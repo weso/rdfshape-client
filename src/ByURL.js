@@ -6,7 +6,6 @@ class ByURL extends React.Component {
  render() {
      return (
         <Form.Group>
-         <Form.Label>{this.props.name}</Form.Label>
          <Form.Control type="text" placeholder={this.props.placeholder} />
         </Form.Group>
      );

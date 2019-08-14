@@ -3,18 +3,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import ByText from "./ByText";
+import DataTabs from "./DataTabs";
+import Tab from "react-bootstrap/Tab";
 
 class RDFShapeNavbar extends React.Component {
+
  render() {
-     return (
-         <Navbar bg="light" expand="lg">
-             <Navbar.Brand href="#home">RDFShape</Navbar.Brand>
-             <Navbar.Toggle aria-controls="basic-navbar-nav" />
-             <Navbar.Collapse id="basic-navbar-nav">
-                 <Nav className="mr-auto">
-                     <NavDropdown title="Data" id="basic-nav-dropdown">
+   return (
+        <Navbar bg="light" expand="lg">
+        <Navbar.Brand href="/">RDFShape</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="mr-auto">
+        <NavDropdown title="Data" id="basic-nav-dropdown">
                          <NavDropdown.Item href="/dataInfo">Info</NavDropdown.Item>
-                         <NavDropdown.Item href="/dataConversions">Convert</NavDropdown.Item>
+                         <NavDropdown.Item href="/dataConvert">Convert</NavDropdown.Item>
                          <NavDropdown.Item href="/dataVisualize">Visualize</NavDropdown.Item>
                          <NavDropdown.Item href="/dataQuery">Query</NavDropdown.Item>
                          <NavDropdown.Item href="/dataExtract">Extract ShEx</NavDropdown.Item>
@@ -25,14 +29,16 @@ class RDFShapeNavbar extends React.Component {
                          <NavDropdown.Item href="/endpointExtract">Extract ShEx</NavDropdown.Item>
                      </NavDropdown>
                      <NavDropdown title="ShEx" id="basic-nav-dropdown">
-                         <NavDropdown.Item href="/validateShEx">Validate data with ShEx</NavDropdown.Item>
-                         <NavDropdown.Item href="/ShExConversions">Convert ShEx formats</NavDropdown.Item>
-                         <NavDropdown.Item href="/ShExToSHACL">ShEx &#8594; SHACL</NavDropdown.Item>
+                         <NavDropdown.Item href="/shexValidate">Validate data with ShEx</NavDropdown.Item>
+                         <NavDropdown.Item href="/shexInfo">Info about ShEx schema</NavDropdown.Item>
+                         <NavDropdown.Item href="/shexVisualize">Visualize ShEx schema</NavDropdown.Item>
+                         <NavDropdown.Item href="/shexConvert">Convert ShEx formats</NavDropdown.Item>
+                         <NavDropdown.Item href="/shex2shacl">ShEx &#8594; SHACL</NavDropdown.Item>
                      </NavDropdown>
                      <NavDropdown title="SHACL" id="basic-nav-dropdown">
-                         <NavDropdown.Item href="/validateSHACL">Validate data with ShEx</NavDropdown.Item>
-                         <NavDropdown.Item href="/SHACLConversions">Convert ShEx formats</NavDropdown.Item>
-                         <NavDropdown.Item href="/SHACLToShEx">SHACL &#8594; ShEx</NavDropdown.Item>
+                         <NavDropdown.Item href="/shaclValidate">Validate data with ShEx</NavDropdown.Item>
+                         <NavDropdown.Item href="/shaclConvert">Convert ShEx formats</NavDropdown.Item>
+                         <NavDropdown.Item href="/shacl2shex">SHACL &#8594; ShEx</NavDropdown.Item>
                      </NavDropdown>
                      <NavDropdown title="Wikidata" id="basic-nav-dropdown">
                          <NavDropdown.Item href="/wikidataQuery">Query</NavDropdown.Item>
@@ -48,8 +54,8 @@ class RDFShapeNavbar extends React.Component {
                  </Nav>
              </Navbar.Collapse>
          </Navbar>
-     );
- }
+   );
+  }
 }
 
 export default RDFShapeNavbar;
