@@ -8,9 +8,8 @@ function App() {
 
   return (
       <Container>
-          <h1>RDFShape</h1>
-           <RDFShapeNavbar />
-          <Routes />
+        <RDFShapeNavbar />
+        <Routes />
       </Container>
   );
 }

@@ -21,7 +21,7 @@ class SelectDataFormat extends React.Component {
         const url = ServerHost() + "/api/data/formats"
         return (
             <Form.Group>
-            <Form.Label>RDF Data format</Form.Label>
+            <Form.Label>{this.props.name}</Form.Label>
             <Form.Control as="select">
                 { this.state.formats.map((format,key) => (
                     <option key={key}>{format}</option>
