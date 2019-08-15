@@ -3,9 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import ByText from "./ByText";
-import DataTabs from "./DataTabs";
-import Tab from "react-bootstrap/Tab";
 
 class RDFShapeNavbar extends React.Component {
 

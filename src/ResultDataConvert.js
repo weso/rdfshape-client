@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-class ResultDataInfo extends React.Component {
+class ResultDataConvert extends React.Component {
  render() {
      const result = this.props.result
      console.log("ResultDataInfo" + JSON.stringify(result));
@@ -34,5 +34,4 @@ class ResultDataInfo extends React.Component {
  }
 }
 
-
-export default ResultDataInfo;
+export default ResultDataConvert;

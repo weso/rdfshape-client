@@ -6,7 +6,6 @@ import axios from 'axios';
 import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
 import ResultDataInfo from "./ResultDataInfo";
-import qs from 'qs';
 import FormData from 'form-data';
 
 class DataInfo extends React.Component {
@@ -16,6 +15,7 @@ class DataInfo extends React.Component {
         this.state = {
             textAreaValue: "",
             result: '',
+            dataFormat: "TURTLE",
             dataUrl: '',
             dataFile: '',
             activeTab: "byText"
@@ -23,6 +23,12 @@ class DataInfo extends React.Component {
      this.handleByTextChange = this.handleByTextChange.bind(this);
      this.handleTabChange = this.handleTabChange.bind(this);
      this.handleSubmit = this.handleSubmit.bind(this);
+     this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
+
+    }
+
+    handleDataFormatChange(value) {
+        this.setState({dataFormat: value});
     }
 
     handleTabChange(value) {
@@ -39,11 +45,12 @@ class DataInfo extends React.Component {
         console.log("Try to prepare request to " + infoUrl);
         const textAreaValue = this.state.textAreaValue;
         const activeTab = this.state.activeTab;
+        const dataFormat = this.state.dataFormat;
         console.log("textAreaValue " + textAreaValue);
         console.log("activeTab " + activeTab);
         let formData = new FormData();
         formData.append('data', textAreaValue);
-        formData.append('dataFormat', 'TURTLE');
+        formData.append('dataFormat', dataFormat);
         console.log("Form data created");
         axios.post(infoUrl,formData).then (response => response.data)
             .then((data) => {
@@ -62,14 +69,17 @@ class DataInfo extends React.Component {
      const textAreaValue = this.state.textAreaValue;
      const activeTab = this.state.activeTab;
      return (
-       <Container>
+       <Container fluid={true}>
          <h1>RDF Data info</h1>
-         <ResultDataInfo msg={this.state.result} />
+         <ResultDataInfo result={this.state.result} />
          <Form onSubmit={this.handleSubmit}>
              <DataTabs textAreaValue={textAreaValue}
                        activeTab={activeTab}
                        handleTabChange={this.handleTabChange}
-                       handleByTextChange={this.handleByTextChange}/>
+                       handleByTextChange={this.handleByTextChange}
+                       defaultDataFormat={this.state.dataFormat}
+                       handleDataFormatChange={this.handleDataFormatChange}
+             />
          <Button variant="primary" type="submit">Info about data</Button>
          </Form>
        </Container>

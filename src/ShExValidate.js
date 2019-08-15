@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 class ShExValidate extends React.Component {
  render() {
      return (
-       <Container>
+       <Container fluid={true}>
          <h1>Validate RDF data with ShEx</h1>
            <Form onSubmit={this.handleSubmit}>
                <DataTabs/>

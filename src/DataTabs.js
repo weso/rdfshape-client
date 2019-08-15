@@ -1,13 +1,13 @@
 import React from 'react';
 import InputTabs from "./InputTabs";
 import SelectDataFormat from "./SelectDataFormat";
-import Form from "react-bootstrap/Form";
 
 class DataTabs extends React.Component {
     constructor(props) {
         super(props);
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
+        this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
     }
 
     handleByTextChange(e) {
@@ -16,6 +16,10 @@ class DataTabs extends React.Component {
 
     handleTabChange(e) {
         this.props.handleTabChange(e.target.value);
+    }
+
+    handleDataFormatChange(e) {
+        this.props.handleDataFormatChange(e.target.value);
     }
 
     render() {
@@ -30,7 +34,10 @@ class DataTabs extends React.Component {
                        handleTabChange={this.props.handleTabChange}
                        byURLPlaceholder="http://..."
             />
-            <SelectDataFormat name="Data format"/>
+            <SelectDataFormat name="Data format"
+                              defaultDataFormat={this.props.dataFormat}
+                              handleDataFormatChange={this.props.handleDataFormatChange}
+            />
             </div>
         );
     }

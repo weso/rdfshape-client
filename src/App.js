@@ -7,7 +7,7 @@ import Routes from './Routes.js';
 function App() {
 
   return (
-      <Container>
+      <Container fluid={true}>
         <RDFShapeNavbar />
         <Routes />
       </Container>

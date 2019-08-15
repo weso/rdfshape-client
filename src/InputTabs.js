@@ -5,7 +5,6 @@ import Tab from 'react-bootstrap/Tab';
 import ByURL from './ByURL';
 import ByFile from './ByFile';
 import ByText from './ByText';
-import SelectDataFormat from "./SelectDataFormat";
 
 class InputTabs extends React.Component {
     constructor(props) {
