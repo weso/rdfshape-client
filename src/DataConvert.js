@@ -3,63 +3,79 @@ import Container from 'react-bootstrap/Container';
 import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import ServerHost from "./ServerHost";
+import API from "./API";
 import axios from "axios";
-import SelectDataFormat from "./SelectDataFormat";
+import SelectFormat from "./SelectFormat";
 import ResultDataConvert from "./ResultDataConvert";
+import {maybeAdd, dataParamsFromQueryParams, formDataFromState} from "./Utils";
+import qs from "query-string";
+import {mkPermalink} from "./Permalink";
+import InputTabsWithFormat from "./InputTabsWithFormat";
 
 class DataConvert extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            textAreaValue: "",
+            dataTextArea: 'RDF',
             result: '',
+            dataFormat: "TURTLE",
             dataUrl: '',
-            dataFile: '',
+            dataFile: null,
             activeTab: "byText",
-            dataFormat: 'TURTLE',
+            permalink: '',
             targetDataFormat: 'TURTLE'
         };
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
+        this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTargetDataFormatChange = this.handleTargetDataFormatChange.bind(this);
     }
 
-    handleTabChange(value) {
-        this.setState({activeTab: value});
-    }
+    handleTabChange(value) { this.setState({activeTab: value}); }
+    handleByTextChange(value) { this.setState({dataTextArea: value}); }
+    handleDataFormatChange(value) {  this.setState({dataFormat: value}); }
+    handleDataUrlChange(value) { this.setState({dataUrl: value}); }
+    handleFileUpload(value) { this.setState({dataFile: value}); }
+    handleTargetDataFormatChange(value) { this.setState({targetDataFormat: value}); }
 
-    handleByTextChange(value) {
-        this.setState({textAreaValue: value});
-    }
-
-    handleTargetDataFormatChange(value) {
-        this.setState({targetDataFormat: value});
-    }
-
-    handleDataFormatChange(value) {
-        this.setState({dataFormat: value});
+    componentDidMount() {
+        console.log("Component Did mount - dataConvert");
+        if (this.props.location.search) {
+            const queryParams = qs.parse(this.props.location.search);
+            console.log("Parameters: " + JSON.stringify(queryParams));
+            let newParams = dataParamsFromQueryParams(queryParams);
+            maybeAdd(queryParams.targetDataFormat,"targetDataFormat", newParams);
+            const infoUrl = API.dataConvert + "?" + qs.stringify(newParams);
+            console.log("Preparing request to " + infoUrl);
+            axios.get(infoUrl).then (response => response.data)
+                .then((data) => {
+                    this.setState({ result: data });
+                    this.setState({ permalink: infoUrl });
+                    if (newParams.data) { this.setState({dataTextArea: newParams.data}) }
+                    if (newParams.dataFormat) { this.setState({dataFormat: newParams.dataFormat}) }
+                    if (newParams.dataUrl) { this.setState({dataUrl: newParams.dataUrl}) }
+                    if (newParams.targetDataFormat) { this.setState({targetDataFormat: newParams.targetDataFormat}) }
+                })
+                .catch(function (error) {
+                    console.log("Error calling server at " + infoUrl + ": " + error);
+                });
+        }
     }
 
     handleSubmit(event) {
-        const infoUrl = ServerHost() + "/api/data/convert"
-        console.log("Try to prepare request to " + infoUrl);
-        const textAreaValue = this.state.textAreaValue;
-        const activeTab = this.state.activeTab;
-        const dataFormat = this.state.dataFormat;
-        const targetDataFormat = this.state.targetDataFormat;
-        console.log("textAreaValue " + textAreaValue);
-        console.log("activeTab " + activeTab);
-        let formData = new FormData();
-        formData.append('data', textAreaValue);
-        formData.append('dataFormat', dataFormat);
-        formData.append('targetDataFormat', targetDataFormat);
-        console.log("Form data created. dataFormat" + dataFormat);
-        axios.post(infoUrl,formData).then (response => response.data)
+        const url = API.dataConvert;
+        console.log("Try to prepare request to " + url);
+        let [formData,params] = formDataFromState(this.state);
+        formData.append('targetDataFormat', this.state.targetDataFormat);
+        params['targetDataFormat'] = this.state.targetDataFormat ;
+        let permalink = mkPermalink(API.dataConvertRoute, params);
+        axios.post(url,formData).then (response => response.data)
             .then((data) => {
                 this.setState({ result: data })
+                this.setState({ permalink: permalink });
                 console.log(this.state.result);
             })
             .catch(function (error) {
@@ -74,21 +90,32 @@ class DataConvert extends React.Component {
      return (
        <Container fluid={true}>
          <h1>Convert RDF data</h1>
-           <ResultDataConvert result={this.state.result} />
            <Form onSubmit={this.handleSubmit}>
-               <DataTabs textAreaValue={this.state.textAreaValue}
-                         dataFormat={this.state.dataFormat}
-                         activeTab={this.state.activeTab}
+               <DataTabs activeTab={this.state.activeTab}
                          handleTabChange={this.handleTabChange}
+
+                         textAreaValue={this.state.dataTextArea}
                          handleByTextChange={this.handleByTextChange}
+
+                         dataUrl={this.state.dataUrl}
+                         handleDataUrlChange={this.handleDataUrlChange}
+
+                         handleFileUpload={this.handleFileUpload}
+
+                         dataFormat={this.state.dataFormat}
                          handleDataFormatChange={this.handleDataFormatChange}
                />
-               <SelectDataFormat name="Target data format"
-                                 dataFormat={this.state.targetDataFormat}
-                                 handleDataFormatChange={this.handleTargetDataFormatChange}
+               <SelectFormat name="Target data format"
+                             defaultFormat={this.state.targetDataFormat}
+                             handleFormatChange={this.handleTargetDataFormatChange}
+                             urlFormats={API.dataFormats}
                />
                <Button variant="primary" type="submit">Convert data</Button>
            </Form>
+           <ResultDataConvert
+               result={this.state.result}
+               permalink={this.state.permalink}
+           />
        </Container>
      );
  }

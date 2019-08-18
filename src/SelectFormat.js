@@ -1,26 +1,26 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 import axios from 'axios';
-import ServerHost from "./ServerHost"
 
-class SelectDataFormat extends React.Component {
+class SelectFormat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             formats: [],
-            dataFormat: this.props.defaultDataFormat
+            format: this.props.defaultFormat
         }
-        this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
+        this.handleFormatChange = this.handleFormatChange.bind(this);
     }
 
-    handleDataFormatChange(e) {
+    handleFormatChange(e) {
         console.log(e.target.value);
-        this.setState({dataFormat: e.target.value})
-        this.props.handleDataFormatChange(e.target.value);
+        this.setState({format: e.target.value})
+        this.props.handleFormatChange(e.target.value);
     }
 
     componentDidMount() {
-        const url = ServerHost() + "/api/data/formats";
+        const url = this.props.urlFormats;
+        console.log("Select format URL:" + url);
         axios.get(url).then(response => response.data)
             .then((data) => {
                 this.setState({ formats: data })
@@ -32,10 +32,10 @@ class SelectDataFormat extends React.Component {
         return (
             <Form.Group>
             <Form.Label>{this.props.name}</Form.Label>
-            <Form.Control as="select" onChange={this.handleDataFormatChange}>
+            <Form.Control as="select" onChange={this.handleFormatChange}>
                 { this.state.formats.map((format,key) => (
-                    <option key={key}>{format}</option>
-                 ))
+                    <option key={key} defaultValue={format === this.props.defaultFormat}>{format}</option>
+                ))
                 }
             </Form.Control>
             </Form.Group>
@@ -43,4 +43,4 @@ class SelectDataFormat extends React.Component {
     }
 }
 
-export default SelectDataFormat;
+export default SelectFormat;

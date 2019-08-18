@@ -1,13 +1,10 @@
 import React from 'react';
-import Code from './Code'
-import { Permalink } from "./Permalink"
-import { mkMode } from "./Utils"
 
 
-class ResultDataConvert extends React.Component {
+class ResultQuery extends React.Component {
  render() {
      const result = this.props.result
-     console.log("ResultDataConvert" + JSON.stringify(result));
+     console.log("ResultQuery" + JSON.stringify(result));
      let msg ;
      if (result === "") {
          msg = null
@@ -20,15 +17,12 @@ class ResultDataConvert extends React.Component {
      } else {
          msg = <div>
              <p>{result.msg}</p>
-             {result.data && result.dataFormat && (
-                 <Code
-                     value={result.data}
-                     mode={mkMode(result.dataFormat)}
-                     theme="material"
-                 />
-             )}
+             <ul>
+                 <li>Number of statements: {result.numberStatements}</li>
+                 <li>Data: <pre>{result.data}</pre></li>
+                 <li>DataFormat: <span>{result.dataFormat}</span></li>
+             </ul>
              <details><pre>{JSON.stringify(result)}</pre></details>
-             <Permalink url={this.props.permalink} />
          </div>
      }
 
@@ -40,4 +34,5 @@ class ResultDataConvert extends React.Component {
  }
 }
 
-export default ResultDataConvert;
+
+export default ResultQuery;

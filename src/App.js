@@ -3,6 +3,7 @@ import './App.css';
 import RDFShapeNavbar from "./RDFShapeNavbar";
 import Container from 'react-bootstrap/Container';
 import Routes from './Routes.js';
+import Cyto from './Cyto.js';
 
 function App() {
 

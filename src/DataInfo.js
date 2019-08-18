@@ -1,83 +1,103 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import ServerHost from "./ServerHost";
+import API from "./API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
 import ResultDataInfo from "./ResultDataInfo";
-import FormData from 'form-data';
+import qs from 'query-string';
+import { mkPermalink, mkFormData } from "./Permalink";
+import {formDataFromState, dataParamsFromQueryParams } from "./Utils";
 
 class DataInfo extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            textAreaValue: "",
+            dataTextArea: 'RDF',
             result: '',
             dataFormat: "TURTLE",
             dataUrl: '',
-            dataFile: '',
-            activeTab: "byText"
+            dataFile: null,
+            activeTab: "byText",
+            permalink: ''
         } ;
      this.handleByTextChange = this.handleByTextChange.bind(this);
      this.handleTabChange = this.handleTabChange.bind(this);
-     this.handleSubmit = this.handleSubmit.bind(this);
      this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-
+     this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
+     this.handleFileUpload = this.handleFileUpload.bind(this);
+     this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleDataFormatChange(value) {
-        this.setState({dataFormat: value});
-    }
+    handleDataFormatChange(value) { this.setState({dataFormat: value}); }
+    handleTabChange(value) { this.setState({activeTab: value});  }
+    handleByTextChange(value) { this.setState({dataTextArea: value});  }
+    handleDataUrlChange(value) { this.setState({dataUrl: value}); }
+    handleFileUpload(value) { this.setState({dataFile: value}); }
 
-    handleTabChange(value) {
-        console.log("Changed tab..." + value);
-        this.setState({activeTab: value});
-    }
-
-    handleByTextChange(value) {
-        this.setState({textAreaValue: value});
+    componentDidMount() {
+        console.log("Component Did mount");
+        if (this.props.location.search) {
+            const queryParams = qs.parse(this.props.location.search);
+            console.log("Parameters: " + JSON.stringify(queryParams));
+            let dataParams = dataParamsFromQueryParams(this.props.location.search);
+            const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
+            console.log("Try to prepare request to " + infoUrl);
+            axios.get(infoUrl).then (response => response.data)
+                .then((data) => {
+                    this.setState({ result: data });
+//                    if (params.data) this.setState({dataTextArea: params.data});
+//                    if (params.dataFormat) this.setState({dataFormat: params.dataFormat});
+//                    if (params.dataUrl) this.setState({dataUrl: params.dataUrl});
+                })
+                .catch(function (error) {
+                    console.log("Error calling server at " + infoUrl + ": " + error);
+                });
+        }
     }
 
     handleSubmit(event) {
-        const infoUrl = ServerHost() + "/api/data/info"
+        const infoUrl = API.dataInfo;
         console.log("Try to prepare request to " + infoUrl);
-        const textAreaValue = this.state.textAreaValue;
-        const activeTab = this.state.activeTab;
-        const dataFormat = this.state.dataFormat;
-        console.log("textAreaValue " + textAreaValue);
-        console.log("activeTab " + activeTab);
-        let formData = new FormData();
-        formData.append('data', textAreaValue);
-        formData.append('dataFormat', dataFormat);
-        console.log("Form data created");
+        let [formData,params] = formDataFromState(this.state);
+        let permalink = mkPermalink(API.dataInfoRoute, params);
+        console.log("Permalink created: " + JSON.stringify(permalink));
         axios.post(infoUrl,formData).then (response => response.data)
             .then((data) => {
-                this.setState({ result: data })
+                this.setState({ result: data });
+                this.setState({ permalink: permalink });
                 console.log(this.state.result);
             })
             .catch(function (error) {
-                console.log('Error doing server request')
-                console.log(error);
+                // this.setState({result: { error: "Error calling server at " + infoUrl + ": " + error}});
+                console.log("Error calling server at " + infoUrl + ": " + error);
         });
-
         event.preventDefault();
     }
 
  render() {
-     const textAreaValue = this.state.textAreaValue;
-     const activeTab = this.state.activeTab;
      return (
        <Container fluid={true}>
          <h1>RDF Data info</h1>
-         <ResultDataInfo result={this.state.result} />
+         <ResultDataInfo
+             result={this.state.result}
+             permalink={this.state.permalink}
+         />
          <Form onSubmit={this.handleSubmit}>
-             <DataTabs textAreaValue={textAreaValue}
-                       activeTab={activeTab}
+             <DataTabs activeTab={this.state.activeTab}
                        handleTabChange={this.handleTabChange}
+
+                       textAreaValue={this.state.dataTextArea}
                        handleByTextChange={this.handleByTextChange}
-                       defaultDataFormat={this.state.dataFormat}
+
+                       dataUrl={this.state.dataUrl}
+                       handleDataUrlChange={this.handleDataUrlChange}
+
+                       handleFileUpload={this.handleFileUpload}
+
+                       dataFormat={this.state.dataFormat}
                        handleDataFormatChange={this.handleDataFormatChange}
              />
          <Button variant="primary" type="submit">Info about data</Button>

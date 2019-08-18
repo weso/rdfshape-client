@@ -6,7 +6,7 @@ class Home extends React.Component {
      return (
        <Container>
          <h1>RDFShape</h1>
-           <p>RDFShape is an RDF playground which can be used to play with:</p>
+           <p>RDFShape is an RDF service where you can play:</p>
            <ul>
                <li><a href="https://www.w3.org/TR/rdf11-concepts/">RDF</a> conversion between different formats
                    like <a href="http://www.w3.org/TR/turtle/">Turtle</a> and <a href="http://www.w3.org/TR/json-ld/">JSON-LD</a></li>

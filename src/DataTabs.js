@@ -1,6 +1,7 @@
 import React from 'react';
+import InputTabsWithFormat from "./InputTabsWithFormat";
+import API from "./API"
 import InputTabs from "./InputTabs";
-import SelectDataFormat from "./SelectDataFormat";
 
 class DataTabs extends React.Component {
     constructor(props) {
@@ -8,10 +9,15 @@ class DataTabs extends React.Component {
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
         this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
+        this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
     }
 
     handleByTextChange(e) {
         this.props.handleByTextChange(e.target.value);
+    }
+
+    handleDataUrlChange(e) {
+        this.props.handleDataUrlChange(e.target.value);
     }
 
     handleTabChange(e) {
@@ -19,24 +25,35 @@ class DataTabs extends React.Component {
     }
 
     handleDataFormatChange(e) {
+        console.log("HandleDataFormatChange in InputTabsWithForm" + e);
         this.props.handleDataFormatChange(e.target.value);
     }
 
     render() {
         return (
             <div>
-            <InputTabs name="RDF data"
+            <InputTabsWithFormat
+                       nameInputTab="RDF data"
                        activeTab={this.props.activeTab}
-                       textAreaValue={this.props.textAreaValue}
-                       byTextPlaceholder="RDF data..."
-                       valueTextArea=""
-                       handleByTextChange={this.props.handleByTextChange}
                        handleTabChange={this.props.handleTabChange}
+
+                       byTextName="RDF data"
+                       textAreaValue={this.props.textAreaValue}
+                       textPlaceholder="RDF data..."
+                       handleByTextChange={this.props.handleByTextChange}
+
+                       byUrlName="URL data"
+                       handleUrlChange={this.props.handleDataUrlChange}
+                       urlValue={this.props.dataUrl}
                        byURLPlaceholder="http://..."
-            />
-            <SelectDataFormat name="Data format"
-                              defaultDataFormat={this.props.dataFormat}
-                              handleDataFormatChange={this.props.handleDataFormatChange}
+
+                       byFileName="RDF File"
+                       handleFileUpload={this.props.handleFileUpload}
+
+                       nameFormat="Data format"
+                       defaultFormat={this.props.dataFormat}
+                       handleFormatChange={this.props.handleDataFormatChange}
+                       urlFormats={API.dataFormats}
             />
             </div>
         );

@@ -11,13 +11,16 @@ class InputTabs extends React.Component {
         super(props);
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
+        this.handleUrlChange = this.handleUrlChange.bind(this);
         this.state = { activeTab: this.props.activeTab }
     }
 
     handleByTextChange(e) {
         this.props.handleByTextChange(e.target.value);
     }
-
+    handleUrlChange(e) {
+        this.props.handleByTextChange(e.target.value);
+    }
     handleTabChange(e) {
         console.log("Tab change " + e);
         this.setState( { activeTab: e })
@@ -35,16 +38,22 @@ class InputTabs extends React.Component {
           >
             <Tab eventKey="byText" title="by Input">
             <ByText name={this.props.byTextName}
-                    valueTextArea={this.props.valueTextArea}
+                    textAreaValue={this.props.textAreaValue}
                     placeholder={this.props.byTextPlaceholder}
                     handleByTextChange={this.props.handleByTextChange}
             />
            </Tab>
            <Tab eventKey="byURL" title="By URL">
-             <ByURL name={this.props.byURLName} placeholder={this.props.byURLPlaceholder}/>
+             <ByURL name={this.props.byURLName}
+                    urlValue={this.props.urlValue}
+                    handleUrlChange={this.props.handleUrlChange}
+                    placeholder={this.props.byUrlPlaceholder}
+             />
            </Tab>
            <Tab eventKey="byFile" title="By File">
-             <ByFile name={this.props.byFileName}/>
+             <ByFile name={this.props.byFileName}
+                     handleFileUpload={this.props.handleFileUpload}
+             />
             </Tab>
          </Tabs>
          </Form.Group>

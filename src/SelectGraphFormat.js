@@ -1,7 +1,7 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 import axios from 'axios';
-import ServerHost from "./ServerHost"
+import API from "./API"
 
 class SelectGraphFormat extends React.Component {
     constructor(props) {
@@ -19,7 +19,7 @@ class SelectGraphFormat extends React.Component {
     }
 
     componentDidMount() {
-        const url = ServerHost() + "/api/data/visualize/formats";
+        const url = API.dataVisualFormats;
         axios.get(url).then(response => response.data)
             .then((data) => {
                 this.setState({ formats: data })

@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 class ShExInfo extends React.Component {
  render() {
      return (
-       <Container>
+       <Container fluid={true}>
          <h1>Info about ShEx schema</h1>
            <Form onSubmit={this.handleSubmit}>
                <ShExTabs/>

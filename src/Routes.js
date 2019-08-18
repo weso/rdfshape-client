@@ -29,6 +29,7 @@ import SHACL2ShEx from './SHACL2ShEx.js';
 import WikidataValidate from './WikidataValidate.js';
 import WikidataQuery from './WikidataQuery.js';
 import WikidataExtract from './WikidataExtract.js';
+import API from './API.js'
 
 function Routes() {
 
@@ -36,31 +37,32 @@ function Routes() {
       <Router>
       <Switch>
       <Route path="/" exact component={Home} />
-      <Route path="/dataInfo" component={DataInfo} />
-      <Route path="/dataConvert" component={DataConvert} />
-      <Route path="/dataVisualize" component={DataVisualize} />
-      <Route path="/dataQuery" component={DataQuery} />
-      <Route path="/dataExtract" component={DataExtract} />
+      <Route path={API.dataInfoRoute} component={DataInfo} />
+      <Route path={API.dataConvertRoute} component={DataConvert} />
+      <Route path={API.dataVisualizeRoute} component={DataVisualize} />
+      <Route path={API.dataQueryRoute} component={DataQuery} />
+      <Route path={API.dataQueryRoute} component={DataExtract} />
 
-      <Route path="/endpointInfo" component={EndpointInfo} />
-      <Route path="/endpointQuery" component={EndpointQuery} />
-      <Route path="/endpointExtract" component={EndpointExtract} />
+      <Route path={API.endpointInfoRoute} component={EndpointInfo} />
+      <Route path={API.endpointQueryRoute} component={EndpointQuery} />
+      <Route path={API.endpointExtractRoute} component={EndpointExtract} />
 
-      <Route path="/shexValidate" component={ShExValidate} />
-      <Route path="/shexInfo" component={ShExInfo} />
-      <Route path="/shexVisualize" component={ShExVisualize} />
-      <Route path="/shexConvert" component={ShExConvert} />
-      <Route path="/shex2shacl" component={ShEx2SHACL} />
+      <Route path={API.shExValidateRoute} component={ShExValidate} />
+      <Route path={API.shExInfoRoute} component={ShExInfo} />
+      <Route path={API.shExVisualizeRoute} component={ShExVisualize} />
+      <Route path={API.shExConvertRoute} component={ShExConvert} />
+      <Route path={API.shEx2ShaclRoute} component={ShEx2SHACL} />
 
-      <Route path="/shaclInfo" component={SHACLInfo} />
-      <Route path="/shaclValidate" component={SHACLValidate} />
-      <Route path="/shaclConvert" component={SHACLConvert} />
-      <Route path="/shacl2shex" component={SHACL2ShEx} />
+      <Route path={API.shaclInfoRoute} component={SHACLInfo} />
+      <Route path={API.shaclValidateRoute} component={SHACLValidate} />
+      <Route path={API.shaclConvertRoute} component={SHACLConvert} />
+      <Route path={API.shacl2ShExRoute} component={SHACL2ShEx} />
 
-      <Route path="/wikidataQuery" component={WikidataQuery} />
-      <Route path="/wikidataValidate" component={WikidataValidate} />
-      <Route path="/wikidataExtract" component={WikidataExtract} />
-      <Route path="/about" component={About} />
+      <Route path={API.wikidataQueryRoute} component={WikidataQuery} />
+      <Route path={API.wikidataValidateRoute} component={WikidataValidate} />
+      <Route path={API.wikidataExtractRoute} component={WikidataExtract} />
+      <Route path={API.aboutRoute} component={About} />
+
       <Route component={NotFound} />
       </Switch>
      </Router>

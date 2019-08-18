@@ -1,4 +1,6 @@
 import React from 'react';
+import Cyto from "./Cyto";
+import Container from "react-bootstrap/Container";
 
 function mkSVG(svg) {
  return {__html: svg};
@@ -20,16 +22,21 @@ class ResultDataVisualization extends React.Component {
                 </div>
      } else {
          const target = result.targetDataFormat.toLowerCase()
-         if (target==="svg" || target ==="png") {
+     if (target==="svg" || target ==="png") {
              msg = <div dangerouslySetInnerHTML={mkSVG(result.result)} />
-         } else {
+     } else
+     if (target === "json") {
+         const elements = JSON.parse(result.result);
+         console.log("Elements: ");
+         console.log(elements);
+         msg = <div>
+             <Cyto elements={elements} />
+             <details><pre>{JSON.stringify(result)}</pre></details>
+         </div>
+     } else
+      {
              msg = <div>
                  <p>{result.msg}</p>
-                 <ul>
-                     <li>Number of statements: {result.numberStatements}</li>
-                     <li>Data: <pre>{result.data}</pre></li>
-                     <li>DataFormat: <span>{result.dataFormat}</span></li>
-                 </ul>
                  <details><pre>{JSON.stringify(result)}</pre></details>
              </div>
          }
