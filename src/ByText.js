@@ -13,7 +13,7 @@ class ByText extends React.Component {
   }
 
   handleChange(e) {
-    this.setState({dataTextArea: e.target.value});
+    this.setState({textAreaValue: e.target.value});
     this.props.handleByTextChange(e.target.value);
   }
 
@@ -29,7 +29,7 @@ class ByText extends React.Component {
          <Form.Label>{this.props.name}</Form.Label>
          <Form.Control as="textarea"
                        rows="3"
-                       value={this.state.textAreaValue}
+                       value={this.props.textAreaValue}
                        onChange={this.handleChange}
                        placeholder={this.props.placeholder}
          />

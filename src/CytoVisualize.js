@@ -16,7 +16,11 @@ import ShowSVG from "./Cyto";
 import Viz from 'viz.js/viz.js';
 const {Module, render} = require('viz.js/full.render.js');
 
-class DataVisualize extends React.Component {
+const cose = "cose"
+const random = "random"
+
+
+class CytoVisualize extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,23 +31,21 @@ class DataVisualize extends React.Component {
             dataFile: null,
             activeTab: "byText",
             permalink: '',
-            targetGraphFormat: 'SVG',
-            svg: null,
-            json: []
+            elements: [],
+            layoutName: random
         };
+        this.changeLayout = this.changeLayout.bind(this);
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
         this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
         this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleTargetGraphFormatChange = this.handleTargetGraphFormatChange.bind(this);
         this.processData = this.processData.bind(this);
     }
 
     handleTabChange(value) { this.setState({activeTab: value}); }
     handleByTextChange(value) { this.setState({dataTextArea: value});    }
-    handleTargetGraphFormatChange(value) {  this.setState({targetGraphFormat: value});   }
     handleDataUrlChange(value) { this.setState({dataUrl: value}); }
     handleFileUpload(value) { this.setState({dataFile: value}); }
     handleDataFormatChange(value) { this.setState({dataFormat: value}); }
@@ -73,55 +75,24 @@ class DataVisualize extends React.Component {
         }
     } */
 
-    convertTargetFormat(targetFormat) {
-        if (targetFormat && ["svg","png","jpg"].includes(targetFormat.toLowerCase())) {
-            console.log("convertTargetFormat " + targetFormat + " -> DOT")
-            return "dot"
-        } else {
-            console.log("convertTargetFormat " + targetFormat + " not dot")
-            return targetFormat
-        }
-    }
-
-    processData(data,targetFormat,permalink) {
-        this.setState({
+    processData(data,permalink) {
+      console.log("Elements " + data.result);
+      const elements = JSON.parse(data.result)
+      this.setState({
             result: data,
             permalink: permalink,
-            targetGraphFormat: targetFormat
+            elements: elements
         });
-        switch (targetFormat) {
-            case "SVG":
-                this.convertDot(data.result,'dot','SVG')
-                this.setState({json: []})
-                break;
-            case "JSON": this.setState({
-                svg: null,
-                json: data.result
-                })
-                break;
-        }
     }
 
     handleSubmit(event) {
         const url = API.dataConvert;
-        console.log("Try to prepare request to " + url);
         let [formData,params] = formDataFromState(this.state);
-        const originalTargetFormat = this.state.targetGraphFormat ;
-        const serverTargetFormat = this.convertTargetFormat(originalTargetFormat)
-        formData.append('targetDataFormat', serverTargetFormat); // It converts to dot in the server
-        params['targetDataFormat'] = originalTargetFormat ;
-        let permalink = mkPermalink(API.dataVisualizeRoute, params);
+        formData.append('targetDataFormat', "JSON");
+        let permalink = mkPermalink(API.cytoVisualizeRoute, params);
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                this.processData(data,originalTargetFormat,permalink)
-/*                if (originalTargetFormat === "JSON") {
-                    this.setState({json: data})
-                }
-                console.log("DataVisualize Before state change");
-                console.log(this.state.result);
-                this.setState({ result: data, permalink: permalink });
-                console.log("DataVisualize Before after result change");
-                console.log(this.state.result); */
+                this.processData(data,permalink)
             })
             .catch(function (error) {
                 console.log('Error doing server request')
@@ -131,61 +102,19 @@ class DataVisualize extends React.Component {
         event.preventDefault();
     }
 
-    convertDot(dot, engine, format) {
-        console.log("Convert DOT to SVG. DOT: " + JSON.stringify(dot));
-        const digraph =
-            `digraph G {
-
-subgraph cluster_0 {
- style=filled;
- color=lightgrey;
- node [style=filled,color=white];
- a0 -> a1 -> a2 -> a3;
- label = "process #1";
-}
-
-subgraph cluster_1 {
- node [style=filled];
- b0 -> b1 -> b2 -> b3;
- label = "process #2";
- color=blue
-}
- tstart -> a0;
- tstart -> b0;
- ta1 -> b3;
- tb2 -> a3;
- ta3 -> a0;
- a3 -> end;
- b3 -> end;
-
-start [shape=Mdiamond];
- tend [shape=Msquare];
-}
-`;
-        let viz = new Viz({Module, render});
-        const opts = {engine: 'dot'};
-        viz.renderSVGElement(digraph, opts).then(svg => {
-            console.log("DOT -> SVG converted!! " + JSON.stringify(dot))
-            this.setState({
-                svg: svg.outerHTML
-            });
-        }).catch(error => {
-            // Create a new Viz instance (@see Caveats page for more info)
-            viz = new Viz({Module, render});
-            this.setState({error: "<p>" + error + "</p>"})
-            console.error(error);
-        });
+ changeLayout(e) {
+        console.log("Change layout: " + e.target.value);
+        this.setState({layoutName: e.target.value});
+        e.preventDefault();
     }
-
 
  render() {
      const targetGraphFormat = this.state.targetGraphFormat
      return (
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>
-         <ShowSVG svg={this.state.svg}/>
-         <ResultDataVisualization result={this.state.result}
-                                  targetGraphFormat={this.state.targetGraphFormat}
+         <Cyto elements={this.state.elements}
+               layoutName={this.state.layoutName}
          />
          <Form onSubmit={this.handleSubmit}>
                <DataTabs activeTab={this.state.activeTab}
@@ -202,15 +131,16 @@ start [shape=Mdiamond];
                          dataFormat={this.state.dataFormat}
                          handleDataFormatChange={this.handleDataFormatChange}
                />
-             <SelectGraphFormat name="Graph format"
-                               default={this.state.graphFormat}
-                               handleChange={this.handleTargetGraphFormatChange}
-             />
          <Button variant="primary" type="submit">Visualize</Button>
+             <Form.Group>
+                 <Button variant="secondary" onClick={this.changeLayout} value="cose">COSE Layaout</Button>
+                 <Button variant="secondary" onClick={this.changeLayout} value="random">Random</Button>
+                 <Button variant="secondary" onClick={this.changeLayout} value="circle">Circle</Button>
+             </Form.Group>
          </Form>
        </Container>
      );
  }
 }
 
-export default DataVisualize;
+export default CytoVisualize;

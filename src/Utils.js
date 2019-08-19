@@ -1,6 +1,8 @@
 import React from 'react';
 import {mkFormData} from "./Permalink";
 import qs from "query-string";
+import Viz from 'viz.js/viz.js';
+const { Module, render } = require('viz.js/full.render.js');
 
 function addPart(maybe, name) {
     if (maybe) return "&name=" + maybe
@@ -15,6 +17,19 @@ function *intersperse(a, delim) {
         yield x;
     }
 }
+
+export function dot2svg(dot,cb) {
+    console.log("### Dot2SVG!!!" + dot);
+    const digraph = 'digraph { a -> b; }';
+    const viz = new Viz({ Module, render });
+    const opts = {engine: 'dot'};
+    viz.renderSVGElement(digraph, opts).then(function(svg) {
+      console.log("SVG converted!!")
+      console.log(svg);
+      cb(svg);
+    });
+};
+
 
 export function mkMode(format) {
     if (format) {

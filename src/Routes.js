@@ -8,6 +8,7 @@ import Home from './Home.js';
 import DataInfo from './DataInfo.js';
 import DataConvert from './DataConvert.js';
 import DataVisualize from './DataVisualize.js';
+import CytoVisualize from './CytoVisualize.js';
 import DataQuery from './DataQuery.js';
 import DataExtract from './DataExtract.js';
 
@@ -40,6 +41,7 @@ function Routes() {
       <Route path={API.dataInfoRoute} component={DataInfo} />
       <Route path={API.dataConvertRoute} component={DataConvert} />
       <Route path={API.dataVisualizeRoute} component={DataVisualize} />
+      <Route path={API.cytoVisualizeRoute} component={CytoVisualize} />
       <Route path={API.dataQueryRoute} component={DataQuery} />
       <Route path={API.dataQueryRoute} component={DataExtract} />
 

@@ -3,6 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import API from './API.js'
+
 
 class RDFShapeNavbar extends React.Component {
 
@@ -14,9 +16,10 @@ class RDFShapeNavbar extends React.Component {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                         <NavDropdown title="Data" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/dataInfo">Info</NavDropdown.Item>
-                            <NavDropdown.Item href="/dataConvert">Convert</NavDropdown.Item>
-                            <NavDropdown.Item href="/dataVisualize">Visualize</NavDropdown.Item>
+                            <NavDropdown.Item href={API.dataInfoRoute}>Info</NavDropdown.Item>
+                            <NavDropdown.Item href={API.dataConvertRoute}>Convert</NavDropdown.Item>
+                            <NavDropdown.Item href={API.dataVisualizeRoute}>Visualize (Graphviz)</NavDropdown.Item>
+                            <NavDropdown.Item href={API.cytoVisualizeRoute}>Visualize (Cytoscape)</NavDropdown.Item>
                             <NavDropdown.Item href="/dataQuery">Query</NavDropdown.Item>
                             <NavDropdown.Item href="/dataExtract">Extract ShEx</NavDropdown.Item>
                         </NavDropdown>
