@@ -1,12 +1,11 @@
 import React from 'react';
-import Cyto from "./Cyto";
 
 class ShowSVG extends React.Component {
 
     render() {
-        return <div>
-            <p>Show SVG: {this.props.svg}</p>
-        </div>
+        return <div className="SVG" border="1"
+                    dangerouslySetInnerHTML={{__html: this.props.svg}}
+        />
     }
 }
 

@@ -20,9 +20,9 @@ class ResultDataConvert extends React.Component {
      } else {
          msg = <div>
              <p>{result.msg}</p>
-             {result.data && result.dataFormat && (
+             {result.result && result.dataFormat && (
                  <Code
-                     value={result.data}
+                     value={result.result}
                      mode={mkMode(result.dataFormat)}
                      theme="material"
                  />

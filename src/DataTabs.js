@@ -1,34 +1,10 @@
 import React from 'react';
 import InputTabsWithFormat from "./InputTabsWithFormat";
 import API from "./API"
+import PropTypes from 'prop-types';
 import InputTabs from "./InputTabs";
 
 class DataTabs extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleByTextChange = this.handleByTextChange.bind(this);
-        this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-        this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
-    }
-
-    handleByTextChange(e) {
-        this.props.handleByTextChange(e.target.value);
-    }
-
-    handleDataUrlChange(e) {
-        this.props.handleDataUrlChange(e.target.value);
-    }
-
-    handleTabChange(e) {
-        this.props.handleTabChange(e.target.value);
-    }
-
-    handleDataFormatChange(e) {
-        console.log("HandleDataFormatChange in InputTabsWithForm" + e);
-        this.props.handleDataFormatChange(e.target.value);
-    }
-
     render() {
         return (
             <div>
@@ -59,5 +35,21 @@ class DataTabs extends React.Component {
         );
     }
 }
+
+DataTabs.propTypes = {
+    activeTab: PropTypes.string,
+    textAreaValue: PropTypes.string,
+    handleByTextChange: PropTypes.func.isRequired,
+    handleFileUpload: PropTypes.func.isRequired,
+    handleDataUrlChange: PropTypes.func.isRequired,
+    dataFormat: PropTypes.string.isRequired,
+    handleDataFormatChange: PropTypes.func.isRequired
+};
+
+DataTabs.defaultProps = {
+    activeTab: 'ByText',
+    dataFormat: 'TURTLE'
+};
+
 
 export default DataTabs;

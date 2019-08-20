@@ -30,7 +30,7 @@ class EndpointQuery extends React.Component {
 
     handleTabChange(value) {
         console.log("Changed tab..." + value);
-        this.setState({activeTab: value});
+        this.setState({dataActiveTab: value});
     }
 
     handleByTextChange(value) {

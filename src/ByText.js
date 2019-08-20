@@ -1,14 +1,12 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
+import PropTypes from "prop-types";
+import InputTabs from "./InputTabs";
 
 class ByText extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      textAreaValue: this.props.textAreaValue
-    };
-    console.log("By Text: textAreaValue from props: " + this.props.textAreaValue);
-    console.log("By Text: textAreaValue from state: " + this.state.textAreaValue)
+    this.state = { textAreaValue: this.props.textAreaValue };
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -17,11 +15,6 @@ class ByText extends React.Component {
     this.props.handleByTextChange(e.target.value);
   }
 
-  componentDidMount() {
-      this.setState({dataTextArea: this.props.textAreaValue});
-      console.log("By Text did mount: textAreaValue from props: " + this.props.textAreaValue);
-      console.log("By Text did mount: textAreaValue from state: " + this.state.textAreaValue)
-  }
 
  render() {
      return (
@@ -37,5 +30,16 @@ class ByText extends React.Component {
      );
  }
 }
+
+ByText.propTypes = {
+    name: PropTypes.string,
+    textAreaValue: PropTypes.string,
+    handleByTextChange: PropTypes.func.isRequired,
+    placeholder: PropTypes.string,
+};
+
+ByText.defaultProps = {
+    placeholder: '',
+};
 
 export default ByText;

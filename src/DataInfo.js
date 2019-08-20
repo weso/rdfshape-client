@@ -7,8 +7,8 @@ import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
 import ResultDataInfo from "./ResultDataInfo";
 import qs from 'query-string';
-import { mkPermalink, mkFormData } from "./Permalink";
-import {formDataFromState, dataParamsFromQueryParams } from "./Utils";
+import {mkPermalink, params2Form} from "./Permalink";
+import {paramsFromStateData, dataParamsFromQueryParams} from "./Utils";
 
 class DataInfo extends React.Component {
 
@@ -20,7 +20,7 @@ class DataInfo extends React.Component {
             dataFormat: "TURTLE",
             dataUrl: '',
             dataFile: null,
-            activeTab: "byText",
+            dataActiveTab: "byText",
             permalink: ''
         } ;
      this.handleByTextChange = this.handleByTextChange.bind(this);
@@ -32,7 +32,7 @@ class DataInfo extends React.Component {
     }
 
     handleDataFormatChange(value) { this.setState({dataFormat: value}); }
-    handleTabChange(value) { this.setState({activeTab: value});  }
+    handleTabChange(value) { this.setState({dataActiveTab: value});  }
     handleByTextChange(value) { this.setState({dataTextArea: value});  }
     handleDataUrlChange(value) { this.setState({dataUrl: value}); }
     handleFileUpload(value) { this.setState({dataFile: value}); }
@@ -61,7 +61,9 @@ class DataInfo extends React.Component {
     handleSubmit(event) {
         const infoUrl = API.dataInfo;
         console.log("Try to prepare request to " + infoUrl);
-        let [formData,params] = formDataFromState(this.state);
+        let params = paramsFromStateData(this.state);
+        let formData = params2Form(params);
+
         let permalink = mkPermalink(API.dataInfoRoute, params);
         console.log("Permalink created: " + JSON.stringify(permalink));
         axios.post(infoUrl,formData).then (response => response.data)
@@ -86,7 +88,7 @@ class DataInfo extends React.Component {
              permalink={this.state.permalink}
          />
          <Form onSubmit={this.handleSubmit}>
-             <DataTabs activeTab={this.state.activeTab}
+             <DataTabs activeTab={this.state.dataActiveTab}
                        handleTabChange={this.handleTabChange}
 
                        textAreaValue={this.state.dataTextArea}

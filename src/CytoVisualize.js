@@ -6,15 +6,9 @@ import API from "./API";
 import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import SelectGraphFormat from "./SelectGraphFormat";
-import ResultDataVisualization from "./ResultDataVisualization";
-import {dataParamsFromQueryParams, formDataFromState, maybeAdd} from "./Utils";
-import {mkPermalink} from "./Permalink";
-import qs from "query-string";
+import {paramsFromStateData} from "./Utils";
+import {mkPermalink, params2Form} from "./Permalink";
 import Cyto from "./Cyto";
-import ShowSVG from "./Cyto";
-import Viz from 'viz.js/viz.js';
-const {Module, render} = require('viz.js/full.render.js');
 
 const cose = "cose"
 const random = "random"
@@ -29,7 +23,7 @@ class CytoVisualize extends React.Component {
             dataFormat: "TURTLE",
             dataUrl: '',
             dataFile: null,
-            activeTab: "byText",
+            dataActiveTab: "byText",
             permalink: '',
             elements: [],
             layoutName: random
@@ -44,7 +38,7 @@ class CytoVisualize extends React.Component {
         this.processData = this.processData.bind(this);
     }
 
-    handleTabChange(value) { this.setState({activeTab: value}); }
+    handleTabChange(value) { console.log(`#### Tab Change dataActiveTab ${value}`); this.setState({dataActiveTab: value}); }
     handleByTextChange(value) { this.setState({dataTextArea: value});    }
     handleDataUrlChange(value) { this.setState({dataUrl: value}); }
     handleFileUpload(value) { this.setState({dataFile: value}); }
@@ -87,9 +81,12 @@ class CytoVisualize extends React.Component {
 
     handleSubmit(event) {
         const url = API.dataConvert;
-        let [formData,params] = formDataFromState(this.state);
-        formData.append('targetDataFormat', "JSON");
+        let params = paramsFromStateData(this.state);
+        let formData = params2Form(params);
+        console.log(`CytoVisualize state: ${JSON.stringify(this.state)}`)
+        console.log(`CytoVisualize submit params: ${JSON.stringify(params)}`)
         let permalink = mkPermalink(API.cytoVisualizeRoute, params);
+        formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
                 this.processData(data,permalink)
@@ -117,7 +114,7 @@ class CytoVisualize extends React.Component {
                layoutName={this.state.layoutName}
          />
          <Form onSubmit={this.handleSubmit}>
-               <DataTabs activeTab={this.state.activeTab}
+               <DataTabs activeTab={this.state.dataActiveTab}
                          handleTabChange={this.handleTabChange}
 
                          textAreaValue={this.state.dataTextArea}

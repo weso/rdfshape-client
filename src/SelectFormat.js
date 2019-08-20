@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 import axios from 'axios';
+import PropTypes from "prop-types";
 
 class SelectFormat extends React.Component {
     constructor(props) {
@@ -42,5 +43,13 @@ class SelectFormat extends React.Component {
         )
     }
 }
+
+SelectFormat.propTypes = {
+    name: PropTypes.string.isRequired,
+    defaultFormat: PropTypes.string.isRequired,
+    handleFormatChange: PropTypes.func.isRequired,
+    urlFormats: PropTypes.string.isRequired,
+};
+
 
 export default SelectFormat;

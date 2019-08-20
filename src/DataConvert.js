@@ -7,9 +7,9 @@ import API from "./API";
 import axios from "axios";
 import SelectFormat from "./SelectFormat";
 import ResultDataConvert from "./ResultDataConvert";
-import {maybeAdd, dataParamsFromQueryParams, formDataFromState} from "./Utils";
+import {maybeAdd, dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
 import qs from "query-string";
-import {mkPermalink} from "./Permalink";
+import {mkPermalink, params2Form} from "./Permalink";
 import InputTabsWithFormat from "./InputTabsWithFormat";
 
 class DataConvert extends React.Component {
@@ -21,7 +21,7 @@ class DataConvert extends React.Component {
             dataFormat: "TURTLE",
             dataUrl: '',
             dataFile: null,
-            activeTab: "byText",
+            dataActiveTab: "byText",
             permalink: '',
             targetDataFormat: 'TURTLE'
         };
@@ -34,7 +34,7 @@ class DataConvert extends React.Component {
         this.handleTargetDataFormatChange = this.handleTargetDataFormatChange.bind(this);
     }
 
-    handleTabChange(value) { this.setState({activeTab: value}); }
+    handleTabChange(value) { this.setState({dataActiveTab: value}); }
     handleByTextChange(value) { this.setState({dataTextArea: value}); }
     handleDataFormatChange(value) {  this.setState({dataFormat: value}); }
     handleDataUrlChange(value) { this.setState({dataUrl: value}); }
@@ -68,7 +68,8 @@ class DataConvert extends React.Component {
     handleSubmit(event) {
         const url = API.dataConvert;
         console.log("Try to prepare request to " + url);
-        let [formData,params] = formDataFromState(this.state);
+        let params = paramsFromStateData(this.state);
+        let formData = params2Form(params);
         formData.append('targetDataFormat', this.state.targetDataFormat);
         params['targetDataFormat'] = this.state.targetDataFormat ;
         let permalink = mkPermalink(API.dataConvertRoute, params);
@@ -91,7 +92,7 @@ class DataConvert extends React.Component {
        <Container fluid={true}>
          <h1>Convert RDF data</h1>
            <Form onSubmit={this.handleSubmit}>
-               <DataTabs activeTab={this.state.activeTab}
+               <DataTabs activeTab={this.state.dataActiveTab}
                          handleTabChange={this.handleTabChange}
 
                          textAreaValue={this.state.dataTextArea}

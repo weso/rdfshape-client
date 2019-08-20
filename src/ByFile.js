@@ -1,5 +1,6 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
+import PropTypes from "prop-types";
 
 class ByFile extends React.Component {
     constructor(props) {
@@ -30,5 +31,14 @@ class ByFile extends React.Component {
      );
  }
 }
+
+ByFile.propTypes = {
+    name: PropTypes.string.isRequired,
+    handleFileUpload: PropTypes.func.isRequired,
+};
+
+ByFile.defaultProps = {
+    name: ''
+};
 
 export default ByFile;

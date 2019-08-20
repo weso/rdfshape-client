@@ -5,26 +5,22 @@ import Tab from 'react-bootstrap/Tab';
 import ByURL from './ByURL';
 import ByFile from './ByFile';
 import ByText from './ByText';
+import PropTypes from "prop-types";
 
 class InputTabs extends React.Component {
+
     constructor(props) {
         super(props);
-        this.handleByTextChange = this.handleByTextChange.bind(this);
+        this.state = {
+            activeTab: this.props.activeTab
+        }
         this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleUrlChange = this.handleUrlChange.bind(this);
-        this.state = { activeTab: this.props.activeTab }
     }
 
-    handleByTextChange(e) {
-        this.props.handleByTextChange(e.target.value);
-    }
-    handleUrlChange(e) {
-        this.props.handleByTextChange(e.target.value);
-    }
     handleTabChange(e) {
-        console.log("Tab change " + e);
-        this.setState( { activeTab: e })
-        this.props.handleTabChange(e)
+        console.log(`Event: ${JSON.stringify(e)}`)
+        this.setState({ activeTab: e})
+        this.props.handleTabChange(e);
     }
 
     render() {
@@ -60,5 +56,30 @@ class InputTabs extends React.Component {
         );
     }
 }
+
+InputTabs.propTypes = {
+    name: PropTypes.string.isRequired,
+    activeTab: PropTypes.string,
+    handleTabChange: PropTypes.func.isRequired,
+    byTextName: PropTypes.string,
+    textAreaValue: PropTypes.string,
+    handleByTextChange: PropTypes.func.isRequired,
+    byTextPlaceholder: PropTypes.string,
+    byUrlName: PropTypes.string.isRequired,
+    urlValue: PropTypes.string.isRequired,
+    handleUrlChange: PropTypes.func.isRequired,
+    byUrlPlaceholder: PropTypes.string,
+    byFileName: PropTypes.string,
+    handleFileUpload: PropTypes.func.isRequired,
+};
+
+InputTabs.defaultProps = {
+    activeTab: 'ByText',
+    byTextName: '',
+    byTextPlaceholder: '',
+    byUrlName: '',
+    byUrlPlaceholder: '',
+    byFileName: ''
+};
 
 export default InputTabs;

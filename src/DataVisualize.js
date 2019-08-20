@@ -7,16 +7,15 @@ import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import SelectGraphFormat from "./SelectGraphFormat";
-import ResultDataVisualization from "./ResultDataVisualization";
-import {dataParamsFromQueryParams, formDataFromState, maybeAdd} from "./Utils";
-import {mkPermalink} from "./Permalink";
+import {paramsFromStateData} from "./Utils";
+import {mkPermalink, params2Form} from "./Permalink";
 import qs from "query-string";
-import Cyto from "./Cyto";
-import ShowSVG from "./Cyto";
+import ShowSVG from "./ShowSVG";
 import Viz from 'viz.js/viz.js';
 const {Module, render} = require('viz.js/full.render.js');
 
 class DataVisualize extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -25,11 +24,10 @@ class DataVisualize extends React.Component {
             dataFormat: "TURTLE",
             dataUrl: '',
             dataFile: null,
-            activeTab: "byText",
+            dataActiveTab: "byText",
             permalink: '',
             targetGraphFormat: 'SVG',
             svg: null,
-            json: []
         };
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
@@ -41,15 +39,15 @@ class DataVisualize extends React.Component {
         this.processData = this.processData.bind(this);
     }
 
-    handleTabChange(value) { this.setState({activeTab: value}); }
+    handleTabChange(value) { this.setState({dataActiveTab: value}); }
     handleByTextChange(value) { this.setState({dataTextArea: value});    }
-    handleTargetGraphFormatChange(value) {  this.setState({targetGraphFormat: value});   }
     handleDataUrlChange(value) { this.setState({dataUrl: value}); }
     handleFileUpload(value) { this.setState({dataFile: value}); }
     handleDataFormatChange(value) { this.setState({dataFormat: value}); }
+    handleTargetGraphFormatChange(value) {  this.setState({targetGraphFormat: value});   }
 
 
-/*    componentDidMount() {
+/* To handle query params   componentDidMount() {
         console.log("Component Did mount - dataConvert");
         if (this.props.location.search) {
             const queryParams = qs.parse(this.props.location.search);
@@ -73,47 +71,22 @@ class DataVisualize extends React.Component {
         }
     } */
 
-    convertTargetFormat(targetFormat) {
-        if (targetFormat && ["svg","png","jpg"].includes(targetFormat.toLowerCase())) {
-            console.log("convertTargetFormat " + targetFormat + " -> DOT")
-            return "dot"
-        } else {
-            console.log("convertTargetFormat " + targetFormat + " not dot")
-            return targetFormat
-        }
-    }
-
-    processData(data,targetFormat,permalink) {
-        this.setState({
-            result: data,
-            permalink: permalink,
-            targetGraphFormat: targetFormat
-        });
-        switch (targetFormat) {
-            case "SVG":
-                this.convertDot(data.result,'dot','SVG')
-                this.setState({json: []})
-                break;
-            case "JSON": this.setState({
-                svg: null,
-                json: data.result
-                })
-                break;
-        }
+    processData(data, targetFormat) {
+       this.convertDot(data.result,'dot','SVG')
     }
 
     handleSubmit(event) {
         const url = API.dataConvert;
         console.log("Try to prepare request to " + url);
-        let [formData,params] = formDataFromState(this.state);
-        const originalTargetFormat = this.state.targetGraphFormat ;
-        const serverTargetFormat = this.convertTargetFormat(originalTargetFormat)
-        formData.append('targetDataFormat', serverTargetFormat); // It converts to dot in the server
-        params['targetDataFormat'] = originalTargetFormat ;
+        let params = paramsFromStateData(this.state);
+        let formData = params2Form(params);
+        const targetFormat = this.state.targetGraphFormat ;
+        formData.append('targetDataFormat', 'dot'); // It converts to dot in the server
+        params['targetDataFormat'] = targetFormat ; // But it keeps the original target format for permalink
         let permalink = mkPermalink(API.dataVisualizeRoute, params);
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                this.processData(data,originalTargetFormat,permalink)
+                this.processData(data)
 /*                if (originalTargetFormat === "JSON") {
                     this.setState({json: data})
                 }
@@ -132,40 +105,9 @@ class DataVisualize extends React.Component {
     }
 
     convertDot(dot, engine, format) {
-        console.log("Convert DOT to SVG. DOT: " + JSON.stringify(dot));
-        const digraph =
-            `digraph G {
-
-subgraph cluster_0 {
- style=filled;
- color=lightgrey;
- node [style=filled,color=white];
- a0 -> a1 -> a2 -> a3;
- label = "process #1";
-}
-
-subgraph cluster_1 {
- node [style=filled];
- b0 -> b1 -> b2 -> b3;
- label = "process #2";
- color=blue
-}
- tstart -> a0;
- tstart -> b0;
- ta1 -> b3;
- tb2 -> a3;
- ta3 -> a0;
- a3 -> end;
- b3 -> end;
-
-start [shape=Mdiamond];
- tend [shape=Msquare];
-}
-`;
         let viz = new Viz({Module, render});
         const opts = {engine: 'dot'};
-        viz.renderSVGElement(digraph, opts).then(svg => {
-            console.log("DOT -> SVG converted!! " + JSON.stringify(dot))
+        viz.renderSVGElement(dot, opts).then(svg => {
             this.setState({
                 svg: svg.outerHTML
             });
@@ -184,11 +126,8 @@ start [shape=Mdiamond];
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>
          <ShowSVG svg={this.state.svg}/>
-         <ResultDataVisualization result={this.state.result}
-                                  targetGraphFormat={this.state.targetGraphFormat}
-         />
          <Form onSubmit={this.handleSubmit}>
-               <DataTabs activeTab={this.state.activeTab}
+               <DataTabs activeTab={this.state.dataActiveTab}
                          handleTabChange={this.handleTabChange}
 
                          textAreaValue={this.state.dataTextArea}

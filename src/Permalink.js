@@ -1,7 +1,6 @@
 import React from 'react';
 import qs from 'query-string';
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
 import FormData from "form-data";
 
 export function mkPermalink(route, params) {
@@ -10,8 +9,8 @@ export function mkPermalink(route, params) {
     return newUrl ;
 }
 
-export function mkFormData(params) {
-    let formData = new FormData();
+export function params2Form(params) {
+    let formData = new FormData()
     Object.keys(params).forEach(key => {
         console.log("Adding to formData: " + key + " =>" + params[key]);
         formData.append(key,params[key])

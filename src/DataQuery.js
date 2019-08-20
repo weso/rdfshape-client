@@ -6,70 +6,68 @@ import API from "./API";
 import DataTabs from "./DataTabs"
 import QueryTabs from "./QueryTabs"
 import Form from "react-bootstrap/Form";
-import FormData from "form-data";
 import axios from "axios";
-import ResultDataInfo from "./ResultDataInfo";
+import ResultQuery from "./ResultQuery";
+import {paramsFromStateData, paramsFromStateQuery} from "./Utils";
+import {params2Form} from "./Permalink";
 
 class DataQuery extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            textAreaValue: "",
-            textAreaValueQuery: "",
             result: '',
-            dataFormat: "TURTLE",
+
+            dataActiveTab: "byText",
+            dataTextArea: "",
             dataUrl: '',
             dataFile: '',
-            activeTab: "byText",
-            activeTabQuery: "byText"
+            dataFormat: "TURTLE",
+
+            queryActiveTab: "byText",
+            queryTextArea: "",
+            queryUrl: '',
+            queryFile: '',
         } ;
-        this.handleByTextChange = this.handleByTextChange.bind(this);
-        this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.handleTabChangeData = this.handleTabChangeData.bind(this);
+        this.handleByTextChangeData = this.handleByTextChangeData.bind(this);
+        this.handleUrlChangeData = this.handleUrlChangeData.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
+
         this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-        this.handleByTextChangeQuery = this.handleByTextChange.bind(this);
-        this.handleTabChangeQuery = this.handleTabChange.bind(this);
+
+        this.handleByTextChangeQuery = this.handleByTextChangeQuery.bind(this);
+        this.handleTabChangeQuery = this.handleTabChangeQuery.bind(this);
+        this.handleUrlChangeQuery = this.handleUrlChangeQuery.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
+
+        this.handleSubmit = this.handleSubmit.bind(this);
 
     }
 
-    handleDataFormatChange(value) {
-        this.setState({dataFormat: value});
-    }
+    handleTabChangeData(value) { this.setState({dataActiveTab: value}); }
+    handleByTextChangeData(value) { this.setState({dataTextArea: value}); }
+    handleUrlChangeData(value) { this.setState({dataUrl: value}); }
+    handleFileUpload(value) { this.setState({dataFile: value}); }
 
-    handleTabChange(value) {
-        console.log("Changed tab..." + value);
-        this.setState({activeTab: value});
-    }
+    handleDataFormatChange(value) { this.setState({dataFormat: value});  }
 
-    handleTabChangeQuery(value) {
-        console.log("Changed tab..." + value);
-        this.setState({activeTabQuery: value});
-    }
-
-    handleByTextChange(value) {
-        this.setState({dataTextArea: value});
-    }
-
-    handleByTextChangeQuery(value) {
-        this.setState({textAreaValueQuery: value});
-    }
+    handleTabChangeQuery(value) { this.setState({queryActiveTab: value}); }
+    handleByTextChangeQuery(value) { this.setState({queryTextArea: value});  }
+    handleUrlChangeQuery(value) { this.setState({queryUrl: value}); }
+    handleFileUploadQuery(value) { this.setState({queryFile: value}); }
 
     handleSubmit(event) {
         const infoUrl = API.dataQuery;
-        console.log("Try to prepare request to " + infoUrl);
-        const textAreaValue = this.state.textAreaValue;
-        const textAreaValueQuery = this.state.textAreaValueQuery;
-        const activeTab = this.state.activeTab;
-        const dataFormat = this.state.dataFormat;
-        console.log("textAreaValue " + textAreaValue);
-        console.log("activeTab " + activeTab);
-        let formData = new FormData();
-        formData.append('data', textAreaValue);
-        formData.append('dataFormat', dataFormat);
-        formData.append('query', textAreaValueQuery);
-        console.log("Form data created");
-        axios.post(infoUrl,formData).then (response => response.data)
+        let paramsData = paramsFromStateData(this.state);
+        console.log(`DataQuery paramsData: ${JSON.stringify(paramsData)}`)
+        let paramsQuery = paramsFromStateQuery(this.state);
+        console.log(`DataQuery paramsQuery: ${JSON.stringify(paramsQuery)}`)
+        let params = {...paramsData,...paramsQuery}
+        console.log(`DataQuery submit params: ${JSON.stringify(params)}`)
+        let form = params2Form(params);
+        axios.post(infoUrl,form).then (response => response.data)
             .then((data) => {
                 this.setState({ result: data })
                 console.log(this.state.result);
@@ -86,19 +84,32 @@ class DataQuery extends React.Component {
         return (
             <Container fluid={true}>
                 <h1>Data Query</h1>
-                <ResultDataInfo result={this.state.result} />
+                <ResultQuery result={this.state.result} />
                 <Form onSubmit={this.handleSubmit}>
-                    <DataTabs textAreaValue={this.state.textAreaValue}
-                              activeTab={this.state.activeTab}
-                              handleTabChange={this.handleTabChange}
-                              handleByTextChange={this.handleByTextChange}
-                              defaultDataFormat={this.state.dataFormat}
-                              handleDataFormatChange={this.handleDataFormatChange}
+                    <DataTabs activeTab={this.state.dataActiveTab}
+                              handleTabChange={this.handleTabChangeData}
+
+                              textAreaValue={this.state.dataTextArea}
+                              handleByTextChange={this.handleByTextChangeData}
+
+                              dataUrl={this.state.dataUrl}
+                              handleDataUrlChange={this.handleUrlChangeData}
+
+                              handleFileUpload={this.handleDataFileUploadData}
+
+                              dataFormat={this.state.dataFormat}
+                              handleDataFormatChange={this.handleFormatChangeData}
                     />
-                    <QueryTabs textAreaValue={this.state.textAreaValueQuery}
-                              activeTab={this.state.activeTab}
+                    <QueryTabs activeTab={this.state.queryActiveTab}
                               handleTabChange={this.handleTabChangeQuery}
+
+                              textAreaValue={this.state.queryTextArea}
                               handleByTextChange={this.handleByTextChangeQuery}
+
+                              urlValue={this.state.queryUrl}
+                              handleDataUrlChange={this.handleUrlChangeQuery}
+
+                              handleFileUpload={this.handleFileUploadQuery}
                     />
                     <Button variant="primary" type="submit">Query</Button>
                 </Form>

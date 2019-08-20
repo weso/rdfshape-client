@@ -17,11 +17,6 @@ class ResultQuery extends React.Component {
      } else {
          msg = <div>
              <p>{result.msg}</p>
-             <ul>
-                 <li>Number of statements: {result.numberStatements}</li>
-                 <li>Data: <pre>{result.data}</pre></li>
-                 <li>DataFormat: <span>{result.dataFormat}</span></li>
-             </ul>
              <details><pre>{JSON.stringify(result)}</pre></details>
          </div>
      }

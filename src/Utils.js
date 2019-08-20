@@ -1,5 +1,5 @@
 import React from 'react';
-import {mkFormData} from "./Permalink";
+import {mkFormData, params2Form} from "./Permalink";
 import qs from "query-string";
 import Viz from 'viz.js/viz.js';
 const { Module, render } = require('viz.js/full.render.js');
@@ -67,15 +67,15 @@ export function dataParamsFromQueryParams(params) {
     return newParams;
 };
 
-export function formDataFromState(state) {
+export function paramsFromStateData(state) {
+    const activeTab = state.dataActiveTab;
     const dataTextArea = state.dataTextArea;
-    const activeTab = state.activeTab;
     const dataFormat = state.dataFormat;
     const dataUrl = state.dataUrl;
     const dataFile = state.dataFile;
-    let params = {};
+    let params = {}
     params['activeTab'] = activeTab;
-    params['dataFormat']=dataFormat;
+    params['dataFormat'] = dataFormat;
     switch (activeTab) {
         case "byText":
             params['data'] = dataTextArea;
@@ -91,8 +91,25 @@ export function formDataFromState(state) {
             break;
         default:
     }
-    let formData = mkFormData(params);
-    console.log("Form data created: " + JSON.stringify(formData));
-   return [formData, params];
+   return params;
 };
 
+
+export function paramsFromStateQuery(state) {
+    let params = {}
+    let activeTab = state.queryActiveTab;
+    params['activeTab'] = activeTab;
+    switch (activeTab) {
+        case "byText":
+            params['query'] = state.queryTextArea;
+            break;
+        case "byURL":
+            params['queryURL'] = state.queryUrl;
+            break;
+        case "byFile":
+            params['queryFile'] = state.queryFile;
+            break;
+        default:
+    }
+    return params;
+};

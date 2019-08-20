@@ -1,5 +1,6 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
+import PropTypes from "prop-types";
 
 class ByURL extends React.Component {
     constructor(props) {
@@ -29,5 +30,17 @@ class ByURL extends React.Component {
      );
  }
 }
+
+ByURL.propTypes = {
+    name: PropTypes.string.isRequired,
+    urlValue: PropTypes.string.isRequired,
+    handleUrlChange: PropTypes.func.isRequired,
+    placeholder: PropTypes.string,
+};
+
+ByURL.defaultProps = {
+    name: '',
+    placeholder: '',
+};
 
 export default ByURL;
