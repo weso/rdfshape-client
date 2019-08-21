@@ -1,5 +1,5 @@
 class API {
-    static rootApi = "http://localhost:8080/api/";
+    static rootApi = process.env.REACT_APP_RDFSHAPE_HOST ; // "http://localhost:8080/api/";
 
     static dataInfo =           API.rootApi + "data/info" ;
     static dataConvert =        API.rootApi + "data/convert";

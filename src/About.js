@@ -1,6 +1,7 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
+import API from "./API";
 
 class About extends React.Component {
  render() {
@@ -29,6 +30,7 @@ class About extends React.Component {
                    <li><a href="https://github.com/labra/shaclex/issues/2">SHACL Features</a></li>
                    <li>Info about the languages: <a href="http://book.validatingrdf.com">Validating RDF data book</a></li>
                </ul>
+           <details>Server: <code>{API.rootApi}</code></details>
        </Container>
      );
  }
