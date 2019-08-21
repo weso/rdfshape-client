@@ -9,6 +9,7 @@ import axios from "axios";
 import {paramsFromStateData} from "./Utils";
 import {mkPermalink, params2Form} from "./Permalink";
 import Cyto from "./Cyto";
+import Pace from 'react-pace-progress';
 
 const cose = "cose"
 const random = "random"
@@ -18,6 +19,8 @@ class CytoVisualize extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
+            error: null,
             dataTextArea: '',
             result: '',
             dataFormat: "TURTLE",
@@ -87,11 +90,15 @@ class CytoVisualize extends React.Component {
         console.log(`CytoVisualize submit params: ${JSON.stringify(params)}`)
         let permalink = mkPermalink(API.cytoVisualizeRoute, params);
         formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
+        this.setState({loading:true});
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
                 this.processData(data,permalink)
+                this.setState({loading:false});
             })
             .catch(function (error) {
+                this.setState({loading:false});
+                this.setState({error:error});
                 console.log('Error doing server request')
                 console.log(error);
             });
@@ -110,9 +117,11 @@ class CytoVisualize extends React.Component {
      return (
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>
-         <Cyto elements={this.state.elements}
-               layoutName={this.state.layoutName}
-         />
+         {this.state.isLoading ? <Pace color="#27ae60"/> :
+            <Cyto elements={this.state.elements}
+                  layoutName={this.state.layoutName}
+            />
+         }
          <Form onSubmit={this.handleSubmit}>
                <DataTabs activeTab={this.state.dataActiveTab}
                          handleTabChange={this.handleTabChange}
