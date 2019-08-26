@@ -9,8 +9,9 @@ class API {
     static dataExtract =        API.rootApi + "data/extract";
     static dataVisualFormats =  API.rootApi + "data/visualize/formats";
     static endpointQuery =      API.rootApi + "endpoint/query";
-    static shExFormats =        API.rootApi + "shex/formats";
+    static shExFormats =        API.rootApi + "shEx/formats";
     static shapeMapFormats =    API.rootApi + "shapeMap/formats";
+    static shaclFormats =       API.rootApi + "shacl/formats";
     static schemaValidate =     API.rootApi + "schema/validate";
 
     static dataInfoRoute        = "/dataInfo" ;
@@ -29,6 +30,7 @@ class API {
     static shExVisualizeRoute   = "/shExVisualize" ;
     static shEx2ShaclRoute      = "/shEx2Shacl" ;
     static shExValidateRoute    = "/shExValidate" ;
+    static shExValidateEndpointRoute  = "/shExValidateEndpoint" ;
 
     static shaclInfoRoute       = "/shaclInfo" ;
     static shaclConvertRoute    = "/shaclConvert" ;
@@ -40,6 +42,14 @@ class API {
     static wikidataExtractRoute  = "/wikidataExtract" ;
 
     static aboutRoute           = "/about" ;
+
+    static byTextTab = "byText";
+    static byUrlTab  = "byUrl";
+    static byFileTab = "byFile";
+    static defaultTab = "byTextTab";
+    static defaultDataFormat = "TURTLE";
+    static defaultShExFormat = "ShExC";
+    static defaultShapeMapFormat = "Compact";
 
 }
 

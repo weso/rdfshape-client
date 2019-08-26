@@ -1,7 +1,6 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
-import InputTabs from "./InputTabs";
 
 class ByText extends React.Component {
   constructor(props) {
@@ -17,15 +16,20 @@ class ByText extends React.Component {
 
 
  render() {
+     let inputText;
+     if (this.props.inputForm) {
+         inputText = this.props.inputForm
+     } else {
+         inputText = <Form.Control as="textarea"
+                                   rows="3"
+                                   value={this.props.textAreaValue}
+                                   onChange={this.handleChange}
+                                   placeholder={this.props.placeholder} />
+     }
      return (
         <Form.Group>
          <Form.Label>{this.props.name}</Form.Label>
-         <Form.Control as="textarea"
-                       rows="3"
-                       value={this.props.textAreaValue}
-                       onChange={this.handleChange}
-                       placeholder={this.props.placeholder}
-         />
+         {inputText}
         </Form.Group>
      );
  }

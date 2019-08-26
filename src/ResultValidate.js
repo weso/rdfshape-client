@@ -1,4 +1,6 @@
 import React from 'react';
+import Alert from "react-bootstrap/Alert";
+import ShowShapeMap from "./ShowShapeMap";
 
 class ResultValidate extends React.Component {
  render() {
@@ -15,12 +17,13 @@ class ResultValidate extends React.Component {
                 </div>
      } else {
          msg = <div>
-             <p>{result.msg}</p>
-             <ul>
-                 <li>Number of statements: {result.numberStatements}</li>
-                 <li>Data: <pre>{result.data}</pre></li>
-                 <li>DataFormat: <span>{result.dataFormat}</span></li>
-             </ul>
+             { result.message && <Alert variant="success">{result.msg} </Alert> }
+             { result.error && <Alert variant="danger">{result.error}</Alert> }
+             { result.shapeMap && <ShowShapeMap
+                 shapeMap={result.shapeMap}
+                 nodesPrefixMap={result.nodesPrefixMap}
+                 shapesPrefixMap={result.shapesPrefixMap}
+             /> }
              <details><pre>{JSON.stringify(result)}</pre></details>
          </div>
      }

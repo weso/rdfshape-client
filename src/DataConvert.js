@@ -12,11 +12,14 @@ import qs from "query-string";
 import {mkPermalink, params2Form} from "./Permalink";
 import InputTabsWithFormat from "./InputTabsWithFormat";
 
+const url = API.dataConvert;
+
 class DataConvert extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            dataTextArea: 'RDF',
+            dataTextArea: null,
             result: '',
             dataFormat: "TURTLE",
             dataUrl: '',
@@ -32,6 +35,8 @@ class DataConvert extends React.Component {
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTargetDataFormatChange = this.handleTargetDataFormatChange.bind(this);
+        this.postConvert = this.postConvert.bind(this);
+        this.updateState = this.updateState.bind(this);
     }
 
     handleTabChange(value) { this.setState({dataActiveTab: value}); }
@@ -46,44 +51,51 @@ class DataConvert extends React.Component {
         if (this.props.location.search) {
             const queryParams = qs.parse(this.props.location.search);
             console.log("Parameters: " + JSON.stringify(queryParams));
-            let newParams = dataParamsFromQueryParams(queryParams);
-            maybeAdd(queryParams.targetDataFormat,"targetDataFormat", newParams);
-            const infoUrl = API.dataConvert + "?" + qs.stringify(newParams);
-            console.log("Preparing request to " + infoUrl);
-            axios.get(infoUrl).then (response => response.data)
-                .then((data) => {
-                    this.setState({ result: data });
-                    this.setState({ permalink: infoUrl });
-                    if (newParams.data) { this.setState({dataTextArea: newParams.data}) }
-                    if (newParams.dataFormat) { this.setState({dataFormat: newParams.dataFormat}) }
-                    if (newParams.dataUrl) { this.setState({dataUrl: newParams.dataUrl}) }
-                    if (newParams.targetDataFormat) { this.setState({targetDataFormat: newParams.targetDataFormat}) }
-                })
-                .catch(function (error) {
-                    console.log("Error calling server at " + infoUrl + ": " + error);
-                });
+            let params = dataParamsFromQueryParams(queryParams);
+            params['targetDataFormat']=queryParams.targetDataFormat
+            const formData = params2Form(params);
+            this.postConvert(url, formData, () => this.updateState(params))
         }
     }
 
+    updateState(params) {
+        if (params['data']) {
+            this.setState({activeTab: API.byTextTab})
+            this.setState({dataTextArea: params['data']})
+        }
+        if (params['dataFormat']) this.setState({dataFormat: params['dataFormat']})
+        if (params['dataUrl']) {
+            this.setState({activeTab: API.byUrlTab})
+            this.setState({dataUrl: params['dataUrl']})
+        }
+        if (params['dataFile']) {
+            this.setState({activeTab: API.byFileTab})
+            this.setState({dataFile: params['dataFile']})
+        }
+        if (params['targetDataFormat']) this.setState({targetDataFormat: params['targetDataFormat']})
+    }
+
+    postConvert(url, formData, cb) {
+        axios.post(url,formData).then (response => response.data)
+            .then((data) => {
+                this.setState({ result: data })
+                console.log(this.state.result);
+                if (cb) cb()
+            })
+            .catch(function (error) {
+                console.log('Error doing server request')
+                console.log(error);
+            });
+    }
+
     handleSubmit(event) {
-        const url = API.dataConvert;
         console.log("Try to prepare request to " + url);
         let params = paramsFromStateData(this.state);
         let formData = params2Form(params);
         formData.append('targetDataFormat', this.state.targetDataFormat);
         params['targetDataFormat'] = this.state.targetDataFormat ;
         let permalink = mkPermalink(API.dataConvertRoute, params);
-        axios.post(url,formData).then (response => response.data)
-            .then((data) => {
-                this.setState({ result: data })
-                this.setState({ permalink: permalink });
-                console.log(this.state.result);
-            })
-            .catch(function (error) {
-                console.log('Error doing server request')
-                console.log(error);
-            });
-
+        this.postConvert(url,formData)
         event.preventDefault();
     }
 

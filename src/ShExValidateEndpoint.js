@@ -9,19 +9,20 @@ import API from "./API";
 import axios from "axios";
 import ResultValidate from "./ResultValidate";
 import {
-    dataParamsFromQueryParams,
+    endpointParamsFromQueryParams,
     shExParamsFromQueryParams,
     shapeMapParamsFromQueryParams,
-    paramsFromStateData,
+    paramsFromStateEndpoint,
     paramsFromStateShapeMap,
     paramsFromStateShEx} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
+import EndpointInput from "./EndpointInput";
 
 const url = API.schemaValidate ;
 
-class ShExValidate extends React.Component {
+class ShExValidateEndpoint extends React.Component {
   constructor(props) {
         super(props);
 
@@ -30,11 +31,7 @@ class ShExValidate extends React.Component {
             permalink: null,
             loading: false,
 
-            dataTextArea: '',
-            dataFormat: API.defaultDataFormat,
-            dataUrl: '',
-            dataFile: null,
-            dataActiveTab: API.defaultTab,
+            endpoint: '',
 
             shExTextArea: "",
             shExFormat: API.defaultShExFormat,
@@ -49,11 +46,7 @@ class ShExValidate extends React.Component {
             shapeMapActiveTab: API.defaultTab
         } ;
 
-      this.handleDataTabChange = this.handleDataTabChange.bind(this);
-      this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-      this.handleDataByTextChange = this.handleDataByTextChange.bind(this);
-      this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
-      this.handleDataFileUpload = this.handleDataFileUpload.bind(this);
+      this.handleEndpointChange = this.handleEndpointChange.bind(this);
 
       this.handleShExTabChange = this.handleShExTabChange.bind(this);
       this.handleShExFormatChange = this.handleShExFormatChange.bind(this);
@@ -71,16 +64,12 @@ class ShExValidate extends React.Component {
       this.postValidate = this.postValidate.bind(this);
       this.processResult = this.processResult.bind(this);
       this.updateStateValidate = this.updateStateValidate.bind(this);
-      this.updateStateData = this.updateStateData.bind(this);
+      this.updateStateEndpoint = this.updateStateEndpoint.bind(this);
       this.updateStateShEx = this.updateStateShEx.bind(this);
       this.updateStateShapeMap = this.updateStateShapeMap.bind(this);
     }
 
-    handleDataTabChange(value) { this.setState({dataActiveTab: value}); }
-    handleDataFormatChange(value) {  this.setState({dataFormat: value}); }
-    handleDataByTextChange(value) { this.setState({dataTextArea: value}); }
-    handleDataUrlChange(value) { this.setState({dataUrl: value}); }
-    handleDataFileUpload(value) { this.setState({dataFile: value}); }
+    handleEndpointChange(value) { this.setState({endpoint: value}); }
 
     handleShExTabChange(value) { this.setState({shExActiveTab: value}); }
     handleShExFormatChange(value) {  this.setState({shExFormat: value}); }
@@ -99,35 +88,23 @@ class ShExValidate extends React.Component {
         if (this.props.location.search) {
             const queryParams = qs.parse(this.props.location.search);
             console.log("Parameters: " + JSON.stringify(queryParams));
-            let paramsData = dataParamsFromQueryParams(queryParams);
+            let paramsEndpoint = endpointParamsFromQueryParams(queryParams);
             let paramsShEx = shExParamsFromQueryParams(queryParams);
             let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-            let params = {...paramsData,...paramsShEx,...paramsShapeMap}
+            let params = {...paramsEndpoint,...paramsShEx,...paramsShapeMap}
             const formData = params2Form(params);
             this.postValidate(url, formData, () => this.updateStateValidate(params))
         }
     }
 
     updateStateValidate(params) {
-      this.updateStateData(params)
+      this.updateStateEndpoint(params)
       this.updateStateShEx(params)
       this.updateStateShapeMap(params)
     }
 
-    updateStateData(params) {
-        if (params['data']) {
-            this.setState({dataActiveTab: API.byTextTab})
-            this.setState({dataTextArea: params['data']})
-        }
-        if (params['dataFormat']) this.setState({dataFormat: params['dataFormat']})
-        if (params['dataUrl']) {
-            this.setState({dataActiveTab: API.byUrlTab})
-            this.setState({dataUrl: params['dataUrl']})
-        }
-        if (params['dataFile']) {
-            this.setState({dataActiveTab: API.byFileTab})
-            this.setState({dataFile: params['dataFile']})
-        }
+    updateStateEndpoint(params) {
+        if (params['endpoint']) { this.setState({endpoint: params['endpoint']}) }
     }
 
     updateStateShEx(params) {
@@ -163,10 +140,10 @@ class ShExValidate extends React.Component {
     }
 
     handleSubmit(event) {
-        let paramsData = paramsFromStateData(this.state);
+        let paramsEndpoint = paramsFromStateEndpoint(this.state);
         let paramsShEx = paramsFromStateShEx(this.state);
         let paramsShapeMap = paramsFromStateShapeMap(this.state);
-        let params = {...paramsData,...paramsShEx,...paramsShapeMap}
+        let params = {...paramsEndpoint,...paramsShEx,...paramsShapeMap}
         params['schemaEngine']='ShEx'
         params['triggerMode']='shapeMap'
         let formData = params2Form(params);
@@ -178,9 +155,7 @@ class ShExValidate extends React.Component {
     }
 
     processResult(data) {
-        this.setState({
-            result: data,
-        });
+        this.setState({ result: data, });
     }
 
     postValidate(url, formData, cb) {
@@ -209,20 +184,8 @@ class ShExValidate extends React.Component {
                             <ResultValidate result={this.state.result} /> : null
                     }
                     { this.state.permalink &&  <Permalink url={this.state.permalink} /> }
-                    <DataTabs activeTab={this.state.dataActiveTab}
-                              handleTabChange={this.handleDataTabChange}
-
-                              textAreaValue={this.state.dataTextArea}
-                              handleByTextChange={this.handleDataByTextChange}
-
-                              dataUrl={this.state.dataUrl}
-                              handleDataUrlChange={this.handleDataUrlChange}
-
-                              handleFileUpload={this.handleDataFileUpload}
-
-                              dataFormat={this.state.dataFormat}
-                              handleDataFormatChange={this.handleDataFormatChange}
-                    />
+                    <EndpointInput value={this.state.value}
+                                   onChange={this.handleEndpointChange} />
                     <ShExTabs activeTab={this.state.shExActiveTab}
                               handleTabChange={this.handleShExTabChange}
 
@@ -258,4 +221,4 @@ class ShExValidate extends React.Component {
     }
 }
 
-export default ShExValidate;
+export default ShExValidateEndpoint;

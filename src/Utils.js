@@ -1,6 +1,4 @@
 import React from 'react';
-import {mkFormData, params2Form} from "./Permalink";
-import qs from "query-string";
 import Viz from 'viz.js/viz.js';
 const { Module, render } = require('viz.js/full.render.js');
 
@@ -28,7 +26,7 @@ export function dot2svg(dot,cb) {
       console.log(svg);
       cb(svg);
     });
-};
+}
 
 
 export function mkMode(format) {
@@ -52,12 +50,12 @@ export function mkMode(format) {
                 return "xml"
         }
     } else return "xml"
-};
+}
 
 export function maybeAdd(maybe,name,obj) {
     if (maybe) obj[name] = maybe ;
     return obj;
-};
+}
 
 export function dataParamsFromQueryParams(params) {
     let newParams = {};
@@ -65,7 +63,29 @@ export function dataParamsFromQueryParams(params) {
     if (params.dataFormat) newParams["dataFormat"] = params.dataFormat ;
     if (params.dataUrl) newParams["dataUrl"] = params.dataUrl ;
     return newParams;
-};
+}
+
+export function shExParamsFromQueryParams(params) {
+    let newParams = {};
+    if (params.schema) newParams["schema"] = params.schema ;
+    if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat ;
+    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl ;
+    return newParams;
+}
+
+export function shapeMapParamsFromQueryParams(params) {
+    let newParams = {};
+    if (params.shapeMap) newParams["shapeMap"] = params.shapeMap ;
+    if (params.shapeMapFormat) newParams["shapeMapFormat"] = params.shapeMapFormat ;
+    if (params.shapeMapUrl) newParams["shapeMapUrl"] = params.shapeMapUrl ;
+    return newParams;
+}
+
+export function endpointParamsFromQueryParams(params) {
+    let newParams = {};
+    if (params.endpoint) newParams["endpoint"] = params.endpoint ;
+    return newParams;
+}
 
 export function paramsFromStateData(state) {
     const activeTab = state.dataActiveTab;
@@ -74,7 +94,7 @@ export function paramsFromStateData(state) {
     const dataUrl = state.dataUrl;
     const dataFile = state.dataFile;
     let params = {}
-    params['activeTab'] = activeTab;
+    params['activeTab'] = convertTabData(activeTab);
     params['dataFormat'] = dataFormat;
     switch (activeTab) {
         case "byText":
@@ -92,13 +112,74 @@ export function paramsFromStateData(state) {
         default:
     }
    return params;
+}
+
+export function paramsFromStateEndpoint(state) {
+    let params = {}
+    params['endpoint'] = state.endpoint;
+    return params;
 };
 
+
+export function paramsFromStateShEx(state) {
+    const activeTab = state.shExActiveTab;
+    const textArea = state.shExTextArea;
+    const format = state.shExFormat;
+    const url = state.shExUrl;
+    const file = state.shExFile;
+    let params = {}
+    params['activeSchemaTab'] = convertTabSchema(activeTab);
+    params['schemaEmbedded'] = false;
+    params['schemaFormat'] = format;
+    switch (activeTab) {
+        case "byText":
+            params['schema'] = textArea;
+            params['schemaFormatTextArea'] = format;
+            break;
+        case "byURL":
+            params['schemaURL'] = url;
+            params['schemaFormatUrl'] = format;
+            break;
+        case "byFile":
+            params['schemaFile'] = file;
+            params['schemaFormatFile'] = format;
+            break;
+        default:
+    }
+    return params;
+};
+
+export function paramsFromStateShapeMap(state) {
+    const activeTab = state.shapeMapActiveTab;
+    const textArea = state.shapeMapTextArea;
+    const format = state.shapeMapFormat;
+    const url = state.shapeMapUrl;
+    const file = state.shapeMapFile;
+    let params = {}
+    params['shapeMapActiveTab'] = convertTabShapeMap(activeTab);
+    params['shapeMapFormat'] = format;
+    switch (activeTab) {
+        case "byText":
+            params['shapeMap'] = textArea;
+            params['shapeMapFormatTextArea'] = format;
+            break;
+        case "byURL":
+            params['shapeMapURL'] = url;
+            params['shapeMapFormatURL'] = format;
+            break;
+        case "byFile":
+            params['shapeMapFile'] = file;
+            params['shapeMapFormatFile'] = format;
+            break;
+        default:
+    }
+    return params;
+};
 
 export function paramsFromStateQuery(state) {
     let params = {}
     let activeTab = state.queryActiveTab;
-    params['activeTab'] = activeTab;
+    params['activeTab'] = convertTabQuery(activeTab);
     switch (activeTab) {
         case "byText":
             params['query'] = state.queryTextArea;
@@ -113,3 +194,45 @@ export function paramsFromStateQuery(state) {
     }
     return params;
 };
+
+function convertTabData(key) {
+    switch (key) {
+        case "byText": return "#dataTextArea"
+        case "byFile": return "#dataFile"
+        case "byUrl": return "#dataUrl"
+        default: console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}
+
+function convertTabSchema(key) {
+    switch (key) {
+        case "byText": return "#schemaTextArea"
+        case "byFile": return "#schemaFile"
+        case "byUrl": return "#schemaUrl"
+        default: console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}
+
+function convertTabShapeMap(key) {
+    switch (key) {
+        case "byText": return "#shapeMapTextArea"
+        case "byFile": return "#shapeMapFile"
+        case "byUrl": return "#shapeMapUrl"
+        default:
+            console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}
+
+function convertTabQuery(key) {
+    switch (key) {
+        case "byText": return "#queryTextArea"
+        case "byFile": return "#queryFile"
+        case "byUrl": return "#queryUrl"
+        default:
+            console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}

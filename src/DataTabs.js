@@ -2,7 +2,6 @@ import React from 'react';
 import InputTabsWithFormat from "./InputTabsWithFormat";
 import API from "./API"
 import PropTypes from 'prop-types';
-import InputTabs from "./InputTabs";
 
 class DataTabs extends React.Component {
     render() {
@@ -15,7 +14,7 @@ class DataTabs extends React.Component {
 
                        byTextName="RDF data"
                        textAreaValue={this.props.textAreaValue}
-                       textPlaceholder="RDF data..."
+                       byTextPlaceholder="RDF data..."
                        handleByTextChange={this.props.handleByTextChange}
 
                        byUrlName="URL data"

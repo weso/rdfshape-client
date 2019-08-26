@@ -15,7 +15,7 @@ class EndpointQuery extends React.Component {
         super(props);
         this.state = {
             result: '',
-            endpointUrl: '',
+            endpoint: '',
             queryTextArea: '',
             queryUrl: '',
             queryFile: '',
@@ -59,7 +59,7 @@ class EndpointQuery extends React.Component {
     }
 
     handleEndpointChange(value) {
-        this.setState({endpointUrl: value});
+        this.setState({endpoint: value});
     }
 
     render() {
@@ -67,7 +67,8 @@ class EndpointQuery extends React.Component {
        <Container fluid={true}>
          <h1>Endpoint query</h1>
            <Form onSubmit={this.handleSubmit}>
-               <EndpointInput onChange={this.handleEndpointChange}/>
+               <EndpointInput value={this.state.endpoint}
+                              onChange={this.handleEndpointChange}/>
                <QueryTabs activeTab={this.state.activeTab}
                           textAreaValue={this.state.queryTextArea}
                           handleByTextChange={this.handleByTextChange}

@@ -9,6 +9,7 @@ class EndpointInput extends React.Component {
                 <Form.Control as="input"
                               type="url"
                               placeholder="http://..."
+                              value={this.props.value}
                               onChange={this.props.handleChange}
                 />
             </Form.Group>

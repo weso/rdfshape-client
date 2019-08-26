@@ -6,6 +6,7 @@ import ByURL from './ByURL';
 import ByFile from './ByFile';
 import ByText from './ByText';
 import PropTypes from "prop-types";
+import API from './API'
 
 class InputTabs extends React.Component {
 
@@ -32,21 +33,22 @@ class InputTabs extends React.Component {
                 id="dataTabs"
                 onSelect={this.handleTabChange}
           >
-            <Tab eventKey="byText" title="by Input">
+            <Tab eventKey={API.byTextTab} title="by Input">
             <ByText name={this.props.byTextName}
                     textAreaValue={this.props.textAreaValue}
                     placeholder={this.props.byTextPlaceholder}
                     handleByTextChange={this.props.handleByTextChange}
+                    inputForm = {this.props.inputForm}
             />
            </Tab>
-           <Tab eventKey="byURL" title="By URL">
+           <Tab eventKey={API.byUrlTab} title="By URL">
              <ByURL name={this.props.byURLName}
                     urlValue={this.props.urlValue}
                     handleUrlChange={this.props.handleUrlChange}
-                    placeholder={this.props.byUrlPlaceholder}
+                    placeholder={this.props.byURLPlaceholder}
              />
            </Tab>
-           <Tab eventKey="byFile" title="By File">
+           <Tab eventKey={API.byFileTab} title="By File">
              <ByFile name={this.props.byFileName}
                      handleFileUpload={this.props.handleFileUpload}
              />
@@ -68,17 +70,17 @@ InputTabs.propTypes = {
     byUrlName: PropTypes.string.isRequired,
     urlValue: PropTypes.string.isRequired,
     handleUrlChange: PropTypes.func.isRequired,
-    byUrlPlaceholder: PropTypes.string,
+    byURLPlaceholder: PropTypes.string,
     byFileName: PropTypes.string,
     handleFileUpload: PropTypes.func.isRequired,
 };
 
 InputTabs.defaultProps = {
-    activeTab: 'ByText',
+    activeTab: API.defaultTab,
     byTextName: '',
     byTextPlaceholder: '',
     byUrlName: '',
-    byUrlPlaceholder: '',
+    byURLPlaceholder: 'http://...',
     byFileName: ''
 };
 

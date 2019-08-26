@@ -6,14 +6,11 @@ import API from "./API";
 import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import {paramsFromStateData} from "./Utils";
-import {mkPermalink, params2Form} from "./Permalink";
+import {dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
+import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Cyto from "./Cyto";
 import Pace from 'react-pace-progress';
-
-const cose = "cose"
-const random = "random"
-
+import qs from 'query-string';
 
 class CytoVisualize extends React.Component {
     constructor(props) {
@@ -28,10 +25,8 @@ class CytoVisualize extends React.Component {
             dataFile: null,
             dataActiveTab: "byText",
             permalink: '',
-            elements: [],
-            layoutName: random
+            elements: null,
         };
-        this.changeLayout = this.changeLayout.bind(this);
         this.handleByTextChange = this.handleByTextChange.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
         this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
@@ -39,6 +34,7 @@ class CytoVisualize extends React.Component {
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.processData = this.processData.bind(this);
+        this.postConvert = this.postConvert.bind(this);
     }
 
     handleTabChange(value) { console.log(`#### Tab Change dataActiveTab ${value}`); this.setState({dataActiveTab: value}); }
@@ -47,39 +43,47 @@ class CytoVisualize extends React.Component {
     handleFileUpload(value) { this.setState({dataFile: value}); }
     handleDataFormatChange(value) { this.setState({dataFormat: value}); }
 
-
-/*    componentDidMount() {
-        console.log("Component Did mount - dataConvert");
+    componentDidMount() {
+        console.log("Component Did mount - cytoVisualize");
         if (this.props.location.search) {
             const queryParams = qs.parse(this.props.location.search);
             console.log("Parameters: " + JSON.stringify(queryParams));
-            let newParams = dataParamsFromQueryParams(queryParams);
-            maybeAdd(queryParams.targetDataFormat,"targetDataFormat", newParams);
-            const url = API.dataVisualize + "?" + qs.stringify(newParams);
+            let dataParams = dataParamsFromQueryParams(queryParams);
+            let formData = params2Form(dataParams);
+            formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
+            const url = API.dataConvert
             console.log("Preparing request to " + url);
-            axios.get(url).then (response => response.data)
-                .then((data) => {
-                    this.setState({ result: data });
-                    this.setState({ permalink: url });
-                    if (newParams.data) { this.setState({dataTextArea: newParams.data}) }
-                    if (newParams.dataFormat) { this.setState({dataFormat: newParams.dataFormat}) }
-                    if (newParams.dataUrl) { this.setState({dataUrl: newParams.dataUrl}) }
-                    if (newParams.targetDataFormat) { this.setState({targetDataFormat: newParams.targetDataFormat}) }
-                })
-                .catch(function (error) {
-                    console.log("Error calling server at " + url + ": " + error);
-                });
+            this.postConvert(url, formData);
+            /* TODO: Should we populate dataTextArea after the call?
+            if (newParams.data) { this.setState({dataTextArea: newParams.data}) }
+            if (newParams.dataFormat) { this.setState({dataFormat: newParams.dataFormat}) }
+            if (newParams.dataUrl) { this.setState({dataUrl: newParams.dataUrl}) }
+            if (newParams.targetDataFormat) { this.setState({targetDataFormat: newParams.targetDataFormat}) }
+             */
         }
-    } */
+    }
 
-    processData(data,permalink) {
+    processData(data) {
       console.log("Elements " + data.result);
       const elements = JSON.parse(data.result)
       this.setState({
             result: data,
-            permalink: permalink,
             elements: elements
         });
+    }
+
+    postConvert(url, formData) {
+        axios.post(url,formData).then (response => response.data)
+            .then((data) => {
+                this.setState({loading:false});
+                this.processData(data)
+            })
+            .catch(function (error) {
+                this.setState({loading:false});
+                this.setState({error:error});
+                console.log('Error doing server request')
+                console.log(error);
+            });
     }
 
     handleSubmit(event) {
@@ -91,25 +95,9 @@ class CytoVisualize extends React.Component {
         let permalink = mkPermalink(API.cytoVisualizeRoute, params);
         formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
         this.setState({loading:true});
-        axios.post(url,formData).then (response => response.data)
-            .then((data) => {
-                this.processData(data,permalink)
-                this.setState({loading:false});
-            })
-            .catch(function (error) {
-                this.setState({loading:false});
-                this.setState({error:error});
-                console.log('Error doing server request')
-                console.log(error);
-            });
-
+        this.setState({permalink: permalink});
+        this.postConvert(url,formData);
         event.preventDefault();
-    }
-
- changeLayout(e) {
-        console.log("Change layout: " + e.target.value);
-        this.setState({layoutName: e.target.value});
-        e.preventDefault();
     }
 
  render() {
@@ -118,9 +106,8 @@ class CytoVisualize extends React.Component {
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>
          {this.state.isLoading ? <Pace color="#27ae60"/> :
-            <Cyto elements={this.state.elements}
-                  layoutName={this.state.layoutName}
-            />
+            this.state.elements ?
+                <Cyto elements={this.state.elements} /> : null
          }
          <Form onSubmit={this.handleSubmit}>
                <DataTabs activeTab={this.state.dataActiveTab}
@@ -138,12 +125,8 @@ class CytoVisualize extends React.Component {
                          handleDataFormatChange={this.handleDataFormatChange}
                />
          <Button variant="primary" type="submit">Visualize</Button>
-             <Form.Group>
-                 <Button variant="secondary" onClick={this.changeLayout} value="cose">COSE Layaout</Button>
-                 <Button variant="secondary" onClick={this.changeLayout} value="random">Random</Button>
-                 <Button variant="secondary" onClick={this.changeLayout} value="circle">Circle</Button>
-             </Form.Group>
          </Form>
+         { this.state.permalink !== '' &&  <Permalink url={this.props.permalink} /> }
        </Container>
      );
  }

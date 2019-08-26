@@ -30,6 +30,7 @@ class RDFShapeNavbar extends React.Component {
                         </NavDropdown>
                         <NavDropdown title="ShEx" id="basic-nav-dropdown">
                             <NavDropdown.Item href="/shexValidate">Validate data with ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href="/shexValidateEndpoint">Validate endpoint data with ShEx</NavDropdown.Item>
                             <NavDropdown.Item href="/shexInfo">Info about ShEx schema</NavDropdown.Item>
                             <NavDropdown.Item href="/shexVisualize">Visualize ShEx schema</NavDropdown.Item>
                             <NavDropdown.Item href="/shexConvert">Convert ShEx formats</NavDropdown.Item>

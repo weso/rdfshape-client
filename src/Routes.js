@@ -18,6 +18,7 @@ import EndpointExtract from './EndpointExtract.js';
 
 import ShExInfo from './ShExInfo.js';
 import ShExValidate from './ShExValidate.js';
+import ShExValidateEndpoint from './ShExValidateEndpoint.js';
 import ShExConvert from './ShExConvert.js';
 import ShExVisualize from './ShExVisualize.js';
 import ShEx2SHACL from './ShEx2SHACL.js';
@@ -30,7 +31,9 @@ import SHACL2ShEx from './SHACL2ShEx.js';
 import WikidataValidate from './WikidataValidate.js';
 import WikidataQuery from './WikidataQuery.js';
 import WikidataExtract from './WikidataExtract.js';
-import API from './API.js'
+import API from './API.js';
+import TestYashe from './test/TestYashe.js'
+import TestYasqe from './test/TestYasqe.js'
 
 function Routes() {
 
@@ -50,6 +53,7 @@ function Routes() {
       <Route path={API.endpointExtractRoute} component={EndpointExtract} />
 
       <Route path={API.shExValidateRoute} component={ShExValidate} />
+      <Route path={API.shExValidateEndpointRoute} component={ShExValidateEndpoint} />
       <Route path={API.shExInfoRoute} component={ShExInfo} />
       <Route path={API.shExVisualizeRoute} component={ShExVisualize} />
       <Route path={API.shExConvertRoute} component={ShExConvert} />
@@ -64,6 +68,8 @@ function Routes() {
       <Route path={API.wikidataValidateRoute} component={WikidataValidate} />
       <Route path={API.wikidataExtractRoute} component={WikidataExtract} />
       <Route path={API.aboutRoute} component={About} />
+      <Route path="/test/yashe" component={TestYashe} />
+      <Route path="/test/yasqe" component={TestYasqe} />
 
       <Route component={NotFound} />
       </Switch>

@@ -15,11 +15,12 @@ class InputTabsWithFormat extends React.Component {
                        textAreaValue={this.props.textAreaValue}
                        handleByTextChange={this.props.handleByTextChange}
                        byTextPlaceholder={this.props.byTextPlaceholder}
+                       inputForm = {this.props.inputForm}
 
                        byUrlName={this.props.byUrlName}
                        urlValue={this.props.urlValue}
                        handleUrlChange={this.props.handleUrlChange}
-                       byUrlPlaceholder={this.props.byUrlPlaceholder}
+                       byURLPlaceholder={this.props.byURLPlaceholder}
 
                        byFileName={this.props.byFileName}
                        handleFileUpload={this.props.handleFileUpload}
@@ -45,7 +46,7 @@ InputTabsWithFormat.propTypes = {
     byUrlName: PropTypes.string.isRequired,
     urlValue: PropTypes.string.isRequired,
     handleUrlChange: PropTypes.func.isRequired,
-    byUrlPlaceholder: PropTypes.string,
+    byURLPlaceholder: PropTypes.string,
     byFileName: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
     nameFormat: PropTypes.string.isRequired,
