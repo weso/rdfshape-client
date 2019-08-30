@@ -1,11 +1,11 @@
-import React from 'react';
+// import React from 'react';
 import Viz from 'viz.js/viz.js';
 const { Module, render } = require('viz.js/full.render.js');
 
-function addPart(maybe, name) {
+/*function addPart(maybe, name) {
     if (maybe) return "&name=" + maybe
     else return '';
-}
+}*/
 
 function *intersperse(a, delim) {
     let first = true;

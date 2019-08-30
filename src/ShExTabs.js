@@ -4,57 +4,57 @@ import ShExForm from "./ShExForm";
 import API from "./API";
 import PropTypes from "prop-types";
 
-class ShExTabs extends React.Component {
-    render() {
-        const shExForm =
-            <ShExForm id="textAreaShEx"
-                      onChange={this.props.handleByTextChange}
-                      value={this.props.textAreaValue}
+function ShExTabs(props) {
+    const shExForm = <ShExForm id="textAreaShEx"
+                               onChange={props.handleByTextChange}
+                               value={props.textAreaValue} />;
+    return (
+        <div>
+            <InputTabsWithFormat
+                nameInputTab="ShEx input"
+                activeTab={props.activeTab}
+                handleTabChange={props.handleTabChange}
+
+                byTextName="RDF shEx"
+                textAreaValue={props.textAreaValue}
+                byTextPlaceholder="RDF shEx..."
+                handleByTextChange={props.handleByTextChange}
+                inputForm={shExForm}
+
+                byUrlName="ShEx URL"
+                handleUrlChange={props.handleShExUrlChange}
+                urlValue={props.shExUrl}
+                byURLPlaceholder="http://..."
+
+                byFileName="ShEx File"
+                handleFileUpload={props.handleFileUpload}
+
+                nameFormat="ShEx format"
+                defaultFormat={props.shExFormat}
+                handleFormatChange={props.handleShExFormatChange}
+                urlFormats={API.shExFormats}
             />
-        return (
-            <div>
-                <InputTabsWithFormat
-                    nameInputTab="ShEx input"
-                    activeTab={this.props.activeTab}
-                    handleTabChange={this.props.handleTabChange}
-
-                    byTextName="RDF shEx"
-                    textAreaValue={this.props.textAreaValue}
-                    byTextPlaceholder="RDF shEx..."
-                    handleByTextChange={this.props.handleByTextChange}
-                    inputForm = {shExForm}
-
-                    byUrlName="ShEx URL"
-                    handleUrlChange={this.props.handleShExUrlChange}
-                    urlValue={this.props.shExUrl}
-                    byURLPlaceholder="http://..."
-
-                    byFileName="ShEx File"
-                    handleFileUpload={this.props.handleFileUpload}
-
-                    nameFormat="ShEx format"
-                    defaultFormat={this.props.shExFormat}
-                    handleFormatChange={this.props.handleShExFormatChange}
-                    urlFormats={API.shExFormats}
-                />
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 ShExTabs.propTypes = {
     activeTab: PropTypes.string,
+    handleTabChange: PropTypes.func.isRequired,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
-    handleFileUpload: PropTypes.func.isRequired,
+
+    shExUrl: PropTypes.string.isRequired,
     handleShExUrlChange: PropTypes.func.isRequired,
+
+    handleFileUpload: PropTypes.func.isRequired,
     shExFormat: PropTypes.string.isRequired,
     handleShExFormatChange: PropTypes.func.isRequired
 };
 
 ShExTabs.defaultProps = {
     activeTab: 'ByText',
-    shExFormat: 'TURTLE'
+    shExFormat: 'ShExC'
 };
 
 

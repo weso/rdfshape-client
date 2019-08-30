@@ -26,35 +26,35 @@ class InputTabs extends React.Component {
 
     render() {
         return (
-         <Form.Group>
-          <Form.Label>{this.props.name}</Form.Label>
-          <Tabs activeKey={this.state.activeTab}
-                transition={false}
-                id="dataTabs"
-                onSelect={this.handleTabChange}
-          >
-            <Tab eventKey={API.byTextTab} title="by Input">
-            <ByText name={this.props.byTextName}
-                    textAreaValue={this.props.textAreaValue}
-                    placeholder={this.props.byTextPlaceholder}
-                    handleByTextChange={this.props.handleByTextChange}
-                    inputForm = {this.props.inputForm}
-            />
-           </Tab>
-           <Tab eventKey={API.byUrlTab} title="By URL">
-             <ByURL name={this.props.byURLName}
-                    urlValue={this.props.urlValue}
-                    handleUrlChange={this.props.handleUrlChange}
-                    placeholder={this.props.byURLPlaceholder}
-             />
-           </Tab>
-           <Tab eventKey={API.byFileTab} title="By File">
-             <ByFile name={this.props.byFileName}
-                     handleFileUpload={this.props.handleFileUpload}
-             />
-            </Tab>
-         </Tabs>
-         </Form.Group>
+            <Form.Group>
+                <Form.Label>{this.props.name}</Form.Label>
+                <Tabs activeKey={this.state.activeTab}
+                      transition={false}
+                      id="dataTabs"
+                      onSelect={this.handleTabChange}
+                >
+                    <Tab eventKey={API.byTextTab} title="by Input">
+                        <ByText name={this.props.byTextName}
+                                textAreaValue={this.props.textAreaValue}
+                                placeholder={this.props.byTextPlaceholder}
+                                handleByTextChange={this.props.handleByTextChange}
+                                inputForm = {this.props.inputForm}
+                        />
+                    </Tab>
+                    <Tab eventKey={API.byUrlTab} title="By URL">
+                        <ByURL name={this.props.byURLName}
+                               urlValue={this.props.urlValue}
+                               handleUrlChange={this.props.handleUrlChange}
+                               placeholder={this.props.byURLPlaceholder}
+                        />
+                    </Tab>
+                    <Tab eventKey={API.byFileTab} title="By File">
+                        <ByFile name={this.props.byFileName}
+                                handleFileUpload={this.props.handleFileUpload}
+                        />
+                    </Tab>
+                </Tabs>
+            </Form.Group>
         );
     }
 }

@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
-import QueryForm from '../QueryForm'
+import ShExForm from '../ShExForm'
 
 function TestYashe(props)  {
     const [shEx,setShEx] = useState('');
@@ -11,7 +11,7 @@ function TestYashe(props)  {
     return (
         <div>
             <h1>Yashe example</h1>
-            <QueryForm id="textarea1"
+            <ShExForm id="textarea1"
                        onChange={(value) => setShEx(value)}
             />
             <br/>

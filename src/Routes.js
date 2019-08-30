@@ -34,6 +34,7 @@ import WikidataExtract from './WikidataExtract.js';
 import API from './API.js';
 import TestYashe from './test/TestYashe.js'
 import TestYasqe from './test/TestYasqe.js'
+import TestRDFArea from './test/TestRDFArea.js'
 
 function Routes() {
 
@@ -70,6 +71,7 @@ function Routes() {
       <Route path={API.aboutRoute} component={About} />
       <Route path="/test/yashe" component={TestYashe} />
       <Route path="/test/yasqe" component={TestYasqe} />
+      <Route path="/test/rdfArea" component={TestRDFArea} />
 
       <Route component={NotFound} />
       </Switch>

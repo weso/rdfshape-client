@@ -20,7 +20,9 @@ function QueryForm(props) {
             });
             y.setValue(props.value)
             setYasqe(y);
-        }});
+        }
+    }, [yasqe, props]);
+
     return (
         <textarea id={props.id}/>
     );
