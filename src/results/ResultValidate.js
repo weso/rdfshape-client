@@ -1,6 +1,6 @@
 import React from 'react';
 import Alert from "react-bootstrap/Alert";
-import ShowShapeMap from "./ShowShapeMap";
+import ShowShapeMap from "../ShowShapeMap";
 
 class ResultValidate extends React.Component {
  render() {

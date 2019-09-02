@@ -1,85 +1,107 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointInput from "./EndpointInput";
 import QueryTabs from "./QueryTabs";
 import API from "./API";
-import FormData from "form-data";
 import axios from "axios";
-import ResultQuery from "./ResultQuery";
+import {mkPermalink, params2Form} from "./Permalink";
+import ResultEndpointQuery from "./results/ResultEndpointQuery";
+import { convertTabQuery } from "./Utils"
 
+function EndpointQuery(props) {
+    const [error, setError] = useState('');
+    const [result, setResult] = useState('');
+    const [endpoint, setEndpoint] = useState('');
+    const [queryTextArea, setQueryTextArea] = useState('');
+    const [queryUrl, setQueryUrl] = useState('');
+    const [queryFile, setQueryFile] = useState('');
+    const [queryActiveTab, setQueryActiveTab] = useState('ByText');
+    const [permalink, setPermalink] = useState(null);
 
-class EndpointQuery extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            result: '',
-            endpoint: '',
-            queryTextArea: '',
-            queryUrl: '',
-            queryFile: '',
-            activeTab: "ByText"
-        } ;
-
-        this.handleEndpointChange = this.handleEndpointChange.bind(this);
-        this.handleByTextChange = this.handleByTextChange.bind(this);
-        this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    function handleTabChangeQuery(value) {
+        setQueryActiveTab(value)
     }
 
-    handleTabChange(value) {
-        console.log("Changed tab..." + value);
-        this.setState({dataActiveTab: value});
+    function handleByTextChangeQuery(value) {
+        setQueryTextArea(value)
     }
 
-    handleByTextChange(value) {
-        this.setState({queryTextArea: value});
+    function handleUrlChangeQuery(value) {
+        setQueryUrl(value)
     }
 
-    handleSubmit(event) {
+    function handleFileUploadQuery(value) {
+        setQueryFile(value)
+    }
+
+    function handleSubmit(event) {
         const infoUrl = API.endpointQuery;
-        console.log("Try to prepare request to " + infoUrl);
-        const queryTextArea = this.state.queryTextArea;
-        const activeTab = this.state.activeTab;
-        let formData = new FormData();
-        formData.append('query', queryTextArea);
-        formData.append('endpoint', this.state.endpointUrl);
-        console.log("Form data created");
-        axios.post(infoUrl,formData).then (response => response.data)
+        let params = {};
+        params['endpoint'] = endpoint;
+        params['activeTab'] = convertTabQuery(queryActiveTab);
+        switch (queryActiveTab) {
+            case API.byTextTab:
+                params['query'] = queryTextArea;
+                break;
+            case API.byUrlTab:
+                params['queryURL'] = queryUrl;
+                break;
+            case API.byFileTab:
+                params['queryFile'] = queryFile;
+                break;
+            default:
+                console.log(`Unknown value for ${queryActiveTab}`)
+        }
+        let formData = params2Form(params);
+        let pl = mkPermalink(API.endpointQueryRoute, params);
+        axios.post(infoUrl, formData)
+            .then(response => response.data)
             .then((data) => {
-                this.setState({ result: data })
-                console.log(this.state.result);
+                setResult(data);
+                setPermalink(pl)
             })
             .catch(function (error) {
-                console.log('Error doing server request')
-                console.log(error);
-            });
+                const msg = `Error doing server request at ${infoUrl}: ${error}`;
+                console.log(msg);
+                setError(msg);
+            })
+        ;
         event.preventDefault();
     }
 
-    handleEndpointChange(value) {
-        this.setState({endpoint: value});
+    function handleEndpointChange(value) {
+        setEndpoint(value);
     }
 
-    render() {
-     return (
-       <Container fluid={true}>
-         <h1>Endpoint query</h1>
-           <Form onSubmit={this.handleSubmit}>
-               <EndpointInput value={this.state.endpoint}
-                              onChange={this.handleEndpointChange}/>
-               <QueryTabs activeTab={this.state.activeTab}
-                          textAreaValue={this.state.queryTextArea}
-                          handleByTextChange={this.handleByTextChange}
-                          handleTabChange={this.handleTabChange}
-               />
-               <Button variant="primary" type="submit">Info about endpoint</Button>
-               <ResultQuery result={this.state.result} />
-           </Form>
-       </Container>
-     );
- }
+    return (
+        <Container fluid={true}>
+            <h1>Endpoint query</h1>
+            <ResultEndpointQuery
+                result={result}
+                error={error}
+                permalink={permalink}
+            />
+            <Form onSubmit={handleSubmit}>
+                <EndpointInput value={endpoint}
+                               handleOnChange={handleEndpointChange}/>
+                <QueryTabs activeTab={queryActiveTab}
+                           handleTabChange={handleTabChangeQuery}
+
+                           textAreaValue={queryTextArea}
+                           handleByTextChange={handleByTextChangeQuery}
+
+                           urlValue={queryUrl}
+                           handleDataUrlChange={handleUrlChangeQuery}
+
+                           handleFileUpload={handleFileUploadQuery}
+                />
+                <Button variant="primary"
+                        type="submit">Query endpoint</Button>
+            </Form>
+        </Container>
+    )
 }
 
 export default EndpointQuery;

@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "./API";
 import axios from "axios";
-import ResultValidate from "./ResultValidate";
+import ResultValidate from "./results/ResultValidate";
 import {
     dataParamsFromQueryParams,
     shExParamsFromQueryParams,

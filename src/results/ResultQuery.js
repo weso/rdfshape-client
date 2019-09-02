@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import EndpointInput from "../EndpointInput";
 
 
 class ResultQuery extends React.Component {
  render() {
-     const result = this.props.result
+     const result = this.props.result;
      console.log("ResultQuery" + JSON.stringify(result));
      let msg ;
      if (result === "") {
@@ -29,5 +31,8 @@ class ResultQuery extends React.Component {
  }
 }
 
+EndpointInput.propTypes = {
+    result: PropTypes.object.isRequired,
+};
 
 export default ResultQuery;

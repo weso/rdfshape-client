@@ -1,7 +1,7 @@
 import React from 'react';
-import Cyto from "./Cyto";
+import Cyto from "../Cyto";
 import Container from "react-bootstrap/Container";
-import {dot2svg} from "./Utils";
+import {dot2svg} from "../Utils";
 import Viz from 'viz.js/viz.js';
 const {Module, render} = require('viz.js/full.render.js');
 
@@ -115,7 +115,7 @@ start [shape=Mdiamond];
             msg =
                 <div><p>Error: {result.error}</p>
                     <details>
-                        <pre>{JSON.stringify(result)}</pre>
+                     <PrintJson json={result} />
                     </details>
                 </div>
         } else {

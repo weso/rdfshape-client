@@ -1,11 +1,8 @@
 // import React from 'react';
 import Viz from 'viz.js/viz.js';
-const { Module, render } = require('viz.js/full.render.js');
+import API from "./API";
 
-/*function addPart(maybe, name) {
-    if (maybe) return "&name=" + maybe
-    else return '';
-}*/
+const { Module, render } = require('viz.js/full.render.js');
 
 function *intersperse(a, delim) {
     let first = true;
@@ -97,15 +94,15 @@ export function paramsFromStateData(state) {
     params['activeTab'] = convertTabData(activeTab);
     params['dataFormat'] = dataFormat;
     switch (activeTab) {
-        case "byText":
+        case API.byTextTab:
             params['data'] = dataTextArea;
             params['dataFormatTextArea']=dataFormat;
             break;
-        case "byURL":
+        case API.byUrlTab:
             params['dataURL'] = dataUrl;
             params['dataFormatUrl']=dataFormat;
             break;
-        case "byFile":
+        case API.byFileTab:
             params['dataFile'] = dataFile;
             params['dataFormatFile']=dataFormat;
             break;
@@ -132,15 +129,15 @@ export function paramsFromStateShEx(state) {
     params['schemaEmbedded'] = false;
     params['schemaFormat'] = format;
     switch (activeTab) {
-        case "byText":
+        case API.byTextTab:
             params['schema'] = textArea;
             params['schemaFormatTextArea'] = format;
             break;
-        case "byURL":
+        case API.byUrlTab:
             params['schemaURL'] = url;
             params['schemaFormatUrl'] = format;
             break;
-        case "byFile":
+        case API.byFileTab:
             params['schemaFile'] = file;
             params['schemaFormatFile'] = format;
             break;
@@ -197,40 +194,40 @@ export function paramsFromStateQuery(state) {
 
 function convertTabData(key) {
     switch (key) {
-        case "byText": return "#dataTextArea"
-        case "byFile": return "#dataFile"
-        case "byUrl": return "#dataUrl"
+        case API.byTextTab: return "#dataTextArea"
+        case API.byFileTab: return "#dataFile"
+        case API.byUrlTab: return "#dataUrl"
         default: console.log("Unknown schemaTab: " + key);
             return key
     }
 }
 
-function convertTabSchema(key) {
+export function convertTabSchema(key) {
     switch (key) {
-        case "byText": return "#schemaTextArea"
-        case "byFile": return "#schemaFile"
-        case "byUrl": return "#schemaUrl"
+        case API.byTextTab: return "#schemaTextArea"
+        case API.byFileTab: return "#schemaFile"
+        case API.byUrlTab: return "#schemaUrl"
         default: console.log("Unknown schemaTab: " + key);
             return key
     }
 }
 
-function convertTabShapeMap(key) {
+export function convertTabShapeMap(key) {
     switch (key) {
-        case "byText": return "#shapeMapTextArea"
-        case "byFile": return "#shapeMapFile"
-        case "byUrl": return "#shapeMapUrl"
+        case API.byTextTab: return "#shapeMapTextArea"
+        case API.byFileTab: return "#shapeMapFile"
+        case API.byUrlTab: return "#shapeMapUrl"
         default:
             console.log("Unknown schemaTab: " + key);
             return key
     }
 }
 
-function convertTabQuery(key) {
+export function convertTabQuery(key) {
     switch (key) {
-        case "byText": return "#queryTextArea"
-        case "byFile": return "#queryFile"
-        case "byUrl": return "#queryUrl"
+        case API.byTextTab: return "#queryTextArea"
+        case API.byFileTab: return "#queryFile"
+        case API.byUrlTab: return "#queryUrl"
         default:
             console.log("Unknown schemaTab: " + key);
             return key

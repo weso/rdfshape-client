@@ -7,7 +7,7 @@ import DataTabs from "./DataTabs"
 import QueryTabs from "./QueryTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import ResultQuery from "./ResultQuery";
+import ResultQuery from "./results/ResultQuery";
 import {paramsFromStateData, paramsFromStateQuery} from "./Utils";
 import {params2Form} from "./Permalink";
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import Code from './Code';
-import { Permalink } from "./Permalink";
-import { mkMode } from "./Utils";
+import Code from '../Code';
+import { Permalink } from "../Permalink";
+import { mkMode } from "../Utils";
 
 class ResultDataInfo extends React.Component {
  constructor(props) {

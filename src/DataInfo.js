@@ -5,7 +5,7 @@ import API from "./API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
-import ResultDataInfo from "./ResultDataInfo";
+import ResultDataInfo from "./results/ResultDataInfo";
 import qs from 'query-string';
 import {mkPermalink, params2Form} from "./Permalink";
 import {paramsFromStateData, dataParamsFromQueryParams} from "./Utils";

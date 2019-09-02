@@ -6,7 +6,7 @@ import API from "./API";
 import Form from "react-bootstrap/Form";
 import FormData from "form-data";
 import axios from "axios";
-import ResultDataInfo from "./ResultDataInfo";
+import ResultDataInfo from "./results/ResultDataInfo";
 import DataTabs from "./DataTabs";
 import NodeSelector from "./NodeSelector";
 

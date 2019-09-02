@@ -1,13 +1,12 @@
 import React from 'react';
+
 import Container from 'react-bootstrap/Container';
-import DataTabs from "./DataTabs"
 import ShExTabs from "./ShExTabs"
-import ShapeMapTabs from "./ShapeMapTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "./API";
 import axios from "axios";
-import ResultShExVisualize from "./ResultShExVisualize";
+import ResultShExVisualize from "./results/ResultShExVisualize";
 import {
     shExParamsFromQueryParams,
     paramsFromStateShEx} from "./Utils";
@@ -61,7 +60,7 @@ class ShExVisualize extends React.Component {
             let paramsShEx = shExParamsFromQueryParams(queryParams);
             let params = paramsShEx
             const formData = params2Form(params);
-            this.postValidate(url, formData, () => this.updateStateVisualize(params))
+            this.postVisualize(url, formData, () => this.updateStateVisualize(params))
         }
     }
 
@@ -93,7 +92,7 @@ class ShExVisualize extends React.Component {
         let permalink = mkPermalink(API.shExVisualizeRoute, params);
         this.setState({loading:true});
         this.setState({permalink: permalink});
-        this.postValidate(url,formData)
+        this.postVisualize(url,formData)
         event.preventDefault();
     }
 
