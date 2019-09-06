@@ -21,6 +21,7 @@ import ShExValidate from './ShExValidate.js';
 import ShExValidateEndpoint from './ShExValidateEndpoint.js';
 import ShExConvert from './ShExConvert.js';
 import ShExVisualize from './ShExVisualize.js';
+import ShExVisualizeCytoscape from './ShExVisualizeCytoscape.js';
 import ShEx2SHACL from './ShEx2SHACL.js';
 
 import SHACLInfo from './SHACLInfo.js';
@@ -35,6 +36,7 @@ import API from './API.js';
 import TestYashe from './test/TestYashe.js'
 import TestYasqe from './test/TestYasqe.js'
 import TestRDFArea from './test/TestRDFArea.js'
+import TestCyto from './test/TestCyto.js'
 
 function Routes() {
 
@@ -57,6 +59,7 @@ function Routes() {
       <Route path={API.shExValidateEndpointRoute} component={ShExValidateEndpoint} />
       <Route path={API.shExInfoRoute} component={ShExInfo} />
       <Route path={API.shExVisualizeRoute} component={ShExVisualize} />
+      <Route path={API.shExVisualizeCytoscapeRoute} component={ShExVisualizeCytoscape} />
       <Route path={API.shExConvertRoute} component={ShExConvert} />
       <Route path={API.shEx2ShaclRoute} component={ShEx2SHACL} />
 
@@ -72,6 +75,7 @@ function Routes() {
       <Route path="/test/yashe" component={TestYashe} />
       <Route path="/test/yasqe" component={TestYasqe} />
       <Route path="/test/rdfArea" component={TestRDFArea} />
+      <Route path="/test/cyto" component={TestCyto} />
 
       <Route component={NotFound} />
       </Switch>

@@ -18,6 +18,7 @@ import {
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
+import EndpointInput from "./EndpointInput";
 
 const url = API.schemaValidate ;
 
@@ -35,6 +36,7 @@ class ShExValidate extends React.Component {
             dataUrl: '',
             dataFile: null,
             dataActiveTab: API.defaultTab,
+            endpoint: '',
 
             shExTextArea: "",
             shExFormat: API.defaultShExFormat,
@@ -67,6 +69,7 @@ class ShExValidate extends React.Component {
       this.handleShapeMapUrlChange = this.handleShapeMapUrlChange.bind(this);
       this.handleShapeMapFileUpload = this.handleShapeMapFileUpload.bind(this);
 
+      this.handleEndpointChange = this.handleEndpointChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.postValidate = this.postValidate.bind(this);
       this.processResult = this.processResult.bind(this);
@@ -94,6 +97,8 @@ class ShExValidate extends React.Component {
     handleShapeMapUrlChange(value) { this.setState({shapeMapUrl: value}); }
     handleShapeMapFileUpload(value) { this.setState({shapeMapFile: value}); }
 
+    handleEndpointChange(value) { this.setState({endpoint: value}); }
+
     componentDidMount() {
         console.log("Component Did mount - dataConvert");
         if (this.props.location.search) {
@@ -102,7 +107,9 @@ class ShExValidate extends React.Component {
             let paramsData = dataParamsFromQueryParams(queryParams);
             let paramsShEx = shExParamsFromQueryParams(queryParams);
             let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-            let params = {...paramsData,...paramsShEx,...paramsShapeMap}
+            let paramsEndpoint = {}
+            if (params.endpoint) paramsEndpoint["endpoint"] = params.endpoint ;
+            let params = {...paramsData,...paramsShEx,...paramsShapeMap,...paramsEndpoint}
             const formData = params2Form(params);
             this.postValidate(url, formData, () => this.updateStateValidate(params))
         }
@@ -166,7 +173,11 @@ class ShExValidate extends React.Component {
         let paramsData = paramsFromStateData(this.state);
         let paramsShEx = paramsFromStateShEx(this.state);
         let paramsShapeMap = paramsFromStateShapeMap(this.state);
-        let params = {...paramsData,...paramsShEx,...paramsShapeMap}
+        let paramsEndpoint = {}
+        if (this.state.endpoint != '') {
+            paramsEndpoint['endpoint'] = this.state.endpoint ;
+        }
+        let params = {...paramsData,...paramsEndpoint,...paramsShEx,...paramsShapeMap}
         params['schemaEngine']='ShEx'
         params['triggerMode']='shapeMap'
         let formData = params2Form(params);
@@ -223,6 +234,8 @@ class ShExValidate extends React.Component {
                               dataFormat={this.state.dataFormat}
                               handleDataFormatChange={this.handleDataFormatChange}
                     />
+                    <EndpointInput value={this.state.endpoint}
+                                   handleOnChange={this.handleEndpointChange}/>
                     <ShExTabs activeTab={this.state.shExActiveTab}
                               handleTabChange={this.handleShExTabChange}
 

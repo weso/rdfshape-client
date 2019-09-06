@@ -16,6 +16,7 @@ class API {
     static schemaValidate = API.rootApi + "schema/validate";
     static schemaInfo = API.rootApi + "schema/info";
     static schemaVisualize = API.rootApi + "schema/visualize";
+    static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
 
     static dataInfoRoute = "/dataInfo";
     static dataConvertRoute = "/dataConvert";
@@ -31,6 +32,7 @@ class API {
     static shExInfoRoute = "/shExInfo";
     static shExConvertRoute = "/shExConvert";
     static shExVisualizeRoute = "/shExVisualize";
+    static shExVisualizeCytoscapeRoute = "/shExVisualizeCytoscape";
     static shEx2ShaclRoute = "/shEx2Shacl";
     static shExValidateRoute = "/shExValidate";
     static shExValidateEndpointRoute = "/shExValidateEndpoint";
