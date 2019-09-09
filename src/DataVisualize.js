@@ -141,7 +141,7 @@ class DataVisualize extends React.Component {
                          dataFormat={this.state.dataFormat}
                          handleDataFormatChange={this.handleDataFormatChange}
                />
-             <SelectGraphFormat name="Graph format"
+             <SelectGraphFormat name="Target graph format"
                                default={this.state.graphFormat}
                                handleChange={this.handleTargetGraphFormatChange}
              />

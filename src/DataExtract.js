@@ -1,90 +1,93 @@
-import React from 'react';
+import React, {useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "./API";
 import Form from "react-bootstrap/Form";
-import FormData from "form-data";
+import Alert from "react-bootstrap/Alert";
 import axios from "axios";
-import ResultDataInfo from "./results/ResultDataInfo";
+import ResultDataExtract from "./results/ResultDataExtract";
 import DataTabs from "./DataTabs";
 import NodeSelector from "./NodeSelector";
+import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import {convertTabData} from "./Utils"
+export default function DataExtract(props) {
+    const [dataTextArea,setDataTextArea] = useState('');
+    const [error,setError] = useState(null);
+    const [result, setResult] = useState('');
+    const [dataFormat,setDataFormat] = useState('');
+    const [dataUrl, setDataUrl] = useState('');
+    const [dataFile, setDataFile] = useState('');
+    const [dataActiveTab, setDataActiveTab] = useState('byText');
+    const [nodeSelector, setNodeSelector] = useState('');
+    const [permalink, setPermalink] = useState(null)
 
-class DataExtract extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            textAreaValue: "",
-            textAreaValueQuery: "",
-            result: '',
-            dataFormat: "TURTLE",
-            dataUrl: '',
-            dataFile: '',
-            activeTab: "byText",
-            activeTabQuery: "byText"
-        } ;
-        this.handleByTextChange = this.handleByTextChange.bind(this);
-        this.handleTabChange = this.handleTabChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-    }
-
-    handleDataFormatChange(value) {
-        this.setState({dataFormat: value});
-    }
-
-    handleTabChange(value) {
-        console.log("Changed tab..." + value);
-        this.setState({dataActiveTab: value});
-    }
-
-    handleByTextChange(value) {
-        this.setState({dataTextArea: value});
-    }
-
-    handleSubmit(event) {
-        const infoUrl = API.dataExtract;
-        const textAreaValue = this.state.textAreaValue;
-        const activeTab = this.state.activeTab;
-        const dataFormat = this.state.dataFormat;
-        console.log("textAreaValue " + textAreaValue);
-        console.log("activeTab " + activeTab);
-        let formData = new FormData();
-        formData.append('data', textAreaValue);
-        formData.append('dataFormat', dataFormat);
-        console.log("Form data created");
-        axios.post(infoUrl,formData).then (response => response.data)
+    function postConvert(url, formData, cb) {
+        axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                this.setState({ result: data })
-                console.log(this.state.result);
+                setResult(data)
+                if (cb) cb()
             })
             .catch(function (error) {
-                console.log('Error doing server request')
-                console.log(error);
+                console.log(`Error doing server request: ${error}`)
+                setError(error);
             });
+    }
 
+    function handleSubmit(event) {
+            const url = API.dataExtract;
+            let params = {};
+            params['activeTab'] = convertTabData(dataActiveTab);
+            params['dataFormat'] = dataFormat;
+            switch (dataActiveTab) {
+                case API.byTextTab:
+                    params['data'] = dataTextArea;
+                    params['dataFormatTextArea']=dataFormat;
+                    break;
+                case API.byUrlTab:
+                    params['dataURL'] = dataUrl;
+                    params['dataFormatUrl']=dataFormat;
+                    break;
+                case API.byFileTab:
+                    params['dataFile'] = dataFile;
+                    params['dataFormatFile']=dataFormat;
+                    break;
+                default:
+            }
+            params['nodeSelector'] = nodeSelector ;
+            let formData = params2Form(params);
+            setPermalink(mkPermalink(API.dataExtract, params));
+            postConvert(url,formData);
         event.preventDefault();
     }
 
-    render() {
-        return (
+    return (
             <Container fluid={true}>
                 <h1>Extract schema from data</h1>
-                <ResultDataInfo result={this.state.result} />
-                <Form onSubmit={this.handleSubmit}>
-                    <DataTabs textAreaValue={this.state.textAreaValue}
-                              activeTab={this.state.activeTab}
-                              handleTabChange={this.handleTabChange}
-                              handleByTextChange={this.handleByTextChange}
-                              defaultDataFormat={this.state.dataFormat}
-                              handleDataFormatChange={this.handleDataFormatChange}
+                { error? <Alert variant="danger">${error}</Alert>: null }
+                <ResultDataExtract result={result} />
+                { permalink? <Permalink url={permalink} />: null }
+                <Form onSubmit={handleSubmit}>
+                    <DataTabs activeTab={dataActiveTab}
+                              handleTabChange={(value) => setDataActiveTab(value)}
+
+                              textAreaValue={dataTextArea}
+                              handleByTextChange={(value) => setDataTextArea(value)}
+
+                              dataUrl={dataUrl}
+                              handleDataUrlChange={(value) => setDataUrl(value)}
+
+                              handleFileUpload={(value) => setDataFile(value)}
+
+                              dataFormat={dataFormat}
+                              handleDataFormatChange={(value) => setDataFormat(value)}
                     />
-                    <NodeSelector />
+                    <NodeSelector
+                        value={nodeSelector}
+                        handleChange={(value) => setNodeSelector(value)} />
                     <Button variant="primary" type="submit">Extract schema</Button>
                 </Form>
             </Container>
-        );
-    }
+    );
 }
 
-export default DataExtract;

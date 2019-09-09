@@ -7,10 +7,9 @@ import API from "./API";
 import axios from "axios";
 import SelectFormat from "./SelectFormat";
 import ResultDataConvert from "./results/ResultDataConvert";
-import {maybeAdd, dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
+import {dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
 import qs from "query-string";
 import {mkPermalink, params2Form} from "./Permalink";
-import InputTabsWithFormat from "./InputTabsWithFormat";
 
 const url = API.dataConvert;
 

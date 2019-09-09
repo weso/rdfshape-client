@@ -108,7 +108,7 @@ class ShExValidate extends React.Component {
             let paramsShEx = shExParamsFromQueryParams(queryParams);
             let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
             let paramsEndpoint = {}
-            if (params.endpoint) paramsEndpoint["endpoint"] = params.endpoint ;
+            if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint ;
             let params = {...paramsData,...paramsShEx,...paramsShapeMap,...paramsEndpoint}
             const formData = params2Form(params);
             this.postValidate(url, formData, () => this.updateStateValidate(params))
@@ -174,7 +174,7 @@ class ShExValidate extends React.Component {
         let paramsShEx = paramsFromStateShEx(this.state);
         let paramsShapeMap = paramsFromStateShapeMap(this.state);
         let paramsEndpoint = {}
-        if (this.state.endpoint != '') {
+        if (this.state.endpoint !== '') {
             paramsEndpoint['endpoint'] = this.state.endpoint ;
         }
         let params = {...paramsData,...paramsEndpoint,...paramsShEx,...paramsShapeMap}

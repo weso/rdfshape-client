@@ -101,7 +101,6 @@ class CytoVisualize extends React.Component {
     }
 
  render() {
-     const targetGraphFormat = this.state.targetGraphFormat
      return (
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>

@@ -49,7 +49,7 @@ function Routes() {
       <Route path={API.dataVisualizeRoute} component={DataVisualize} />
       <Route path={API.cytoVisualizeRoute} component={CytoVisualize} />
       <Route path={API.dataQueryRoute} component={DataQuery} />
-      <Route path={API.dataQueryRoute} component={DataExtract} />
+      <Route path={API.dataExtractRoute} component={DataExtract} />
 
       <Route path={API.endpointInfoRoute} component={EndpointInfo} />
       <Route path={API.endpointQueryRoute} component={EndpointQuery} />

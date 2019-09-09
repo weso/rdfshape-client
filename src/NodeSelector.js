@@ -1,16 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Form from "react-bootstrap/Form";
+import PropTypes from "prop-types";
 
-class NodeSelector extends React.Component {
-
- render() {
-     return (
+function NodeSelector(props) {
+    return (
         <Form.Group>
-         <Form.Label>Node selector</Form.Label>
-         <Form.Control type="text" placeholder={this.props.placeholder} />
+            <Form.Label>Node selector</Form.Label>
+            <Form.Control type="text"
+                          placeholder={props.placeholder}
+                          value={props.value}
+                          onChange={(value) => {
+                              props.handleChange(value.target.value)
+                          }}
+            />
         </Form.Group>
-     );
- }
+    )
 }
+
+NodeSelector.propTypes = {
+    value: PropTypes.string,
+    handleChange: PropTypes.func.isRequired,
+    placeholder: PropTypes.string,
+};
+
+NodeSelector.defaultProps = {
+    placeholder: '<Node>',
+};
 
 export default NodeSelector;

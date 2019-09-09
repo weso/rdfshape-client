@@ -193,7 +193,7 @@ export function paramsFromStateQuery(state) {
     return params;
 }
 
-function convertTabData(key) {
+export function convertTabData(key) {
     switch (key) {
         case API.byTextTab: return "#dataTextArea";
         case API.byFileTab: return "#dataFile";
