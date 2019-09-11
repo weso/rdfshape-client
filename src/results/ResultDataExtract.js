@@ -4,7 +4,6 @@ import { mkMode } from "../Utils"
 
 function ResultDataExtract(props) {
      const result = props.result
-     console.log("ResultDataConvert" + JSON.stringify(result));
      let msg ;
      if (result === "") {
          msg = null
@@ -12,25 +11,24 @@ function ResultDataExtract(props) {
      if (result.error) {
          msg =
              <div><p>Error: {result.error}</p>
-                 <details><pre>{JSON.stringify(result)}</pre></details>
                 </div>
      } else {
          msg = <div>
              <p>{result.msg}</p>
-             {result.result && result.dataFormat && (
+             {result.inferedShape && (
                  <Code
-                     value={result.result}
-                     mode={mkMode(result.dataFormat)}
+                     value={result.inferedShape}
+                     mode="ShExC"
                      theme="material"
                  />
              )}
-             <details><pre>{JSON.stringify(result)}</pre></details>
          </div>
      }
 
      return (
          <div>
              {msg}
+             { result && <details><pre>{JSON.stringify(result)}</pre></details> }
          </div>
      );
 }

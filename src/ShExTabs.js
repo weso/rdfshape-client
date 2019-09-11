@@ -5,11 +5,14 @@ import API from "./API";
 import PropTypes from "prop-types";
 
 function ShExTabs(props) {
+
     const shExForm = <ShExForm id="textAreaShEx"
                                onChange={props.handleByTextChange}
                                value={props.textAreaValue} />;
+
     return (
         <div>
+            <p>HandleTabChange in ShExTabs: {typeof props.handleTabChange}</p>
             <InputTabsWithFormat
                 nameInputTab="ShEx input"
                 activeTab={props.activeTab}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -10,7 +10,10 @@ import ResultDataExtract from "./results/ResultDataExtract";
 import DataTabs from "./DataTabs";
 import NodeSelector from "./NodeSelector";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
-import {convertTabData} from "./Utils"
+import {convertTabData, dataParamsFromQueryParams} from "./Utils"
+import qs from "query-string";
+
+
 export default function DataExtract(props) {
     const [dataTextArea,setDataTextArea] = useState('');
     const [error,setError] = useState(null);
@@ -20,7 +23,36 @@ export default function DataExtract(props) {
     const [dataFile, setDataFile] = useState('');
     const [dataActiveTab, setDataActiveTab] = useState('byText');
     const [nodeSelector, setNodeSelector] = useState('');
-    const [permalink, setPermalink] = useState(null)
+    const [permalink, setPermalink] = useState(null);
+    const url = API.dataExtract;
+
+    useEffect(() => {
+        if (props.location.search) {
+            const queryParams = qs.parse(props.location.search);
+            console.log("Parameters: " + JSON.stringify(queryParams));
+            let params = dataParamsFromQueryParams(queryParams);
+            params['nodeSelector'] = queryParams.nodeSelector;
+            const formData = params2Form(params);
+            postConvert(url, formData, () => updateState(params))
+        }
+     });
+
+    function updateState(params) {
+        if (params['data']) {
+            setDataActiveTab(API.byTextTab);
+            setDataTextArea(params['data'])
+        }
+        if (params['dataFormat']) setDataFormat(params['dataFormat']);
+        if (params['dataUrl']) {
+            setDataActiveTab(API.byUrlTab);
+            setDataUrl(params['dataUrl'])
+        }
+        if (params['dataFile']) {
+            setDataActiveTab(API.byFileTab);
+            setDataFile(params['dataFile'])
+        }
+        if (params['nodeSelector']) setNodeSelector(params['targetDataFormat'])
+    }
 
     function postConvert(url, formData, cb) {
         axios.post(url,formData).then (response => response.data)
@@ -35,7 +67,6 @@ export default function DataExtract(props) {
     }
 
     function handleSubmit(event) {
-            const url = API.dataExtract;
             let params = {};
             params['activeTab'] = convertTabData(dataActiveTab);
             params['dataFormat'] = dataFormat;
@@ -56,7 +87,7 @@ export default function DataExtract(props) {
             }
             params['nodeSelector'] = nodeSelector ;
             let formData = params2Form(params);
-            setPermalink(mkPermalink(API.dataExtract, params));
+            setPermalink(mkPermalink(API.dataExtractRoute, params));
             postConvert(url,formData);
         event.preventDefault();
     }

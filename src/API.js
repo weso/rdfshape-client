@@ -10,12 +10,13 @@ class API {
     static dataVisualFormats = API.rootApi + "data/visualize/formats";
     static endpointInfo = API.rootApi + "endpoint/info";
     static endpointQuery = API.rootApi + "endpoint/query";
-    static shExFormats = API.rootApi + "shEx/formats";
+    static shExFormats = API.rootApi + "schema/formats?schemaEngine=shex";
     static shapeMapFormats = API.rootApi + "shapeMap/formats";
-    static shaclFormats = API.rootApi + "shacl/formats";
+    static shaclFormats = API.rootApi + "schema/formats?schemaEngine=shaclex";
     static schemaValidate = API.rootApi + "schema/validate";
     static schemaInfo = API.rootApi + "schema/info";
     static schemaVisualize = API.rootApi + "schema/visualize";
+    static schemaConvert = API.rootApi + "schema/convert";
     static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
 
     static dataInfoRoute = "/dataInfo";

@@ -22,7 +22,7 @@ import ShExValidateEndpoint from './ShExValidateEndpoint.js';
 import ShExConvert from './ShExConvert.js';
 import ShExVisualize from './ShExVisualize.js';
 import ShExVisualizeCytoscape from './ShExVisualizeCytoscape.js';
-import ShEx2SHACL from './ShEx2SHACL.js';
+import ShEx2Shacl from './ShEx2Shacl.js';
 
 import SHACLInfo from './SHACLInfo.js';
 import SHACLValidate from './SHACLValidate.js';
@@ -61,7 +61,7 @@ function Routes() {
       <Route path={API.shExVisualizeRoute} component={ShExVisualize} />
       <Route path={API.shExVisualizeCytoscapeRoute} component={ShExVisualizeCytoscape} />
       <Route path={API.shExConvertRoute} component={ShExConvert} />
-      <Route path={API.shEx2ShaclRoute} component={ShEx2SHACL} />
+      <Route path={API.shEx2ShaclRoute} component={ShEx2Shacl} />
 
       <Route path={API.shaclInfoRoute} component={SHACLInfo} />
       <Route path={API.shaclValidateRoute} component={SHACLValidate} />

@@ -3,36 +3,35 @@ import InputTabs from "./InputTabs";
 import SelectFormat from "./SelectFormat";
 import PropTypes from "prop-types";
 
-class InputTabsWithFormat extends React.Component {
-    render() {
-        return (
+function InputTabsWithFormat(props) {
+    return (
             <div>
-            <InputTabs name={this.props.nameInputTab}
-                       activeTab={this.props.activeTab}
-                       handleTabChange={this.props.handleTabChange}
+                <p>HandleTabChange in InputTabsWithFormat: {typeof props.handleTabChange}</p>
+                <InputTabs name={props.nameInputTab}
+                       activeTab={props.activeTab}
+                       handleTabChange={props.handleTabChange}
 
-                       byTextName={this.props.byTextName}
-                       textAreaValue={this.props.textAreaValue}
-                       handleByTextChange={this.props.handleByTextChange}
-                       byTextPlaceholder={this.props.byTextPlaceholder}
-                       inputForm = {this.props.inputForm}
+                       byTextName={props.byTextName}
+                       textAreaValue={props.textAreaValue}
+                       handleByTextChange={props.handleByTextChange}
+                       byTextPlaceholder={props.byTextPlaceholder}
+                       inputForm = {props.inputForm}
 
-                       byUrlName={this.props.byUrlName}
-                       urlValue={this.props.urlValue}
-                       handleUrlChange={this.props.handleUrlChange}
-                       byURLPlaceholder={this.props.byURLPlaceholder}
+                       byUrlName={props.byUrlName}
+                       urlValue={props.urlValue}
+                       handleUrlChange={props.handleUrlChange}
+                       byURLPlaceholder={props.byURLPlaceholder}
 
-                       byFileName={this.props.byFileName}
-                       handleFileUpload={this.props.handleFileUpload}
+                       byFileName={props.byFileName}
+                       handleFileUpload={props.handleFileUpload}
             />
-            <SelectFormat name={this.props.nameFormat}
-                              defaultFormat={this.props.defaultFormat}
-                              handleFormatChange={this.props.handleFormatChange}
-                              urlFormats={this.props.urlFormats}
+            <SelectFormat name={props.nameFormat}
+                              defaultFormat={props.defaultFormat}
+                              handleFormatChange={props.handleFormatChange}
+                              urlFormats={props.urlFormats}
             />
             </div>
         );
-    }
 }
 
 InputTabsWithFormat.propTypes = {
@@ -47,7 +46,7 @@ InputTabsWithFormat.propTypes = {
     urlValue: PropTypes.string.isRequired,
     handleUrlChange: PropTypes.func.isRequired,
     byURLPlaceholder: PropTypes.string,
-    byFileName: PropTypes.func.isRequired,
+    byFileName: PropTypes.string.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
     nameFormat: PropTypes.string.isRequired,
     defaultFormat: PropTypes.string.isRequired,

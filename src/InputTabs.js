@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Form from 'react-bootstrap/Form';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
@@ -8,55 +8,48 @@ import ByText from './ByText';
 import PropTypes from "prop-types";
 import API from './API'
 
-class InputTabs extends React.Component {
+function InputTabs(props) {
+    const [activeTab, setActiveTab] = useState(props.activeTab)
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeTab: this.props.activeTab
-        }
-        this.handleTabChange = this.handleTabChange.bind(this);
+    function handleTabChange(e) {
+        console.log(`InputTabs: handleTabChange(${JSON.stringify(e)})`)
+        console.log(`InputTabs: props.handleTabChange = (${typeof props.handleTabChange})`)
+        setActiveTab(e)
+        props.handleTabChange(e);
     }
 
-    handleTabChange(e) {
-        console.log(`Event: ${JSON.stringify(e)}`)
-        this.setState({ activeTab: e})
-        this.props.handleTabChange(e);
-    }
-
-    render() {
-        return (
-            <Form.Group>
-                <Form.Label>{this.props.name}</Form.Label>
-                <Tabs activeKey={this.state.activeTab}
-                      transition={false}
-                      id="dataTabs"
-                      onSelect={this.handleTabChange}
-                >
-                    <Tab eventKey={API.byTextTab} title="by Input">
-                        <ByText name={this.props.byTextName}
-                                textAreaValue={this.props.textAreaValue}
-                                placeholder={this.props.byTextPlaceholder}
-                                handleByTextChange={this.props.handleByTextChange}
-                                inputForm = {this.props.inputForm}
-                        />
-                    </Tab>
-                    <Tab eventKey={API.byUrlTab} title="By URL">
-                        <ByURL name={this.props.byURLName}
-                               urlValue={this.props.urlValue}
-                               handleUrlChange={this.props.handleUrlChange}
-                               placeholder={this.props.byURLPlaceholder}
-                        />
-                    </Tab>
-                    <Tab eventKey={API.byFileTab} title="By File">
-                        <ByFile name={this.props.byFileName}
-                                handleFileUpload={this.props.handleFileUpload}
-                        />
-                    </Tab>
-                </Tabs>
-            </Form.Group>
-        );
-    }
+    return (
+        <Form.Group>
+            <p>HandleTabChange in InputTabs: {typeof props.handleTabChange}</p>
+            <Form.Label>{props.name}</Form.Label>
+            <Tabs activeKey={activeTab}
+                  transition={false}
+                  id="dataTabs"
+                  onSelect={handleTabChange}
+            >
+                <Tab eventKey={API.byTextTab} title="by Input">
+                    <ByText name={props.byTextName}
+                            textAreaValue={props.textAreaValue}
+                            placeholder={props.byTextPlaceholder}
+                            handleByTextChange={props.handleByTextChange}
+                            inputForm = {props.inputForm}
+                    />
+                </Tab>
+                <Tab eventKey={API.byUrlTab} title="By URL">
+                    <ByURL name={props.byURLName}
+                           urlValue={props.urlValue}
+                           handleUrlChange={props.handleUrlChange}
+                           placeholder={props.byURLPlaceholder}
+                    />
+                </Tab>
+                <Tab eventKey={API.byFileTab} title="By File">
+                    <ByFile name={props.byFileName}
+                            handleFileUpload={props.handleFileUpload}
+                    />
+                </Tab>
+            </Tabs>
+        </Form.Group>
+    );
 }
 
 InputTabs.propTypes = {
