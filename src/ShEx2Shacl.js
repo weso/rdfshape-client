@@ -110,15 +110,23 @@ export default function ShEx2Shacl(props)  {
             });
     }
 
+    function targetFormatMode(targetFormat) {
+        switch (targetFormat.toUpperCase()) {
+            case 'TURTLE': return 'turtle';
+            case 'RDF/XML': return 'xml';
+            case 'TRIG': return 'xml';
+            case 'JSON-LD': return 'javascript'
+            default: return 'turtle'
+        }
+    }
+
     return  (
       <Container fluid={true}>
           <h1>Convert ShEx &#8594; SHACL</h1>
-          <p>Hoooola</p>
-          <p>HandleShExTabChange in ShEx2SHACL: {typeof handleShExTabChange}</p>
-
           <Form onSubmit={handleSubmit}>
               {loading ? <Pace color="#27ae60"/> :
-               result ? <ResultShEx2Shacl result={result} /> :
+               result ? <ResultShEx2Shacl result={result}
+                                          mode={targetFormatMode(targetFormat)}/> :
                error? <p>Error: {error}</p>:
                null
               }

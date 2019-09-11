@@ -12,15 +12,12 @@ function InputTabs(props) {
     const [activeTab, setActiveTab] = useState(props.activeTab)
 
     function handleTabChange(e) {
-        console.log(`InputTabs: handleTabChange(${JSON.stringify(e)})`)
-        console.log(`InputTabs: props.handleTabChange = (${typeof props.handleTabChange})`)
         setActiveTab(e)
         props.handleTabChange(e);
     }
 
     return (
         <Form.Group>
-            <p>HandleTabChange in InputTabs: {typeof props.handleTabChange}</p>
             <Form.Label>{props.name}</Form.Label>
             <Tabs activeKey={activeTab}
                   transition={false}

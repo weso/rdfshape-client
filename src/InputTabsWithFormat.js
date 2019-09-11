@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 function InputTabsWithFormat(props) {
     return (
             <div>
-                <p>HandleTabChange in InputTabsWithFormat: {typeof props.handleTabChange}</p>
                 <InputTabs name={props.nameInputTab}
                        activeTab={props.activeTab}
                        handleTabChange={props.handleTabChange}

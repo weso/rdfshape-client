@@ -12,7 +12,6 @@ function ShExTabs(props) {
 
     return (
         <div>
-            <p>HandleTabChange in ShExTabs: {typeof props.handleTabChange}</p>
             <InputTabsWithFormat
                 nameInputTab="ShEx input"
                 activeTab={props.activeTab}
