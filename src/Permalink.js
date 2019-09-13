@@ -5,6 +5,7 @@ import FormData from "form-data";
 
 
 export function mkPermalink(route, params) {
+    console.log(`mkPermalink: ${JSON.stringify(params)}`)
     const newUrl = getHost() + route + "?" + qs.stringify(params)
     console.log("mkPermalink newUrl: " + newUrl);
     return newUrl ;

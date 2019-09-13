@@ -15,6 +15,7 @@ function ResultShEx2Shacl(props) {
 
 ResultShEx2Shacl.propTypes = {
     result: PropTypes.object,
+    mode: PropTypes.string
 };
 
 export default ResultShEx2Shacl;

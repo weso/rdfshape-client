@@ -24,7 +24,28 @@ export default function ShEx2Shacl(props)  {
     const [shExUrl, setShExUrl] = useState('');
     const [shExFile, setShExFile] = useState(null);
     const [shExActiveTab,setShExActiveTab] = useState(API.defaultTab);
-    const [targetFormat, setTargetFormat] = useState('');
+    const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat);
+
+    useEffect(() => {
+            console.log("Use Effect - shEx2Shacl");
+            if (props.location.search) {
+                const clientParams = qs.parse(props.location.search);
+                console.log("Client Params: " + JSON.stringify(clientParams));
+//                let clientParams =  shExParamsFromQueryParams(queryParams);
+                let serverParams = serverParamsFromClientParams(clientParams)
+                const formData = params2Form(serverParams);
+                postRequest(url, formData, () => updateState(clientParams))
+            }
+        }, [
+        shExUrl,
+        shExFormat,
+        shExFile,
+        shExTextArea,
+        shExActiveTab,
+        permalink,
+        props.location.search
+        ]
+    );
 
     const handleShExTabChange = (value) => { setShExActiveTab(value); };
     function handleShExFormatChange(value) { setShExFormat(value); }
@@ -32,23 +53,32 @@ export default function ShEx2Shacl(props)  {
     function handleShExUrlChange(value) { setShExUrl(value); }
     function handleShExFileUpload(value) { setShExFile(value); }
 
-    useEffect(() => {
-        console.log("Use Effect - shEx2Shacl");
-        if (props.location.search) {
-            const queryParams = qs.parse(props.location.search);
-            console.log("Parameters: " + JSON.stringify(queryParams));
-            let params =  shExParamsFromQueryParams(queryParams);
-            const formData = params2Form(params);
-            postRequest(url, formData, () => updateState(params))
-        }
-    });
+    function serverParamsFromClientParams(params) {
+        let postParams = {} ;
+        if (params['shEx']) { postParams['schema']=params['shEx']; }
+        if (params['shExUrl']) { postParams['schemaURL']=params['shExUrl']; }
+        if (params['shExFormat']) { postParams['schemaFormat']=params['shExFormat']; }
+        if (params['targetFormat']) { postParams['targetSchemaFormat']=params['targetFormat']; }
+        return postParams;
+    }
+
+    function queryParamsFromServerParams(params) {
+        console.log(`queryParamsFromServerParams: ${JSON.stringify(params)}`)
+        let postParams = {} ;
+        if (params['schema']) { postParams['shEx']=params['schema']; }
+        if (params['schemaURL']) { postParams['shExUrl']=params['schemaURL']; }
+        if (params['schemaFormat']) { postParams['shExFormat']=params['schemaFormat']; }
+        if (params['targetSchemaFormat']) { postParams['targetFormat']=params['targetSchemaFormat']; }
+        return postParams;
+    }
 
     function updateState(params) {
         if (params['shEx']) {
             setShExActiveTab(API.byTextTab);
             setShExTextArea(params['shEx'])
         }
-        if (params['shExFormat']) setShExFormat(params['shExFormat']);
+        if (params['shExFormat'])
+            setShExFormat(params['shExFormat']);
         if (params['shExUrl']) {
             setShExActiveTab(API.byUrlTab);
             setShExUrl(params['shExUrl']);
@@ -57,10 +87,11 @@ export default function ShEx2Shacl(props)  {
             setShExActiveTab(API.byFileTab);
             setShExFile(params['shExFile']);
         }
-        if (params['targetFormat']) setTargetFormat(params['targetFormat']);
+        if (params['targetFormat'])
+            setTargetFormat(params['targetFormat']);
     }
 
-    function paramsFromStateShEx() {
+    function mkServerParams() {
         let params = {};
         params['activeSchemaTab'] = convertTabSchema(shExActiveTab);
         params['schemaEmbedded'] = false;
@@ -71,6 +102,7 @@ export default function ShEx2Shacl(props)  {
                 params['schemaFormatTextArea'] = shExFormat;
                 break;
             case API.byUrlTab:
+                console.log(`byURLTab...${shExUrl}`)
                 params['schemaURL'] = shExUrl;
                 params['schemaFormatUrl'] = shExFormat;
                 break;
@@ -80,17 +112,22 @@ export default function ShEx2Shacl(props)  {
                 break;
             default:
         }
-        params['targetFormat'] = targetFormat;
+        params['targetSchemaFormat'] = targetFormat;
+        console.log(`#################### targetSchemaFormat: ${targetFormat}`)
         return params;
     }
 
     function handleSubmit(event) {
-        let params = paramsFromStateShEx();
-        params['schemaEngine']='ShEx';
-        let formData = params2Form(params);
-        let permalink = mkPermalink(API.shEx2ShaclRoute, params);
+        let serverParams = mkServerParams();
+        serverParams['schemaEngine']='ShEx';
+        serverParams['targetSchemaEngine']='SHACL';
+        console.log(`Making permalink...with ${JSON.stringify(serverParams)}`)
+        let clientParams = queryParamsFromServerParams(serverParams)
+        let permalink = mkPermalink(API.shEx2ShaclRoute, clientParams);
+        console.log(`Permalink created: ${permalink}`)
         setLoading(true);
         setPermalink(permalink);
+        let formData = params2Form(serverParams);
         postRequest(url,formData);
         event.preventDefault();
     }

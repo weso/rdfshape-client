@@ -55,6 +55,7 @@ class API {
     static defaultTab = "byTextTab";
     static defaultDataFormat = "TURTLE";
     static defaultShExFormat = "ShExC";
+    static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
 
 }
