@@ -1,38 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
+import Code from "./Code";
 
-class ByText extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { textAreaValue: this.props.textAreaValue };
-    this.handleChange = this.handleChange.bind(this);
+function ByText(props) {
+
+  const [code,setCode] = useState(props.textAreaValue);
+
+  function handleChange(value) {
+    setCode(value);
+    props.handleByTextChange(value);
   }
 
-  handleChange(e) {
-    this.setState({textAreaValue: e.target.value});
-    this.props.handleByTextChange(e.target.value);
-  }
-
-
- render() {
-     let inputText;
-     if (this.props.inputForm) {
-         inputText = this.props.inputForm
+  let inputText;
+  if (props.inputForm) {
+         inputText = props.inputForm
      } else {
-         inputText = <Form.Control as="textarea"
-                                   rows="3"
-                                   value={this.props.textAreaValue}
-                                   onChange={this.handleChange}
-                                   placeholder={this.props.placeholder} />
+         inputText = <Code value={code}
+                           mode='turtle'
+                           onChange={handleChange}
+                           placeholder={props.placeholder}
+                           readonly='false'
+         />
      }
      return (
         <Form.Group>
-         <Form.Label>{this.props.name}</Form.Label>
+         <Form.Label>{props.name}</Form.Label>
          {inputText}
         </Form.Group>
      );
- }
 }
 
 ByText.propTypes = {
@@ -40,6 +36,7 @@ ByText.propTypes = {
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
+    importForm: PropTypes.element
 };
 
 ByText.defaultProps = {

@@ -1,112 +1,112 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import API from "./API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
 import ResultDataInfo from "./results/ResultDataInfo";
 import qs from 'query-string';
-import {mkPermalink, params2Form} from "./Permalink";
-import {paramsFromStateData, dataParamsFromQueryParams} from "./Utils";
+import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import { dataParamsFromQueryParams, convertTabData} from "./Utils";
 
-class DataInfo extends React.Component {
+function DataInfo(props) {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataTextArea: 'RDF',
-            result: '',
-            dataFormat: "TURTLE",
-            dataUrl: '',
-            dataFile: null,
-            dataActiveTab: "byText",
-            permalink: ''
-        } ;
-     this.handleByTextChange = this.handleByTextChange.bind(this);
-     this.handleTabChange = this.handleTabChange.bind(this);
-     this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-     this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
-     this.handleFileUpload = this.handleFileUpload.bind(this);
-     this.handleSubmit = this.handleSubmit.bind(this);
-    }
+    const [dataTextArea, setDataTextArea] = useState('');
+    const [result,setResult] = useState(null);
+    const [error,setError] = useState(null);
+    const [dataFormat, setDataFormat] = useState('TURTLE');
+    const [dataUrl, setDataUrl] = useState('');
+    const [dataFile, setDataFile] = useState(null);
+    const [dataActiveTab, setDataActiveTab] = useState('byText');
+    const [permalink, setPermalink] = useState(null);
 
-    handleDataFormatChange(value) { this.setState({dataFormat: value}); }
-    handleTabChange(value) { this.setState({dataActiveTab: value});  }
-    handleByTextChange(value) { this.setState({dataTextArea: value});  }
-    handleDataUrlChange(value) { this.setState({dataUrl: value}); }
-    handleFileUpload(value) { this.setState({dataFile: value}); }
+    function handleDataFormatChange(value) { setDataFormat(value); }
+    function handleTabChange(value) { setDataActiveTab(value); }
+    function handleByTextChange(value) { setDataTextArea(value);  }
+    function handleDataUrlChange(value) { setDataUrl(value); }
+    function handleFileUpload(value) { setDataFile(value); }
 
-    componentDidMount() {
-        console.log("Component Did mount");
-        if (this.props.location.search) {
-            const queryParams = qs.parse(this.props.location.search);
-            console.log("Parameters: " + JSON.stringify(queryParams));
-            let dataParams = dataParamsFromQueryParams(this.props.location.search);
-            const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
-            console.log("Try to prepare request to " + infoUrl);
-            axios.get(infoUrl).then (response => response.data)
-                .then((data) => {
-                    this.setState({ result: data });
-//                    if (params.data) this.setState({dataTextArea: params.data});
-//                    if (params.dataFormat) this.setState({dataFormat: params.dataFormat});
-//                    if (params.dataUrl) this.setState({dataUrl: params.dataUrl});
-                })
-                .catch(function (error) {
-                    console.log("Error calling server at " + infoUrl + ": " + error);
-                });
-        }
-    }
+    useEffect(() => {
+            if (props.location.search) {
+                let dataParams = dataParamsFromQueryParams(props.location.search);
+                const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
+                axios.get(infoUrl).then (response => response.data)
+                    .then((data) => {
+                        setResult(data);
+                        if (dataParams.data) setDataTextArea(dataParams.data);
+                        if (dataParams.dataFormat) setDataFormat(dataParams.dataFormat);
+                        if (dataParams.dataUrl) setDataUrl(dataParams.dataUrl);
+                    })
+                    .catch(function (error) {
+                        setError("Error calling server at " + infoUrl + ": " + error);
+                    });
+            }
+        },
+        [props.location.search, result, dataTextArea, dataFormat, dataUrl]
+    );
 
-    handleSubmit(event) {
+    function handleSubmit(event) {
         const infoUrl = API.dataInfo;
         console.log("Try to prepare request to " + infoUrl);
-        let params = paramsFromStateData(this.state);
+        let params = {};
+        params['activeTab'] = convertTabData(dataActiveTab);
+        params['dataFormat'] = dataFormat;
+        switch (dataActiveTab) {
+            case API.byTextTab:
+                params['data'] = dataTextArea;
+                params['dataFormatTextArea']=dataFormat;
+                break;
+            case API.byUrlTab:
+                params['dataURL'] = dataUrl;
+                params['dataFormatUrl']=dataFormat;
+                break;
+            case API.byFileTab:
+                params['dataFile'] = dataFile;
+                params['dataFormatFile']=dataFormat;
+                break;
+            default:
+        }
         let formData = params2Form(params);
-
         let permalink = mkPermalink(API.dataInfoRoute, params);
         console.log("Permalink created: " + JSON.stringify(permalink));
         axios.post(infoUrl,formData).then (response => response.data)
             .then((data) => {
-                this.setState({ result: data });
-                this.setState({ permalink: permalink });
-                console.log(this.state.result);
+                setResult(data);
+                setPermalink(permalink);
             })
             .catch(function (error) {
-                // this.setState({result: { error: "Error calling server at " + infoUrl + ": " + error}});
-                console.log("Error calling server at " + infoUrl + ": " + error);
+                setError({ error: "Error calling server at " + infoUrl + ": " + error});
         });
         event.preventDefault();
     }
 
- render() {
-     return (
+    return (
        <Container fluid={true}>
          <h1>RDF Data info</h1>
-         <ResultDataInfo
-             result={this.state.result}
-             permalink={this.state.permalink}
-         />
-         <Form onSubmit={this.handleSubmit}>
-             <DataTabs activeTab={this.state.dataActiveTab}
-                       handleTabChange={this.handleTabChange}
+           { result && <ResultDataInfo result={result} permalink={permalink} /> }
+           { error && <Alert variant='danger'>{error}</Alert> }
+           <Permalink url={props.permalink} />
+         <Form onSubmit={handleSubmit}>
+             <DataTabs activeTab={dataActiveTab}
+                       handleTabChange={handleTabChange}
 
-                       textAreaValue={this.state.dataTextArea}
-                       handleByTextChange={this.handleByTextChange}
+                       textAreaValue={dataTextArea}
+                       handleByTextChange={handleByTextChange}
 
-                       dataUrl={this.state.dataUrl}
-                       handleDataUrlChange={this.handleDataUrlChange}
+                       dataUrl={dataUrl}
+                       handleDataUrlChange={handleDataUrlChange}
 
-                       handleFileUpload={this.handleFileUpload}
+                       handleFileUpload={handleFileUpload}
 
-                       dataFormat={this.state.dataFormat}
-                       handleDataFormatChange={this.handleDataFormatChange}
+                       dataFormat={dataFormat}
+                       handleDataFormatChange={handleDataFormatChange}
              />
          <Button variant="primary" type="submit">Info about data</Button>
          </Form>
        </Container>
      );
- }
 }
 
 export default DataInfo;

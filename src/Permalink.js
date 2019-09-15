@@ -27,7 +27,6 @@ function getHost() {
         window.location.hostname + (port? ":" + port: "") ;
 }
 
-
 export function Permalink(props) {
     if (props.url)
         return <Button variant="secondary" href={props.url}>Permalink</Button>

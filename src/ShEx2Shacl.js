@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -160,15 +162,17 @@ export default function ShEx2Shacl(props)  {
     return  (
       <Container fluid={true}>
           <h1>Convert ShEx &#8594; SHACL</h1>
-          <Form onSubmit={handleSubmit}>
-              {loading ? <Pace color="#27ae60"/> :
+<Row>
+    <Col>{loading ? <Pace color="#27ae60"/> :
                result ? <ResultShEx2Shacl result={result}
                                           mode={targetFormatMode(targetFormat)}/> :
                error? <p>Error: {error}</p>:
                null
               }
               { permalink &&  <Permalink url={permalink} /> }
-
+    </Col>
+    <Col>
+        <Form onSubmit={handleSubmit}>
               <ShExTabs activeTab={shExActiveTab}
                         handleTabChange={handleShExTabChange}
 
@@ -190,6 +194,8 @@ export default function ShEx2Shacl(props)  {
                             urlFormats={API.shaclFormats} />
               <Button variant="primary" type="submit">Convert to SHACL</Button>
           </Form>
+    </Col>
+</Row>
       </Container>
      );
 };

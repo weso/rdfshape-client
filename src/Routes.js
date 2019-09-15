@@ -37,6 +37,7 @@ import TestYashe from './test/TestYashe.js'
 import TestYasqe from './test/TestYasqe.js'
 import TestRDFArea from './test/TestRDFArea.js'
 import TestCyto from './test/TestCyto.js'
+import TestCode from './test/TestCode.js'
 
 function Routes() {
 
@@ -76,6 +77,7 @@ function Routes() {
       <Route path="/test/yasqe" component={TestYasqe} />
       <Route path="/test/rdfArea" component={TestRDFArea} />
       <Route path="/test/cyto" component={TestCyto} />
+      <Route path="/test/code" component={TestCode} />
 
       <Route component={NotFound} />
       </Switch>
