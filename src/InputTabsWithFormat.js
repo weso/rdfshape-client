@@ -12,6 +12,7 @@ function InputTabsWithFormat(props) {
 
                        byTextName={props.byTextName}
                        textAreaValue={props.textAreaValue}
+                       textFormat={props.textFormat}
                        handleByTextChange={props.handleByTextChange}
                        byTextPlaceholder={props.byTextPlaceholder}
                        inputForm = {props.inputForm}
@@ -25,9 +26,9 @@ function InputTabsWithFormat(props) {
                        handleFileUpload={props.handleFileUpload}
             />
             <SelectFormat name={props.nameFormat}
-                              defaultFormat={props.defaultFormat}
-                              handleFormatChange={props.handleFormatChange}
-                              urlFormats={props.urlFormats}
+                          selectedFormat={props.textFormat}
+                          handleFormatChange={props.handleFormatChange}
+                          urlFormats={props.urlFormats}
             />
             </div>
         );
@@ -38,6 +39,7 @@ InputTabsWithFormat.propTypes = {
     activeTab: PropTypes.string,
     handleTabChange: PropTypes.func.isRequired,
     byTextName: PropTypes.string,
+    textFormat: PropTypes.string,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     byTextPlaceholder: PropTypes.string,

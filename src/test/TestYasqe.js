@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
-import Alert from "react-bootstrap/Alert";
 import QueryForm from '../QueryForm'
 
-function TestYasqe(props)  {
+function TestYasqe()  {
     const [query,setQuery] = useState('');
     const [msg,setMsg] = useState('');
 
@@ -12,15 +11,17 @@ function TestYasqe(props)  {
         <div>
             <h1>Yasqe example</h1>
             <QueryForm id="textarea1"
+                       value={query}
                        onChange={(value) => setQuery(value)}
+                       placeholder="select ..."
             />
             <br/>
             <Button variant="primary"
                     onClick={() => {
-                        setMsg(`TextArea value: ${query}`)
+                        setMsg(`Query: ${query}`)
                     }}
                     type="submit">See query</Button>
-            <Alert variant="primary">{msg}</Alert>
+            { msg && <div><pre>{msg}</pre></div> }
         </div>
     );
 }

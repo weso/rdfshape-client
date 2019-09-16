@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
 import Code from "./Code";
+import { format2mode } from './Utils';
 
 function ByText(props) {
 
@@ -17,7 +18,7 @@ function ByText(props) {
          inputText = props.inputForm
      } else {
          inputText = <Code value={code}
-                           mode='turtle'
+                           mode={format2mode(props.textFormat)}
                            onChange={handleChange}
                            placeholder={props.placeholder}
                            readonly='false'
@@ -36,6 +37,7 @@ ByText.propTypes = {
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
+    textFormat: PropTypes.string,
     importForm: PropTypes.element
 };
 

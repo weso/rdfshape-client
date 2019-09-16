@@ -29,6 +29,7 @@ function InputTabs(props) {
                             textAreaValue={props.textAreaValue}
                             placeholder={props.byTextPlaceholder}
                             handleByTextChange={props.handleByTextChange}
+                            textFormat={props.textFormat}
                             inputForm = {props.inputForm}
                     />
                 </Tab>
@@ -54,6 +55,7 @@ InputTabs.propTypes = {
     activeTab: PropTypes.string,
     handleTabChange: PropTypes.func.isRequired,
     byTextName: PropTypes.string,
+    textFormat: PropTypes.string,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     byTextPlaceholder: PropTypes.string,

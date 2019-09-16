@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
+
+import 'codemirror/addon/display/placeholder';
 import 'yasgui-yasqe/dist/yasqe.min.css'
 import Yasqe from 'yasgui-yasqe/dist/yasqe.bundled.min';
 import PropTypes from "prop-types";
 
 function QueryForm(props) {
-    const [yasqe,setYasqe] = useState(null)
+    const [yasqe,setYasqe] = useState(null);
 
     useEffect(() => {
         if (!yasqe) {
@@ -12,13 +14,14 @@ function QueryForm(props) {
                 sparql: {
                     showQueryButton: false
                 },
-                createShareLink: null
-            })
+                createShareLink: null,
+                placeholder: props.placeholder
+            });
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())
                 props.onChange(cm.getValue())
             });
-            y.setValue(props.value)
+            y.setValue(props.value);
             setYasqe(y);
         }
     }, [yasqe, props]);
@@ -31,11 +34,12 @@ function QueryForm(props) {
 QueryForm.propTypes = {
     id: PropTypes.string.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-}
+    onChange: PropTypes.func.isRequired,
+    placeholder: PropTypes.string
+};
 
 QueryForm.defaultProps = {
     value: ''
-}
+};
 
 export default QueryForm;

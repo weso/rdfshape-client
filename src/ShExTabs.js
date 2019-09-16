@@ -21,7 +21,9 @@ function ShExTabs(props) {
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="RDF shEx..."
                 handleByTextChange={props.handleByTextChange}
+/*
                 inputForm={shExForm}
+*/
 
                 byUrlName="ShEx URL"
                 handleUrlChange={props.handleShExUrlChange}

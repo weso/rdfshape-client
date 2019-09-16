@@ -8,7 +8,7 @@ class SelectFormat extends React.Component {
         super(props);
         this.state = {
             formats: [],
-            format: this.props.defaultFormat
+            format: this.props.selectedFormat
         }
         this.handleFormatChange = this.handleFormatChange.bind(this);
     }
@@ -46,7 +46,7 @@ class SelectFormat extends React.Component {
 
 SelectFormat.propTypes = {
     name: PropTypes.string.isRequired,
-    defaultFormat: PropTypes.string.isRequired,
+    selectedFormat: PropTypes.string.isRequired,
     handleFormatChange: PropTypes.func.isRequired,
     urlFormats: PropTypes.string.isRequired,
 };

@@ -234,3 +234,28 @@ export function convertTabQuery(key) {
             return key
     }
 }
+
+export function format2mode(format) {
+    if (format) {
+        switch (format.toUpperCase()) {
+            case 'TURTLE':
+                return 'turtle';
+            case 'RDF/XML':
+                return 'xml';
+            case 'SPARQL':
+                return 'sparql';
+            case 'HTML':
+                return 'xml';
+            case 'JSON-LD':
+                return 'javascript';
+            case 'RDF/JSON':
+                return 'javascript';
+            case 'TRIG':
+                return 'xml';
+            case 'SHEXC':
+                return 'shex';
+            default:
+                return 'turtle'
+        }
+    } else return 'turtle'
+}
