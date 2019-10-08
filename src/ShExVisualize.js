@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import ShExTabs from "./ShExTabs"
@@ -7,146 +7,145 @@ import Button from "react-bootstrap/Button";
 import API from "./API";
 import axios from "axios";
 import ResultShExVisualize from "./results/ResultShExVisualize";
-import {
-    shExParamsFromQueryParams,
-    paramsFromStateShEx} from "./Utils";
+import { shExParamsFromQueryParams, convertTabSchema} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 
 const url = API.schemaVisualize ;
 
-class ShExVisualize extends React.Component {
-    constructor(props) {
-        super(props);
+function ShExVisualize(props) {
+    const [result, setResult] = useState('');
+    const [permalink, setPermalink] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error,setError] = useState(null);
+    const [shExTextArea, setShExTextArea] = useState("");
+    const [shExFormat, setShExFormat] = useState(API.defaultShExFormat);
+    const [shExUrl, setShExUrl] = useState("");
+    const [shExFile, setShExFile] = useState(null);
+    const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
 
-        this.state = {
-            result: '',
-            permalink: null,
-            loading: false,
+    function handleShExTabChange(value) { setShExActiveTab(value); }
+    function handleShExFormatChange(value) {  setShExFormat(value); }
+    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExUrlChange(value) { setShExUrl(value); }
+    function handleShExFileUpload(value) { setShExFile(value); }
 
-            shExTextArea: "",
-            shExFormat: API.defaultShExFormat,
-            shExUrl: "",
-            shExFile: null,
-            shExActiveTab: API.defaultTab,
-
-        } ;
-
-        this.handleShExTabChange = this.handleShExTabChange.bind(this);
-        this.handleShExFormatChange = this.handleShExFormatChange.bind(this);
-        this.handleShExByTextChange = this.handleShExByTextChange.bind(this);
-        this.handleShExUrlChange = this.handleShExUrlChange.bind(this);
-        this.handleShExFileUpload = this.handleShExFileUpload.bind(this);
-
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.postVisualize = this.postVisualize.bind(this);
-        this.processResult = this.processResult.bind(this);
-        this.updateStateVisualize = this.updateStateVisualize.bind(this);
-        this.updateStateShEx = this.updateStateShEx.bind(this);
-    }
-
-    handleShExTabChange(value) { this.setState({shExActiveTab: value}); }
-    handleShExFormatChange(value) {  this.setState({shExFormat: value}); }
-    handleShExByTextChange(value) { this.setState({shExTextArea: value}); }
-    handleShExUrlChange(value) { this.setState({shExUrl: value}); }
-    handleShExFileUpload(value) { this.setState({shExFile: value}); }
-
-    componentDidMount() {
-        console.log("Component Did mount - dataConvert");
-        if (this.props.location.search) {
-            const queryParams = qs.parse(this.props.location.search);
-            console.log("Parameters: " + JSON.stringify(queryParams));
+    useEffect(() => {
+        if (props.location.search) {
+            const queryParams = qs.parse(props.location.search);
             let paramsShEx = shExParamsFromQueryParams(queryParams);
             let params = paramsShEx
             const formData = params2Form(params);
-            this.postVisualize(url, formData, () => this.updateStateVisualize(params))
+            postVisualize(url, formData, () => updateStateVisualize(params))
         }
+    },
+     [props.location.search]
+   );
+
+
+    function updateStateVisualize(params) {
+        updateStateShEx(params)
     }
 
-    updateStateVisualize(params) {
-        this.updateStateShEx(params)
+    function paramsFromStateShEx() {
+        let params = {};
+        params['activeSchemaTab'] = convertTabSchema(shExActiveTab);
+        params['schemaEmbedded'] = false;
+        params['schemaFormat'] = shExFormat;
+        switch (shExActiveTab) {
+            case API.byTextTab:
+                params['schema'] = shExTextArea;
+                params['schemaFormatTextArea'] = shExFormat;
+                break;
+            case API.byUrlTab:
+                params['schemaURL'] = shExUrl;
+                params['schemaFormatUrl'] = shExFormat;
+                break;
+            case API.byFileTab:
+                params['schemaFile'] = shExFile;
+                params['schemaFormatFile'] = shExFormat;
+                break;
+            default:
+        }
+        return params;
     }
 
-    updateStateShEx(params) {
+
+    function updateStateShEx(params) {
         if (params['shEx']) {
-            this.setState({shExActiveTab: API.byTextTab})
-            this.setState({shExTextArea: params['shEx']})
+            setShExActiveTab(API.byTextTab);
+            setShExTextArea(params['shEx']);
         }
-        if (params['shExFormat']) this.setState({shExFormat: params['shExFormat']})
+        if (params['shExFormat']) setShExFormat(params['shExFormat']);
         if (params['shExUrl']) {
-            this.setState({shExActiveTab: API.byUrlTab})
-            this.setState({shExUrl: params['shExUrl']})
+            setShExActiveTab(API.byUrlTab);
+            setShExUrl(params['shExUrl']);
         }
         if (params['shExFile']) {
-            this.setState({shExActiveTab: API.byFileTab})
-            this.setState({shExFile: params['shExFile']})
+            setShExActiveTab(API.byFileTab);
+            setShExFile(params['shExFile'])
         }
     }
 
-    handleSubmit(event) {
-        let paramsShEx = paramsFromStateShEx(this.state);
-        let params = paramsShEx
+    function handleSubmit(event) {
+        let params =  paramsFromStateShEx();
         params['schemaEngine']='ShEx'
         let formData = params2Form(params);
         let permalink = mkPermalink(API.shExVisualizeRoute, params);
-        this.setState({loading:true});
-        this.setState({permalink: permalink});
-        this.postVisualize(url,formData)
+        setLoading(true);
+        setPermalink(permalink);
+        postVisualize(url,formData)
         event.preventDefault();
     }
 
-    processResult(data) {
-        this.setState({
-            result: data,
-        });
+    function processResult(data) {
+        setResult(data);
     }
 
-    postVisualize(url, formData, cb) {
+    function postVisualize(url, formData, cb) {
+        console.log(`postVisualize: ${url}`)
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                this.setState({loading:false});
-                this.processResult(data)
+                setLoading(false);
+                processResult(data);
                 if (cb) cb()
             })
             .catch(function (error) {
-//                this.setState({loading:false});
-//                this.setState({error:error});
+                setLoading(false);
+                setError(`Error doing POST request to ${url}: ${error}`);
                 console.log('Error doing server request')
                 console.log(error);
             });
     }
 
-
-    render() {
-        return (
+    return (
             <Container fluid={true}>
                 <h1>ShEx: Visualize ShEx schemas</h1>
-                <Form onSubmit={this.handleSubmit}>
-                    {this.state.isLoading ? <Pace color="#27ae60"/> :
-                        this.state.result ?
-                            <ResultShExVisualize result={this.state.result} /> : null
+                <Form onSubmit={handleSubmit}>
+                    {loading ? <Pace color="#27ae60"/> :
+                        result ?
+                            <ResultShExVisualize result={result} /> : null
                     }
-                    { this.state.permalink &&  <Permalink url={this.state.permalink} /> }
-                    <ShExTabs activeTab={this.state.shExActiveTab}
-                              handleTabChange={this.handleShExTabChange}
+                    { permalink &&  <Permalink url={permalink} /> }
+                    <ShExTabs activeTab={shExActiveTab}
+                              handleTabChange={handleShExTabChange}
 
-                              textAreaValue={this.state.shExTextArea}
-                              handleByTextChange={this.handleShExByTextChange}
+                              textAreaValue={shExTextArea}
+                              handleByTextChange={handleShExByTextChange}
 
-                              shExUrl={this.state.shExUrl}
-                              handleShExUrlChange={this.handleShExUrlChange}
+                              shExUrl={shExUrl}
+                              handleShExUrlChange={handleShExUrlChange}
 
-                              handleFileUpload={this.handleShExFileUpload}
+                              handleFileUpload={handleShExFileUpload}
 
-                              shExFormat={this.state.shExFormat}
-                              handleShExFormatChange={this.handleShExFormatChange}
+                              shExFormat={shExFormat}
+                              handleShExFormatChange={handleShExFormatChange}
                     />
                     <Button variant="primary" type="submit">Visualize</Button>
                 </Form>
             </Container>
-        );
-    }
+    );
 }
 
 export default ShExVisualize;

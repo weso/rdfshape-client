@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 function ShExTabs(props) {
 
-    const shExForm = <ShExForm id="textAreaShEx"
+    const shExForm = <ShExForm // id="textAreaShEx"
                                onChange={props.handleByTextChange}
                                value={props.textAreaValue} />;
 
@@ -21,9 +21,8 @@ function ShExTabs(props) {
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="RDF shEx..."
                 handleByTextChange={props.handleByTextChange}
-/*
                 inputForm={shExForm}
-*/
+
 
                 byUrlName="ShEx URL"
                 handleUrlChange={props.handleShExUrlChange}

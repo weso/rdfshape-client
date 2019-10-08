@@ -2,12 +2,13 @@ import React, {useState} from 'react';
 import ReactDOM from "react-dom";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import PropTypes from "prop-types";
-
 import 'codemirror/addon/display/placeholder';
 require("codemirror/lib/codemirror.css");
-require('codemirror/mode/xml/xml.js');
-require('codemirror/mode/turtle/turtle.js');
-require('codemirror/mode/sparql/sparql.js');
+require("codemirror/mode/xml/xml.js");
+require("codemirror/mode/turtle/turtle.js");
+require("codemirror/mode/sparql/sparql.js");
+require("codemirror/mode/javascript/javascript.js");
+require("codemirror/theme/midnight.css");
 
 function Code(props) {
 
@@ -18,6 +19,8 @@ function Code(props) {
         readonly: props.readonly,
         placeholder: props.placeholder
     };
+
+    console.log(`<Code props.mode: ${props.mode}>`);
 
     return <CodeMirror
         value={props.value}

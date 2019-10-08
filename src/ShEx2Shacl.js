@@ -7,38 +7,38 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Pace from "react-pace-progress";
 import ResultShEx2Shacl from "./results/ResultShEx2Shacl";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import { mkPermalink, params2Form, Permalink } from "./Permalink";
 import API from "./API";
 import SelectFormat from "./SelectFormat";
 import qs from "query-string";
-import {convertTabSchema, shExParamsFromQueryParams} from "./Utils";
+import { convertTabSchema, shExParamsFromQueryParams } from "./Utils";
 import axios from "axios";
 
-export default function ShEx2Shacl(props)  {
+export default function ShEx2Shacl(props) {
     const url = API.schemaConvert;
 
-    const [result,setResult] = useState('');
-    const [permalink,setPermalink] = useState(null);
-    const [loading,setLoading] = useState(false);
-    const [error,setError] = useState(null);
-    const [shExTextArea,setShExTextArea] = useState('');
+    const [result, setResult] = useState('');
+    const [permalink, setPermalink] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [shExTextArea, setShExTextArea] = useState('');
     const [shExFormat, setShExFormat] = useState(API.defaultShExFormat);
     const [shExUrl, setShExUrl] = useState('');
     const [shExFile, setShExFile] = useState(null);
-    const [shExActiveTab,setShExActiveTab] = useState(API.defaultTab);
+    const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
     const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat);
 
     useEffect(() => {
-            console.log("Use Effect - shEx2Shacl");
-            if (props.location.search) {
-                const clientParams = qs.parse(props.location.search);
-                console.log("Client Params: " + JSON.stringify(clientParams));
-//                let clientParams =  shExParamsFromQueryParams(queryParams);
-                let serverParams = serverParamsFromClientParams(clientParams)
-                const formData = params2Form(serverParams);
-                postRequest(url, formData, () => updateState(clientParams))
-            }
-        }, [
+        console.log("Use Effect - shEx2Shacl");
+        if (props.location.search) {
+            const clientParams = qs.parse(props.location.search);
+            console.log("Client Params: " + JSON.stringify(clientParams));
+            //                let clientParams =  shExParamsFromQueryParams(queryParams);
+            let serverParams = serverParamsFromClientParams(clientParams)
+            const formData = params2Form(serverParams);
+            postRequest(url, formData, () => updateState(clientParams))
+        }
+    }, [
         shExUrl,
         shExFormat,
         shExFile,
@@ -46,7 +46,7 @@ export default function ShEx2Shacl(props)  {
         shExActiveTab,
         permalink,
         props.location.search
-        ]
+    ]
     );
 
     const handleShExTabChange = (value) => { setShExActiveTab(value); };
@@ -56,21 +56,21 @@ export default function ShEx2Shacl(props)  {
     function handleShExFileUpload(value) { setShExFile(value); }
 
     function serverParamsFromClientParams(params) {
-        let postParams = {} ;
-        if (params['shEx']) { postParams['schema']=params['shEx']; }
-        if (params['shExUrl']) { postParams['schemaURL']=params['shExUrl']; }
-        if (params['shExFormat']) { postParams['schemaFormat']=params['shExFormat']; }
-        if (params['targetFormat']) { postParams['targetSchemaFormat']=params['targetFormat']; }
+        let postParams = {};
+        if (params['shEx']) { postParams['schema'] = params['shEx']; }
+        if (params['shExUrl']) { postParams['schemaURL'] = params['shExUrl']; }
+        if (params['shExFormat']) { postParams['schemaFormat'] = params['shExFormat']; }
+        if (params['targetFormat']) { postParams['targetSchemaFormat'] = params['targetFormat']; }
         return postParams;
     }
 
     function queryParamsFromServerParams(params) {
         console.log(`queryParamsFromServerParams: ${JSON.stringify(params)}`)
-        let postParams = {} ;
-        if (params['schema']) { postParams['shEx']=params['schema']; }
-        if (params['schemaURL']) { postParams['shExUrl']=params['schemaURL']; }
-        if (params['schemaFormat']) { postParams['shExFormat']=params['schemaFormat']; }
-        if (params['targetSchemaFormat']) { postParams['targetFormat']=params['targetSchemaFormat']; }
+        let postParams = {};
+        if (params['schema']) { postParams['shEx'] = params['schema']; }
+        if (params['schemaURL']) { postParams['shExUrl'] = params['schemaURL']; }
+        if (params['schemaFormat']) { postParams['shExFormat'] = params['schemaFormat']; }
+        if (params['targetSchemaFormat']) { postParams['targetFormat'] = params['targetSchemaFormat']; }
         return postParams;
     }
 
@@ -121,8 +121,8 @@ export default function ShEx2Shacl(props)  {
 
     function handleSubmit(event) {
         let serverParams = mkServerParams();
-        serverParams['schemaEngine']='ShEx';
-        serverParams['targetSchemaEngine']='SHACL';
+        serverParams['schemaEngine'] = 'ShEx';
+        serverParams['targetSchemaEngine'] = 'SHACL';
         console.log(`Making permalink...with ${JSON.stringify(serverParams)}`)
         let clientParams = queryParamsFromServerParams(serverParams)
         let permalink = mkPermalink(API.shEx2ShaclRoute, clientParams);
@@ -130,12 +130,12 @@ export default function ShEx2Shacl(props)  {
         setLoading(true);
         setPermalink(permalink);
         let formData = params2Form(serverParams);
-        postRequest(url,formData);
+        postRequest(url, formData);
         event.preventDefault();
     }
 
     function postRequest(url, formData, cb) {
-        axios.post(url,formData).then (response => response.data)
+        axios.post(url, formData).then(response => response.data)
             .then((data) => {
                 setLoading(false);
                 setResult(data);
@@ -159,43 +159,45 @@ export default function ShEx2Shacl(props)  {
         }
     }
 
-    return  (
-      <Container fluid={true}>
-          <h1>Convert ShEx &#8594; SHACL</h1>
-<Row>
-    <Col>{loading ? <Pace color="#27ae60"/> :
-               result ? <ResultShEx2Shacl result={result}
-                                          mode={targetFormatMode(targetFormat)}/> :
-               error? <p>Error: {error}</p>:
-               null
-              }
-              { permalink &&  <Permalink url={permalink} /> }
-    </Col>
-    <Col>
-        <Form onSubmit={handleSubmit}>
-              <ShExTabs activeTab={shExActiveTab}
-                        handleTabChange={handleShExTabChange}
+    return (
+        <Container fluid={true}>
+            <h1>Convert ShEx &#8594; SHACL</h1>
+            <Row>
+                {loading || result || error ?
+                    <Col>{
+                        loading ? <Pace color="#27ae60" /> :
+                        result ? <ResultShEx2Shacl result={result}
+                            mode={targetFormatMode(targetFormat)} /> :
+                            error ? <p>Error: {error}</p> : null
+                    }
+                        {permalink && <Permalink url={permalink} />}
+                    </Col> : null
+                }
+                <Col>
+                    <Form onSubmit={handleSubmit}>
+                        <ShExTabs activeTab={shExActiveTab}
+                            handleTabChange={handleShExTabChange}
 
-                        textAreaValue={shExTextArea}
-                        handleByTextChange={handleShExByTextChange}
+                            textAreaValue={shExTextArea}
+                            handleByTextChange={handleShExByTextChange}
 
-                        shExUrl={shExUrl}
-                        handleShExUrlChange={handleShExUrlChange}
+                            shExUrl={shExUrl}
+                            handleShExUrlChange={handleShExUrlChange}
 
-                        handleFileUpload={handleShExFileUpload}
+                            handleFileUpload={handleShExFileUpload}
 
-                        shExFormat={shExFormat}
-                        handleShExFormatChange={handleShExFormatChange}
-              />
+                            shExFormat={shExFormat}
+                            handleShExFormatChange={handleShExFormatChange}
+                        />
 
-              <SelectFormat name="SHACL format"
+                        <SelectFormat name="SHACL format"
                             defaultFormat="TURTLE"
-                            handleFormatChange={(value) => setTargetFormat(value) }
+                            handleFormatChange={(value) => setTargetFormat(value)}
                             urlFormats={API.shaclFormats} />
-              <Button variant="primary" type="submit">Convert to SHACL</Button>
-          </Form>
-    </Col>
-</Row>
-      </Container>
-     );
+                        <Button variant="primary" type="submit">Convert to SHACL</Button>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
+    );
 };

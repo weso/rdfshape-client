@@ -19,7 +19,7 @@ function QueryTabs(props) {
                            textAreaValue={props.textAreaValue}
                            handleByTextChange={props.handleByTextChange}
                            byTextPlaceholder="SELECT..."
-                           inputForm={QueryForm}
+                           inputForm={queryForm}
 
                            byUrlName="URL query"
                            urlValue={props.urlValue}

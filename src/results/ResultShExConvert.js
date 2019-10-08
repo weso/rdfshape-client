@@ -4,8 +4,12 @@ import { Permalink } from "../Permalink"
 import { mkMode } from "../Utils"
 
 
-function ResultDataConvert(props) {
+function ResultShExConvert(props) {
   const result = props.result
+  const mode = mkMode(result.targetSchemaFormat)
+  console.log(`ResultShExConvert:`);
+  console.log(result);
+  console.log(`Mode: ${mode}`)
   let msg ;
   if (result === "") {
         msg = null
@@ -18,10 +22,10 @@ function ResultDataConvert(props) {
   else {
     msg = <div>
       <p>{result.msg}</p>
-         {result.result && result.dataFormat && (
+         {result.result && (
          <Code
            value={result.result}
-           mode={mkMode(result.dataFormat)}
+           mode={mode}
            theme="material"
          />)}
        <details><pre>{JSON.stringify(result)}</pre></details>
@@ -34,4 +38,4 @@ function ResultDataConvert(props) {
   );
 }
 
-export default ResultDataConvert;
+export default ResultShExConvert;

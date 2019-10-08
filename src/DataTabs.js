@@ -1,38 +1,41 @@
 import React from 'react';
+import TurtleForm from "./TurtleForm";
 import InputTabsWithFormat from "./InputTabsWithFormat";
 import API from "./API"
 import PropTypes from 'prop-types';
 
-class DataTabs extends React.Component {
-    render() {
-        return (
+function DataTabs(props) {
+
+    const turtleForm = <TurtleForm onChange={props.handleByTextChange} value={props.textAreaValue} />;
+    return (
             <div>
             <InputTabsWithFormat
                        nameInputTab="RDF data"
-                       activeTab={this.props.activeTab}
-                       handleTabChange={this.props.handleTabChange}
+                       activeTab={props.activeTab}
+                       handleTabChange={props.handleTabChange}
 
                        byTextName="RDF data"
-                       textAreaValue={this.props.textAreaValue}
+                       textAreaValue={props.textAreaValue}
                        byTextPlaceholder="RDF data..."
-                       handleByTextChange={this.props.handleByTextChange}
+                       handleByTextChange={props.handleByTextChange}
+                       inputForm={turtleForm}
+
 
                        byUrlName="URL data"
-                       handleUrlChange={this.props.handleDataUrlChange}
-                       urlValue={this.props.dataUrl}
+                       handleUrlChange={props.handleDataUrlChange}
+                       urlValue={props.dataUrl}
                        byURLPlaceholder="http://..."
 
                        byFileName="RDF File"
-                       handleFileUpload={this.props.handleFileUpload}
+                       handleFileUpload={props.handleFileUpload}
 
                        nameFormat="Data format"
-                       defaultFormat={this.props.dataFormat}
-                       handleFormatChange={this.props.handleDataFormatChange}
+                       defaultFormat={props.dataFormat}
+                       handleFormatChange={props.handleDataFormatChange}
                        urlFormats={API.dataFormats}
             />
             </div>
         );
-    }
 }
 
 DataTabs.propTypes = {

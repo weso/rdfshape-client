@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import DataTabs from "./DataTabs"
 import ShExTabs from "./ShExTabs"
@@ -14,7 +14,8 @@ import {
     shapeMapParamsFromQueryParams,
     paramsFromStateData,
     paramsFromStateShapeMap,
-    paramsFromStateShEx} from "./Utils";
+    paramsFromStateShEx, convertTabData, convertTabSchema
+} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
@@ -24,87 +25,56 @@ import Col from "react-bootstrap/Col";
 
 const url = API.schemaValidate ;
 
-class ShExValidate extends React.Component {
-  constructor(props) {
-        super(props);
+function ShExValidate(props) {
 
-        this.state = {
-            result: '',
-            permalink: null,
-            loading: false,
+    const [result, setResult] = useState('');
+    const [permalink, setPermalink] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error,setError] = useState(null);
 
-            dataTextArea: '',
-            dataFormat: API.defaultDataFormat,
-            dataUrl: '',
-            dataFile: null,
-            dataActiveTab: API.defaultTab,
-            endpoint: '',
+    const [shExTextArea, setShExTextArea] = useState("");
+    const [shExFormat, setShExFormat] = useState(API.defaultShExFormat);
+    const [shExUrl, setShExUrl] = useState("");
+    const [shExFile, setShExFile] = useState(null);
+    const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
 
-            shExTextArea: "",
-            shExFormat: API.defaultShExFormat,
-            shExUrl: "",
-            shExFile: null,
-            shExActiveTab: API.defaultTab,
+    const [dataTextArea, setDataTextArea] = useState('');
+    const [dataFormat, setDataFormat] = useState('TURTLE');
+    const [dataUrl, setDataUrl] = useState('');
+    const [dataFile, setDataFile] = useState(null);
+    const [dataActiveTab, setDataActiveTab] = useState('byText');
 
-            shapeMapTextArea: '',
-            shapeMapFormat: API.defaultShapeMapFormat,
-            shapeMapUrl: "",
-            shapeMapFile: null,
-            shapeMapActiveTab: API.defaultTab
-        } ;
+    const [shapeMapTextArea, setShapeMapTextArea] = useState('');
+    const [shapeMapFormat, setShapeMapFormat] = useState('Compact');
+    const [shapeMapUrl, setShapeMapUrl] = useState('');
+    const [shapeMapFile, setShapeMapFile] = useState(null);
+    const [shapeMapActiveTab, setShapeMapActiveTab] = useState('byText');
 
-      this.handleDataTabChange = this.handleDataTabChange.bind(this);
-      this.handleDataFormatChange = this.handleDataFormatChange.bind(this);
-      this.handleDataByTextChange = this.handleDataByTextChange.bind(this);
-      this.handleDataUrlChange = this.handleDataUrlChange.bind(this);
-      this.handleDataFileUpload = this.handleDataFileUpload.bind(this);
+    const [endpoint, setEndpoint] = useState('');
 
-      this.handleShExTabChange = this.handleShExTabChange.bind(this);
-      this.handleShExFormatChange = this.handleShExFormatChange.bind(this);
-      this.handleShExByTextChange = this.handleShExByTextChange.bind(this);
-      this.handleShExUrlChange = this.handleShExUrlChange.bind(this);
-      this.handleShExFileUpload = this.handleShExFileUpload.bind(this);
+    function handleDataTabChange(value) { setDataActiveTab(value); }
+    function handleDataFormatChange(value) {  setDataFormat(value); }
+    function handleDataByTextChange(value) { setDataTextArea(value); }
+    function handleDataUrlChange(value) { setDataUrl(value); }
+    function handleDataFileUpload(value) { setDataFile(value); }
 
-      this.handleShapeMapTabChange = this.handleShapeMapTabChange.bind(this);
-      this.handleShapeMapFormatChange = this.handleShapeMapFormatChange.bind(this);
-      this.handleShapeMapByTextChange = this.handleShapeMapByTextChange.bind(this);
-      this.handleShapeMapUrlChange = this.handleShapeMapUrlChange.bind(this);
-      this.handleShapeMapFileUpload = this.handleShapeMapFileUpload.bind(this);
+    function handleShExTabChange(value) { setShExActiveTab(value); }
+    function handleShExFormatChange(value) {  setShExFormat(value); }
+    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExUrlChange(value) { setShExUrl(value); }
+    function handleShExFileUpload(value) { setShExFile(value); }
 
-      this.handleEndpointChange = this.handleEndpointChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
-      this.postValidate = this.postValidate.bind(this);
-      this.processResult = this.processResult.bind(this);
-      this.updateStateValidate = this.updateStateValidate.bind(this);
-      this.updateStateData = this.updateStateData.bind(this);
-      this.updateStateShEx = this.updateStateShEx.bind(this);
-      this.updateStateShapeMap = this.updateStateShapeMap.bind(this);
-    }
+    function handleShapeMapTabChange(value) { setShapeMapActiveTab(value); }
+    function handleShapeMapFormatChange(value) {  setShapeMapFormat(value); }
+    function handleShapeMapByTextChange(value) { setShapeMapTextArea(value); }
+    function handleShapeMapUrlChange(value) { setShapeMapUrl(value); }
+    function handleShapeMapFileUpload(value) { setShapeMapFile(value); }
 
-    handleDataTabChange(value) { this.setState({dataActiveTab: value}); }
-    handleDataFormatChange(value) {  this.setState({dataFormat: value}); }
-    handleDataByTextChange(value) { this.setState({dataTextArea: value}); }
-    handleDataUrlChange(value) { this.setState({dataUrl: value}); }
-    handleDataFileUpload(value) { this.setState({dataFile: value}); }
+    function handleEndpointChange(value) { setEndpoint(value); }
 
-    handleShExTabChange(value) { this.setState({shExActiveTab: value}); }
-    handleShExFormatChange(value) {  this.setState({shExFormat: value}); }
-    handleShExByTextChange(value) { this.setState({shExTextArea: value}); }
-    handleShExUrlChange(value) { this.setState({shExUrl: value}); }
-    handleShExFileUpload(value) { this.setState({shExFile: value}); }
-
-    handleShapeMapTabChange(value) { this.setState({shapeMapActiveTab: value}); }
-    handleShapeMapFormatChange(value) {  this.setState({shapeMapFormat: value}); }
-    handleShapeMapByTextChange(value) { this.setState({shapeMapTextArea: value}); }
-    handleShapeMapUrlChange(value) { this.setState({shapeMapUrl: value}); }
-    handleShapeMapFileUpload(value) { this.setState({shapeMapFile: value}); }
-
-    handleEndpointChange(value) { this.setState({endpoint: value}); }
-
-    componentDidMount() {
-        console.log("Component Did mount - dataConvert");
-        if (this.props.location.search) {
-            const queryParams = qs.parse(this.props.location.search);
+    useEffect( () => {
+        if (props.location.search) {
+            const queryParams = qs.parse(props.location.search);
             console.log("Parameters: " + JSON.stringify(queryParams));
             let paramsData = dataParamsFromQueryParams(queryParams);
             let paramsShEx = shExParamsFromQueryParams(queryParams);
@@ -113,94 +83,164 @@ class ShExValidate extends React.Component {
             if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint ;
             let params = {...paramsData,...paramsShEx,...paramsShapeMap,...paramsEndpoint};
             const formData = params2Form(params);
-            this.postValidate(url, formData, () => this.updateStateValidate(params))
+            postValidate(url, formData, () => updateStateValidate(params))
         }
+    },
+      [props.location.search]
+    );
+
+    function updateStateValidate(params) {
+      updateStateData(params);
+      updateStateShEx(params);
+      updateStateShapeMap(params)
     }
 
-    updateStateValidate(params) {
-      this.updateStateData(params);
-      this.updateStateShEx(params);
-      this.updateStateShapeMap(params)
-    }
-
-    updateStateData(params) {
+    function updateStateData(params) {
         if (params['data']) {
-            this.setState({dataActiveTab: API.byTextTab});
-            this.setState({dataTextArea: params['data']})
+            setDataActiveTab(API.byTextTab);
+            setDataTextArea(params['data'])
         }
-        if (params['dataFormat']) this.setState({dataFormat: params['dataFormat']});
+        if (params['dataFormat']) setDataFormat(params['dataFormat']);
         if (params['dataUrl']) {
-            this.setState({dataActiveTab: API.byUrlTab});
-            this.setState({dataUrl: params['dataUrl']})
+            setDataActiveTab(API.byUrlTab);
+            setDataUrl(params['dataUrl'])
         }
         if (params['dataFile']) {
-            this.setState({dataActiveTab: API.byFileTab});
-            this.setState({dataFile: params['dataFile']})
+            setDataActiveTab(API.byFileTab);
+            setDataFile(params['dataFile'])
         }
     }
 
-    updateStateShEx(params) {
+    function updateStateShEx(params) {
         if (params['shEx']) {
-            this.setState({shExActiveTab: API.byTextTab});
-            this.setState({shExTextArea: params['shEx']})
+            setShExActiveTab(API.byTextTab);
+            setShExTextArea(params['shEx'])
         }
-        if (params['shExFormat']) this.setState({shExFormat: params['shExFormat']});
+        if (params['shExFormat']) setShExFormat(params['shExFormat']);
         if (params['shExUrl']) {
-            this.setState({shExActiveTab: API.byUrlTab});
-            this.setState({shExUrl: params['shExUrl']})
+            setShExActiveTab(API.byUrlTab);
+            setShExUrl(params['shExUrl'])
         }
         if (params['shExFile']) {
-            this.setState({shExActiveTab: API.byFileTab});
-            this.setState({shExFile: params['shExFile']})
+            setShExActiveTab(API.byFileTab);
+            setShExFile(params['shExFile'])
         }
     }
 
-    updateStateShapeMap(params) {
+    function updateStateShapeMap(params) {
         if (params['shapeMap']) {
-            this.setState({shapeMapActiveTab: API.byTextTab});
-            this.setState({shapeMapTextArea: params['shapeMap']})
+            setShapeMapActiveTab(API.byTextTab);
+            setShapeMapTextArea(params['shapeMap'])
         }
-        if (params['shapeMapFormat']) this.setState({shapeMapFormat: params['shapeMapFormat']});
+        if (params['shapeMapFormat']) setShapeMapFormat(params['shapeMapFormat']);
         if (params['shapeMapUrl']) {
-            this.setState({shapeMapActiveTab: API.byUrlTab});
-            this.setState({shapeMapUrl: params['shapeMapUrl']})
+            setShapeMapActiveTab(API.byUrlTab);
+            setShapeMapUrl(params['shapeMapUrl'])
         }
         if (params['shapeMapFile']) {
-            this.setState({shapeMapActiveTab: API.byFileTab});
-            this.setState({shapeMapFile: params['shapeMapFile']})
+            setShapeMapActiveTab(API.byFileTab);
+            setShapeMapFile(params['shapeMapFile'])
         }
     }
 
-    handleSubmit(event) {
-        let paramsData = paramsFromStateData(this.state);
-        let paramsShEx = paramsFromStateShEx(this.state);
-        let paramsShapeMap = paramsFromStateShapeMap(this.state);
+
+    function paramsFromStateData() {
+        let params = {};
+        params['activeSchemaTab'] = convertTabData(dataActiveTab);
+        params['dataFormat'] = dataFormat;
+        switch (dataActiveTab) {
+            case API.byTextTab:
+                params['data'] = dataTextArea;
+                params['dataFormatTextArea'] = dataFormat;
+                break;
+            case API.byUrlTab:
+                params['dataURL'] = dataUrl;
+                params['dataFormatUrl'] = dataFormat;
+                break;
+            case API.byFileTab:
+                params['dataFile'] = dataFile;
+                params['dataFormatFile'] = dataFormat;
+                break;
+            default:
+        }
+        return params;
+    }
+
+    function paramsFromStateShEx() {
+        let params = {};
+        params['activeSchemaTab'] = convertTabSchema(shExActiveTab);
+        console.log(`paramsFromStateShEx: activeSchemaTab: ${shExActiveTab}: ${params['activeSchemaTab']}`);
+        params['schemaEmbedded'] = false;
+        params['schemaFormat'] = shExFormat;
+        switch (shExActiveTab) {
+            case API.byTextTab:
+                params['schema'] = shExTextArea;
+                params['schemaFormatTextArea'] = shExFormat;
+                break;
+            case API.byUrlTab:
+                params['schemaURL'] = shExUrl;
+                params['schemaFormatUrl'] = shExFormat;
+                break;
+            case API.byFileTab:
+                params['schemaFile'] = shExFile;
+                params['schemaFormatFile'] = shExFormat;
+                break;
+            default:
+        }
+        return params;
+    }
+
+    function paramsFromStateShapeMap() {
+        let params = {};
+        params['activeShapeMapTab'] = convertTabSchema(shapeMapActiveTab);
+        console.log(`paramsFromStateShEx: activeSchemaTab: ${shapeMapActiveTab}: ${params['activeShapeMapTab']}`);
+        params['shapeMapFormat'] = shapeMapFormat;
+        switch (shapeMapActiveTab) {
+            case API.byTextTab:
+                params['shapeMap'] = shapeMapTextArea;
+                params['shapeMapFormatTextArea'] = shapeMapFormat;
+                break;
+            case API.byUrlTab:
+                params['shapeMapURL'] = shapeMapUrl;
+                params['shapeMapFormatUrl'] = shapeMapFormat;
+                break;
+            case API.byFileTab:
+                params['shapeMapFile'] = shapeMapFile;
+                params['shapeMapFormatFile'] = shapeMapFormat;
+                break;
+            default:
+        }
+        return params;
+    }
+
+    function handleSubmit(event) {
+        let paramsData = paramsFromStateData();
+        let paramsShEx = paramsFromStateShEx();
+        let paramsShapeMap = paramsFromStateShapeMap();
         let paramsEndpoint = {};
-        if (this.state.endpoint !== '') {
-            paramsEndpoint['endpoint'] = this.state.endpoint ;
+        if (endpoint !== '') {
+            paramsEndpoint['endpoint'] = endpoint ;
         }
         let params = {...paramsData,...paramsEndpoint,...paramsShEx,...paramsShapeMap};
         params['schemaEngine']='ShEx';
         params['triggerMode']='shapeMap';
         let formData = params2Form(params);
         let permalink = mkPermalink(API.shExValidateRoute, params);
-        this.setState({loading:true});
-        this.setState({permalink: permalink});
-        this.postValidate(url,formData);
+        setLoading(true);
+        setPermalink(permalink);
+        postValidate(url,formData);
         event.preventDefault();
     }
 
-    processResult(data) {
-        this.setState({
-            result: data,
-        });
+    function processResult(data) {
+        setResult(data);
     }
 
-    postValidate(url, formData, cb) {
+    function postValidate(url, formData, cb) {
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                this.setState({loading:false});
-                this.processResult(data);
+                setLoading(false);
+                processResult(data);
                 if (cb) cb()
             })
             .catch(function (error) {
@@ -212,71 +252,70 @@ class ShExValidate extends React.Component {
     }
 
 
-    render() {
-        return (
+    return (
             <Container fluid={true}>
                 <h1>ShEx: Validate RDF data</h1>
                 <Row>
                 <Col>
-                    {this.state.isLoading ? <Pace color="#27ae60"/> :
-                        this.state.result ?
-                            <ResultValidate result={this.state.result} /> : null
+                    {loading ? <Pace color="#27ae60"/> :
+                        result ?
+                            <ResultValidate result={result} /> : null
                     }
-                    { this.state.permalink &&  <Permalink url={this.state.permalink} /> }
+                    { permalink &&  <Permalink url={permalink} /> }
                 </Col>
                 </Row>
-                    <Form onSubmit={this.handleSubmit}>
+                    <Form onSubmit={handleSubmit}>
                         <Row>
                             <Col>
-                    <DataTabs activeTab={this.state.dataActiveTab}
-                              handleTabChange={this.handleDataTabChange}
+                    <DataTabs activeTab={dataActiveTab}
+                              handleTabChange={handleDataTabChange}
 
-                              textAreaValue={this.state.dataTextArea}
-                              handleByTextChange={this.handleDataByTextChange}
+                              textAreaValue={dataTextArea}
+                              handleByTextChange={handleDataByTextChange}
 
-                              dataUrl={this.state.dataUrl}
-                              handleDataUrlChange={this.handleDataUrlChange}
+                              dataUrl={dataUrl}
+                              handleDataUrlChange={handleDataUrlChange}
 
-                              handleFileUpload={this.handleDataFileUpload}
+                              handleFileUpload={handleDataFileUpload}
 
-                              dataFormat={this.state.dataFormat}
-                              handleDataFormatChange={this.handleDataFormatChange}
+                              dataFormat={dataFormat}
+                              handleDataFormatChange={handleDataFormatChange}
                     />
-                    <EndpointInput value={this.state.endpoint}
-                                   handleOnChange={this.handleEndpointChange}/>
+                    <EndpointInput value={endpoint}
+                                   handleOnChange={handleEndpointChange}/>
                             </Col>
                             <Col>
-                    <ShExTabs activeTab={this.state.shExActiveTab}
-                              handleTabChange={this.handleShExTabChange}
+                    <ShExTabs activeTab={shExActiveTab}
+                              handleTabChange={handleShExTabChange}
 
-                              textAreaValue={this.state.shExTextArea}
-                              handleByTextChange={this.handleShExByTextChange}
+                              textAreaValue={shExTextArea}
+                              handleByTextChange={handleShExByTextChange}
 
-                              shExUrl={this.state.shExUrl}
-                              handleShExUrlChange={this.handleShExUrlChange}
+                              shExUrl={shExUrl}
+                              handleShExUrlChange={handleShExUrlChange}
 
-                              handleFileUpload={this.handleShExFileUpload}
+                              handleFileUpload={handleShExFileUpload}
 
-                              dataFormat={this.state.shExFormat}
-                              handleShExFormatChange={this.handleShExFormatChange}
+                              dataFormat={shExFormat}
+                              handleShExFormatChange={handleShExFormatChange}
                     />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                    <ShapeMapTabs activeTab={this.state.shapeMapActiveTab}
-                              handleTabChange={this.handleShapeMapTabChange}
+                    <ShapeMapTabs activeTab={shapeMapActiveTab}
+                              handleTabChange={handleShapeMapTabChange}
 
-                              textAreaValue={this.state.shapeMapTextArea}
-                              handleByTextChange={this.handleShapeMapByTextChange}
+                              textAreaValue={shapeMapTextArea}
+                              handleByTextChange={handleShapeMapByTextChange}
 
-                              dataUrl={this.state.shapeMapUrl}
-                              handleShapeMapUrlChange={this.handleShapeMapUrlChange}
+                              dataUrl={shapeMapUrl}
+                              handleShapeMapUrlChange={handleShapeMapUrlChange}
 
-                              handleFileUpload={this.handleShapeMapFileUpload}
+                              handleFileUpload={handleShapeMapFileUpload}
 
-                              dataFormat={this.state.shapeMapFormat}
-                              handleShapeMapFormatChange={this.handleShapeMapFormatChange}
+                              dataFormat={shapeMapFormat}
+                              handleShapeMapFormatChange={handleShapeMapFormatChange}
                     />
                             </Col>
                         </Row>
@@ -287,8 +326,7 @@ class ShExValidate extends React.Component {
                         </Row>
                 </Form>
             </Container>
-        );
-    }
+    );
 }
 
 export default ShExValidate;

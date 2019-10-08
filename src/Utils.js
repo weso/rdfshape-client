@@ -26,28 +26,24 @@ export function dot2svg(dot,cb) {
     });
 }
 
+const formatModes = {
+    "html": "html",
+    "json": "javascript",
+    "rdf/json": "javascript",
+    "rdf/xml": "xml",
+    "shexc": "shex",
+    "shexj": "javascript",
+    "trig": "xml",
+    "turtle": "turtle",
+    "sparql": "sparql",
+  };
+
+const defaultMode = "xml";
 
 export function mkMode(format) {
-    if (format) {
-        switch (format.toLowerCase()) {
-            case "turtle":
-                return "turtle";
-            case "html":
-                return "xml";
-            case "rdf/xml":
-                return "xml";
-            case "shex":
-                return "turtle";
-            case "sparql":
-                return "sparql";
-            case "rdf/json":
-                return "javascript";
-            case "shexj":
-                return "javascript";
-            default:
-                return "xml"
-        }
-    } else return "xml"
+    let mode = format ? formatModes[format.toLowerCase()] || defaultMode: defaultMode;
+    console.log(`mkMode(${format}) = ${mode}`);
+    return mode; 
 }
 
 export function maybeAdd(maybe,name,obj) {

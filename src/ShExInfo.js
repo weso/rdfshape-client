@@ -40,7 +40,8 @@ function ShExInfo(props) {
             const formData = params2Form(params);
             postRequest(url, formData, () => updateState(params))
         }
-    });
+    },[props.location.search]
+    );
 
     function updateState(params) {
         if (params['shEx']) {
@@ -111,13 +112,14 @@ function ShExInfo(props) {
     return (
             <Container fluid={true}>
                 <h1>ShEx: Info ShEx schema</h1>
-                <Form onSubmit={handleSubmit}>
                     {loading ? <Pace color="#27ae60"/> :
                         result ?
-                            <ResultShExInfo result={result} /> : error?
-                            <p>Error: {error}</p>: null
+                            <ResultShExInfo result={result} /> : 
+                            error?
+                              <p>Error: {error}</p>: null
                     }
                     { permalink &&  <Permalink url={permalink} /> }
+                  <Form onSubmit={handleSubmit}>
                     <ShExTabs activeTab={shExActiveTab}
                               handleTabChange={handleShExTabChange}
 

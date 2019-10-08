@@ -29,22 +29,22 @@ function DataInfo(props) {
     function handleFileUpload(value) { setDataFile(value); }
 
     useEffect(() => {
-            if (props.location.search) {
-                let dataParams = dataParamsFromQueryParams(props.location.search);
-                const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
-                axios.get(infoUrl).then (response => response.data)
-                    .then((data) => {
-                        setResult(data);
-                        if (dataParams.data) setDataTextArea(dataParams.data);
-                        if (dataParams.dataFormat) setDataFormat(dataParams.dataFormat);
-                        if (dataParams.dataUrl) setDataUrl(dataParams.dataUrl);
-                    })
-                    .catch(function (error) {
-                        setError("Error calling server at " + infoUrl + ": " + error);
-                    });
+        if (props.location.search) {
+            let dataParams = dataParamsFromQueryParams(props.location.search);
+            const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
+            axios.get(infoUrl).then (response => response.data)
+                .then((data) => {
+                    setResult(data);
+                    if (dataParams.data) setDataTextArea(dataParams.data);
+                    if (dataParams.dataFormat) setDataFormat(dataParams.dataFormat);
+                    if (dataParams.dataUrl) setDataUrl(dataParams.dataUrl);
+                })
+                .catch(function (error) {
+                    setError("Error calling server at " + infoUrl + ": " + error);
+                });
             }
         },
-        [props.location.search, result, dataTextArea, dataFormat, dataUrl]
+        [props.location.search]
     );
 
     function handleSubmit(event) {
