@@ -8,12 +8,13 @@ import API from "./API";
 import axios from "axios";
 import {mkPermalink, params2Form} from "./Permalink";
 import ResultEndpointQuery from "./results/ResultEndpointQuery";
-import { convertTabQuery } from "./Utils"
+import {convertTabQuery} from "./Utils"
 
 function EndpointQuery(props) {
     const [error, setError] = useState('');
     const [result, setResult] = useState('');
     const [endpoint, setEndpoint] = useState('');
+
     const [queryTextArea, setQueryTextArea] = useState('');
     const [queryUrl, setQueryUrl] = useState('');
     const [queryFile, setQueryFile] = useState('');

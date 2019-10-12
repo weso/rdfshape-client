@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import ReactDOM from "react-dom";
-import { Controlled as CodeMirror } from "react-codemirror2";
+import {Controlled as CodeMirror} from "react-codemirror2";
 import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
+
 require("codemirror/lib/codemirror.css");
 require("codemirror/mode/xml/xml.js");
 require("codemirror/mode/turtle/turtle.js");

@@ -41,6 +41,8 @@ import TestRDFArea from './test/TestRDFArea.js'
 import TestCyto from './test/TestCyto.js'
 import TestCode from './test/TestCode.js'
 import TestYate from './test/TestYate.js'
+import TestSearch from './test/TestSearch.js'
+import TestGithubSearch from './test/TestGithubSearch.js'
 
 function Routes() {
 
@@ -82,6 +84,8 @@ function Routes() {
       <Route path="/test/cyto" component={TestCyto} />
       <Route path="/test/code" component={TestCode} />
       <Route path="/test/turtle" component={TestYate} />
+      <Route path="/test/search" component={TestSearch} />
+      <Route path="/test/github" component={TestGithubSearch} />
 
       <Route component={NotFound} />
       </Switch>

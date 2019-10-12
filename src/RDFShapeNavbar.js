@@ -39,12 +39,13 @@ class RDFShapeNavbar extends React.Component {
                         </NavDropdown>
                         <NavDropdown title="SHACL" id="basic-nav-dropdown">
                             <NavDropdown.Item href="/shaclValidate">Validate data with ShEx</NavDropdown.Item>
-                            <NavDropdown.Item href="/shaclConvert">Convert ShEx formats</NavDropdown.Item>
+                            <NavDropdown.Item href="/shaclConvert">Convert SHACL formats</NavDropdown.Item>
                             <NavDropdown.Item href="/shacl2shex">SHACL &#8594; ShEx</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Wikidata" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/wikidataQuery">Query</NavDropdown.Item>
-                            <NavDropdown.Item href="/wikidataExtract">Extract ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href="/wikidataQuery">Query Wikidata endpoint</NavDropdown.Item>
+                            <NavDropdown.Item href="/wikidataValidate">Validate Wikidata entities</NavDropdown.Item>
+                            <NavDropdown.Item href="/wikidataExtract">Extract ShEx from Wikidata entities</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                     <Nav>

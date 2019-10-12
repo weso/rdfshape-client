@@ -1,4 +1,6 @@
 class API {
+
+    // Routes in server
     static rootApi = process.env.REACT_APP_RDFSHAPE_HOST + "/api/"; // "http://localhost:8080/api/";
 
     static dataInfo = API.rootApi + "data/info";
@@ -18,7 +20,10 @@ class API {
     static schemaVisualize = API.rootApi + "schema/visualize";
     static schemaConvert = API.rootApi + "schema/convert";
     static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
+    static wikidataEntityLabel = API.rootApi + "wikidata/entityLabel";
+    static wikidataSearchEntity = API.rootApi + "wikidata/searchEntity";
 
+    // Routes in client
     static dataInfoRoute = "/dataInfo";
     static dataConvertRoute = "/dataConvert";
     static dataVisualizeRoute = "/dataVisualize";
@@ -57,6 +62,9 @@ class API {
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
+
+    static wikidataUrl =  "https://query.wikidata.org/sparql" ;
+    static dbpediaUrl = "https://dbpedia.org/sparql" ;
 
 }
 

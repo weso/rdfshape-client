@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import Code from "../Code";
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
-import {Controlled as CodeMirror} from "react-codemirror2";
 
 function TestCode(props) {
 
