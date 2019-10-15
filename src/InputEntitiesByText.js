@@ -63,7 +63,7 @@ function InputEntitiesByText(props) {
 
     return (
         <Container fuild={true}>
-        <Row>{JSON.stringify(language)}</Row>
+        {/*<Row>{JSON.stringify(language)}</Row>*/}
         <Row>
             <Col>
             <AsyncTypeahead

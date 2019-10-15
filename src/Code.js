@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import ReactDOM from "react-dom";
+import React from 'react';
 import {Controlled as CodeMirror} from "react-codemirror2";
 import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
+import ShExForm from "./ShExForm";
 
 require("codemirror/lib/codemirror.css");
 require("codemirror/mode/xml/xml.js");
@@ -21,15 +21,27 @@ function Code(props) {
         placeholder: props.placeholder
     };
 
-    console.log(`<Code props.mode: ${props.mode}>`);
 
-    return <CodeMirror
-        value={props.value}
-        options={options}
-        onBeforeChange={(_editor, _data, val) => {
-            props.onChange(val);
-        }}
-    />
+    let code = null ;
+    switch (props.mode.toLowerCase()) {
+        case 'shexc': code = <ShExForm value={props.value}
+                                       theme={props.theme}
+                                       onChange={()=> null}
+                                       options={options} />
+          break;
+        default: code =
+            <CodeMirror
+             value={props.value}
+             options={options}
+             onBeforeChange={(_editor, _data, val) => {
+                props.onChange(val);
+             }}
+            />
+
+    }
+
+    return code ;
+
 }
 
 Code.propTypes = {

@@ -8,7 +8,7 @@ import Form from "react-bootstrap/Form";
 import DataTabs from "./DataTabs";
 import ResultDataInfo from "./results/ResultDataInfo";
 import qs from 'query-string';
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import { mkPermalink, params2Form, Permalink} from "./Permalink";
 import { dataParamsFromQueryParams, convertTabData} from "./Utils";
 
 function DataInfo(props) {

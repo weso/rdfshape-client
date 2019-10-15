@@ -19,6 +19,8 @@ function ResultDataExtract(props) {
                  <Code
                      value={result.inferedShape}
                      mode="ShExC"
+                     readonly={true}
+                     linenumbers={true}
                      theme="material"
                  />
              )}

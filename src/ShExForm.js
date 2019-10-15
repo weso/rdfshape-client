@@ -11,7 +11,8 @@ function ShExForm(props) {
         if (!yashe) {
 //            const y = Yashe.fromTextArea(document.getElementById(props.id))
             const options = { 
-                placeholder: props.placeholder 
+                placeholder: props.placeholder,
+                readonly: props.readonly
             }
             const y = Yashe.fromTextArea(
                 textAreaRef.current, 
@@ -36,14 +37,15 @@ function ShExForm(props) {
 }
 
 ShExForm.propTypes = {
-//    id: PropTypes.string.isRequired,
     value: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    placeholder: PropTypes.string
+    onChange: PropTypes.func,
+    placeholder: PropTypes.string,
+    readonly: PropTypes.bool
 }
 
 ShExForm.defaultProps = {
-    value: ''
+    value: '',
+    readonly: false
 }
 
 export default ShExForm;

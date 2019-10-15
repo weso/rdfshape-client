@@ -20,9 +20,11 @@ class API {
     static schemaVisualize = API.rootApi + "schema/visualize";
     static schemaConvert = API.rootApi + "schema/convert";
     static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
+
     static wikidataEntityLabel = API.rootApi + "wikidata/entityLabel";
     static wikidataSearchEntity = API.rootApi + "wikidata/searchEntity";
     static wikidataLanguages = API.rootApi + "wikidata/languages";
+    static wikidataSchemaContent = API.rootApi + "wikidata/schemaContent";
 
     // Routes in client
     static dataInfoRoute = "/dataInfo";

@@ -17,8 +17,9 @@ class ResultValidate extends React.Component {
                 </div>
      } else {
          msg = <div>
-             { result.message && <Alert variant="success">{result.msg} </Alert> }
-             { result.error && <Alert variant="danger">{result.error}</Alert> }
+             { result.message && <Alert variant="success">{result.message} </Alert> }
+             { result.errors && <div> { result.errors.map((e,idx) => <Alert id={idx} variant="danger">{e.type}: {e.error}</Alert> )}</div>
+             }
              { result.shapeMap && <ShowShapeMap
                  shapeMap={result.shapeMap}
                  nodesPrefixMap={result.nodesPrefixMap}

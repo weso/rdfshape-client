@@ -1,28 +1,29 @@
 import React from 'react';
 // import Table from "react-bootstrap/Table";
 import BootstrapTable from 'react-bootstrap-table-next';
+import Alert from "react-bootstrap/Alert";
 
 function showQualify(node, prefix) {
     console.log("showQualify node)");
     console.log(node);
-    var relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
-    var matchBase = relativeBaseRegex.exec(node);
+    const relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
+    const matchBase = relativeBaseRegex.exec(node);
     if (matchBase) {
-        var rawNode = matchBase[1];
+        const rawNode = matchBase[1];
         return "<" + rawNode + ">";
     } else {
-        var iriRegexp = /^<(.*)>$/g;
-        var matchIri = iriRegexp.exec(node);
+        const iriRegexp = /^<(.*)>$/g;
+        const matchIri = iriRegexp.exec(node);
         if (matchIri) {
-            var rawNode = matchIri[1];
-            for (var key in prefix) {
+            const rawNode = matchIri[1];
+            for (const key in prefix) {
                 if (rawNode.startsWith(prefix[key])) {
-                    var localName = rawNode.slice(prefix[key].length);
+                    const localName = rawNode.slice(prefix[key].length);
                     console.log("qualifying " + localName)
                     /*       if (localName.indexOf("/") > -1) {
                             return "&lt;" + rawNode + "&gt;" ;
                            } else */
-                    var longNode = "<" + rawNode + ">";
+                    const longNode = "<" + rawNode + ">";
                     return <abbr title={longNode + key}>{":" + localName}</abbr> ;
                 }
             }
@@ -61,38 +62,49 @@ function detailsFormatter(cell, row) {
 }
 
 function ShowShapeMap(props) {
-    const table = shapeMap2Table(props.shapeMap, props.nodesPrefixMap, props.shapesPrefixMap)
-    console.log("Table data: " + table)
-    const columns = [
-        { dataField: 'id',
-            text: "Id",
-            sort: true
-        },
-        { dataField: 'node',
-          text: "Node",
-          sort: true
-        },
-        { dataField: 'shape',
-            text: "Shape",
-            sort: true,
-            formatter: shapeFormatter
-        },
-        { dataField: 'status',
-          hidden: true
-        },
-        { dataField: 'evidence',
-            text: "Details",
-            formatter: detailsFormatter
-        },
-    ];
+    const shapeMap = props.shapeMap
+    console.log(`ShapeMap: ${shapeMap} isString? ${typeof shapeMap}`)
+    if (typeof shapeMap === 'string') {
+       return <Alert variant="info">{shapeMap}</Alert>
+    } else {
+        const table = shapeMap2Table(shapeMap, props.nodesPrefixMap, props.shapesPrefixMap)
+        console.log("Table data: " + table)
+        const columns = [
+            {
+                dataField: 'id',
+                text: "Id",
+                sort: true
+            },
+            {
+                dataField: 'node',
+                text: "Node",
+                sort: true
+            },
+            {
+                dataField: 'shape',
+                text: "Shape",
+                sort: true,
+                formatter: shapeFormatter
+            },
+            {
+                dataField: 'status',
+                hidden: true
+            },
+            {
+                dataField: 'evidence',
+                text: "Details",
+                formatter: detailsFormatter
+            },
+        ];
 
-    return <BootstrapTable
-         keyField='id'
-         data={table}
-         columns={columns}
-         striped
-         hover
-         condensed     />
+        return <BootstrapTable
+            keyField='id'
+            data={table}
+            columns={columns}
+            striped
+            hover
+            condensed/>
+    }
 }
 
 export default ShowShapeMap;
