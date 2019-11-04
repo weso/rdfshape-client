@@ -10,7 +10,7 @@ function DataTabs(props) {
     return (
             <div>
             <InputTabsWithFormat
-                       nameInputTab="RDF data"
+                       nameInputTab={props.name}
                        activeTab={props.activeTab}
                        handleTabChange={props.handleTabChange}
 
@@ -40,15 +40,18 @@ function DataTabs(props) {
 
 DataTabs.propTypes = {
     activeTab: PropTypes.string,
+    handleTabChange: PropTypes.func.isRequired,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
-    handleFileUpload: PropTypes.func.isRequired,
+    dataUrl: PropTypes.string.isRequired,
     handleDataUrlChange: PropTypes.func.isRequired,
+    handleFileUpload: PropTypes.func.isRequired,
     dataFormat: PropTypes.string.isRequired,
     handleDataFormatChange: PropTypes.func.isRequired
 };
 
 DataTabs.defaultProps = {
+    name: 'RDF data',
     activeTab: 'ByText',
     dataFormat: 'TURTLE'
 };

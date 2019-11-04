@@ -129,7 +129,6 @@ function WikidataValidate(props) {
             });
     }
 
-
     function handleShExTabChange(value) { dispatchShEx({ type: 'changeTab', value: value } ); }
     function handleShExFormatChange(value) {  dispatchShEx({type: 'setFormat', value: value }); }
     function handleShExByTextChange(value) { dispatchShEx({type: 'setText', value: value}) }
@@ -139,8 +138,6 @@ function WikidataValidate(props) {
     function handleTabChange(e) {
         setSchemaActiveTab(e)
     }
-
-
 
     return (
        <Container>

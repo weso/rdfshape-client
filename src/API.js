@@ -69,6 +69,7 @@ class API {
     static wikidataUrl =  "https://query.wikidata.org/sparql" ;
     static dbpediaUrl = "https://dbpedia.org/sparql" ;
 
+
 }
 
 export default API;

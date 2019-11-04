@@ -30,7 +30,8 @@ function DataInfo(props) {
 
     useEffect(() => {
         if (props.location.search) {
-            let dataParams = dataParamsFromQueryParams(props.location.search);
+            const queryParams = qs.parse(props.location.search);
+            let dataParams = dataParamsFromQueryParams(queryParams);
             const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
             axios.get(infoUrl).then (response => response.data)
                 .then((data) => {
