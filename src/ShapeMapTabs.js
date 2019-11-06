@@ -3,36 +3,33 @@ import InputTabsWithFormat from "./InputTabsWithFormat";
 import API from "./API"
 import PropTypes from 'prop-types';
 
-class ShapeMapTabs extends React.Component {
-    render() {
-        return (
-            <div>
-                <InputTabsWithFormat
-                    nameInputTab="ShapeMap"
-                    activeTab={this.props.activeTab}
-                    handleTabChange={this.props.handleTabChange}
+function ShapeMapTabs(props) {
+    return ( <div>
+        <InputTabsWithFormat
+            nameInputTab="ShapeMap"
+            activeTab={props.activeTab}
+            handleTabChange={props.handleTabChange}
 
-                    byTextName="Input shapeMap"
-                    textAreaValue={this.props.textAreaValue}
-                    byTextPlaceholder="<node>@<Shape>...>"
-                    handleByTextChange={this.props.handleByTextChange}
+            byTextName="Input shapeMap"
+            textAreaValue={props.textAreaValue}
+            byTextPlaceholder="<node>@<Shape>...>"
+            handleByTextChange={props.handleByTextChange}
 
-                    byUrlName="URL shapeMap"
-                    handleUrlChange={this.props.handleShapeMapUrlChange}
-                    urlValue={this.props.shapeMapUrl}
-                    byURLPlaceholder="http://..."
+            byUrlName="URL shapeMap"
+            handleUrlChange={props.handleShapeMapUrlChange}
+            urlValue={props.shapeMapUrl}
+            byURLPlaceholder="http://..."
 
-                    byFileName="ShapeMap File"
-                    handleFileUpload={this.props.handleFileUpload}
+            byFileName="ShapeMap File"
+            handleFileUpload={props.handleFileUpload}
 
-                    nameFormat="ShapeMap format"
-                    defaultFormat={this.props.shapeMapFormat}
-                    handleFormatChange={this.props.handleShapeMapFormatChange}
-                    urlFormats={API.shapeMapFormats}
-                />
-            </div>
-        );
-    }
+            nameFormat="ShapeMap format"
+            textFormat={props.shapeMapFormat}
+            handleFormatChange={props.handleShapeMapFormatChange}
+            urlFormats={API.shapeMapFormats}
+        />
+    </div>
+    );
 }
 
 ShapeMapTabs.propTypes = {

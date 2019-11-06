@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
@@ -7,12 +7,35 @@ import QueryForm from '../QueryForm'
 import Form from "react-bootstrap/Form";
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
+import qs from "query-string";
+import {dataParamsFromQueryParams, shapeMapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
+import {params2Form} from "../Permalink";
 
 function TestYashe(props)  {
     const [shEx,setShEx] = useState('');
     const [sparql,setSparql] = useState('');
     const [msg,setMsg] = useState('');
-    const [activeTab, setActiveTab] = useState('ShEx')
+    const [activeTab, setActiveTab] = useState('ShEx');
+    const [yashe, setYashe] = useState(null);
+
+    useEffect( () => {
+            console.log(`TestYashe... `)
+            if (props.location.search) {
+                console.log(`TestYashe with location.search `)
+                const queryParams = qs.parse(props.location.search);
+                console.log("Parameters: " + JSON.stringify(queryParams));
+                if (queryParams['shex']) {
+                    setShEx(queryParams['shex']);
+                    console.log(`Setting parameter shex=${shEx}`)
+                    if (yashe) {
+                        yashe.setValue(shEx); yashe.refresh();
+                    }
+                }
+            }
+        },
+        [props.location.search]
+    );
+
 
     function handleTabChange(e) {
         setActiveTab(e)
@@ -22,10 +45,12 @@ function TestYashe(props)  {
     return (
      <div>
        <h1>Yashe example</h1>
-       <QueryForm id="sparqlArea1" 
+{/*
+       <QueryForm id="sparqlArea1"
                       value={sparql} 
                       onChange={(value) => setSparql(value)}
                   />
+*/}
        <Form.Group>
            <Form.Label>Select input</Form.Label>
             <Tabs activeKey={activeTab}
@@ -37,7 +62,11 @@ function TestYashe(props)  {
                  <Form.Label>ShEx</Form.Label>
                  <ShExForm // id="shExArea" 
                       value={shEx} 
-                      onChange={(value) => setShEx(value)}
+                      onChange={(value) => {
+                          setShEx(value);
+                          if (yashe) yashe.refresh();
+                      }}
+                      setCodeMirror={(cm) => setYashe(cm)}
                  />
                 </Form.Group>
                 </Tab>
@@ -53,11 +82,18 @@ function TestYashe(props)  {
             </Tabs>    
             <br/>
             <p>ActiveTab: {activeTab}</p>
-            <Button variant="primary"
+            <pre>ShEx: {shEx}</pre>
+            <pre>Yashe: {typeof yashe}</pre>
+           <Button variant="primary"
                     onClick={() => {
                         setMsg(`TextArea value: \nShEx: ${shEx}\nSPARQL: ${sparql}`)
                     }}
                     type="submit">See Value</Button>
+           <Button variant="primary"
+                   onClick={() => {
+                       setShEx(`prefix : <http:/>/example.org/>\n<S> { \n  :p . \n}`)
+                   }}
+                   type="submit">Reset ShEx</Button>
             <Alert variant="primary"><pre>{msg}</pre></Alert>
         </Form.Group>
 

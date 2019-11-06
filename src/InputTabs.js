@@ -31,6 +31,7 @@ function InputTabs(props) {
                             handleByTextChange={props.handleByTextChange}
                             textFormat={props.textFormat}
                             inputForm = {props.inputForm}
+                            setCodeMirror = { props.setCodeMirror }
                     />
                 </Tab>
                 <Tab eventKey={API.byUrlTab} title="By URL">
@@ -57,6 +58,7 @@ InputTabs.propTypes = {
     byTextName: PropTypes.string,
     textFormat: PropTypes.string,
     textAreaValue: PropTypes.string,
+    setCodeMirror: PropTypes.func,
     handleByTextChange: PropTypes.func.isRequired,
     byTextPlaceholder: PropTypes.string,
     byUrlName: PropTypes.string.isRequired,

@@ -17,9 +17,10 @@ function ByText(props) {
   if (props.inputForm) {
          inputText = props.inputForm
      } else {
-         inputText = <Code value={code}
+         inputText =  <Code value={code}
                            mode={format2mode(props.textFormat)}
                            onChange={handleChange}
+                           setCodeMirror={props.setCodeMirror}
                            placeholder={props.placeholder}
                            readonly='false'
          />
@@ -36,6 +37,7 @@ ByText.propTypes = {
     name: PropTypes.string,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
+    setCodeMirror: PropTypes.func,
     placeholder: PropTypes.string,
     textFormat: PropTypes.string,
     importForm: PropTypes.element

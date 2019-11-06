@@ -22,6 +22,9 @@ function TurtleForm(props) {
             y.setValue(props.value)
             y.refresh();
             setYate(y);
+        } else {
+            yate.setValue(props.value);
+            yate.refresh();
         }
     }, [yate,
         props.onChange,

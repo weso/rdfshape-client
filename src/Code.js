@@ -3,6 +3,7 @@ import {Controlled as CodeMirror} from "react-codemirror2";
 import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
 import ShExForm from "./ShExForm";
+import TurtleForm from "./TurtleForm";
 
 require("codemirror/lib/codemirror.css");
 require("codemirror/mode/xml/xml.js");
@@ -27,8 +28,14 @@ function Code(props) {
         case 'shexc': code = <ShExForm value={props.value}
                                        theme={props.theme}
                                        onChange={()=> null}
-                                       options={options} />
-          break;
+                                       setCodeMirror = {props.setCodeMirror}
+                                       options={options} />;
+        break;
+        case 'turtle': code = <TurtleForm value={props.value}
+                                       theme={props.theme}
+                                       onChange={()=> null}
+                                       options={options} />;
+        break;
         default: code =
             <CodeMirror
              value={props.value}

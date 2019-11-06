@@ -16,6 +16,7 @@ function InputTabsWithFormat(props) {
                        handleByTextChange={props.handleByTextChange}
                        byTextPlaceholder={props.byTextPlaceholder}
                        inputForm = {props.inputForm}
+                       setCodeMirror = {props.setCodeMirror}
 
                        byUrlName={props.byUrlName}
                        urlValue={props.urlValue}
@@ -42,6 +43,7 @@ InputTabsWithFormat.propTypes = {
     textFormat: PropTypes.string,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
+    setCodeMirror: PropTypes.func.isRequired,
     byTextPlaceholder: PropTypes.string,
     byUrlName: PropTypes.string.isRequired,
     urlValue: PropTypes.string.isRequired,

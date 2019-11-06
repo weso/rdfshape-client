@@ -8,6 +8,7 @@ function ShExTabs(props) {
 
     const shExForm = <ShExForm // id="textAreaShEx"
                                onChange={props.handleByTextChange}
+                               setCodeMirror={props.setCodeMirror}
                                value={props.textAreaValue} />;
 
     return (
@@ -21,6 +22,7 @@ function ShExTabs(props) {
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="RDF shEx..."
                 handleByTextChange={props.handleByTextChange}
+                setCodeMirror = {props.setCodeMirror}
                 inputForm={shExForm}
 
 
@@ -46,6 +48,7 @@ ShExTabs.propTypes = {
     handleTabChange: PropTypes.func.isRequired,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
+    setCodeMirror:PropTypes.func.isRequired,
 
     shExUrl: PropTypes.string.isRequired,
     handleShExUrlChange: PropTypes.func.isRequired,
@@ -59,6 +62,5 @@ ShExTabs.defaultProps = {
     activeTab: 'ByText',
     shExFormat: 'ShExC'
 };
-
 
 export default ShExTabs;

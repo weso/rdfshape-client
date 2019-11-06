@@ -14,7 +14,7 @@ import {
     shapeMapParamsFromQueryParams,
     paramsFromStateData,
     paramsFromStateShapeMap,
-    paramsFromStateShEx, convertTabData, convertTabSchema
+    paramsFromStateShEx, convertTabData, convertTabSchema, mkMode
 } from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
@@ -22,11 +22,12 @@ import qs from "query-string";
 import EndpointInput from "./EndpointInput";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import ShExForm from "./ShExForm";
+import Code from "./Code";
 
 const url = API.schemaValidate ;
 
 function ShExValidate(props) {
-
     const [result, setResult] = useState('');
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -37,13 +38,12 @@ function ShExValidate(props) {
     const [shExUrl, setShExUrl] = useState("");
     const [shExFile, setShExFile] = useState(null);
     const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
-
     const [dataTextArea, setDataTextArea] = useState('');
     const [dataFormat, setDataFormat] = useState('TURTLE');
     const [dataUrl, setDataUrl] = useState('');
     const [dataFile, setDataFile] = useState(null);
     const [dataActiveTab, setDataActiveTab] = useState('byText');
-
+    const [yashe, setYashe] = useState(null);
     const [shapeMapTextArea, setShapeMapTextArea] = useState('');
     const [shapeMapFormat, setShapeMapFormat] = useState('Compact');
     const [shapeMapUrl, setShapeMapUrl] = useState('');
@@ -60,7 +60,11 @@ function ShExValidate(props) {
 
     function handleShExTabChange(value) { setShExActiveTab(value); }
     function handleShExFormatChange(value) {  setShExFormat(value); }
-    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExByTextChange(value, y) {
+        console.log(`handlingShExByTexthange`)
+        setShExTextArea(value);
+        if (yashe) { yashe.refresh(); }
+    }
     function handleShExUrlChange(value) { setShExUrl(value); }
     function handleShExFileUpload(value) { setShExFile(value); }
 
@@ -112,18 +116,27 @@ function ShExValidate(props) {
     }
 
     function updateStateShEx(params) {
-        if (params['shEx']) {
+        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
+        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
+        if (params['schema']) {
             setShExActiveTab(API.byTextTab);
-            setShExTextArea(params['shEx'])
+            const schema = params['schema'];
+            setShExTextArea(schema);
+            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
+            if (yashe) {
+                yashe.setValue(schema);
+                yashe.refresh();
+            }
         }
-        if (params['shExFormat']) setShExFormat(params['shExFormat']);
-        if (params['shExUrl']) {
+        if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['shExUrl'])
+            setShExUrl(params['schemaURL'])
+            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
         if (params['shExFile']) {
             setShExActiveTab(API.byFileTab);
             setShExFile(params['shExFile'])
+            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
     }
 
@@ -142,7 +155,6 @@ function ShExValidate(props) {
             setShapeMapFile(params['shapeMapFile'])
         }
     }
-
 
     function paramsFromStateData() {
         let params = {};
@@ -244,8 +256,8 @@ function ShExValidate(props) {
                 if (cb) cb()
             })
             .catch(function (error) {
-//                this.setState({loading:false});
-//                this.setState({error:error});
+                setLoading(false);
+                setError(error.message);
                 console.log('Error doing server request');
                 console.log(error);
             });
@@ -255,18 +267,39 @@ function ShExValidate(props) {
     return (
             <Container fluid={true}>
                 <h1>ShEx: Validate RDF data</h1>
+            { loading || result || permalink ?
+            <fragment>
+            <Row>
+            <Col>
+            {loading ? <Pace color="#27ae60"/> :
+              result ?
+                <ResultValidate result={result} /> : null }
+                { permalink &&  <Permalink url={permalink} /> }
+            </Col>
+            </Row>
+{/*
                 <Row>
-                <Col>
-                    {loading ? <Pace color="#27ae60"/> :
-                        result ?
-                            <ResultValidate result={result} /> : null
-                    }
-                    { permalink &&  <Permalink url={permalink} /> }
-                </Col>
+                { dataTextArea? <Col>
+                    <Code value={dataTextArea}
+                          mode={mkMode(dataFormat)}
+                          theme="material"
+                          readonly onChange={() => null}
+                          placeholder=''/>
+                </Col>  : null }
+                    { shExTextArea? <Col>
+                        <Code value={shExTextArea}
+                              mode={'shexc'} // {mkMode(shExFormat)}
+                              theme="material"
+                              readonly onChange={() => null
+                        } placeholder=''/>
+                    </Col>  : null }
                 </Row>
-                    <Form onSubmit={handleSubmit}>
-                        <Row>
-                            <Col>
+*/}
+            </fragment>
+           : null }
+                <Form onSubmit={handleSubmit}>
+                  <Row>
+                   <Col>
                     <DataTabs activeTab={dataActiveTab}
                               handleTabChange={handleDataTabChange}
 
@@ -283,13 +316,14 @@ function ShExValidate(props) {
                     />
                     <EndpointInput value={endpoint}
                                    handleOnChange={handleEndpointChange}/>
-                            </Col>
-                            <Col>
+                </Col>
+                <Col>
                     <ShExTabs activeTab={shExActiveTab}
                               handleTabChange={handleShExTabChange}
 
                               textAreaValue={shExTextArea}
                               handleByTextChange={handleShExByTextChange}
+                              setCodeMirror = { (cm) => {setYashe(cm);} }
 
                               shExUrl={shExUrl}
                               handleShExUrlChange={handleShExUrlChange}
