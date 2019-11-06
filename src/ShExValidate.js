@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
 import DataTabs from "./DataTabs"
 import ShExTabs from "./ShExTabs"
@@ -49,6 +49,8 @@ function ShExValidate(props) {
     const [shapeMapUrl, setShapeMapUrl] = useState('');
     const [shapeMapFile, setShapeMapFile] = useState(null);
     const [shapeMapActiveTab, setShapeMapActiveTab] = useState('byText');
+    const [fromParams, setFromParams] = useState(false);
+    const [fromParamsData, setFromParamsData] = useState(false);
 
     const [endpoint, setEndpoint] = useState('');
 
@@ -102,7 +104,8 @@ function ShExValidate(props) {
     function updateStateData(params) {
         if (params['data']) {
             setDataActiveTab(API.byTextTab);
-            setDataTextArea(params['data'])
+            setDataTextArea(params['data']);
+            setFromParamsData(true);
         }
         if (params['dataFormat']) setDataFormat(params['dataFormat']);
         if (params['dataUrl']) {
@@ -122,11 +125,12 @@ function ShExValidate(props) {
             setShExActiveTab(API.byTextTab);
             const schema = params['schema'];
             setShExTextArea(schema);
+            setFromParams(true);
             if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
-            if (yashe) {
+            /*if (yashe) {
                 yashe.setValue(schema);
                 yashe.refresh();
-            }
+            }*/
         }
         if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
@@ -268,7 +272,7 @@ function ShExValidate(props) {
             <Container fluid={true}>
                 <h1>ShEx: Validate RDF data</h1>
             { loading || result || permalink ?
-            <fragment>
+            <Fragment>
             <Row>
             <Col>
             {loading ? <Pace color="#27ae60"/> :
@@ -295,7 +299,7 @@ function ShExValidate(props) {
                     </Col>  : null }
                 </Row>
 */}
-            </fragment>
+            </Fragment>
            : null }
                 <Form onSubmit={handleSubmit}>
                   <Row>
@@ -313,6 +317,9 @@ function ShExValidate(props) {
 
                               dataFormat={dataFormat}
                               handleDataFormatChange={handleDataFormatChange}
+                              fromParams={fromParamsData}
+                              resetFromParams={() => setFromParamsData(false) }
+
                     />
                     <EndpointInput value={endpoint}
                                    handleOnChange={handleEndpointChange}/>
@@ -323,7 +330,6 @@ function ShExValidate(props) {
 
                               textAreaValue={shExTextArea}
                               handleByTextChange={handleShExByTextChange}
-                              setCodeMirror = { (cm) => {setYashe(cm);} }
 
                               shExUrl={shExUrl}
                               handleShExUrlChange={handleShExUrlChange}
@@ -332,6 +338,10 @@ function ShExValidate(props) {
 
                               dataFormat={shExFormat}
                               handleShExFormatChange={handleShExFormatChange}
+                              setCodeMirror = { (cm) => {setYashe(cm);} }
+                              fromParams={fromParams}
+                              resetFromParams={() => setFromParams(false) }
+
                     />
                             </Col>
                         </Row>

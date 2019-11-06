@@ -9,8 +9,7 @@ function ShExForm(props) {
 
     useEffect(() => {
         if (!yashe) {
-//            const y = Yashe.fromTextArea(document.getElementById(props.id))
-            const options = { 
+            const options = {
                 placeholder: props.placeholder,
                 readonly: props.readonly
             };
@@ -21,18 +20,20 @@ function ShExForm(props) {
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())
                 props.onChange(cm.getValue(), y);
-                y.refresh();
+                // y.refresh();
             });
             y.setValue(props.value);
             y.refresh();
             setYashe(y);
-        } else {
-            yashe.setValue(props.value)
-            yashe.refresh();
+        } else if (props.fromParams) {
+            yashe.setValue(props.value);
+            props.resetFromParams();
         }
     }, [yashe,
         props.onChange,
         props.placeholder,
+        props.fromParams,
+        props.resetFromParams,
         props.value]
     );
 
@@ -46,7 +47,9 @@ ShExForm.propTypes = {
     onChange: PropTypes.func,
     placeholder: PropTypes.string,
     readonly: PropTypes.bool,
-    setCodeMirror: PropTypes.func.isRequired
+    setCodeMirror: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool,
+    resetFromParams: PropTypes.func,
 };
 
 ShExForm.defaultProps = {

@@ -17,6 +17,7 @@ function TestYashe(props)  {
     const [msg,setMsg] = useState('');
     const [activeTab, setActiveTab] = useState('ShEx');
     const [yashe, setYashe] = useState(null);
+    const [fromParams, setFromParams] = useState(false);
 
     useEffect( () => {
             console.log(`TestYashe... `)
@@ -26,10 +27,8 @@ function TestYashe(props)  {
                 console.log("Parameters: " + JSON.stringify(queryParams));
                 if (queryParams['shex']) {
                     setShEx(queryParams['shex']);
-                    console.log(`Setting parameter shex=${shEx}`)
-                    if (yashe) {
-                        yashe.setValue(shEx); yashe.refresh();
-                    }
+                    setFromParams(true);
+                    console.log(`Setting parameter shex=${shEx}`);
                 }
             }
         },
@@ -64,9 +63,14 @@ function TestYashe(props)  {
                       value={shEx} 
                       onChange={(value) => {
                           setShEx(value);
-                          if (yashe) yashe.refresh();
+//                          if (yashe) {
+//                              yashe.setValue(value);
+//                              yashe.refresh();
+//                          }
                       }}
                       setCodeMirror={(cm) => setYashe(cm)}
+                      fromParams={fromParams}
+                      resetFromParams={() => setFromParams(false) }
                  />
                 </Form.Group>
                 </Tab>
@@ -91,7 +95,8 @@ function TestYashe(props)  {
                     type="submit">See Value</Button>
            <Button variant="primary"
                    onClick={() => {
-                       setShEx(`prefix : <http:/>/example.org/>\n<S> { \n  :p . \n}`)
+                       setShEx(`prefix : <http://example.org/>\n<S> { \n  :p . \n}`)
+                       setFromParams(true);
                    }}
                    type="submit">Reset ShEx</Button>
             <Alert variant="primary"><pre>{msg}</pre></Alert>

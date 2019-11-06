@@ -6,7 +6,12 @@ import PropTypes from 'prop-types';
 
 function DataTabs(props) {
 
-    const turtleForm = <TurtleForm onChange={props.handleByTextChange} value={props.textAreaValue} />;
+    const turtleForm = <TurtleForm
+        onChange={props.handleByTextChange}
+        fromParams={props.fromParams}
+        resetFromParams={props.resetFromParams}
+        value={props.textAreaValue}
+    />;
     return (
             <div>
             <InputTabsWithFormat

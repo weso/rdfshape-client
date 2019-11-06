@@ -9,6 +9,8 @@ function ShExTabs(props) {
     const shExForm = <ShExForm // id="textAreaShEx"
                                onChange={props.handleByTextChange}
                                setCodeMirror={props.setCodeMirror}
+                               fromParams={props.fromParams}
+                               resetFromParams={props.resetFromParams}
                                value={props.textAreaValue} />;
 
     return (

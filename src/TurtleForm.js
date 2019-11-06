@@ -11,7 +11,7 @@ function TurtleForm(props) {
         if (!yate) {
             const options = { 
                 placeholder: props.placeholder 
-            }
+            };
             const y = Yate.fromTextArea(
                 textAreaRef.current, 
                 options)
@@ -22,13 +22,15 @@ function TurtleForm(props) {
             y.setValue(props.value)
             y.refresh();
             setYate(y);
-        } else {
+        } else if (props.fromParams) {
             yate.setValue(props.value);
-            yate.refresh();
+            props.resetFromParams();
         }
     }, [yate,
         props.onChange,
         props.placeholder,
+        props.fromParams,
+        props.resetFromParams,
         props.value]
     );
 
