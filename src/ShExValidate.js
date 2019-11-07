@@ -134,9 +134,9 @@ function ShExValidate(props) {
             setShExUrl(params['schemaURL'])
             if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
-        if (params['shExFile']) {
+        if (params['schemaFile']) {
             setShExActiveTab(API.byFileTab);
-            setShExFile(params['shExFile'])
+            setShExFile(params['schemaFile'])
             if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
     }

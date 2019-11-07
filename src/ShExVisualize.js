@@ -79,20 +79,24 @@ function ShExVisualize(props) {
 
 
     function updateStateShEx(params) {
-        if (params['shEx']) {
+        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
+        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
+        if (params['schema']) {
             setShExActiveTab(API.byTextTab);
-            setShExTextArea(params['shEx']);
+            const schema = params['schema'];
+            setShExTextArea(schema);
             setFromParamsShEx(true);
             if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
         }
-        if (params['shExFormat']) setShExFormat(params['shExFormat']);
-        if (params['shExUrl']) {
+        if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['shExUrl']);
+            setShExUrl(params['schemaURL'])
+            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
-        if (params['shExFile']) {
+        if (params['schemaFile']) {
             setShExActiveTab(API.byFileTab);
-            setShExFile(params['shExFile'])
+            setShExFile(params['schemaFile'])
+            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
     }
 
