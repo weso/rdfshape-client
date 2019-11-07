@@ -27,11 +27,17 @@ function ShExConvert(props) {
     const [shExFile, setShExFile] = useState(null);
     const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
     const [targetSchemaFormat, setTargetSchemaFormat] = useState(API.defaultShExFormat);
+    const [yashe, setYashe] = useState(null);
+    const [fromParamsShEx, setFromParamsShEx] = useState(false);
 
     const url = API.schemaConvert ;
     function handleShExTabChange(value) { setShExActiveTab(value); }
     function handleShExFormatChange(value) {  setShExFormat(value); }
-    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExByTextChange(value, y) {
+        console.log(`handlingShExByTexthange`)
+        setShExTextArea(value);
+        if (yashe) { yashe.refresh(); }
+    }
     function handleShExUrlChange(value) { setShExUrl(value); }
     function handleShExFileUpload(value) { setShExFile(value); }
     function handleTargetSchemaFormatChange(value) {  setTargetSchemaFormat(value); }
@@ -80,24 +86,24 @@ function ShExConvert(props) {
     }
 
     function updateStateShEx(params) {
-        console.log(`updateStateShEx: params=`);
-        console.log(params);
-        if (params['shEx']) {
+        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
+        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
+        if (params['schema']) {
             setShExActiveTab(API.byTextTab);
-            setShExTextArea(params['shEx']);
+            const schema = params['schema'];
+            setShExTextArea(schema);
+            setFromParamsShEx(true);
+            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
         }
-        if (params['shExUrl']) {
+        if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['shExUrl']);
+            setShExUrl(params['schemaURL'])
+            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
-        if (params['shExFile']) {
+        if (params['schemaFile']) {
             setShExActiveTab(API.byFileTab);
-            setShExFile(params['shExFile'])
-        }
-        if (params['shExFormat']) 
-          setShExFormat(params['shExFormat']);
-        if (params['targetSchemaFormat']) {
-          setTargetSchemaFormat(params['targetSchemaFormat']);
+            setShExFile(params['schemaFile'])
+            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
     }
 
@@ -162,9 +168,12 @@ function ShExConvert(props) {
 
                       handleFileUpload={handleShExFileUpload}
 
-                      shExFormat={shExFormat}
+                      dataFormat={shExFormat}
                       handleShExFormatChange={handleShExFormatChange}
-                    />
+                      setCodeMirror = { (cm) => {setYashe(cm);} }
+                      fromParams={fromParamsShEx}
+                      resetFromParams={() => setFromParamsShEx(false) }
+            />
             <SelectFormat name="Target schema format"
                       selectedFormat={targetSchemaFormat}
                       handleFormatChange={handleTargetSchemaFormatChange}

@@ -27,6 +27,8 @@ export default function ShEx2Shacl(props) {
     const [shExFile, setShExFile] = useState(null);
     const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
     const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat);
+    const [yashe, setYashe] = useState(null);
+    const [fromParamsShEx, setFromParamsShEx] = useState(false);
 
     useEffect(() => {
         console.log("Use Effect - shEx2Shacl");
@@ -51,7 +53,11 @@ export default function ShEx2Shacl(props) {
 
     const handleShExTabChange = (value) => { setShExActiveTab(value); };
     function handleShExFormatChange(value) { setShExFormat(value); }
-    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExByTextChange(value, y) {
+        console.log(`handlingShExByTexthange`)
+        setShExTextArea(value);
+        if (yashe) { yashe.refresh(); }
+    }
     function handleShExUrlChange(value) { setShExUrl(value); }
     function handleShExFileUpload(value) { setShExFile(value); }
 
@@ -75,22 +81,25 @@ export default function ShEx2Shacl(props) {
     }
 
     function updateState(params) {
-        if (params['shEx']) {
+        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
+        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
+        if (params['schema']) {
             setShExActiveTab(API.byTextTab);
-            setShExTextArea(params['shEx'])
+            const schema = params['schema'];
+            setShExTextArea(schema);
+            setFromParamsShEx(true);
+            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
         }
-        if (params['shExFormat'])
-            setShExFormat(params['shExFormat']);
-        if (params['shExUrl']) {
+        if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['shExUrl']);
+            setShExUrl(params['schemaURL'])
+            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
-        if (params['shExFile']) {
+        if (params['schemaFile']) {
             setShExActiveTab(API.byFileTab);
-            setShExFile(params['shExFile']);
+            setShExFile(params['schemaFile'])
+            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
-        if (params['targetFormat'])
-            setTargetFormat(params['targetFormat']);
     }
 
     function mkServerParams() {
@@ -176,18 +185,21 @@ export default function ShEx2Shacl(props) {
                 <Col>
                     <Form onSubmit={handleSubmit}>
                         <ShExTabs activeTab={shExActiveTab}
-                            handleTabChange={handleShExTabChange}
+                                  handleTabChange={handleShExTabChange}
 
-                            textAreaValue={shExTextArea}
-                            handleByTextChange={handleShExByTextChange}
+                                  textAreaValue={shExTextArea}
+                                  handleByTextChange={handleShExByTextChange}
 
-                            shExUrl={shExUrl}
-                            handleShExUrlChange={handleShExUrlChange}
+                                  shExUrl={shExUrl}
+                                  handleShExUrlChange={handleShExUrlChange}
 
-                            handleFileUpload={handleShExFileUpload}
+                                  handleFileUpload={handleShExFileUpload}
 
-                            shExFormat={shExFormat}
-                            handleShExFormatChange={handleShExFormatChange}
+                                  dataFormat={shExFormat}
+                                  handleShExFormatChange={handleShExFormatChange}
+                                  setCodeMirror = { (cm) => {setYashe(cm);} }
+                                  fromParams={fromParamsShEx}
+                                  resetFromParams={() => setFromParamsShEx(false) }
                         />
 
                         <SelectFormat name="SHACL format"
