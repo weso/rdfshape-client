@@ -25,6 +25,8 @@ function InputTabsWithFormat(props) {
 
                        byFileName={props.byFileName}
                        handleFileUpload={props.handleFileUpload}
+                       fromParams={props.fromParams}
+                       resetFromParams={props.resetFromParams}
             />
             <SelectFormat name={props.nameFormat}
                           selectedFormat={props.textFormat}
@@ -55,6 +57,8 @@ InputTabsWithFormat.propTypes = {
     defaultFormat: PropTypes.string.isRequired,
     handleFormatChange: PropTypes.func.isRequired,
     urlFormats: PropTypes.string.isRequired,
+    resetFromParams: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool.isRequired
 };
 
 InputTabsWithFormat.defaultProps = {

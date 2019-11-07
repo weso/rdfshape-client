@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import {Controlled as CodeMirror} from "react-codemirror2";
 import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
@@ -13,6 +13,16 @@ require("codemirror/mode/javascript/javascript.js");
 require("codemirror/theme/midnight.css");
 
 function Code(props) {
+    const [editor, setEditor] = useState(null);
+
+    useEffect(() => {
+      if (editor) {
+          if (props.fromParams) {
+              editor.setValue(props.value);
+              props.resetFromParams();
+          }
+      }
+    }, [props.value, props.fromParams, props.resetFromParams]);
 
     const options = {
         mode: props.mode,
@@ -29,12 +39,18 @@ function Code(props) {
                                        theme={props.theme}
                                        onChange={()=> null}
                                        setCodeMirror = {props.setCodeMirror}
-                                       options={options} />;
+                                       options={options}
+                                       fromParams={props.fromParams}
+                                       resetFromParams={props.resetFromParams}
+        />;
         break;
         case 'turtle': code = <TurtleForm value={props.value}
                                        theme={props.theme}
                                        onChange={()=> null}
-                                       options={options} />;
+                                       options={options}
+                                       fromParams={props.fromParams}
+                                       resetFromParams={props.resetFromParams}
+        />;
         break;
         default: code =
             <CodeMirror
@@ -43,6 +59,7 @@ function Code(props) {
              onBeforeChange={(_editor, _data, val) => {
                 props.onChange(val);
              }}
+             editorDidMount={editor => { setEditor(editor) }}
             />
 
     }

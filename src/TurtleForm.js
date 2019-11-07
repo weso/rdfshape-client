@@ -24,7 +24,10 @@ function TurtleForm(props) {
             setYate(y);
         } else if (props.fromParams) {
             yate.setValue(props.value);
-            props.resetFromParams();
+            if (props.resetFromParams) props.resetFromParams();
+            else {
+                console.error(`resetFromParams is not a function...`)
+            }
         }
     }, [yate,
         props.onChange,
@@ -43,8 +46,10 @@ TurtleForm.propTypes = {
 //    id: PropTypes.string.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func.isRequired,
-    placeholder: PropTypes.string
-}
+    placeholder: PropTypes.string,
+    resetFromParams: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool.isRequired
+};
 
 TurtleForm.defaultProps = {
     value: ''

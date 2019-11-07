@@ -32,6 +32,8 @@ function InputTabs(props) {
                             textFormat={props.textFormat}
                             inputForm = {props.inputForm}
                             setCodeMirror = { props.setCodeMirror }
+                            fromParams={props.fromParams}
+                            resetFromParams={props.resetFromParams}
                     />
                 </Tab>
                 <Tab eventKey={API.byUrlTab} title="By URL">
@@ -67,6 +69,8 @@ InputTabs.propTypes = {
     byURLPlaceholder: PropTypes.string,
     byFileName: PropTypes.string,
     handleFileUpload: PropTypes.func.isRequired,
+    resetFromParams: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool.isRequired
 };
 
 InputTabs.defaultProps = {

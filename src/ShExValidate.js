@@ -49,8 +49,9 @@ function ShExValidate(props) {
     const [shapeMapUrl, setShapeMapUrl] = useState('');
     const [shapeMapFile, setShapeMapFile] = useState(null);
     const [shapeMapActiveTab, setShapeMapActiveTab] = useState('byText');
-    const [fromParams, setFromParams] = useState(false);
+    const [fromParamsShEx, setFromParamsShEx] = useState(false);
     const [fromParamsData, setFromParamsData] = useState(false);
+    const [fromParamsShapeMap, setFromParamsShapeMap] = useState(false);
 
     const [endpoint, setEndpoint] = useState('');
 
@@ -125,12 +126,8 @@ function ShExValidate(props) {
             setShExActiveTab(API.byTextTab);
             const schema = params['schema'];
             setShExTextArea(schema);
-            setFromParams(true);
+            setFromParamsShEx(true);
             if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
-            /*if (yashe) {
-                yashe.setValue(schema);
-                yashe.refresh();
-            }*/
         }
         if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
@@ -148,6 +145,7 @@ function ShExValidate(props) {
         if (params['shapeMap']) {
             setShapeMapActiveTab(API.byTextTab);
             setShapeMapTextArea(params['shapeMap'])
+            setFromParamsShapeMap(true);
         }
         if (params['shapeMapFormat']) setShapeMapFormat(params['shapeMapFormat']);
         if (params['shapeMapUrl']) {
@@ -339,9 +337,8 @@ function ShExValidate(props) {
                               dataFormat={shExFormat}
                               handleShExFormatChange={handleShExFormatChange}
                               setCodeMirror = { (cm) => {setYashe(cm);} }
-                              fromParams={fromParams}
-                              resetFromParams={() => setFromParams(false) }
-
+                              fromParams={fromParamsShEx}
+                              resetFromParams={() => setFromParamsShEx(false) }
                     />
                             </Col>
                         </Row>
@@ -360,13 +357,15 @@ function ShExValidate(props) {
 
                               dataFormat={shapeMapFormat}
                               handleShapeMapFormatChange={handleShapeMapFormatChange}
+                              fromParams={fromParamsShapeMap}
+                              resetFromParams={() => setFromParamsShapeMap(false)}
                     />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
+                    </Col>
+                </Row>
+                <Row>
+                <Col>
                     <Button variant="primary" type="submit">Validate</Button>
-                            </Col>
+                     </Col>
                         </Row>
                 </Form>
             </Container>

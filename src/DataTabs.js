@@ -52,7 +52,9 @@ DataTabs.propTypes = {
     handleDataUrlChange: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
     dataFormat: PropTypes.string.isRequired,
-    handleDataFormatChange: PropTypes.func.isRequired
+    handleDataFormatChange: PropTypes.func.isRequired,
+    resetFromParams: PropTypes.func,
+    fromParams: PropTypes.bool
 };
 
 DataTabs.defaultProps = {

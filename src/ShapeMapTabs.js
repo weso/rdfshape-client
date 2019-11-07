@@ -27,6 +27,8 @@ function ShapeMapTabs(props) {
             textFormat={props.shapeMapFormat}
             handleFormatChange={props.handleShapeMapFormatChange}
             urlFormats={API.shapeMapFormats}
+            fromParams={props.fromParams}
+            resetFromparams={props.resetFromParams}
         />
     </div>
     );
@@ -39,7 +41,9 @@ ShapeMapTabs.propTypes = {
     handleFileUpload: PropTypes.func.isRequired,
     handleShapeMapUrlChange: PropTypes.func.isRequired,
     shapeMapFormat: PropTypes.string.isRequired,
-    handleShapeMapFormatChange: PropTypes.func.isRequired
+    handleShapeMapFormatChange: PropTypes.func.isRequired,
+    resetFromParams: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool.isRequired
 };
 
 ShapeMapTabs.defaultProps = {

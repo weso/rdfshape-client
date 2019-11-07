@@ -11,6 +11,7 @@ import { shExParamsFromQueryParams, convertTabSchema} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
+import Col from "react-bootstrap/Col";
 
 const url = API.schemaVisualize ;
 
@@ -24,10 +25,15 @@ function ShExVisualize(props) {
     const [shExUrl, setShExUrl] = useState("");
     const [shExFile, setShExFile] = useState(null);
     const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
+    const [fromParamsShEx, setFromParamsShEx] = useState(false);
+    const [yashe, setYashe] = useState(null);
 
     function handleShExTabChange(value) { setShExActiveTab(value); }
     function handleShExFormatChange(value) {  setShExFormat(value); }
-    function handleShExByTextChange(value) { setShExTextArea(value); }
+    function handleShExByTextChange(value) {
+        setShExTextArea(value);
+        if (yashe) { yashe.refresh(); }
+    }
     function handleShExUrlChange(value) { setShExUrl(value); }
     function handleShExFileUpload(value) { setShExFile(value); }
 
@@ -76,6 +82,8 @@ function ShExVisualize(props) {
         if (params['shEx']) {
             setShExActiveTab(API.byTextTab);
             setShExTextArea(params['shEx']);
+            setFromParamsShEx(true);
+            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
         }
         if (params['shExFormat']) setShExFormat(params['shExFormat']);
         if (params['shExUrl']) {
@@ -139,8 +147,11 @@ function ShExVisualize(props) {
 
                               handleFileUpload={handleShExFileUpload}
 
-                              shExFormat={shExFormat}
+                              dataFormat={shExFormat}
                               handleShExFormatChange={handleShExFormatChange}
+                              setCodeMirror = { (cm) => {setYashe(cm);} }
+                              fromParams={fromParamsShEx}
+                              resetFromParams={() => setFromParamsShEx(false) }
                     />
                     <Button variant="primary" type="submit">Visualize</Button>
                 </Form>

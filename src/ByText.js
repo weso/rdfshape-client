@@ -23,6 +23,8 @@ function ByText(props) {
                            setCodeMirror={props.setCodeMirror}
                            placeholder={props.placeholder}
                            readonly='false'
+                           fromParams={props.fromParams}
+                           resetFromParams={props.resetFromParams}
          />
      }
      return (
@@ -40,7 +42,9 @@ ByText.propTypes = {
     setCodeMirror: PropTypes.func,
     placeholder: PropTypes.string,
     textFormat: PropTypes.string,
-    importForm: PropTypes.element
+    importForm: PropTypes.element,
+    resetFromParams: PropTypes.func.isRequired,
+    fromParams: PropTypes.bool.isRequired
 };
 
 ByText.defaultProps = {
