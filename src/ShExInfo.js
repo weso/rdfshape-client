@@ -11,6 +11,7 @@ import {convertTabSchema, shExParamsFromQueryParams} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
+import Col from "react-bootstrap/Col";
 
 const url = API.schemaInfo ;
 
@@ -24,10 +25,16 @@ function ShExInfo(props) {
   const [shExUrl, setShExUrl] = useState('');
   const [shExFile, setShExFile] = useState(null);
   const [shExActiveTab,setShExActiveTab] = useState(API.defaultTab);
+  const [yashe, setYashe] = useState(null);
+  const [fromParamsShEx, setFromParamsShEx] = useState(false);
 
   function handleShExTabChange(value) { setShExActiveTab(value); }
   function handleShExFormatChange(value) { setShExFormat(value); }
-  function handleShExByTextChange(value) { setShExTextArea(value); }
+  function handleShExByTextChange(value, y) {
+        console.log(`handlingShExByTexthange`)
+        setShExTextArea(value);
+        if (yashe) { yashe.refresh(); }
+    }
   function handleShExUrlChange(value) { setShExUrl(value); }
   function handleShExFileUpload(value) { setShExFile(value); }
 
@@ -44,18 +51,24 @@ function ShExInfo(props) {
     );
 
     function updateState(params) {
-        if (params['shEx']) {
+        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
+        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
+        if (params['schema']) {
             setShExActiveTab(API.byTextTab);
-            setShExTextArea(params['shEx'])
+            const schema = params['schema'];
+            setShExTextArea(schema);
+            setFromParamsShEx(true);
+            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
         }
-        if (params['shExFormat']) setShExFormat(params['shExFormat']);
-        if (params['shExUrl']) {
+        if (params['schemaURL']) {
             setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['shExUrl']);
+            setShExUrl(params['schemaURL'])
+            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
         }
-        if (params['shExFile']) {
+        if (params['schemaFile']) {
             setShExActiveTab(API.byFileTab);
-            setShExFile(params['shExFile']);
+            setShExFile(params['schemaFile'])
+            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
         }
     }
 
@@ -120,20 +133,23 @@ function ShExInfo(props) {
                     }
                     { permalink &&  <Permalink url={permalink} /> }
                   <Form onSubmit={handleSubmit}>
-                    <ShExTabs activeTab={shExActiveTab}
-                              handleTabChange={handleShExTabChange}
+                      <ShExTabs activeTab={shExActiveTab}
+                                handleTabChange={handleShExTabChange}
 
-                              textAreaValue={shExTextArea}
-                              handleByTextChange={handleShExByTextChange}
+                                textAreaValue={shExTextArea}
+                                handleByTextChange={handleShExByTextChange}
 
-                              shExUrl={shExUrl}
-                              handleShExUrlChange={handleShExUrlChange}
+                                shExUrl={shExUrl}
+                                handleShExUrlChange={handleShExUrlChange}
 
-                              handleFileUpload={handleShExFileUpload}
+                                handleFileUpload={handleShExFileUpload}
 
-                              shExFormat={shExFormat}
-                              handleShExFormatChange={handleShExFormatChange}
-                    />
+                                dataFormat={shExFormat}
+                                handleShExFormatChange={handleShExFormatChange}
+                                setCodeMirror = { (cm) => {setYashe(cm);} }
+                                fromParams={fromParamsShEx}
+                                resetFromParams={() => setFromParamsShEx(false) }
+                      />
                     <Button variant="primary" type="submit">Info about ShEx schema</Button>
                 </Form>
             </Container>
