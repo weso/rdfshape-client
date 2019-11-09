@@ -3,11 +3,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import TurtleForm from '../TurtleForm'
-import Form from "react-bootstrap/Form";
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
 
 function TestYate(props)  {
+    const [options,setOptions] = useState({readOnly:false});
     const [turtle,setTurtle] = useState('');
     const [msg,setMsg] = useState('');
 
@@ -15,15 +13,22 @@ function TestYate(props)  {
      <div>
        <h1>YATE example</h1>
        <TurtleForm id="turtleArea1"
-                      value={turtle}
-                      onChange={(value) => setTurtle(value)}
-                  />
+                   value={turtle}
+                   options={options}
+                   onChange={(value) => setTurtle(value)}
+       />
        <br/>
        <Button variant="primary"
                 onClick={() => {
-                setMsg(`TextArea value: \nShEx: ${turtle}\n`)
+                setMsg(`TextArea value: \nShEx: ${turtle}\nOptions:${JSON.stringify(options)}\n`)
                }}
                type="submit">See Value</Button>
+       <Button variant="secondary"
+                 onClick={() => {
+                     setOptions({...options, readOnly: !options.readOnly})
+                 }}
+                 type="submit">Change Reaonly Status</Button>
+
         <Alert variant="primary"><pre>{msg}</pre></Alert>
      </div>
     );

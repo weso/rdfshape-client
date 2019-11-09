@@ -9,7 +9,7 @@ import API from "./API";
 import axios from "axios";
 import SelectFormat from "./SelectFormat";
 import ResultDataConvert from "./results/ResultDataConvert";
-import {dataParamsFromQueryParams, convertTabData} from "./Utils";
+import {dataParamsFromQueryParams, convertTabData, InitialData, updateStateData, paramsFromStateData} from "./Utils";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import {mkPermalink, params2Form} from "./Permalink";
@@ -21,25 +21,22 @@ function DataConvert(props) {
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error,setError] = useState(null);
-    const [dataTextArea, setDataTextArea] = useState("");
-    const [dataFormat, setDataFormat] = useState(API.defaultDataFormat);
-    const [dataUrl, setDataUrl] = useState("");
-    const [dataFile, setDataFile] = useState(null);
-    const [dataActiveTab, setDataActiveTab] = useState(API.defaultTab);
+    const [data,setData] = useState(InitialData);
     const [targetDataFormat, setTargetDataFormat] = useState(API.defaultDataFormat);
 
-    function handleTabChange(value) { setDataActiveTab(value); }
-    function handleByTextChange(value) { setDataTextArea(value); }
-    function handleDataFormatChange(value) {  setDataFormat(value); }
-    function handleDataUrlChange(value) { setDataUrl(value); }
-    function handleFileUpload(value) { setDataFile(value); }
+    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
+    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
+    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
+    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
+    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
     function handleTargetDataFormatChange(value) { setTargetDataFormat(value); }
 
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
             let params = dataParamsFromQueryParams(queryParams);
-            params['targetDataFormat']=queryParams.targetDataFormat
+            params['targetDataFormat']=queryParams.targetDataFormat;
+            setPermalink(mkPermalink(API.dataConvertRoute,params));
             const formData = params2Form(params);
             postConvert(url, formData, () => updateState(params))
         }
@@ -48,21 +45,8 @@ function DataConvert(props) {
    );
 
     function updateState(params) {
-        if (params['data']) {
-            setDataActiveTab(API.byTextTab);
-            setDataTextArea(params['data'])
-        }
-        if (params['dataFormat']) 
-          setDataFormat(params['dataFormat']);
-        if (params['dataUrl']) {
-            setDataActiveTab(API.byUrlTab);
-            setDataUrl(params['dataUrl']);
-        }
-        if (params['dataFile']) {
-          setDataActiveTab(API.byFileTab);
-          setDataFile(params['dataFile']);
-        }
-        if (params['targetDataFormat']) 
+        setData(updateStateData(params,data));
+        if (params['targetDataFormat'])
           setTargetDataFormat(params['targetDataFormat']);
     }
 
@@ -74,41 +58,19 @@ function DataConvert(props) {
             })
             .catch(function (error) {
                 setError(error);
-                console.log('Error doing server request')
+                console.log('Error doing server request');
                 console.log(error);
             });
     }
 
-    function paramsFromStateData() {
-        let params = {};
-        params['activeSchemaTab'] = convertTabData(dataActiveTab);
-        params['dataFormat'] = dataFormat;
-        switch (dataActiveTab) {
-            case API.byTextTab:
-                params['data'] = dataTextArea;
-                params['dataFormatTextArea'] = dataFormat;
-                break;
-            case API.byUrlTab:
-                params['dataURL'] = dataUrl;
-                params['dataFormatUrl'] = dataFormat;
-                break;
-            case API.byFileTab:
-                params['dataFile'] = dataFile;
-                params['dataFormatFile'] = dataFormat;
-                break;
-            default:
-        }
-        return params;
-    }
-
     function handleSubmit(event) {
-        let params = paramsFromStateData();
+        event.preventDefault();
+        let params = paramsFromStateData(data);
         params['targetDataFormat'] = targetDataFormat ;
         let formData = params2Form(params);
         let permalink = mkPermalink(API.dataConvertRoute, params);
         setPermalink(permalink);
-        postConvert(url,formData)
-        event.preventDefault();
+        postConvert(url,formData);
     }
 
  return (
@@ -119,7 +81,7 @@ function DataConvert(props) {
              <Col>
                  { loading ? <Pace color="#27ae60"/> :
                    result ?  <ResultDataConvert result={result}
-                                                  permalink={permalink} /> :
+                                                permalink={permalink} /> :
                     null
                  }
              </Col>
@@ -127,19 +89,21 @@ function DataConvert(props) {
              }
           <Col>
            <Form onSubmit={handleSubmit}>
-               <DataTabs activeTab={dataActiveTab}
-                         handleTabChange={handleTabChange}
+               <DataTabs activeTab={data.dataActiveTab}
+                         handleTabChange={handleDataTabChange}
 
-                         textAreaValue={dataTextArea}
-                         handleByTextChange={handleByTextChange}
+                         textAreaValue={data.dataTextArea}
+                         handleByTextChange={handleDataByTextChange}
 
-                         dataUrl={dataUrl}
+                         dataUrl={data.dataUrl}
                          handleDataUrlChange={handleDataUrlChange}
 
-                         handleFileUpload={handleFileUpload}
+                         handleFileUpload={handleDataFileUpload}
 
-                         dataFormat={dataFormat}
+                         dataFormat={data.dataFormat}
                          handleDataFormatChange={handleDataFormatChange}
+                         fromParams={data.fromParamsData}
+                         resetFromParams={() => setData({...data, fromParamsData: false}) }
                />
                <SelectFormat name="Target data format"
                              selectedFormat={targetDataFormat}

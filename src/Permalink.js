@@ -2,6 +2,8 @@ import React from 'react';
 import Button from "react-bootstrap/Button";
 import qs from 'query-string';
 import FormData from "form-data";
+import PropTypes from "prop-types";
+import SelectFormat from "./SelectFormat";
 
 
 export function mkPermalink(route, params) {
@@ -22,7 +24,7 @@ export function params2Form(params) {
 }
 
 function getHost() {
-    var port = window.location.port;
+    const port = window.location.port;
     return window.location.protocol + "//" +
         window.location.hostname + (port? ":" + port: "") ;
 }
@@ -33,3 +35,8 @@ export function Permalink(props) {
     else
         return null
 }
+
+Permalink.propTypes = {
+    url: PropTypes.string.isRequired,
+};
+

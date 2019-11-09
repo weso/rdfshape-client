@@ -9,9 +9,10 @@ function TurtleForm(props) {
 
     useEffect(() => {
         if (!yate) {
-            const options = { 
+            const options = { ...props.options,
                 placeholder: props.placeholder 
             };
+            console.log(`Initializing YATE with options: ${JSON.stringify(options)}`)
             const y = Yate.fromTextArea(
                 textAreaRef.current, 
                 options)
@@ -22,11 +23,17 @@ function TurtleForm(props) {
             y.setValue(props.value)
             y.refresh();
             setYate(y);
-        } else if (props.fromParams) {
-            yate.setValue(props.value);
-            if (props.resetFromParams) props.resetFromParams();
-            else {
-                console.error(`resetFromParams is not a function...`)
+        } else {
+            if (props.options) {
+                console.log(`Changing props.options.readOnly to ${props.options.readOnly}`)
+                yate.setOption('readOnly', props.options.readOnly)
+            }
+            if (props.fromParams) {
+                yate.setValue(props.value);
+                if (props.resetFromParams) props.resetFromParams();
+                else {
+                    console.error(`resetFromParams is not a function...`)
+                }
             }
         }
     }, [yate,
@@ -34,6 +41,7 @@ function TurtleForm(props) {
         props.placeholder,
         props.fromParams,
         props.resetFromParams,
+        props.options,
         props.value]
     );
 
@@ -47,6 +55,7 @@ TurtleForm.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
+//    options: PropTypes.object ,
     resetFromParams: PropTypes.func.isRequired,
     fromParams: PropTypes.bool.isRequired
 };

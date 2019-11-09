@@ -60,7 +60,7 @@ class API {
     static byTextTab = "byText";
     static byUrlTab = "byUrl";
     static byFileTab = "byFile";
-    static defaultTab = "byTextTab";
+    static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";

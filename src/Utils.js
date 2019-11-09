@@ -1,6 +1,8 @@
 // import React from 'react';
 import Viz from 'viz.js/viz.js';
+import React, {Fragment} from "react";
 import API from "./API";
+import {ExternalLinkIcon} from "react-open-iconic-svg";
 
 const { Module, render } = require('viz.js/full.render.js');
 
@@ -52,11 +54,216 @@ export function maybeAdd(maybe,name,obj) {
 }
 
 export function dataParamsFromQueryParams(params) {
+    // This code is redundant, it could be just return params
+    // We keep it because we could do some error checking
     let newParams = {};
     if (params.data) newParams["data"] = params.data ;
     if (params.dataFormat) newParams["dataFormat"] = params.dataFormat ;
     if (params.dataUrl) newParams["dataUrl"] = params.dataUrl ;
     return newParams;
+}
+
+export const InitialData = {
+    dataActiveTab: API.defaultTab,
+    dataTextArea: '',
+    dataUrl: '',
+    dataFile: null,
+    dataFormat: API.defaultDataFormat,
+    fromParamsData: false
+} ;
+
+export function showQualify(node, prefixMap) {
+    console.log(`node: ${JSON.stringify(node)}`)
+    if (node) {
+        const relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
+        const matchBase = relativeBaseRegex.exec(node);
+        if (matchBase) {
+            const rawNode = matchBase[1];
+            return {
+                type: 'RelativeIRI',
+                uri: rawNode,
+                str: `<${rawNode}>`,
+                prefix: '',
+                localName: '',
+                node: node
+            };
+        } else {
+            const iriRegexp = /^<(.*)>$/g;
+            const matchIri = iriRegexp.exec(node);
+            if (matchIri) {
+                const rawNode = matchIri[1];
+                for (const key in prefixMap) {
+                    if (rawNode.startsWith(prefixMap[key])) {
+                        const localName = rawNode.slice(prefixMap[key].length);
+                        return {
+                            type: 'QualifiedName',
+                            uri: rawNode,
+                            prefix: key,
+                            localName: localName,
+                            str: `${key}:${localName}`,
+                            node: node
+                        };
+                    }
+                }
+                return {
+                    type: 'FullIRI',
+                    uri: rawNode,
+                    prefix: '',
+                    localName: '',
+                    str: `<${rawNode}>`,
+                    node: node
+                };
+            }
+            // const matchString =
+            const datatypeLiteralRegex = /\"(.*)\"\^\^(.*)/g
+            const matchDatatypeLiteral = datatypeLiteralRegex.exec(node);
+            if (matchDatatypeLiteral) {
+                const literal = matchDatatypeLiteral[1]
+                const datatype = matchDatatypeLiteral[2]
+                const datatypeQualified = showQualify(datatype, prefixMap)
+                return {
+                    type: 'Literal',
+                    prefix: '',
+                    localName: '',
+                    str: `"${literal}"^^<${datatypeQualified.str}>`,
+                    node: node
+                }
+            }
+            const langLiteralRegex = /\"(.*)\"@(.*)/g
+            const matchLangLiteral = langLiteralRegex.exec(node)
+            if (matchLangLiteral) {
+                const literal = matchLangLiteral[1]
+                const lang = matchLangLiteral[2]
+                return {
+                    type: 'LangLiteral',
+                    prefix: '',
+                    localName: '',
+                    str: `"${literal}"@${lang}`,
+                    node: node
+                }
+            }
+            if (node.match(/^[0-9\"\'\_]/)) return {
+                type: 'Literal',
+                prefix: '',
+                localName: '',
+                str: node,
+                node: node
+            };
+            console.log("Unknown format for node: " + node);
+            return {
+                type: 'Unknown',
+                prefix: '',
+                localName: '',
+                str: node,
+                node: node
+            };
+        }
+    } else {
+        return {
+            type: 'empty',
+            prefix: '',
+            localName: '',
+            str: '',
+            node: node
+        }
+    }
+}
+
+export function showQualified(qualified, prefixes) {
+    console.log(`showQualified`)
+    switch (qualified.type) {
+        case 'RelativeIRI': return <span>{qualified.str}</span>
+        case 'QualifiedName':
+            console.log(`QualifiedName: ${qualified.prefix}`)
+            if (prefixes.includes(qualified.prefix)) {
+                return <Fragment>
+                    <a href={API.wikidataOutgoingRoute + "?node=" + encodeURIComponent(qualified.uri)}>{qualified.str}</a>
+                    <a href={qualified.uri}><ExternalLinkIcon /></a>
+                </Fragment>
+            } else {
+                return <fragment>{qualified.str} <a href={qualified.uri}><ExternalLinkIcon/></a></fragment>
+            }
+        case 'FullIRI': return <a href={qualified.uri}>{qualified.str}</a>
+        case 'Literal' : return <span>{qualified.str}</span>
+        case 'LangLiteral' : return <span>{qualified.str}</span>
+        default:
+            console.log(`Unknown type for qualified value`)
+            return <span>qualified.str</span>
+    }
+}
+
+export function cnvValueFromSPARQL(value) {
+    switch (value.type) {
+        case 'uri': return `<${value.value}>`;
+        case 'literal':
+            if (value.datatype) return `"${value.value}"^^<${value.datatype}>`;
+            if (value['xml:lang']) return `"${value.value}"@${value['xml:lang']}`
+            return `"${value.value}"`
+        default:
+            console.error(`cnvValue: Unknown value type for ${value}`)
+            return value
+    }
+}
+
+export const InitialQuery = {
+    queryActiveTab: API.defaultTab,
+    queryTextArea: '',
+    queryUrl: '',
+    queryFile: null,
+    fromParamsQuery: false
+} ;
+
+
+export function paramsFromStateData(data) {
+    let params = {};
+    params['activeTab'] = convertTabData(data.dataActiveTab);
+    params['dataFormat'] = data.dataFormat;
+    switch (data.dataActiveTab) {
+        case API.byTextTab:
+            params['data'] = data.dataTextArea;
+            params['dataFormatTextArea'] = data.dataFormat;
+            break;
+        case API.byUrlTab:
+            params['dataURL'] = data.dataUrl;
+            params['dataFormatUrl'] = data.dataFormat;
+            break;
+        case API.byFileTab:
+            params['dataFile'] = data.dataFile;
+            params['dataFormatFile'] = data.dataFormat;
+            break;
+        default:
+    }
+    return params;
+}
+
+export function updateStateData(params, data) {
+    if (params['data']) {
+        return { ...data,
+            dataActiveTab: API.byTextTab,
+            dataTextArea: params['data'],
+            fromParamsData: true,
+            dataFormat: params['dataFormat']? params['dataFormat'] : data.dataFormat
+        } ;
+    }
+    if (params['dataUrl']) {
+        return {
+            ...data,
+            dataActiveTab: API.byUrlTab,
+            dataUrl: params['dataUrl'],
+            fromParamsData: false,
+            dataFormat: params['dataFormat']? params['dataFormat'] : data.dataFormat
+       }
+    }
+    if (params['dataFile']) {
+        return {
+            ...data,
+            dataActiveTab: API.byFileTab,
+            dataUrl: params['dataFile'],
+            fromParamsData: false,
+            dataFormat: params['dataFormat'] ? params['dataFormat'] : data.dataFormat
+        }
+    }
+    return data;
 }
 
 export function shExParamsFromQueryParams(params) {
@@ -81,32 +288,6 @@ export function endpointParamsFromQueryParams(params) {
     return newParams;
 }
 
-export function paramsFromStateData(state) {
-    const activeTab = state.dataActiveTab;
-    const dataTextArea = state.dataTextArea;
-    const dataFormat = state.dataFormat;
-    const dataUrl = state.dataUrl;
-    const dataFile = state.dataFile;
-    let params = {};
-    params['activeTab'] = convertTabData(activeTab);
-    params['dataFormat'] = dataFormat;
-    switch (activeTab) {
-        case API.byTextTab:
-            params['data'] = dataTextArea;
-            params['dataFormatTextArea']=dataFormat;
-            break;
-        case API.byUrlTab:
-            params['dataURL'] = dataUrl;
-            params['dataFormatUrl']=dataFormat;
-            break;
-        case API.byFileTab:
-            params['dataFile'] = dataFile;
-            params['dataFormatFile']=dataFormat;
-            break;
-        default:
-    }
-   return params;
-}
 
 export function paramsFromStateEndpoint(state) {
     let params = {};

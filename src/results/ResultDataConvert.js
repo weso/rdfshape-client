@@ -21,6 +21,7 @@ function ResultDataConvert(props) {
          {result.result && result.dataFormat && (
          <Code
            value={result.result}
+           readOnly
            mode={mkMode(result.dataFormat)}
            theme="material"
          />)}

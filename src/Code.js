@@ -28,7 +28,7 @@ function Code(props) {
         mode: props.mode,
         theme: props.theme,
         lineNumbers: props.linenumbers,
-        readonly: props.readonly,
+        readOnly: props.readOnly,
         placeholder: props.placeholder
     };
 
@@ -72,7 +72,7 @@ Code.propTypes = {
     value: PropTypes.string,
     mode: PropTypes.string,
     linenumbers: PropTypes.bool,
-    readonly: PropTypes.bool,
+    readOnly: PropTypes.bool,
     theme: PropTypes.string,
     onChange: PropTypes.func,
     placeholder: PropTypes.string

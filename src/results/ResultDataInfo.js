@@ -18,8 +18,10 @@ function ResultDataInfo(props) {
                     <Code
                         value={result.data}
                         mode={mode}
-                        readonly={true}
+                        readOnly={true}
                         onChange={() => {}}
+                        fromParams={props.fromParams}
+                        resetFromParams={props.resetFromParams}
                     />
                 )}
                 <ul>
