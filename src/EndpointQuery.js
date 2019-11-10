@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {Fragment, useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -8,68 +8,48 @@ import API from "./API";
 import axios from "axios";
 import {mkPermalink, params2Form} from "./Permalink";
 import ResultEndpointQuery from "./results/ResultEndpointQuery";
-import {convertTabQuery} from "./Utils"
+import {InitialQuery, paramsFromStateQuery} from "./Utils"
+import Col from "react-bootstrap/Col";
+import Pace from "react-pace-progress";
+import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
 
 function EndpointQuery(props) {
+    const [loading,setLoading] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState('');
     const [endpoint, setEndpoint] = useState('');
 
-    const [queryTextArea, setQueryTextArea] = useState('');
-    const [queryUrl, setQueryUrl] = useState('');
-    const [queryFile, setQueryFile] = useState('');
-    const [queryActiveTab, setQueryActiveTab] = useState('ByText');
+    const [query, setQuery] = useState(InitialQuery);
+
     const [permalink, setPermalink] = useState(null);
 
-    function handleTabChangeQuery(value) {
-        setQueryActiveTab(value)
-    }
-
-    function handleByTextChangeQuery(value) {
-        setQueryTextArea(value)
-    }
-
-    function handleUrlChangeQuery(value) {
-        setQueryUrl(value)
-    }
-
-    function handleFileUploadQuery(value) {
-        setQueryFile(value)
-    }
+    function handleQueryTabChange(value) { setQuery({...query, queryActiveTab: value}); }
+    function handleQueryByTextChange(value) { setQuery({...query, queryTextArea: value}); }
+    function handleQueryUrlChange(value) { setQuery( {...query, queryUrl: value}); }
+    function handleQueryFileUpload(value) { setQuery({...query, queryFile: value }); }
 
     function handleSubmit(event) {
-        const infoUrl = API.endpointQuery;
-        let params = {};
+        event.preventDefault();
+        let params = paramsFromStateQuery(query);
         params['endpoint'] = endpoint;
-        params['activeTab'] = convertTabQuery(queryActiveTab);
-        switch (queryActiveTab) {
-            case API.byTextTab:
-                params['query'] = queryTextArea;
-                break;
-            case API.byUrlTab:
-                params['queryURL'] = queryUrl;
-                break;
-            case API.byFileTab:
-                params['queryFile'] = queryFile;
-                break;
-            default:
-                console.log(`Unknown value for ${queryActiveTab}`)
-        }
         let formData = params2Form(params);
-        let pl = mkPermalink(API.endpointQueryRoute, params);
-        axios.post(infoUrl, formData)
-            .then(response => response.data)
+        setPermalink(mkPermalink(API.endpointQueryRoute, params));
+        postQuery(API.endpointQuery, formData)
+    }
+
+    function postQuery(url,formData,cb) {
+        setLoading(true);
+        axios.post(url,formData).then (response => response.data)
             .then((data) => {
-                setResult(data);
-                setPermalink(pl)
+                setLoading(false);
+                setResult({ result: data })
+                if (cb) cb();
             })
             .catch(function (error) {
-                const msg = `Error doing server request at ${infoUrl}: ${error}`;
-                console.log(msg);
-                setError(msg);
-            })
-        ;
-        event.preventDefault();
+                setLoading(false);
+                setError(error.message);
+            });
     }
 
     function handleEndpointChange(value) {
@@ -79,28 +59,35 @@ function EndpointQuery(props) {
     return (
         <Container fluid={true}>
             <h1>Endpoint query</h1>
-            <ResultEndpointQuery
-                result={result}
-                error={error}
-                permalink={permalink}
-            />
+            <Row>
+            { loading || result || permalink ?
+                <Fragment>
+                    <Col>
+                        {loading ? <Pace color="#27ae60"/> :
+                            error? <Alert variant='danger'>{error}</Alert> :
+                                result ? <ResultEndpointQuery result={result} error={error} permalink={permalink} />: null }
+                    </Col>
+                </Fragment> : null }
+            <Col>
             <Form onSubmit={handleSubmit}>
                 <EndpointInput value={endpoint}
                                handleOnChange={handleEndpointChange}/>
-                <QueryTabs activeTab={queryActiveTab}
-                           handleTabChange={handleTabChangeQuery}
+                <QueryTabs activeTab={query.queryActiveTab}
+                           handleTabChange={handleQueryTabChange}
 
-                           textAreaValue={queryTextArea}
-                           handleByTextChange={handleByTextChangeQuery}
+                           textAreaValue={query.queryTextArea}
+                           handleByTextChange={handleQueryByTextChange}
 
-                           urlValue={queryUrl}
-                           handleDataUrlChange={handleUrlChangeQuery}
+                           urlValue={query.queryUrl}
+                           handleDataUrlChange={handleQueryUrlChange}
 
-                           handleFileUpload={handleFileUploadQuery}
+                           handleFileUpload={handleQueryFileUpload}
                 />
                 <Button variant="primary"
                         type="submit">Query endpoint</Button>
             </Form>
+        </Col>
+        </Row>
         </Container>
     )
 }

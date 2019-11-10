@@ -1,21 +1,26 @@
-import React, {useState} from 'react';
+import React, {Fragment, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import API from "./API";
-import DataTabs from "./DataTabs"
-import QueryTabs from "./QueryTabs"
+import API from "../API";
+import DataTabs from "../DataTabs"
+import QueryTabs from "../QueryTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import ResultQuery from "./results/ResultQuery";
-import {InitialData, InitialQuery, paramsFromStateData, paramsFromStateQuery} from "./Utils";
-import {params2Form} from "./Permalink";
+import ResultQuery from "../results/ResultQuery";
+import {InitialData, InitialQuery, paramsFromStateData, paramsFromStateQuery} from "../Utils";
+import {params2Form} from "../Permalink";
+import Col from "react-bootstrap/Col";
+import Pace from "react-pace-progress";
+import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
 
 function DataQuery(props)  {
     const [data, setData] = useState(InitialData);
     const [result,setResult] = useState(null);
     const [query, setQuery] = useState(InitialQuery);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState('');
 
     function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
@@ -43,23 +48,34 @@ function DataQuery(props)  {
     }
 
     function postQuery(url, formData,cb) {
+        setLoading(true);
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
+                setLoading(false);
                 setResult({ result: data })
                 if (cb) cb();
             })
             .catch(function (error) {
+                setLoading(false);
                 setError(error.message);
-                console.log('Error doing server request')
-                console.log(error);
             });
-
     }
 
         return (
             <Container fluid={true}>
                 <h1>Data Query</h1>
-                <ResultQuery result={result} />
+                <Row>
+                    { loading || result || permalink ?
+                        <Fragment>
+                            <Col>
+                                {loading ? <Pace color="#27ae60"/> :
+                                    error? <Alert variant='danger'>{error}</Alert> :
+                                        result && result.result ?
+                                            <ResultQuery result={result.result} /> : null }
+                            </Col>
+                        </Fragment> : null
+                    }
+                    <Col>
                 <Form onSubmit={handleSubmit}>
                     <DataTabs activeTab={data.dataActiveTab}
                               handleTabChange={handleDataTabChange}
@@ -90,6 +106,8 @@ function DataQuery(props)  {
                     />
                     <Button variant="primary" type="submit">Query</Button>
                 </Form>
+                    </Col>
+                </Row>
             </Container>
         );
 }

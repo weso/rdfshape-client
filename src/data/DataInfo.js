@@ -2,14 +2,14 @@ import React, {useState, useEffect, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import API from "./API";
+import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-import DataTabs from "./DataTabs";
-import ResultDataInfo from "./results/ResultDataInfo";
+import DataTabs from "../DataTabs";
+import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
-import { mkPermalink, params2Form, Permalink} from "./Permalink";
-import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "./Utils";
+import { mkPermalink, params2Form, Permalink} from "../Permalink";
+import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
@@ -33,7 +33,7 @@ function DataInfo(props) {
             const queryParams = qs.parse(props.location.search);
             let dataParams = dataParamsFromQueryParams(queryParams);
             // const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
-            postDataInfo(API.dataInfo, params2Form(dataParams), () => updateStateData(dataParams,data));
+            postDataInfo(API.dataInfo, params2Form(dataParams), () => setData(updateStateData(dataParams,data)));
         }},
         [props.location.search]
     );

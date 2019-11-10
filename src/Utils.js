@@ -86,7 +86,7 @@ export function showQualify(node, prefixMap) {
                 prefix: '',
                 localName: '',
                 node: node
-            };
+            }
         } else {
             const iriRegexp = /^<(.*)>$/g;
             const matchIri = iriRegexp.exec(node);
@@ -142,14 +142,21 @@ export function showQualify(node, prefixMap) {
                     node: node
                 }
             }
-            if (node.match(/^[0-9\"\'\_]/)) return {
+          /*  if (node.match(/^[0-9\"\'\_]/)) return {
                 type: 'Literal',
                 prefix: '',
                 localName: '',
                 str: node,
                 node: node
-            };
-            console.log("Unknown format for node: " + node);
+            };*/
+          if (node.type === 'bnode') return {
+              type: 'BNode',
+              prefix: '',
+              localName: node.value,
+              str: `_:${node.value}`,
+              node: node
+          }
+          console.log(`ShowQualify: Unknown format for node: ${JSON.stringify(node)}`);
             return {
                 type: 'Unknown',
                 prefix: '',
@@ -170,7 +177,7 @@ export function showQualify(node, prefixMap) {
 }
 
 export function showQualified(qualified, prefixes) {
-    console.log(`showQualified`)
+    console.log(`showQualified ${JSON.stringify(qualified)}`)
     switch (qualified.type) {
         case 'RelativeIRI': return <span>{qualified.str}</span>
         case 'QualifiedName':
@@ -188,7 +195,7 @@ export function showQualified(qualified, prefixes) {
         case 'LangLiteral' : return <span>{qualified.str}</span>
         default:
             console.log(`Unknown type for qualified value`)
-            return <span>qualified.str</span>
+            return <span>{qualified.str}</span>
     }
 }
 
@@ -212,7 +219,6 @@ export const InitialQuery = {
     queryFile: null,
     fromParamsQuery: false
 } ;
-
 
 export function paramsFromStateData(data) {
     let params = {};

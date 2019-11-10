@@ -10,8 +10,9 @@ function ResultDataExtract(props) {
      } else
      if (result.error) {
          msg =
-             <div><p>Error: {result.error}</p>
-                </div>
+             <div>
+                 <p>Error: {result.error}</p>
+             </div>
      } else {
          msg = <div>
              <p>{result.msg}</p>
@@ -19,7 +20,9 @@ function ResultDataExtract(props) {
                  <Code
                      value={result.inferedShape}
                      mode="ShExC"
-                     readonly={true}
+                     readOnly={true}
+                     fromParams={props.fromParams}
+                     resetFromParams={props.resetFromParams}
                      linenumbers={true}
                      theme="material"
                  />

@@ -4,7 +4,6 @@ import BootstrapTable from "react-bootstrap-table-next";
 import EndpointInput from "../EndpointInput";
 import {cnvValueFromSPARQL, showQualified, showQualify} from "../Utils";
 
-
 class ResultQuery extends React.Component {
  render() {
      const result = this.props.result;
@@ -20,7 +19,7 @@ class ResultQuery extends React.Component {
                 </div>
      } else {
          const prefixes = [] ;
-         const table = parseData(result.result, prefixes);
+         const table = parseData(result, prefixes);
          msg = <div>
              <BootstrapTable
                  keyField='_id'

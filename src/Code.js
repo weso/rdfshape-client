@@ -38,7 +38,6 @@ function Code(props) {
         case 'shexc': code = <ShExForm value={props.value}
                                        theme={props.theme}
                                        onChange={()=> null}
-                                       setCodeMirror = {props.setCodeMirror}
                                        options={options}
                                        fromParams={props.fromParams}
                                        resetFromParams={props.resetFromParams}

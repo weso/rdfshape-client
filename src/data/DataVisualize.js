@@ -2,15 +2,15 @@ import React, {Fragment, useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import API from "./API";
-import DataTabs from "./DataTabs"
+import API from "../API";
+import DataTabs from "../DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import SelectGraphFormat from "./SelectGraphFormat";
-import {convertTabData, dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "./Utils";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import SelectGraphFormat from "../SelectGraphFormat";
+import {convertTabData, dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";
-import ShowSVG from "./ShowSVG";
+import ShowSVG from "../ShowSVG";
 import Viz from 'viz.js/viz.js';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
