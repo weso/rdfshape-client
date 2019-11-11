@@ -3,16 +3,16 @@ import Container from 'react-bootstrap/Container';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
-import { mkPermalink, params2Form, Permalink } from "./Permalink";
-import API from "./API";
+import { mkPermalink, params2Form, Permalink } from "../Permalink";
+import API from "../API";
 import Pace from "react-pace-progress";
-import ResultValidate from "./results/ResultValidate";
+import ResultValidate from "../results/ResultValidate";
 import Form from "react-bootstrap/Form";
-import QueryTabs from "./QueryTabs";
+import QueryTabs from "../QueryTabs";
 import Button from "react-bootstrap/Button";
-import {convertTabQuery} from "./Utils";
+import {convertTabQuery} from "../Utils";
 import axios from "axios";
-import ResultEndpointQuery from "./results/ResultEndpointQuery";
+import ResultEndpointQuery from "../results/ResultEndpointQuery";
 
 function WikidataQuery(props) {
     const [result, setResult] = useState('');

@@ -3,9 +3,9 @@ import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointInput from "./EndpointInput";
-import ResultEndpointInfo from "./results/ResultEndpointInfo";
-import API from "./API";
-import {mkPermalink, params2Form} from "./Permalink";
+import ResultEndpointInfo from "../results/ResultEndpointInfo";
+import API from "../API";
+import {mkPermalink, params2Form} from "../Permalink";
 import axios from "axios";
 
 function EndpointInfo(props) {

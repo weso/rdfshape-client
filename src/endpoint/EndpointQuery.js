@@ -3,12 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointInput from "./EndpointInput";
-import QueryTabs from "./QueryTabs";
-import API from "./API";
+import QueryTabs from "../QueryTabs";
+import API from "../API";
 import axios from "axios";
-import {mkPermalink, params2Form} from "./Permalink";
-import ResultEndpointQuery from "./results/ResultEndpointQuery";
-import {InitialQuery, paramsFromStateQuery} from "./Utils"
+import {mkPermalink, params2Form} from "../Permalink";
+import ResultEndpointQuery from "../results/ResultEndpointQuery";
+import {InitialQuery, paramsFromStateQuery} from "../Utils"
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";

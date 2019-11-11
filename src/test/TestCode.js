@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Code from "../Code";
+import Code from "../components/Code";
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
 

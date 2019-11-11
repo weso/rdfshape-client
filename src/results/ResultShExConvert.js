@@ -1,5 +1,5 @@
 import React from 'react';
-import Code from '../Code'
+import Code from '../components/Code'
 import { Permalink } from "../Permalink"
 import { mkMode } from "../Utils"
 

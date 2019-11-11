@@ -5,12 +5,12 @@ import Row from 'react-bootstrap/Row';
 import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "./API";
+import API from "../API";
 import axios from "axios";
-import ResultShExConvert from "./results/ResultShExConvert";
-import SelectFormat from "./SelectFormat";
-import { shExParamsFromQueryParams, convertTabSchema} from "./Utils";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import ResultShExConvert from "../results/ResultShExConvert";
+import SelectFormat from "../SelectFormat";
+import { shExParamsFromQueryParams, convertTabSchema} from "../Utils";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 

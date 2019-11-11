@@ -4,14 +4,13 @@ import Container from 'react-bootstrap/Container';
 import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "./API";
+import API from "../API";
 import axios from "axios";
-import ResultShExInfo from "./results/ResultShExInfo";
-import {convertTabSchema, shExParamsFromQueryParams} from "./Utils";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import ResultShExInfo from "../results/ResultShExInfo";
+import {convertTabSchema, shExParamsFromQueryParams} from "../Utils";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
-import Col from "react-bootstrap/Col";
 
 const url = API.schemaInfo ;
 

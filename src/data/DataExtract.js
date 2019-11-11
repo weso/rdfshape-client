@@ -7,8 +7,8 @@ import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 import ResultDataExtract from "../results/ResultDataExtract";
-import DataTabs from "../DataTabs";
-import NodeSelector from "../NodeSelector";
+import DataTabs from "./DataTabs";
+import NodeSelector from "../shex/NodeSelector";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils"
 import qs from "query-string";

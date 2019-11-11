@@ -1,5 +1,5 @@
 import React from 'react';
-import Cyto from "../Cyto";
+import Cyto from "../components/Cyto";
 import Container from "react-bootstrap/Container";
 import {dot2svg} from "../Utils";
 import Viz from 'viz.js/viz.js';

@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-import DataTabs from "../DataTabs";
+import DataTabs from "./DataTabs";
 import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";

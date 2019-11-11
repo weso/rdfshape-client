@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "../DataTabs"
+import DataTabs from "./DataTabs"
 import QueryTabs from "../QueryTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";

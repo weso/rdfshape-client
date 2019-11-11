@@ -3,12 +3,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "./API";
-import DataTabs from "./DataTabs"
+import DataTabs from "./data/DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import {dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
-import Cyto from "./Cyto";
+import Cyto from "./components/Cyto";
 import Pace from 'react-pace-progress';
 import qs from 'query-string';
 

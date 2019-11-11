@@ -1,24 +1,24 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import DataTabs from "./DataTabs"
+import DataTabs from "../data/DataTabs"
 import ShExTabs from "./ShExTabs"
 import ShapeMapTabs from "./ShapeMapTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "./API";
+import API from "../API";
 import axios from "axios";
-import ResultValidate from "./results/ResultValidate";
+import ResultValidate from "../results/ResultValidate";
 import {
     endpointParamsFromQueryParams,
     shExParamsFromQueryParams,
     shapeMapParamsFromQueryParams,
     paramsFromStateEndpoint,
     paramsFromStateShapeMap,
-    paramsFromStateShEx} from "./Utils";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+    paramsFromStateShEx} from "../Utils";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
-import EndpointInput from "./EndpointInput";
+import EndpointInput from "../endpoint/EndpointInput";
 
 const url = API.schemaValidate ;
 

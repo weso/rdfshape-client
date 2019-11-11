@@ -1,5 +1,5 @@
 import React from 'react';
-import Code from '../Code';
+import Code from '../components/Code';
 import { mkMode } from "../Utils";
 import Alert from 'react-bootstrap/Alert';
 

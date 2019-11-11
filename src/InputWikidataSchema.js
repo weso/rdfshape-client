@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 import PropTypes from "prop-types";
 import axios from "axios";
 import API from "./API";
-import Code from "./Code";
+import Code from "./components/Code";
 
 function InputWikidataSchema(props) {
 

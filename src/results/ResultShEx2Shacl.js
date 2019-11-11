@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from "prop-types";
 import PrintJson from "../utils/PrintJson";
-import Code from "../Code";
+import Code from "../components/Code";
 
 function ResultShEx2Shacl(props) {
     const result = props.result ;

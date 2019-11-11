@@ -12,26 +12,26 @@ import CytoVisualize from './CytoVisualize.js';
 import DataQuery from './data/DataQuery.js';
 import DataExtract from './data/DataExtract.js';
 
-import EndpointInfo from './EndpointInfo.js';
-import EndpointQuery from './EndpointQuery.js';
-import EndpointExtract from './EndpointExtract.js';
+import EndpointInfo from './endpoint/EndpointInfo.js';
+import EndpointQuery from './endpoint/EndpointQuery.js';
+import EndpointExtract from './endpoint/EndpointExtract.js';
 
-import ShExInfo from './ShExInfo.js';
-import ShExValidate from './ShExValidate.js';
-import ShExValidateEndpoint from './ShExValidateEndpoint.js';
-import ShExConvert from './ShExConvert.js';
-import ShExVisualize from './ShExVisualize.js';
-import ShExVisualizeCytoscape from './ShExVisualizeCytoscape.js';
-import ShEx2Shacl from './ShEx2Shacl.js';
+import ShExInfo from './shex/ShExInfo.js';
+import ShExValidate from './shex/ShExValidate.js';
+import ShExValidateEndpoint from './shex/ShExValidateEndpoint.js';
+import ShExConvert from './shex/ShExConvert.js';
+import ShExVisualize from './shex/ShExVisualize.js';
+import ShExVisualizeCytoscape from './shex/ShExVisualizeCytoscape.js';
+import ShEx2Shacl from './shex/ShEx2Shacl.js';
 
-import SHACLInfo from './SHACLInfo.js';
-import SHACLValidate from './SHACLValidate.js';
-import SHACLConvert from './SHACLConvert.js';
-import SHACL2ShEx from './SHACL2ShEx.js';
+import SHACLInfo from './shacl/SHACLInfo.js';
+import SHACLValidate from './shacl/SHACLValidate.js';
+import SHACLConvert from './shacl/SHACLConvert.js';
+import SHACL2ShEx from './shacl/SHACL2ShEx.js';
 
-import WikidataValidate from './WikidataValidate.js';
-import WikidataQuery from './WikidataQuery.js';
-import WikidataExtract from './WikidataExtract.js';
+import WikidataValidate from './wikidata/WikidataValidate.js';
+import WikidataQuery from './wikidata/WikidataQuery.js';
+import WikidataExtract from './wikidata/WikidataExtract.js';
 import API from './API.js';
 
 // Only for testing

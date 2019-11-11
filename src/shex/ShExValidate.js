@@ -1,13 +1,13 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
-import DataTabs from "./DataTabs"
+import DataTabs from "../data/DataTabs"
 import ShExTabs from "./ShExTabs"
 import ShapeMapTabs from "./ShapeMapTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "./API";
+import API from "../API";
 import axios from "axios";
-import ResultValidate from "./results/ResultValidate";
+import ResultValidate from "../results/ResultValidate";
 import {
     dataParamsFromQueryParams,
     shExParamsFromQueryParams,
@@ -15,15 +15,16 @@ import {
     paramsFromStateData,
     paramsFromStateShapeMap,
     paramsFromStateShEx, convertTabData, convertTabSchema, mkMode
-} from "./Utils";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+} from "../Utils";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
-import EndpointInput from "./EndpointInput";
+import EndpointInput from "../endpoint/EndpointInput";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import ShExForm from "./ShExForm";
-import Code from "./Code";
+import ShExForm from "../ShExForm";
+import Code from "../components/Code";
+import Alert from "react-bootstrap/Alert";
 
 const url = API.schemaValidate ;
 
@@ -268,12 +269,13 @@ function ShExValidate(props) {
 
     return (
             <Container fluid={true}>
-                <h1>ShEx: Validate RDF data</h1>
-            { loading || result || permalink ?
+             <h1>ShEx: Validate RDF data</h1>
+            { loading || result || permalink || error ?
             <Fragment>
             <Row>
             <Col>
-            {loading ? <Pace color="#27ae60"/> :
+            { loading ? <Pace color="#27ae60"/> :
+              error? <Alert variant="danger">{error}</Alert> :
               result ?
                 <ResultValidate result={result} /> : null }
                 { permalink &&  <Permalink url={permalink} /> }

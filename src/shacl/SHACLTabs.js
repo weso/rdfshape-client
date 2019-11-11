@@ -1,5 +1,5 @@
 import React from 'react';
-import InputTabs from "./InputTabs";
+import InputTabs from "../InputTabs";
 
 class SHACLTabs extends React.Component {
     render() {

@@ -4,20 +4,19 @@ import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import InputEntity from "./InputEntity";
-import ShExTabs from "./ShExTabs";
-import API from "./API"
-import {convertTabSchema} from "./Utils";
+import ShExTabs from "../shex/ShExTabs";
+import API from "../API"
+import {convertTabSchema} from "../Utils";
 import axios from "axios";
 import Tab from "react-bootstrap/Tab";
-import InputShapeLabel from "./InputShapeLabel";
+import InputShapeLabel from "../InputShapeLabel";
 import Tabs from "react-bootstrap/Tabs";
-import InputEntitiesByText from "./InputEntitiesByText";
-import ResultValidate from "./results/ResultValidate";
-import InputWikidataSchema from "./InputWikidataSchema";
+import InputEntitiesByText from "../InputEntitiesByText";
+import ResultValidate from "../results/ResultValidate";
+import InputWikidataSchema from "../InputWikidataSchema";
 
 function WikidataValidate(props) {
 

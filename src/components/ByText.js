@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
 import Code from "./Code";
-import { format2mode } from './Utils';
+import { format2mode } from '../Utils';
 
 function ByText(props) {
 

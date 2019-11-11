@@ -1,7 +1,7 @@
 import React from 'react';
-import TurtleForm from "./TurtleForm";
-import InputTabsWithFormat from "./InputTabsWithFormat";
-import API from "./API"
+import TurtleForm from "../TurtleForm";
+import InputTabsWithFormat from "../InputTabsWithFormat";
+import API from "../API"
 import PropTypes from 'prop-types';
 
 function DataTabs(props) {

@@ -6,12 +6,12 @@ import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Pace from "react-pace-progress";
-import ResultShEx2Shacl from "./results/ResultShEx2Shacl";
-import { mkPermalink, params2Form, Permalink } from "./Permalink";
-import API from "./API";
-import SelectFormat from "./SelectFormat";
+import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
+import { mkPermalink, params2Form, Permalink } from "../Permalink";
+import API from "../API";
+import SelectFormat from "../SelectFormat";
 import qs from "query-string";
-import { convertTabSchema, shExParamsFromQueryParams } from "./Utils";
+import { convertTabSchema } from "../Utils";
 import axios from "axios";
 
 export default function ShEx2Shacl(props) {

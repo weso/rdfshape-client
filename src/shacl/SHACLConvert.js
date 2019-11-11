@@ -1,6 +1,6 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import DataTabs from "./DataTabs"
+import DataTabs from "../data/DataTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 

@@ -3,11 +3,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "../DataTabs"
+import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import SelectGraphFormat from "../SelectGraphFormat";
-import {convertTabData, dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
+import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";
 import ShowSVG from "../ShowSVG";

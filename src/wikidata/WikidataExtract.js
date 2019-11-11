@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Alert from "react-bootstrap/Alert";
-import InputEntitiesByText from "./InputEntitiesByText";
+import InputEntitiesByText from "../InputEntitiesByText";
 import Table from "react-bootstrap/Table";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import DataTabs from "./DataTabs";
+import DataTabs from "../data/DataTabs";
 import Button from "react-bootstrap/Button";
-import API from "./API";
-import {mkPermalink, params2Form, Permalink} from "./Permalink";
+import API from "../API";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import axios from "axios";
-import ResultDataExtract from "./results/ResultDataExtract";
+import ResultDataExtract from "../results/ResultDataExtract";
 import Pace from "react-pace-progress";
 
 function WikidataExtract(props) {

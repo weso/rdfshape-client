@@ -8,8 +8,8 @@ import Form from "react-bootstrap/Form";
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import qs from "query-string";
-import {dataParamsFromQueryParams, shapeMapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
-import {params2Form} from "../Permalink";
+// import {dataParamsFromQueryParams, shapeMapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
+// import {params2Form} from "../Permalink";
 
 function TestYashe(props)  {
     const [shEx,setShEx] = useState('');

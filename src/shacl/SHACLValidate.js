@@ -1,13 +1,13 @@
 import React, {useReducer, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
-import DataTabs from "./DataTabs"
+import DataTabs from "../data/DataTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "./API";
+import API from "../API";
 import {initialSHACLStatus, shaclReducer, paramsFromShacl} from "./SHACL";
-import {initialDataStatus, dataReducer, paramsFromData} from "./Data";
+import {initialDataStatus, dataReducer, paramsFromData} from "../data/Data";
 import Tab from "react-bootstrap/Tab";
-import ShExTabs from "./ShExTabs";
+import ShExTabs from "../shex/ShExTabs";
 import Tabs from "react-bootstrap/Tabs";
 
 function SHACLValidate(props) {

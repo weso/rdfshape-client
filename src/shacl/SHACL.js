@@ -1,5 +1,5 @@
-import API from './API';
-import {convertTabSchema} from "./Utils";
+import API from '../API';
+import {convertTabSchema} from "../Utils";
 
 export const initialSHACLStatus = {
     shaclActiveTab: API.defaultTab,

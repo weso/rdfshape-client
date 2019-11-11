@@ -1,6 +1,6 @@
 import React from 'react';
-import InputTabsWithFormat from "./InputTabsWithFormat";
-import API from "./API"
+import InputTabsWithFormat from "../InputTabsWithFormat";
+import API from "../API"
 import PropTypes from 'prop-types';
 
 function ShapeMapTabs(props) {
