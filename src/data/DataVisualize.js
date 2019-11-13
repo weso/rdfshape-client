@@ -47,28 +47,14 @@ function  DataVisualize(props) {
     );
 
     function updateStateVisualize(params) {
-        updateStateData(params, data);
+        console.log(`Update state visualize: ${JSON.stringify(params)}`)
+        setData(updateStateData(params, data));
     }
-
-/*    function updateStateData(params) {
-        if (params['data']) {
-            setData({...data, dataActiveTab: API.byTextTab, dataTextArea: params['data'], fromParamsData: true} );
-        }
-        if (params['dataFormat']) setData({...data, dataFormat: params['dataFormat']});
-        if (params['dataUrl']) {
-            setData({...data, dataActiveTab: API.byUrlTab, dataUrl: params['dataUrl']} );
-        }
-        if (params['dataFile']) {
-            setData({...data, dataActiveTab: API.byFileTab, dataFile: params['dataFile']} );
-        }
-    } */
 
     function processData(d, targetFormat) {
        console.log(`Process data: ${JSON.stringify(d)}`);
        convertDot(d.result,'dot','SVG')
     }
-
-
 
     function handleSubmit(event) {
         event.preventDefault();
