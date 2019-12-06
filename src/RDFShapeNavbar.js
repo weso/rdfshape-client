@@ -42,6 +42,14 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href="/shaclConvert">Convert SHACL formats</NavDropdown.Item>
                             <NavDropdown.Item href="/shacl2shex">SHACL &#8594; ShEx</NavDropdown.Item>
                         </NavDropdown>
+                        <NavDropdown title="ShapeMap" id="basic-nav-dropdown">
+                            <NavDropdown.Item href="/shapeMapInfo">Info about ShapeMap</NavDropdown.Item>
+                            <NavDropdown.Item href="/shapeMapFix">Fix shapeMap with RDFData</NavDropdown.Item>
+                            <NavDropdown.Item href="/shapeMapConvert">Convert ShapeMap format</NavDropdown.Item>
+                        </NavDropdown>
+                        <NavDropdown title="SPARQL" id="basic-nav-dropdown">
+                            <NavDropdown.Item href="/endpoint">SPARQL</NavDropdown.Item>
+                        </NavDropdown>
                         <NavDropdown title="Wikidata" id="basic-nav-dropdown">
                             <NavDropdown.Item href="http://wikishape.weso.es">Wikishape</NavDropdown.Item>
                         </NavDropdown>

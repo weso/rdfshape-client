@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 function ShapeMapTabs(props) {
     return ( <div>
         <InputTabsWithFormat
+            defaultFormat={"Compact"}
             nameInputTab="ShapeMap"
             activeTab={props.activeTab}
             handleTabChange={props.handleTabChange}
@@ -13,7 +14,7 @@ function ShapeMapTabs(props) {
             byTextName="Input shapeMap"
             textAreaValue={props.textAreaValue}
             byTextPlaceholder="<node>@<Shape>...>"
-            handleByTextChange={props.handleByTextChange}
+            handleByTextChange={props.handleShapeMapByTextChange}
 
             byUrlName="URL shapeMap"
             handleUrlChange={props.handleShapeMapUrlChange}
@@ -21,14 +22,14 @@ function ShapeMapTabs(props) {
             byURLPlaceholder="http://..."
 
             byFileName="ShapeMap File"
-            handleFileUpload={props.handleFileUpload}
+            handleFileUpload={props.handleShapeMapFileUpload}
 
             nameFormat="ShapeMap format"
             textFormat={props.shapeMapFormat}
             handleFormatChange={props.handleShapeMapFormatChange}
             urlFormats={API.shapeMapFormats}
             fromParams={props.fromParams}
-            resetFromparams={props.resetFromParams}
+            resetFromParams={props.resetFromParams}
         />
     </div>
     );
@@ -37,8 +38,8 @@ function ShapeMapTabs(props) {
 ShapeMapTabs.propTypes = {
     activeTab: PropTypes.string,
     textAreaValue: PropTypes.string,
-    handleByTextChange: PropTypes.func.isRequired,
-    handleFileUpload: PropTypes.func.isRequired,
+    handleShapeMapByTextChange: PropTypes.func.isRequired,
+    handleShapeMapFileUpload: PropTypes.func.isRequired,
     handleShapeMapUrlChange: PropTypes.func.isRequired,
     shapeMapFormat: PropTypes.string.isRequired,
     handleShapeMapFormatChange: PropTypes.func.isRequired,

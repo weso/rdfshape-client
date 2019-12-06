@@ -14,7 +14,7 @@ import {
     shapeMapParamsFromQueryParams,
     paramsFromStateData,
     paramsFromStateShapeMap,
-    paramsFromStateShEx, convertTabData, convertTabSchema, mkMode
+    paramsFromStateShEx, convertTabData, convertTabSchema, convertTabShapeMap, mkMode
 } from "../Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
@@ -45,11 +45,13 @@ function ShExValidate(props) {
     const [dataFile, setDataFile] = useState(null);
     const [dataActiveTab, setDataActiveTab] = useState('byText');
     const [yashe, setYashe] = useState(null);
+
     const [shapeMapTextArea, setShapeMapTextArea] = useState('');
     const [shapeMapFormat, setShapeMapFormat] = useState('Compact');
     const [shapeMapUrl, setShapeMapUrl] = useState('');
     const [shapeMapFile, setShapeMapFile] = useState(null);
     const [shapeMapActiveTab, setShapeMapActiveTab] = useState('byText');
+
     const [fromParamsShEx, setFromParamsShEx] = useState(false);
     const [fromParamsData, setFromParamsData] = useState(false);
     const [fromParamsShapeMap, setFromParamsShapeMap] = useState(false);
@@ -207,13 +209,14 @@ function ShExValidate(props) {
 
     function paramsFromStateShapeMap() {
         let params = {};
-        params['activeShapeMapTab'] = convertTabSchema(shapeMapActiveTab);
-        console.log(`paramsFromStateShEx: activeSchemaTab: ${shapeMapActiveTab}: ${params['activeShapeMapTab']}`);
+        params['activeShapeMapTab'] = convertTabShapeMap(shapeMapActiveTab);
+        console.log(`paramsFromStateShEx: activeShapeMapTab: ${shapeMapActiveTab}: ${params['activeShapeMapTab']}`);
         params['shapeMapFormat'] = shapeMapFormat;
         switch (shapeMapActiveTab) {
             case API.byTextTab:
                 params['shapeMap'] = shapeMapTextArea;
                 params['shapeMapFormatTextArea'] = shapeMapFormat;
+                console.log(`paramsFromStateShapeMap: byTextArea: shapeMap: ${shapeMapTextArea}/${shapeMapFormat}`);
                 break;
             case API.byUrlTab:
                 params['shapeMapURL'] = shapeMapUrl;
