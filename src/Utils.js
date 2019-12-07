@@ -72,6 +72,16 @@ export const InitialData = {
     fromParamsData: false
 } ;
 
+export const InitialShapeMap = {
+    shapeMapActiveTab: API.defaultTab,
+    shapeMapTextArea: '',
+    shapeMapUrl: '',
+    shapeMapFile: null,
+    shapeMapFormat: API.defaultShapeMapFormat,
+    fromParamsShapeMap: false
+} ;
+
+
 export function showQualify(node, prefixMap) {
     console.log(`node: ${JSON.stringify(node)}`)
     if (node) {
@@ -402,7 +412,7 @@ export function convertTabShapeMap(key) {
         case API.byFileTab: return "#shapeMapFile";
         case API.byUrlTab: return "#shapeMapUrl";
         default:
-            console.log("Unknown schemaTab: " + key);
+            console.log("Unknown shapeMapTab: " + key);
             return key
     }
 }

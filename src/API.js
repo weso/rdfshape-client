@@ -13,6 +13,7 @@ class API {
     static endpointInfo = API.rootApi + "endpoint/info";
     static endpointQuery = API.rootApi + "endpoint/query";
     static shExFormats = API.rootApi + "schema/formats?schemaEngine=shex";
+    static shapeMapInfo = API.rootApi + "shapeMap/info";
     static shapeMapFormats = API.rootApi + "shapeMap/formats";
     static shaclFormats = API.rootApi + "schema/formats?schemaEngine=shaclex";
     static schemaValidate = API.rootApi + "schema/validate";
@@ -50,6 +51,8 @@ class API {
     static shaclConvertRoute = "/shaclConvert";
     static shacl2ShExRoute = "/shacl2ShEx";
     static shaclValidateRoute = "/shaclValidate";
+
+    static shapeMapInfoRoute = "/shapeMapInfo";
 
     static wikidataQueryRoute = "/wikidataQuery";
     static wikidataValidateRoute = "/wikidataValidate";
