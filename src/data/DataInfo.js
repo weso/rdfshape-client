@@ -9,10 +9,11 @@ import DataTabs from "./DataTabs";
 import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
+import {dataParamsFromQueryParams} from "../Utils";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
+import {InitialData, paramsFromStateData, updateStateData} from "./Data";
 
 function DataInfo(props) {
 
@@ -21,6 +22,7 @@ function DataInfo(props) {
     const [error,setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState(null);
+    const [codeMirror, setCodeMirror] = useState(null);
 
     function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
     function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
@@ -74,8 +76,8 @@ function DataInfo(props) {
                    {loading ? <Pace color="#27ae60"/> :
                     error? <Alert variant='danger'>{error}</Alert> :
                     result ? <ResultDataInfo result={result}
-                                             fromParams={data.fromParamsData}
-                                             resetFromParams={() => setData({ ...data, fromParamsData: false})}
+                                             fromParams={data.fromParams}
+                                             resetFromParams={() => setData({ ...data, fromParams: false})}
                     /> : null
                    }
                    { permalink? <Permalink url={permalink} />: null }
@@ -86,21 +88,22 @@ function DataInfo(props) {
 
          <Col>
          <Form onSubmit={handleSubmit}>
-             <DataTabs activeTab={data.dataActiveTab}
+             <DataTabs activeTab={data.activeTab}
                        handleTabChange={handleDataTabChange}
 
-                       textAreaValue={data.dataTextArea}
+                       textAreaValue={data.textArea}
                        handleByTextChange={handleDataByTextChange}
 
-                       dataUrl={data.dataUrl}
+                       dataUrl={data.url}
                        handleDataUrlChange={handleDataUrlChange}
 
                        handleFileUpload={handleDataFileUpload}
 
-                       dataFormat={data.dataFormat}
+                       selectedFormat={data.format}
                        handleDataFormatChange={handleDataFormatChange}
-                       fromParams={data.fromParamsData}
-                       resetFromParams={() => setData({...data, fromParamsData: false}) }
+                       setCodeMirror={(cm) => setCodeMirror(cm)}
+                       fromParams={data.fromParams}
+                       resetFromParams={() => setData({...data, fromParams: false}) }
              />
          <Button variant="primary" type="submit">Info about data</Button>
          </Form>

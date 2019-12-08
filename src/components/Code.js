@@ -35,7 +35,7 @@ function Code(props) {
 
     let code = null ;
     switch (props.mode.toLowerCase()) {
-        case 'shexc': code = <ShExForm value={props.value}
+       /* case 'shexc': code = <ShExForm value={props.value}
                                        theme={props.theme}
                                        onChange={()=> null}
                                        options={options}
@@ -50,7 +50,7 @@ function Code(props) {
                                        fromParams={props.fromParams}
                                        resetFromParams={props.resetFromParams}
         />;
-        break;
+        break; */
         default: code =
             <CodeMirror
              value={props.value}

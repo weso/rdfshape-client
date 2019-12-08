@@ -48,10 +48,10 @@ export function mkMode(format) {
     return mode; 
 }
 
-export function maybeAdd(maybe,name,obj) {
+/*export function maybeAdd(maybe,name,obj) {
     if (maybe) obj[name] = maybe ;
     return obj;
-}
+}*/
 
 export function dataParamsFromQueryParams(params) {
     // This code is redundant, it could be just return params
@@ -62,15 +62,6 @@ export function dataParamsFromQueryParams(params) {
     if (params.dataUrl) newParams["dataUrl"] = params.dataUrl ;
     return newParams;
 }
-
-export const InitialData = {
-    dataActiveTab: API.defaultTab,
-    dataTextArea: '',
-    dataUrl: '',
-    dataFile: null,
-    dataFormat: API.defaultDataFormat,
-    fromParamsData: false
-} ;
 
 export const InitialShapeMap = {
     shapeMapActiveTab: API.defaultTab,
@@ -230,57 +221,37 @@ export const InitialQuery = {
     fromParamsQuery: false
 } ;
 
-export function paramsFromStateData(data) {
-    let params = {};
-    params['activeTab'] = convertTabData(data.dataActiveTab);
-    params['dataFormat'] = data.dataFormat;
-    switch (data.dataActiveTab) {
-        case API.byTextTab:
-            params['data'] = data.dataTextArea;
-            params['dataFormatTextArea'] = data.dataFormat;
-            break;
-        case API.byUrlTab:
-            params['dataURL'] = data.dataUrl;
-            params['dataFormatUrl'] = data.dataFormat;
-            break;
-        case API.byFileTab:
-            params['dataFile'] = data.dataFile;
-            params['dataFormatFile'] = data.dataFormat;
-            break;
-        default:
-    }
-    return params;
-}
 
-export function updateStateData(params, data) {
-    if (params['data']) {
-        return { ...data,
-            dataActiveTab: API.byTextTab,
-            dataTextArea: params['data'],
-            fromParamsData: true,
-            dataFormat: params['dataFormat']? params['dataFormat'] : data.dataFormat
+export function updateStateShapeMap(params, shapeMap) {
+    if (params['shapeMap']) {
+        return { ...shapeMap,
+            shapeMapActiveTab: API.byTextTab,
+            shapeMapTextArea: params['shapeMap'],
+            fromParamsShapeMap: true,
+            shapeMapFormat: params['shapeMapFormat']? params['shapeMapFormat'] : API.defaultShapeMapFormat
         } ;
     }
-    if (params['dataUrl']) {
+    if (params['shapeMapUrl']) {
         return {
-            ...data,
-            dataActiveTab: API.byUrlTab,
-            dataUrl: params['dataUrl'],
-            fromParamsData: false,
-            dataFormat: params['dataFormat']? params['dataFormat'] : data.dataFormat
-       }
-    }
-    if (params['dataFile']) {
-        return {
-            ...data,
-            dataActiveTab: API.byFileTab,
-            dataUrl: params['dataFile'],
-            fromParamsData: false,
-            dataFormat: params['dataFormat'] ? params['dataFormat'] : data.dataFormat
+            ...shapeMap,
+            shapeMapActiveTab: API.byUrlTab,
+            shapeMapUrl: params['shapeMapUrl'],
+            fromParamsShapeMap: false,
+            shapeMapFormat: params['shapeMapFormat']? params['shapeMapFormat'] : API.defaultShapeMapFormat
         }
     }
-    return data;
+    if (params['shapeMapFile']) {
+        return {
+            ...shapeMap,
+            shapeMapActiveTab: API.byFileTab,
+            shapeMapFile: params['shapeMapFile'],
+            fromParamsShapeMap: false,
+            shapeMapFormat: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
+        }
+    }
+    return shapeMap;
 }
+
 
 export function shExParamsFromQueryParams(params) {
     let newParams = {};
@@ -308,35 +279,6 @@ export function endpointParamsFromQueryParams(params) {
 export function paramsFromStateEndpoint(state) {
     let params = {};
     params['endpoint'] = state.endpoint;
-    return params;
-}
-
-
-export function paramsFromStateShEx(state) {
-    const activeTab = state.shExActiveTab;
-    const textArea = state.shExTextArea;
-    const format = state.shExFormat;
-    const url = state.shExUrl;
-    const file = state.shExFile;
-    let params = {};
-    params['activeSchemaTab'] = convertTabSchema(activeTab);
-    params['schemaEmbedded'] = false;
-    params['schemaFormat'] = format;
-    switch (activeTab) {
-        case API.byTextTab:
-            params['schema'] = textArea;
-            params['schemaFormatTextArea'] = format;
-            break;
-        case API.byUrlTab:
-            params['schemaURL'] = url;
-            params['schemaFormatUrl'] = format;
-            break;
-        case API.byFileTab:
-            params['schemaFile'] = file;
-            params['schemaFormatFile'] = format;
-            break;
-        default:
-    }
     return params;
 }
 

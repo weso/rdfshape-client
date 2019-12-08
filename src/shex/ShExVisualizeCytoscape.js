@@ -8,12 +8,12 @@ import API from "../API";
 import axios from "axios";
 import CytoSchema from "../CytoSchema";
 import {
-    shExParamsFromQueryParams,
-    paramsFromStateShEx
+    shExParamsFromQueryParams
 } from "../Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
+import {paramsFromStateShEx} from "./ShEx";
 
 const url = API.schemaVisualizeCytoscape ;
 

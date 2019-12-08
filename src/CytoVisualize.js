@@ -6,11 +6,12 @@ import API from "./API";
 import DataTabs from "./data/DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import {dataParamsFromQueryParams, paramsFromStateData} from "./Utils";
+import {dataParamsFromQueryParams} from "./Utils";
 import {mkPermalink, params2Form, Permalink} from "./Permalink";
 import Cyto from "./components/Cyto";
 import Pace from 'react-pace-progress';
 import qs from 'query-string';
+import {paramsFromStateData} from "./data/Data";
 
 class CytoVisualize extends React.Component {
     constructor(props) {

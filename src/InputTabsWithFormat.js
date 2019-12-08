@@ -4,6 +4,12 @@ import SelectFormat from "./SelectFormat";
 import PropTypes from "prop-types";
 
 function InputTabsWithFormat(props) {
+
+    function handleTextChange(value) {
+        console.log(`HandleChange...`);
+        props.handleByTextChange(value);
+    }
+
     return (
             <div>
                 <InputTabs name={props.nameInputTab}
@@ -13,7 +19,7 @@ function InputTabsWithFormat(props) {
                        byTextName={props.byTextName}
                        textAreaValue={props.textAreaValue}
                        textFormat={props.textFormat}
-                       handleByTextChange={props.handleByTextChange}
+                       handleByTextChange={handleTextChange}
                        byTextPlaceholder={props.byTextPlaceholder}
                        inputForm = {props.inputForm}
                        setCodeMirror = {props.setCodeMirror}
@@ -29,7 +35,7 @@ function InputTabsWithFormat(props) {
                        resetFromParams={props.resetFromParams}
             />
             <SelectFormat name={props.nameFormat}
-                          selectedFormat={props.textFormat}
+                          selectedFormat={props.selectedFormat}
                           handleFormatChange={props.handleFormatChange}
                           urlFormats={props.urlFormats}
             />
@@ -38,27 +44,58 @@ function InputTabsWithFormat(props) {
 }
 
 InputTabsWithFormat.propTypes = {
+    /** Name of input tab container */
     nameInputTab: PropTypes.string.isRequired,
-    activeTab: PropTypes.string,
+
+    /** Callback to call with the tab changes */
     handleTabChange: PropTypes.func.isRequired,
-    byTextName: PropTypes.string,
-    textFormat: PropTypes.string,
-    textAreaValue: PropTypes.string,
+
+    /** Selected format */
+    selectedFormat: PropTypes.string.isRequired,
+
+    /** Value of textarea */
+    textAreaValue: PropTypes.string.isRequired,
+
+    /** Handler for changes in textarea */
     handleByTextChange: PropTypes.func.isRequired,
+
+    /** Callback to obtain a link to the codeMirror */
     setCodeMirror: PropTypes.func.isRequired,
-    byTextPlaceholder: PropTypes.string,
-    byUrlName: PropTypes.string.isRequired,
+
+    /** Value of byURL tab */
     urlValue: PropTypes.string.isRequired,
+
+    /** Handler for changes in URL tab */
     handleUrlChange: PropTypes.func.isRequired,
-    byURLPlaceholder: PropTypes.string,
-    byFileName: PropTypes.string.isRequired,
+
+    /** Handler for changes in file upload tab */
     handleFileUpload: PropTypes.func.isRequired,
+
+    /** Name of select format tab */
     nameFormat: PropTypes.string.isRequired,
-    defaultFormat: PropTypes.string.isRequired,
+
+    /** Handler for changes in format */
     handleFormatChange: PropTypes.func.isRequired,
+
+    /** URL of API call that obtains the list of available formats */
     urlFormats: PropTypes.string.isRequired,
+
+    /** Handler to fill the values with params for the first time */
     resetFromParams: PropTypes.func.isRequired,
-    fromParams: PropTypes.bool.isRequired
+
+    /** Flag to signal if the values are filled from params */
+    fromParams: PropTypes.bool.isRequired,
+
+    // Non-required props
+
+
+    activeTab: PropTypes.string,
+    byTextName: PropTypes.string,
+    byTextPlaceholder: PropTypes.string,
+    byUrlName: PropTypes.string,
+    byURLPlaceholder: PropTypes.string,
+    byFileName: PropTypes.string
+
 };
 
 InputTabsWithFormat.defaultProps = {

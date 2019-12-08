@@ -12,6 +12,7 @@ function DataTabs(props) {
         resetFromParams={props.resetFromParams}
         value={props.textAreaValue}
     />;
+
     return (
             <div>
             <InputTabsWithFormat
@@ -35,9 +36,12 @@ function DataTabs(props) {
                        handleFileUpload={props.handleFileUpload}
 
                        nameFormat="Data format"
-                       defaultFormat={props.dataFormat}
+                       selectedFormat={props.selectedFormat}
                        handleFormatChange={props.handleDataFormatChange}
                        urlFormats={API.dataFormats}
+                       setCodeMirror={props.setCodeMirror}
+                       fromParams = {props.fromParams}
+                       resetFromParams={props.resetFromParams}
             />
             </div>
         );
@@ -51,7 +55,7 @@ DataTabs.propTypes = {
     dataUrl: PropTypes.string.isRequired,
     handleDataUrlChange: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
-    dataFormat: PropTypes.string.isRequired,
+    selectedFormat: PropTypes.string.isRequired,
     handleDataFormatChange: PropTypes.func.isRequired,
     resetFromParams: PropTypes.func,
     fromParams: PropTypes.bool

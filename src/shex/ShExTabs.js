@@ -37,9 +37,12 @@ function ShExTabs(props) {
                 handleFileUpload={props.handleFileUpload}
 
                 nameFormat="ShEx format"
-                defaultFormat={props.shExFormat}
+                selectedFormat={props.selectedFormat}
                 handleFormatChange={props.handleShExFormatChange}
                 urlFormats={API.shExFormats}
+
+                fromParams = {props.fromParams}
+                resetFromParams={props.resetFromParams}
             />
         </div>
     );
@@ -56,8 +59,14 @@ ShExTabs.propTypes = {
     handleShExUrlChange: PropTypes.func.isRequired,
 
     handleFileUpload: PropTypes.func.isRequired,
-    shExFormat: PropTypes.string.isRequired,
-    handleShExFormatChange: PropTypes.func.isRequired
+    selectedFormat: PropTypes.string.isRequired,
+    handleShExFormatChange: PropTypes.func.isRequired,
+
+    /** Flag to signal if values come from Params */
+    fromParams: PropTypes.bool.isRequired,
+
+    /** Function to reset value of fromParams */
+    resetFromParams: PropTypes.func.isRequired
 };
 
 ShExTabs.defaultProps = {

@@ -54,13 +54,20 @@ function InputTabs(props) {
 }
 
 InputTabs.propTypes = {
+
     name: PropTypes.string.isRequired,
+
+    /** Specific text input form that can be provided to replace the default one */
+    inputForm: PropTypes.node,
+
+    /** Callback to get a handler of the codeMirror instance */
+    setCodeMirror: PropTypes.func,
+
     activeTab: PropTypes.string,
     handleTabChange: PropTypes.func.isRequired,
     byTextName: PropTypes.string,
     textFormat: PropTypes.string,
     textAreaValue: PropTypes.string,
-    setCodeMirror: PropTypes.func,
     handleByTextChange: PropTypes.func.isRequired,
     byTextPlaceholder: PropTypes.string,
     byUrlName: PropTypes.string.isRequired,
@@ -69,6 +76,7 @@ InputTabs.propTypes = {
     byURLPlaceholder: PropTypes.string,
     byFileName: PropTypes.string,
     handleFileUpload: PropTypes.func.isRequired,
+
     resetFromParams: PropTypes.func.isRequired,
     fromParams: PropTypes.bool.isRequired
 };

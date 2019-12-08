@@ -44,8 +44,10 @@ class RDFShapeNavbar extends React.Component {
                         </NavDropdown>
                         <NavDropdown title="ShapeMap" id="basic-nav-dropdown">
                             <NavDropdown.Item href="/shapeMapInfo">Info about ShapeMap</NavDropdown.Item>
+{/*
                             <NavDropdown.Item href="/shapeMapFix">Fix shapeMap with RDFData</NavDropdown.Item>
                             <NavDropdown.Item href="/shapeMapConvert">Convert ShapeMap format</NavDropdown.Item>
+*/}
                         </NavDropdown>
                         <NavDropdown title="SPARQL" id="basic-nav-dropdown">
                             <NavDropdown.Item href="/endpoint">SPARQL</NavDropdown.Item>

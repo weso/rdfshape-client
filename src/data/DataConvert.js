@@ -9,10 +9,11 @@ import API from "../API";
 import axios from "axios";
 import SelectFormat from "../SelectFormat";
 import ResultDataConvert from "../results/ResultDataConvert";
-import {dataParamsFromQueryParams, InitialData, updateStateData, paramsFromStateData} from "../Utils";
+import {dataParamsFromQueryParams} from "../Utils";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import {mkPermalink, params2Form} from "../Permalink";
+import {InitialData, paramsFromStateData, updateStateData} from "./Data";
 
 function DataConvert(props) {
 

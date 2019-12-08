@@ -14,20 +14,22 @@ function ShapeMapTabs(props) {
             byTextName="Input shapeMap"
             textAreaValue={props.textAreaValue}
             byTextPlaceholder="<node>@<Shape>...>"
-            handleByTextChange={props.handleShapeMapByTextChange}
+            handleByTextChange={props.handleByTextChange}
 
             byUrlName="URL shapeMap"
-            handleUrlChange={props.handleShapeMapUrlChange}
-            urlValue={props.shapeMapUrl}
+            handleUrlChange={props.handleUrlChange}
+            urlValue={props.urlValue}
             byURLPlaceholder="http://..."
 
             byFileName="ShapeMap File"
-            handleFileUpload={props.handleShapeMapFileUpload}
+            handleFileUpload={props.handleFileUpload}
 
             nameFormat="ShapeMap format"
-            textFormat={props.shapeMapFormat}
-            handleFormatChange={props.handleShapeMapFormatChange}
+            selectedFormat={props.selectedFormat}
+            handleFormatChange={props.handleFormatChange}
+
             urlFormats={API.shapeMapFormats}
+
             fromParams={props.fromParams}
             resetFromParams={props.resetFromParams}
         />
@@ -36,14 +38,32 @@ function ShapeMapTabs(props) {
 }
 
 ShapeMapTabs.propTypes = {
+
+    /** Active tab */
     activeTab: PropTypes.string,
+
+    /** Textarea value */
     textAreaValue: PropTypes.string,
-    handleShapeMapByTextChange: PropTypes.func.isRequired,
-    handleShapeMapFileUpload: PropTypes.func.isRequired,
-    handleShapeMapUrlChange: PropTypes.func.isRequired,
-    shapeMapFormat: PropTypes.string.isRequired,
-    handleShapeMapFormatChange: PropTypes.func.isRequired,
+
+    /** Handles changed in textarea */
+    handleByTextChange: PropTypes.func.isRequired,
+
+    /** Handles changes in file upload tab */
+    handleFileUpload: PropTypes.func.isRequired,
+
+    /** Handles URl changes */
+    handleUrlChange: PropTypes.func.isRequired,
+
+    /** Selected format */
+    selectedFormat: PropTypes.string.isRequired,
+
+    /** Handles format changes */
+    handleFormatChange: PropTypes.func.isRequired,
+
+    /** Handler to reset value from params */
     resetFromParams: PropTypes.func.isRequired,
+
+    /** Flag to signal if the values come from params */
     fromParams: PropTypes.bool.isRequired
 };
 

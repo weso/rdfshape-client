@@ -2,7 +2,7 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import DataTabs from "../data/DataTabs"
 import ShExTabs from "./ShExTabs"
-import ShapeMapTabs from "./ShapeMapTabs"
+import ShapeMapTabs from "../shapeMap/ShapeMapTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
@@ -13,12 +13,12 @@ import {
     shExParamsFromQueryParams,
     shapeMapParamsFromQueryParams,
     paramsFromStateEndpoint,
-    paramsFromStateShapeMap,
-    paramsFromStateShEx} from "../Utils";
+    paramsFromStateShapeMap} from "../Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import EndpointInput from "../endpoint/EndpointInput";
+import {paramsFromStateShEx} from "./ShEx";
 
 const url = API.schemaValidate ;
 

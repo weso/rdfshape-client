@@ -10,6 +10,7 @@ function ByText(props) {
 
   function handleChange(value) {
     setCode(value);
+    console.log(`ByText: handleChange ${value}`)
     props.handleByTextChange(value);
   }
 
@@ -17,7 +18,9 @@ function ByText(props) {
   if (props.inputForm) {
          inputText = props.inputForm
      } else {
-         inputText =  <Code value={code}
+         inputText =  <div>
+             <p>Code: {code}</p>
+             <Code value={code}
                            mode={format2mode(props.textFormat)}
                            onChange={handleChange}
                            setCodeMirror={props.setCodeMirror}
@@ -25,7 +28,7 @@ function ByText(props) {
                            readonly='false'
                            fromParams={props.fromParams}
                            resetFromParams={props.resetFromParams}
-         />
+         /></div>
      }
      return (
         <Form.Group>

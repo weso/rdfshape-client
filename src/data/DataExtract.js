@@ -10,11 +10,12 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import DataTabs from "./DataTabs";
 import NodeSelector from "../shex/NodeSelector";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils"
+import {dataParamsFromQueryParams} from "../Utils"
 import qs from "query-string";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Pace from "react-pace-progress";
+import {InitialData, paramsFromStateData, updateStateData} from "./Data";
 
 
 function DataExtract(props) {

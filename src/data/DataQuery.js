@@ -8,12 +8,13 @@ import QueryTabs from "../QueryTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import ResultQuery from "../results/ResultQuery";
-import {InitialData, InitialQuery, paramsFromStateData, paramsFromStateQuery} from "../Utils";
+import {InitialQuery, paramsFromStateQuery} from "../Utils";
 import {params2Form} from "../Permalink";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
+import {InitialData, paramsFromStateData} from "./Data";
 
 function DataQuery(props)  {
     const [data, setData] = useState(InitialData);

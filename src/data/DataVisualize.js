@@ -7,7 +7,7 @@ import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import SelectGraphFormat from "../SelectGraphFormat";
-import {dataParamsFromQueryParams, InitialData, paramsFromStateData, updateStateData} from "../Utils";
+import {dataParamsFromQueryParams} from "../Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";
 import ShowSVG from "../ShowSVG";
@@ -16,6 +16,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
+import {InitialData, paramsFromStateData, updateStateData} from "./Data";
 const {Module, render} = require('viz.js/full.render.js');
 
 function  DataVisualize(props) {

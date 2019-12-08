@@ -5,11 +5,11 @@ import Alert from 'react-bootstrap/Alert';
 import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-import ShapeMapTabs from "./ShapeMapTabs";
+import ShapeMapTabs from "./ShapeMapTabs.delete";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
-import {shapeMapParamsFromQueryParams, InitialShapeMap, paramsFromStateData, updateStateData} from "../Utils";
+import {shapeMapParamsFromQueryParams, InitialShapeMap, paramsFromStateShapeMap, updateStateShapeMap} from "../Utils";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
@@ -74,7 +74,7 @@ function ShapeMapInfo(props) {
                                 error? <Alert variant='danger'>{error}</Alert> :
                                     result ? <ResultShapeMapInfo result={result}
                                                              fromParams={shapeMap.fromParamsShapeMap}
-                                                             resetFromParams={() => setData({ ...shapeMap, fromParamsShapeMap: false})}
+                                                             resetFromParams={() => setShapeMap({ ...shapeMap, fromParamsShapeMap: false})}
                                     /> : null
                             }
                             { permalink? <Permalink url={permalink} />: null }
@@ -91,13 +91,13 @@ function ShapeMapInfo(props) {
                                   textAreaValue={shapeMap.shapeMapTextArea}
                                   handleByTextChange={handleShapeMapByTextChange}
 
-                                  dataUrl={shapeMap.shapeMapUrl}
-                                  handleDataUrlChange={handleShapeMapUrlChange}
+                                  shapeMapUrl={shapeMap.shapeMapUrl}
+                                  handleShapeMapUrlChange={handleShapeMapUrlChange}
 
                                   handleFileUpload={handleShapeMapFileUpload}
 
-                                  dataFormat={shapeMap.shapeMapFormat}
-                                  handleDataFormatChange={handleShapeMapFormatChange}
+                                  shapeMapFormat={shapeMap.shapeMapFormat}
+                                  handleShapeMapFormatChange={handleShapeMapFormatChange}
                                   fromParams={shapeMap.fromParamsShapeMap}
                                   resetFromParams={() => setShapeMap({...shapeMap, fromParamsShapeMap: false}) }
                         />

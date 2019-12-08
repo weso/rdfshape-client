@@ -1,99 +1,71 @@
-import React, {useReducer, useEffect} from 'react';
+import React, {useReducer, useEffect, useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import DataTabs from "../data/DataTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import API from "../API";
-import {initialSHACLStatus, shaclReducer, paramsFromShacl} from "./SHACL";
-import {initialDataStatus, dataReducer, paramsFromData} from "../data/Data";
-import Tab from "react-bootstrap/Tab";
-import ShExTabs from "../shex/ShExTabs";
-import Tabs from "react-bootstrap/Tabs";
+import { InitialData, paramsFromStateData} from "../data/Data";
 
 function SHACLValidate(props) {
-    const [shacl, dispatchShacl] = useReducer(shaclReducer, initialSHACLStatus);
-    const [data, dispatchData] = useReducer(dataReducer, initialDataStatus);
+    const [shacl, setShacl] = useState(InitialData);
+    const [data, setData] = useState(InitialData);
 
     function handleSubmit(event) {
         event.preventDefault();
-        const paramsShacl = paramsFromShacl(shacl)
-        const paramsData = paramsFromData(data)
+        const paramsShacl = paramsFromStateData(shacl)
+        const paramsData = paramsFromStateData(data)
     }
 
-    function handleShaclTabChange(value) {
-        dispatchShacl({type: 'changeTab', value: value});
-    }
+    function handleShaclTabChange(value) { setShacl({...shacl, dataActiveTab: value}); }
+    function handleShaclFormatChange(value) {  setShacl({...shacl, dataFormat: value}); }
+    function handleShaclByTextChange(value) { setShacl({...shacl, dataTextArea: value}); }
+    function handleShaclUrlChange(value) { setShacl( {...shacl, dataUrl: value}); }
+    function handleShaclFileUpload(value) { setShacl({...shacl, dataFile: value }); }
 
-    function handleShaclFormatChange(value) {
-        dispatchShacl({type: 'setFormat', value: value});
-    }
-
-    function handleShaclByTextChange(value) {
-        dispatchShacl({type: 'setText', value: value})
-    }
-
-    function handleShaclUrlChange(value) {
-        dispatchShacl({type: 'setUrl', value: value})
-    }
-
-    function handleShaclFileUpload(value) {
-        dispatchShacl({type: 'setFile', value: value})
-    }
-
-    function handleDataTabChange(value) {
-        dispatchData({type: 'changeTab', value: value});
-    }
-
-    function handleDataFormatChange(value) {
-        dispatchData({type: 'setFormat', value: value});
-    }
-
-    function handleDataByTextChange(value) {
-        dispatchData({type: 'setText', value: value})
-    }
-
-    function handleDataUrlChange(value) {
-        dispatchData({type: 'setUrl', value: value})
-    }
-
-    function handleDataFileUpload(value) {
-        dispatchData({type: 'setFile', value: value})
-    }
+    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
+    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
+    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
+    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
+    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
 
     return (
         <Container>
             <h1>Validate RDF data with SHACL</h1>
             <Form onSubmit={handleSubmit}>
-                <DataTabs
-                    name="RDF data"
-                    activeTab={data.activeTab}
-                    handleTabChange={handleDataTabChange}
+                <DataTabs name="RDF data"
+                          activeTab={data.dataActiveTab}
+                          handleTabChange={handleDataTabChange}
 
-                    textAreaValue={shacl.textArea}
-                    handleByTextChange={handleDataByTextChange}
+                          textAreaValue={data.dataTextArea}
+                          handleByTextChange={handleDataByTextChange}
 
-                    dataUrl={shacl.url}
-                    handleUrlChange={handleDataUrlChange}
+                          dataUrl={data.dataUrl}
+                          handleDataUrlChange={handleDataUrlChange}
 
-                    handleFileUpload={handleDataFileUpload}
+                          handleFileUpload={handleDataFileUpload}
 
-                    dataFormat={shacl.format}
-                    handleDataFormatChange={handleDataFormatChange}/>
+                          dataFormat={data.dataFormat}
+                          handleDataFormatChange={handleDataFormatChange}
+                          fromParams={data.fromParamsData}
+                          resetFromParams={() => setData({...data, fromParamsData: false}) }
+                />
                 <DataTabs
                     name="Shapes graph (SHACL)"
-                    activeTab={shacl.shaclActiveTab}
+                    activeTab={shacl.dataActiveTab}
                     handleTabChange={handleShaclTabChange}
 
-                    textAreaValue={shacl.shaclTextArea}
+                    textAreaValue={shacl.dataTextArea}
                     handleByTextChange={handleShaclByTextChange}
 
-                    dataUrl={shacl.shaclUrl}
+                    dataUrl={shacl.dataUrl}
                     handleUrlChange={handleShaclUrlChange}
 
                     handleFileUpload={handleShaclFileUpload}
 
-                    dataFormat={shacl.shaclFormat}
-                    handleDataFormatChange={handleShaclFormatChange}/>
+                    dataFormat={shacl.dataFormat}
+                    handleDataFormatChange={handleShaclFormatChange}
+                    fromParams={shacl.fromParamsData}
+                    resetFromParams={() => setData({...shacl, fromParamsData: false}) }
+                />
                 <Button variant="primary">Validate</Button>
             </Form>
         </Container>
