@@ -1,4 +1,12 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# RDFShape-client
+
+This is the front-end part of the [rdfshape.weso.es](http://rdfshape.weso.es) tool. 
+
+This project is a pure client library implemented with [React](http://reactjs.org/). 
+It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+[![Build Status](https://travis-ci.org/weso/rdfshape-client.svg?branch=master)](https://travis-ci.org/weso/rdfshape-client)
+
 
 ## Available Scripts
 
