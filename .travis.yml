@@ -7,4 +7,4 @@ script:
   - echo 'Installing Deps!'
   - yarn
   - echo 'Testing!'
-  - npm run test:prod
+  - npm run test
