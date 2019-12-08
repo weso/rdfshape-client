@@ -11,8 +11,9 @@ import { mkPermalink, params2Form, Permalink } from "../Permalink";
 import API from "../API";
 import SelectFormat from "../SelectFormat";
 import qs from "query-string";
-import { convertTabSchema } from "../Utils";
+import {convertTabSchema, shExParamsFromQueryParams} from "../Utils";
 import axios from "axios";
+import {InitialShEx, updateStateShEx} from "./ShEx";
 
 export default function ShEx2Shacl(props) {
     const url = API.schemaConvert;
@@ -21,111 +22,81 @@ export default function ShEx2Shacl(props) {
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [shExTextArea, setShExTextArea] = useState('');
-    const [shExFormat, setShExFormat] = useState(API.defaultShExFormat);
-    const [shExUrl, setShExUrl] = useState('');
-    const [shExFile, setShExFile] = useState(null);
-    const [shExActiveTab, setShExActiveTab] = useState(API.defaultTab);
+    const [shex, setShEx] = useState(InitialShEx);
     const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat);
     const [yashe, setYashe] = useState(null);
-    const [fromParamsShEx, setFromParamsShEx] = useState(false);
+
+    function handleShExTabChange(value) {
+        setShEx({...shex, activeTab: value});
+    }
+
+    function handleShExFormatChange(value) {
+        setShEx({...shex, format: value});
+    }
+
+    function handleShExByTextChange(value) {
+        setShEx({...shex, textArea: value});
+    }
+
+    function handleShExUrlChange(value) {
+        setShEx({...shex, url: value});
+    }
+
+    function handleShExFileUpload(value) {
+        setShEx({...shex, file: value});
+    }
 
     useEffect(() => {
-        console.log("Use Effect - shEx2Shacl");
         if (props.location.search) {
-            const clientParams = qs.parse(props.location.search);
-            console.log("Client Params: " + JSON.stringify(clientParams));
-            //                let clientParams =  shExParamsFromQueryParams(queryParams);
-            let serverParams = serverParamsFromClientParams(clientParams)
-            const formData = params2Form(serverParams);
-            postRequest(url, formData, () => updateState(clientParams))
+            const queryParams = qs.parse(props.location.search);
+            let paramsShEx = shExParamsFromQueryParams(queryParams);
+            let params = {};
+            if (queryParams.targetFormat) params['targetSchemaFormat'] = queryParams.targetFormat ;
+            const formData = params2Form(params);
+            postRequest(url, formData, () => updateState(params))
         }
     }, [
-        shExUrl,
-        shExFormat,
-        shExFile,
-        shExTextArea,
-        shExActiveTab,
-        permalink,
         props.location.search
     ]
     );
 
-    const handleShExTabChange = (value) => { setShExActiveTab(value); };
-    function handleShExFormatChange(value) { setShExFormat(value); }
-    function handleShExByTextChange(value, y) {
-        console.log(`handlingShExByTexthange`)
-        setShExTextArea(value);
-        if (yashe) { yashe.refresh(); }
-    }
-    function handleShExUrlChange(value) { setShExUrl(value); }
-    function handleShExFileUpload(value) { setShExFile(value); }
-
-    function serverParamsFromClientParams(params) {
-        let postParams = {};
-        if (params['shEx']) { postParams['schema'] = params['shEx']; }
-        if (params['shExUrl']) { postParams['schemaURL'] = params['shExUrl']; }
-        if (params['shExFormat']) { postParams['schemaFormat'] = params['shExFormat']; }
-        if (params['targetFormat']) { postParams['targetSchemaFormat'] = params['targetFormat']; }
-        return postParams;
-    }
-
-    function queryParamsFromServerParams(params) {
-        console.log(`queryParamsFromServerParams: ${JSON.stringify(params)}`)
-        let postParams = {};
-        if (params['schema']) { postParams['shEx'] = params['schema']; }
-        if (params['schemaURL']) { postParams['shExUrl'] = params['schemaURL']; }
-        if (params['schemaFormat']) { postParams['shExFormat'] = params['schemaFormat']; }
-        if (params['targetSchemaFormat']) { postParams['targetFormat'] = params['targetSchemaFormat']; }
-        return postParams;
-    }
-
     function updateState(params) {
-        console.log(`UpdateStateShEx: ${JSON.stringify(params)}`);
-        if (params['schemaFormat']) setShExFormat(params['schemaFormat']);
-        if (params['schema']) {
-            setShExActiveTab(API.byTextTab);
-            const schema = params['schema'];
-            setShExTextArea(schema);
-            setFromParamsShEx(true);
-            if (params['schemaFormatTextArea']) setShExFormat(params['schemaFormatTextArea']);
-        }
-        if (params['schemaURL']) {
-            setShExActiveTab(API.byUrlTab);
-            setShExUrl(params['schemaURL'])
-            if (params['schemaFormatUrl']) setShExFormat(params['schemaFormatUrl']);
-        }
-        if (params['schemaFile']) {
-            setShExActiveTab(API.byFileTab);
-            setShExFile(params['schemaFile'])
-            if (params['schemaFormatFile']) setShExFormat(params['schemaFormatFile']);
-        }
+        updateStateShEx(params);
+        if (params['targetSchemaFormat']) setTargetFormat(params['targetSchemaFormat']);
     }
 
     function mkServerParams() {
         let params = {};
-        params['activeSchemaTab'] = convertTabSchema(shExActiveTab);
+        params['activeSchemaTab'] = convertTabSchema(shex.activeTab);
         params['schemaEmbedded'] = false;
-        params['schemaFormat'] = shExFormat;
-        switch (shExActiveTab) {
+        params['schemaFormat'] = shex.format;
+        switch (shex.activeTab) {
             case API.byTextTab:
-                params['schema'] = shExTextArea;
-                params['schemaFormatTextArea'] = shExFormat;
+                params['schema'] = shex.textArea;
+                params['schemaFormatTextArea'] = shex.format;
                 break;
             case API.byUrlTab:
-                console.log(`byURLTab...${shExUrl}`)
-                params['schemaURL'] = shExUrl;
-                params['schemaFormatUrl'] = shExFormat;
+                params['schemaURL'] = shex.url;
+                params['schemaFormatUrl'] = shex.format;
                 break;
             case API.byFileTab:
-                params['schemaFile'] = shExFile;
-                params['schemaFormatFile'] = shExFormat;
+                params['schemaFile'] = shex.file;
+                params['schemaFormatFile'] = shex.format;
                 break;
             default:
         }
         params['targetSchemaFormat'] = targetFormat;
-        console.log(`#################### targetSchemaFormat: ${targetFormat}`)
         return params;
+    }
+
+    function queryParamsFromServerParams(params) {
+        console.log(`queryParamsFromServerParams: ${JSON.stringify(params)}`)
+        let queryParams = {};
+        if (params['schema']) { queryParams['shEx'] = params['schema']; }
+        if (params['schemaURL']) { queryParams['shExUrl'] = params['schemaURL']; }
+        if (params['schemaFormat']) { queryParams['shExFormat'] = params['schemaFormat']; }
+        if (params['targetSchemaFormat']) { queryParams['targetFormat'] = params['targetSchemaFormat']; }
+        return queryParams;
     }
 
     function handleSubmit(event) {
@@ -184,22 +155,24 @@ export default function ShEx2Shacl(props) {
                 }
                 <Col>
                     <Form onSubmit={handleSubmit}>
-                        <ShExTabs activeTab={shExActiveTab}
+                        <ShExTabs activeTab={shex.activeTab}
                                   handleTabChange={handleShExTabChange}
 
-                                  textAreaValue={shExTextArea}
+                                  textAreaValue={shex.textArea}
                                   handleByTextChange={handleShExByTextChange}
 
-                                  shExUrl={shExUrl}
+                                  shExUrl={shex.url}
                                   handleShExUrlChange={handleShExUrlChange}
 
                                   handleFileUpload={handleShExFileUpload}
 
-                                  dataFormat={shExFormat}
+                                  selectedFormat={shex.format}
                                   handleShExFormatChange={handleShExFormatChange}
-                                  setCodeMirror = { (cm) => {setYashe(cm);} }
-                                  fromParams={fromParamsShEx}
-                                  resetFromParams={() => setFromParamsShEx(false) }
+                                  setCodeMirror={(cm) => {
+                                      setYashe(cm);
+                                  }}
+                                  fromParams={shex.fromParams}
+                                  resetFromParams={() => setShEx({...shex, fromParams: false})}
                         />
 
                         <SelectFormat name="SHACL format"

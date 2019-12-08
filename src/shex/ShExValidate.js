@@ -22,8 +22,6 @@ import qs from "query-string";
 import EndpointInput from "../endpoint/EndpointInput";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import ShExForm from "../ShExForm";
-import Code from "../components/Code";
 import Alert from "react-bootstrap/Alert";
 import {InitialShEx, paramsFromStateShEx, updateStateShEx} from "./ShEx";
 import {InitialData, paramsFromStateData, updateStateData} from "../data/Data";

@@ -52,13 +52,16 @@ function DataConvert(props) {
     }
 
     function postConvert(url, formData, cb) {
+        setLoading(true)
         axios.post(url,formData).then (response => response.data)
             .then((data) => {
+                setLoading(false);
                 setResult(data)
                 if (cb) cb()
             })
             .catch(function (error) {
                 setError(error);
+                setLoading(false);
                 console.log('Error doing server request');
                 console.log(error);
             });

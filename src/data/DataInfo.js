@@ -105,7 +105,7 @@ function DataInfo(props) {
                        fromParams={data.fromParams}
                        resetFromParams={() => setData({...data, fromParams: false}) }
              />
-         <Button variant="primary" type="submit">Info about data</Button>
+         <Button id="submit" variant="primary" type="submit">Info about data</Button>
          </Form>
        </Col>
        </Row>
