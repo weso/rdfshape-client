@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Form from "react-bootstrap/Form";
-import {Typeahead, Token} from 'react-bootstrap-typeahead';
+// import {Typeahead, Token} from 'react-bootstrap-typeahead';
 import axios from 'axios';
 import PropTypes from "prop-types";
 
@@ -41,6 +41,10 @@ SelectFormat.propTypes = {
     selectedFormat: PropTypes.string.isRequired,
     handleFormatChange: PropTypes.func.isRequired,
     urlFormats: PropTypes.string.isRequired,
+};
+
+SelectFormat.defaultProps = {
+    name: 'Format'
 };
 
 
