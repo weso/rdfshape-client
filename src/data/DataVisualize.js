@@ -3,20 +3,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import SelectGraphFormat from "../SelectGraphFormat";
-import {dataParamsFromQueryParams} from "../Utils";
+import SelectGraphFormat from "../utils/SelectGraphFormat.toDelete";
+import {dataParamsFromQueryParams} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";
-import ShowSVG from "../ShowSVG";
+import ShowSVG from "../svg/ShowSVG";
 import Viz from 'viz.js/viz.js';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
-import {InitialData, paramsFromStateData, updateStateData} from "./Data";
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
 const {Module, render} = require('viz.js/full.render.js');
 
 function  DataVisualize(props) {
@@ -28,11 +27,6 @@ function  DataVisualize(props) {
     const [targetGraphFormat, setTargetGraphFormat] = useState('SVG');
     const [svg, setSVG] = useState(null);
 
-    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
-    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
-    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
-    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
-    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
     function handleTargetGraphFormatChange(value) {  setTargetGraphFormat(value);  }
 
     useEffect(() => {
@@ -119,23 +113,7 @@ function  DataVisualize(props) {
            }
          <Col>
          <Form onSubmit={handleSubmit}>
-             <DataTabs activeTab={data.dataActiveTab}
-                       handleTabChange={handleDataTabChange}
-
-                       textAreaValue={data.dataTextArea}
-                       handleByTextChange={handleDataByTextChange}
-
-                       dataUrl={data.dataUrl}
-                       handleDataUrlChange={handleDataUrlChange}
-
-                       handleFileUpload={handleDataFileUpload}
-
-                       dataFormat={data.dataFormat}
-                       handleDataFormatChange={handleDataFormatChange}
-                       fromParams={data.fromParamsData}
-                       resetFromParams={() => setData({...data, fromParamsData: false}) }
-
-             />
+             { mkDataTabs(data,setData)}
              <SelectGraphFormat name="Target graph format"
                                default={targetGraphFormat}
                                handleChange={handleTargetGraphFormatChange}

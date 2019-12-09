@@ -2,8 +2,8 @@ import React, { useState, useEffect} from 'react';
 import {Controlled as CodeMirror} from "react-codemirror2";
 import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
-import ShExForm from "../ShExForm";
-import TurtleForm from "../TurtleForm";
+import ShExForm from "../shex/ShExForm";
+import TurtleForm from "../data/TurtleForm";
 
 require("codemirror/lib/codemirror.css");
 require("codemirror/mode/xml/xml.js");

@@ -9,8 +9,8 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import qs from "query-string";
-import InputTabsWithFormat from "../InputTabsWithFormat";
-import {convertTabData} from "../Utils";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
+import {convertTabData} from "../data/Data";
 
 function TestInputTabsWithFormat(props) {
 
@@ -44,7 +44,7 @@ function TestInputTabsWithFormat(props) {
         let params = {};
         params['activeTab'] = convertTabData(data.dataActiveTab);
         params['dataFormat'] = data.format;
-        switch (data.dataActiveTab) {
+        switch (data.activeTab) {
             case API.byTextTab:
                 params['data'] = data.textArea;
                 params['dataFormatTextArea'] = data.format;

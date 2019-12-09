@@ -9,10 +9,16 @@ import ShapeMapTabs from "./ShapeMapTabs.delete";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
-import {shapeMapParamsFromQueryParams, InitialShapeMap, paramsFromStateShapeMap, updateStateShapeMap} from "../Utils";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
+import {
+    InitialShapeMap,
+    mkShapeMapTabs,
+    paramsFromStateShapeMap,
+    shapeMapParamsFromQueryParams,
+    updateStateShapeMap
+} from "./ShapeMap";
 
 function ShapeMapInfo(props) {
 
@@ -22,17 +28,14 @@ function ShapeMapInfo(props) {
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState(null);
 
-    function handleShapeMapTabChange(value) { setShapeMap({...shapeMap, shapeMapActiveTab: value}); }
-    function handleShapeMapFormatChange(value) {  setShapeMap({...shapeMap, shapeMapFormat: value}); }
-    function handleShapeMapByTextChange(value) { setShapeMap({...shapeMap, shapeMapTextArea: value}); }
-    function handleShapeMapUrlChange(value) { setShapeMap( {...shapeMap, shapeMapUrl: value}); }
-    function handleShapeMapFileUpload(value) { setShapeMap({...shapeMap, shapeMapFile: value }); }
-
     useEffect(() => {
             if (props.location.search) {
                 const queryParams = qs.parse(props.location.search);
                 let shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
-                postShapeMapInfo(API.shapeMapInfo, params2Form(shapeMapParams), () => setShapeMap(updateStateShapeMap(shapeMapParams,shapeMap)));
+                postShapeMapInfo(API.shapeMapInfo, params2Form(shapeMapParams), () => {
+                    const newShapeMap = updateStateShapeMap(shapeMapParams,shapeMap) || shapeMap
+                    setShapeMap(newShapeMap);
+                });
             }},
         [props.location.search]
     );
@@ -85,22 +88,7 @@ function ShapeMapInfo(props) {
 
                 <Col>
                     <Form onSubmit={handleSubmit}>
-                        <ShapeMapTabs activeTab={shapeMap.shapeMapActiveTab}
-                                  handleTabChange={handleShapeMapTabChange}
-
-                                  textAreaValue={shapeMap.shapeMapTextArea}
-                                  handleByTextChange={handleShapeMapByTextChange}
-
-                                  shapeMapUrl={shapeMap.shapeMapUrl}
-                                  handleShapeMapUrlChange={handleShapeMapUrlChange}
-
-                                  handleFileUpload={handleShapeMapFileUpload}
-
-                                  shapeMapFormat={shapeMap.shapeMapFormat}
-                                  handleShapeMapFormatChange={handleShapeMapFormatChange}
-                                  fromParams={shapeMap.fromParamsShapeMap}
-                                  resetFromParams={() => setShapeMap({...shapeMap, fromParamsShapeMap: false}) }
-                        />
+                        { mkShapeMapTabs(shapeMap, setShapeMap) }
                         <Button variant="primary" type="submit">Info about shape map</Button>
                     </Form>
                 </Col>

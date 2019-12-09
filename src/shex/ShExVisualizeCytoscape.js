@@ -6,14 +6,11 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import axios from "axios";
-import CytoSchema from "../CytoSchema";
-import {
-    shExParamsFromQueryParams
-} from "../Utils";
+import CytoSchema from "../cytoscape/CytoSchema";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
-import {paramsFromStateShEx} from "./ShEx";
+import {paramsFromStateShEx, shExParamsFromQueryParams} from "./ShEx";
 
 const url = API.schemaVisualizeCytoscape ;
 

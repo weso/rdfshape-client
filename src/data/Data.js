@@ -1,5 +1,16 @@
 import API from '../API';
-import {convertTabData} from "../Utils";
+import DataTabs from "./DataTabs";
+import React from "react";
+
+export const InitialData = {
+    activeTab: API.defaultTab,
+    textArea: '',
+    url: '',
+    file: null,
+    format: API.defaultDataFormat,
+    fromParams: false,
+    codeMirror: null
+};
 
 export function updateStateData(params, data) {
     if (params['data']) {
@@ -32,6 +43,20 @@ export function updateStateData(params, data) {
     return data;
 }
 
+export function convertTabData(key) {
+    switch (key) {
+        case API.byTextTab:
+            return "#dataTextArea";
+        case API.byFileTab:
+            return "#dataFile";
+        case API.byUrlTab:
+            return "#dataUrl";
+        default:
+            console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}
+
 export function paramsFromStateData(data) {
     let params = {};
     params['activeTab'] = convertTabData(data.activeTab);
@@ -54,11 +79,33 @@ export function paramsFromStateData(data) {
     return params;
 }
 
-export const InitialData = {
-    activeTab: API.defaultTab,
-    textArea: '',
-    url: '',
-    file: null,
-    format: API.defaultDataFormat,
-    fromParams: false
-};
+
+export function mkDataTabs(data, setData, name) {
+
+    function handleDataTabChange(value) { setData({...data, activeTab: value}); }
+    function handleDataFormatChange(value) {  setData({...data, format: value}); }
+    function handleDataByTextChange(value) { setData({...data, textArea: value}); }
+    function handleDataUrlChange(value) { setData( {...data, url: value}); }
+    function handleDataFileUpload(value) { setData({...data, file: value }); }
+
+    return (<DataTabs
+              name={name || "RDF data"}
+              activeTab={data.activeTab}
+              handleTabChange={handleDataTabChange}
+
+              textAreaValue={data.textArea}
+              handleByTextChange={handleDataByTextChange}
+
+              urlValue={data.url}
+              handleDataUrlChange={handleDataUrlChange}
+
+              handleFileUpload={handleDataFileUpload}
+
+              selectedFormat={data.format}
+              handleDataFormatChange={handleDataFormatChange}
+              setCodeMirror={(cm) => setData({...data, codeMirror: cm}) }
+              fromParams={data.fromParams}
+              resetFromParams={() => setData({...data, fromParams: false}) }
+    />);
+
+}

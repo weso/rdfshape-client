@@ -9,11 +9,10 @@ import Pace from "react-pace-progress";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import { mkPermalink, params2Form, Permalink } from "../Permalink";
 import API from "../API";
-import SelectFormat from "../SelectFormat";
+import SelectFormat from "../components/SelectFormat";
 import qs from "query-string";
-import {convertTabSchema, shExParamsFromQueryParams} from "../Utils";
 import axios from "axios";
-import {InitialShEx, updateStateShEx} from "./ShEx";
+import {convertTabSchema, InitialShEx, shExParamsFromQueryParams, updateStateShEx} from "./ShEx";
 
 export default function ShEx2Shacl(props) {
     const url = API.schemaConvert;
@@ -61,7 +60,7 @@ export default function ShEx2Shacl(props) {
     );
 
     function updateState(params) {
-        updateStateShEx(params);
+        setShEx(updateStateShEx(params,shex));
         if (params['targetSchemaFormat']) setTargetFormat(params['targetSchemaFormat']);
     }
 

@@ -5,7 +5,7 @@ import FormLabel from 'react-bootstrap/FormLabel';
 import Alert from 'react-bootstrap/Alert';
 import PropTypes from "prop-types";
 import axios from "axios";
-import API from "./API";
+import API from "../API";
 
 function InputEntity(props) {
 

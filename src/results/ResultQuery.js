@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import BootstrapTable from "react-bootstrap-table-next";
 import EndpointInput from "../endpoint/EndpointInput";
-import {cnvValueFromSPARQL, showQualified, showQualify} from "../Utils";
+import {cnvValueFromSPARQL, showQualified, showQualify} from "../utils/Utils";
 
 class ResultQuery extends React.Component {
  render() {

@@ -1,3 +1,6 @@
+
+/** This class contains global definitions */
+// TODO: Global definitions in React could better be deined using Contexts?
 class API {
 
     // Routes in server

@@ -9,13 +9,8 @@ import API from "../API";
 import axios from "axios";
 import ResultValidate from "../results/ResultValidate";
 import {
-    dataParamsFromQueryParams,
-    shExParamsFromQueryParams,
-    shapeMapParamsFromQueryParams,
-    paramsFromStateShapeMap,
-    InitialShapeMap,
-    updateStateShapeMap
-} from "../Utils";
+    dataParamsFromQueryParams
+} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
@@ -23,12 +18,20 @@ import EndpointInput from "../endpoint/EndpointInput";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
-import {InitialShEx, paramsFromStateShEx, updateStateShEx} from "./ShEx";
-import {InitialData, paramsFromStateData, updateStateData} from "../data/Data";
+import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams, updateStateShEx} from "./ShEx";
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "../data/Data";
+import {
+    InitialShapeMap,
+    mkShapeMapTabs,
+    paramsFromStateShapeMap,
+    shapeMapParamsFromQueryParams,
+    updateStateShapeMap
+} from "../shapeMap/ShapeMap";
 
 const url = API.schemaValidate;
 
 function ShExValidate(props) {
+
     const [result, setResult] = useState('');
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -37,69 +40,10 @@ function ShExValidate(props) {
     const [data, setData] = useState(InitialData);
     const [shex, setShEx] = useState(InitialShEx);
     const [shapeMap, setShapeMap] = useState(InitialShapeMap);
-    const [yashe, setYashe] = useState(null);
 
     const [endpoint, setEndpoint] = useState('');
 
-    function handleDataTabChange(value) {
-        setData({...data, dataActiveTab: value});
-    }
 
-    function handleDataFormatChange(value) {
-        setData({...data, dataFormat: value});
-    }
-
-    function handleDataByTextChange(value) {
-        setData({...data, dataTextArea: value});
-    }
-
-    function handleDataUrlChange(value) {
-        setData({...data, dataUrl: value});
-    }
-
-    function handleDataFileUpload(value) {
-        setData({...data, dataFile: value});
-    }
-
-    function handleShExTabChange(value) {
-        setShEx({...shex, activeTab: value});
-    }
-
-    function handleShExFormatChange(value) {
-        setShEx({...shex, format: value});
-    }
-
-    function handleShExByTextChange(value) {
-        setShEx({...shex, textArea: value});
-    }
-
-    function handleShExUrlChange(value) {
-        setShEx({...shex, url: value});
-    }
-
-    function handleShExFileUpload(value) {
-        setShEx({...shex, file: value});
-    }
-
-    function handleShapeMapTabChange(value) {
-        setShapeMap({...shapeMap, shapeMapActiveTab: value});
-    }
-
-    function handleShapeMapFormatChange(value) {
-        setShapeMap({...shapeMap, shapeMapFormat: value});
-    }
-
-    function handleShapeMapByTextChange(value) {
-        setShapeMap({...shapeMap, shapeMapTextArea: value});
-    }
-
-    function handleShapeMapUrlChange(value) {
-        setShapeMap({...shapeMap, shapeMapUrl: value});
-    }
-
-    function handleShapeMapFileUpload(value) {
-        setShapeMap({...shapeMap, shapeMapFile: value});
-    }
 
     function handleEndpointChange(value) {
         setEndpoint(value);
@@ -115,28 +59,34 @@ function ShExValidate(props) {
                 let paramsEndpoint = {};
                 if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint;
                 let params = {...paramsData, ...paramsShEx, ...paramsShapeMap, ...paramsEndpoint};
+                console.log(`Params: ${JSON.stringify(params)}`);
                 const formData = params2Form(params);
                 postValidate(url, formData, () => updateStateValidate(params))
             }
         },
-        [props.location.search]
+        [
+            props.location.search,
+            data.codeMirror,
+            shex.codeMirror,
+            shapeMap.codeMirror
+        ]
     );
 
     function updateStateValidate(params) {
-        console.log(`UpdateState after validate: Params:\n${JSON.stringify(params)}`)
-        updateStateData(params);
-        updateStateShEx(params);
-        updateStateShapeMap(params)
+        const newData = updateStateData(params,data) || data ;
+        setData(newData);
+
+        const newShEx = updateStateShEx(params,shex) || shex
+        setShEx(newShEx);
+
+        const newShapeMap = updateStateShapeMap(params,shapeMap) || shapeMap;
+        setShapeMap(newShapeMap);
     }
 
     function handleSubmit(event) {
-        console.log(`Handling submit...`);
         let paramsData = paramsFromStateData(data);
-        console.log(`ShExValidate paramsData...${JSON.stringify(paramsData)}`);
         let paramsShEx = paramsFromStateShEx(shex);
-        console.log(`ShExValidate paramsShEx...${JSON.stringify(paramsShEx)}`);
         let paramsShapeMap = paramsFromStateShapeMap(shapeMap);
-        console.log(`ShExValidate paramsShapeMap...${JSON.stringify(paramsShapeMap)}`);
 
         let paramsEndpoint = {};
         if (endpoint !== '') {
@@ -189,70 +139,22 @@ function ShExValidate(props) {
                         </Col>
                     </Row>
                 </Fragment>
-                : null}
+                : null
+            }
             <Form onSubmit={handleSubmit}>
                 <Row>
                     <Col>
-                        <DataTabs activeTab={data.dataActiveTab}
-                                  handleTabChange={handleDataTabChange}
-
-                                  textAreaValue={data.dataTextArea}
-                                  handleByTextChange={handleDataByTextChange}
-
-                                  dataUrl={data.dataUrl}
-                                  handleDataUrlChange={handleDataUrlChange}
-
-                                  handleFileUpload={handleDataFileUpload}
-
-                                  dataFormat={data.dataFormat}
-                                  handleDataFormatChange={handleDataFormatChange}
-                                  fromParams={data.fromParamsData}
-                                  resetFromParams={() => setData({...data, fromParamsData: false})}
-                        />
+                        { mkDataTabs(data, setData)}
                         <EndpointInput value={endpoint}
                                        handleOnChange={handleEndpointChange}/>
                     </Col>
                     <Col>
-                        <ShExTabs activeTab={shex.activeTab}
-                                  handleTabChange={handleShExTabChange}
-
-                                  textAreaValue={shex.textArea}
-                                  handleByTextChange={handleShExByTextChange}
-
-                                  shExUrl={shex.url}
-                                  handleShExUrlChange={handleShExUrlChange}
-
-                                  handleFileUpload={handleShExFileUpload}
-
-                                  selectedFormat={shex.format}
-                                  handleShExFormatChange={handleShExFormatChange}
-                                  setCodeMirror={(cm) => {
-                                      setYashe(cm);
-                                  }}
-                                  fromParams={shex.fromParams}
-                                  resetFromParams={() => setShEx({...shex, fromParams: false})}
-                        />
+                        { mkShExTabs(shex,setShapeMap)}
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <ShapeMapTabs activeTab={shapeMap.shapeMapActiveTab}
-                                      handleTabChange={handleShapeMapTabChange}
-
-                                      textAreaValue={shapeMap.shapeMapTextArea}
-                                      handleByTextChange={handleShapeMapByTextChange}
-
-                                      urlValue={shapeMap.shapeMapUrl}
-                                      handleUrlChange={handleShapeMapUrlChange}
-
-                                      handleFileUpload={handleShapeMapFileUpload}
-
-                                      selectedFormat={shapeMap.shapeMapFormat}
-                                      handleFormatChange={handleShapeMapFormatChange}
-
-                                      fromParams={shapeMap.fromParamsShapeMap}
-                                      resetFromParams={() => setShapeMap({...shapeMap, fromParamsShapeMap: false})}
-                        />
+                        { mkShapeMapTabs(shapeMap,setShapeMap) }
                     </Col>
                 </Row>
                 <Row>

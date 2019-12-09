@@ -15,12 +15,12 @@ function TestCode(props) {
     }
 
 
-    const options = {
+/*    const options = {
         mode: 'turtle',
         theme: 'default',
         lineNumbers: true,
         readonly: false
-    }
+    } */
 
     return (
         <Container>

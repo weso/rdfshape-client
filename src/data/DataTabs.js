@@ -1,6 +1,6 @@
 import React from 'react';
-import TurtleForm from "../TurtleForm";
-import InputTabsWithFormat from "../InputTabsWithFormat";
+import TurtleForm from "./TurtleForm";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
 import API from "../API"
 import PropTypes from 'prop-types';
 
@@ -29,7 +29,7 @@ function DataTabs(props) {
 
                        byUrlName="URL data"
                        handleUrlChange={props.handleDataUrlChange}
-                       urlValue={props.dataUrl}
+                       urlValue={props.urlValue}
                        byURLPlaceholder="http://..."
 
                        byFileName="RDF File"
@@ -52,7 +52,7 @@ DataTabs.propTypes = {
     handleTabChange: PropTypes.func.isRequired,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
-    dataUrl: PropTypes.string.isRequired,
+    urlValue: PropTypes.string.isRequired,
     handleDataUrlChange: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
     selectedFormat: PropTypes.string.isRequired,

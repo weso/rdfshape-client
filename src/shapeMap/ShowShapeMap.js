@@ -29,7 +29,7 @@ function showQualify(node, prefix) {
             }
             return <a href={rawNode}>{"<" + rawNode + ">"}</a>;
         }
-        if (node.match(/^[0-9\"\'\_]/)) return node;
+        if (node.match(/^[0-9"'_]/)) return node;
         console.log("Unknown format for node: " + node);
         return node;
     }

@@ -5,15 +5,15 @@ import Alert from 'react-bootstrap/Alert';
 import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-import DataTabs from "./DataTabs";
+// import DataTabs from "./DataTabs";
 import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams} from "../Utils";
+import {dataParamsFromQueryParams} from "../utils/Utils";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
-import {InitialData, paramsFromStateData, updateStateData} from "./Data";
+import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
 
 function DataInfo(props) {
 
@@ -22,20 +22,16 @@ function DataInfo(props) {
     const [error,setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState(null);
-    const [codeMirror, setCodeMirror] = useState(null);
-
-    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
-    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
-    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
-    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
-    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
 
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
             let dataParams = dataParamsFromQueryParams(queryParams);
             // const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
-            postDataInfo(API.dataInfo, params2Form(dataParams), () => setData(updateStateData(dataParams,data)));
+            postDataInfo(API.dataInfo, params2Form(dataParams), () => {
+                const newData = updateStateData(dataParams,data) || data ;
+                setData(newData);
+            });
         }},
         [props.location.search]
     );
@@ -88,23 +84,7 @@ function DataInfo(props) {
 
          <Col>
          <Form onSubmit={handleSubmit}>
-             <DataTabs activeTab={data.activeTab}
-                       handleTabChange={handleDataTabChange}
-
-                       textAreaValue={data.textArea}
-                       handleByTextChange={handleDataByTextChange}
-
-                       dataUrl={data.url}
-                       handleDataUrlChange={handleDataUrlChange}
-
-                       handleFileUpload={handleDataFileUpload}
-
-                       selectedFormat={data.format}
-                       handleDataFormatChange={handleDataFormatChange}
-                       setCodeMirror={(cm) => setCodeMirror(cm)}
-                       fromParams={data.fromParams}
-                       resetFromParams={() => setData({...data, fromParams: false}) }
-             />
+             { mkDataTabs(data,setData) }
          <Button id="submit" variant="primary" type="submit">Info about data</Button>
          </Form>
        </Col>

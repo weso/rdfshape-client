@@ -8,7 +8,7 @@ import Home from './Home.js';
 import DataInfo from './data/DataInfo.js';
 import DataConvert from './data/DataConvert.js';
 import DataVisualize from './data/DataVisualize.js';
-import CytoVisualize from './CytoVisualize.js';
+import CytoVisualize from './cytoscape/CytoVisualize.js';
 import DataQuery from './data/DataQuery.js';
 import DataExtract from './data/DataExtract.js';
 

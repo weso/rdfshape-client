@@ -1,0 +1,140 @@
+import API from "../API";
+import ShapeMapTabs from "./ShapeMapTabs";
+import React from "react";
+
+export const InitialShapeMap = {
+    activeTab: API.defaultTab,
+    textArea: '',
+    url: '',
+    file: null,
+    format: API.defaultShapeMapFormat,
+    fromParams: false,
+    codeMirror: null
+};
+
+export function convertTabShapeMap(key) {
+    switch (key) {
+        case API.byTextTab:
+            return "#shapeMapTextArea";
+        case API.byFileTab:
+            return "#shapeMapFile";
+        case API.byUrlTab:
+            return "#shapeMapUrl";
+        default:
+            console.log("Unknown shapeMapTab: " + key);
+            return key
+    }
+}
+
+export function paramsFromStateShapeMap(state) {
+    const activeTab = state.activeTab;
+    const textArea = state.textArea;
+    const format = state.format;
+    const url = state.url;
+    const file = state.file;
+    let params = {};
+    params['shapeMapActiveTab'] = convertTabShapeMap(activeTab);
+    params['shapeMapFormat'] = format;
+    switch (activeTab) {
+        case "byText":
+            params['shapeMap'] = textArea;
+            params['shapeMapFormatTextArea'] = format;
+            break;
+        case "byURL":
+            params['shapeMapURL'] = url;
+            params['shapeMapFormatURL'] = format;
+            break;
+        case "byFile":
+            params['shapeMapFile'] = file;
+            params['shapeMapFormatFile'] = format;
+            break;
+        default:
+    }
+    return params;
+}
+
+export function updateStateShapeMap(params, shapeMap) {
+    if (params['shapeMap']) {
+        return {
+            ...shapeMap,
+            activeTab: API.byTextTab,
+            textArea: params['shapeMap'],
+            shapeMap: true,
+            format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
+        };
+    }
+    if (params['shapeMapUrl']) {
+        return {
+            ...shapeMap,
+            activeTab: API.byUrlTab,
+            url: params['shapeMapUrl'],
+            fromParams: false,
+            format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
+        }
+    }
+    if (params['shapeMapFile']) {
+        return {
+            ...shapeMap,
+            activeTab: API.byFileTab,
+            file: params['shapeMapFile'],
+            fromParams: false,
+            format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
+        }
+    }
+    return shapeMap;
+}
+
+export function shapeMapParamsFromQueryParams(params) {
+    let newParams = {};
+    if (params.shapeMap) newParams["shapeMap"] = params.shapeMap;
+    if (params.shapeMapFormat) newParams["shapeMapFormat"] = params.shapeMapFormat;
+    if (params.shapeMapUrl) newParams["shapeMapUrl"] = params.shapeMapUrl;
+    return newParams;
+}
+
+export function mkShapeMapTabs(shapeMap, setShapeMap) {
+
+    function handleShapeMapTabChange(value) {
+        setShapeMap({...shapeMap, activeTab: value});
+    }
+
+    function handleShapeMapFormatChange(value) {
+        setShapeMap({...shapeMap, format: value});
+    }
+
+    function handleShapeMapByTextChange(value) {
+        setShapeMap({...shapeMap, textArea: value});
+    }
+
+    function handleShapeMapUrlChange(value) {
+        setShapeMap({...shapeMap, url: value});
+    }
+
+    function handleShapeMapFileUpload(value) {
+        setShapeMap({...shapeMap, file: value});
+    }
+
+    return(
+        <ShapeMapTabs activeTab={shapeMap.activeTab}
+                      handleTabChange={handleShapeMapTabChange}
+
+                      textAreaValue={shapeMap.textArea}
+                      handleByTextChange={handleShapeMapByTextChange}
+
+                      urlValue={shapeMap.url}
+                      handleUrlChange={handleShapeMapUrlChange}
+
+                      handleFileUpload={handleShapeMapFileUpload}
+
+                      selectedFormat={shapeMap.format}
+                      handleFormatChange={handleShapeMapFormatChange}
+
+                      setCodeMirror={(cm) => setInterval({...shapeMap, codeMirror: cm })}
+
+                      fromParams={shapeMap.fromParams}
+                      resetFromParams={() => setShapeMap({...shapeMap, fromParams: false})}
+        />
+    );
+
+}
+

@@ -1,5 +1,5 @@
 import React from 'react';
-import InputTabs from "./InputTabs";
+import InputTabs from "../components/InputTabs";
 import PropTypes from "prop-types";
 import QueryForm from "./QueryForm";
 

@@ -9,14 +9,14 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ShExTabs from "../shex/ShExTabs";
 import API from "../API"
-import {convertTabSchema} from "../Utils";
 import axios from "axios";
 import Tab from "react-bootstrap/Tab";
-import InputShapeLabel from "../InputShapeLabel";
+import InputShapeLabel from "../components/InputShapeLabel";
 import Tabs from "react-bootstrap/Tabs";
-import InputEntitiesByText from "../InputEntitiesByText";
+import InputEntitiesByText from "../components/InputEntitiesByText";
 import ResultValidate from "../results/ResultValidate";
-import InputWikidataSchema from "../InputWikidataSchema";
+import InputWikidataSchema from "../components/InputWikidataSchema";
+import {convertTabSchema} from "../shex/ShEx";
 
 function WikidataValidate(props) {
 

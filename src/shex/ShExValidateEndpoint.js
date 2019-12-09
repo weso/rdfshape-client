@@ -9,16 +9,14 @@ import API from "../API";
 import axios from "axios";
 import ResultValidate from "../results/ResultValidate";
 import {
-    endpointParamsFromQueryParams,
-    shExParamsFromQueryParams,
-    shapeMapParamsFromQueryParams,
-    paramsFromStateEndpoint,
-    paramsFromStateShapeMap} from "../Utils";
+    paramsFromStateEndpoint} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import EndpointInput from "../endpoint/EndpointInput";
-import {paramsFromStateShEx} from "./ShEx";
+import {paramsFromStateShEx, shExParamsFromQueryParams} from "./ShEx";
+import {paramsFromStateShapeMap, shapeMapParamsFromQueryParams} from "../shapeMap/ShapeMap";
+import {endpointParamsFromQueryParams} from "../endpoint/Endpoint";
 
 const url = API.schemaValidate ;
 

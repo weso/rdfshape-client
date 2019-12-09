@@ -1,7 +1,7 @@
 import React from 'react';
 import Code from '../components/Code'
 import { Permalink } from "../Permalink"
-import { mkMode } from "../Utils"
+import { mkMode } from "../utils/Utils"
 
 
 function ResultShExConvert(props) {
@@ -29,7 +29,6 @@ function ResultShExConvert(props) {
            theme="material"
          />)}
        <details><pre>{JSON.stringify(result)}</pre></details>
-       <Permalink url={props.permalink} />
     </div>
  }
 

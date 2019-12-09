@@ -7,30 +7,25 @@ import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 import ResultDataExtract from "../results/ResultDataExtract";
-import DataTabs from "./DataTabs";
 import NodeSelector from "../shex/NodeSelector";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams} from "../Utils"
+import {dataParamsFromQueryParams} from "../utils/Utils"
 import qs from "query-string";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Pace from "react-pace-progress";
-import {InitialData, paramsFromStateData, updateStateData} from "./Data";
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
 
 
 function DataExtract(props) {
     const [data, setData] = useState(InitialData);
+    const [codeMirror, setCodeMirror] = useState(null);
     const [loading,setLoading] = useState(false);
     const [error,setError] = useState(null);
     const [result, setResult] = useState('');
     const [permalink, setPermalink] = useState(null);
     const [nodeSelector, setNodeSelector] = useState('');
 
-    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
-    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
-    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
-    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
-    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
 
     const url = API.dataExtract;
 
@@ -89,22 +84,7 @@ function DataExtract(props) {
                 }
                 <Col>
                 <Form onSubmit={handleSubmit}>
-                    <DataTabs activeTab={data.dataActiveTab}
-                              handleTabChange={handleDataTabChange}
-
-                              textAreaValue={data.dataTextArea}
-                              handleByTextChange={handleDataByTextChange}
-
-                              dataUrl={data.dataUrl}
-                              handleDataUrlChange={handleDataUrlChange}
-
-                              handleFileUpload={handleDataFileUpload}
-
-                              dataFormat={data.dataFormat}
-                              handleDataFormatChange={handleDataFormatChange}
-                              fromParams={data.fromParamsData}
-                              resetFromParams={() => setData({...data, fromParamsData: false}) }
-                    />
+                    { mkDataTabs(data, setData) }
                     <NodeSelector
                         value={nodeSelector}
                         handleChange={(value) => setNodeSelector(value)} />

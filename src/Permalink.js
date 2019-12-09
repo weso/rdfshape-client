@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import qs from 'query-string';
 import FormData from "form-data";
 import PropTypes from "prop-types";
-import SelectFormat from "./SelectFormat";
+import SelectFormat from "./components/SelectFormat";
 
 
 export function mkPermalink(route, params) {

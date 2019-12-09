@@ -3,12 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointInput from "./EndpointInput";
-import QueryTabs from "../QueryTabs";
+import QueryTabs from "../query/QueryTabs";
 import API from "../API";
 import axios from "axios";
 import {mkPermalink, params2Form} from "../Permalink";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
-import {InitialQuery, paramsFromStateQuery} from "../Utils"
+import {InitialQuery, paramsFromStateQuery, mkQueryTabs} from "../query/Query"
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
@@ -23,11 +23,6 @@ function EndpointQuery(props) {
     const [query, setQuery] = useState(InitialQuery);
 
     const [permalink, setPermalink] = useState(null);
-
-    function handleQueryTabChange(value) { setQuery({...query, queryActiveTab: value}); }
-    function handleQueryByTextChange(value) { setQuery({...query, queryTextArea: value}); }
-    function handleQueryUrlChange(value) { setQuery( {...query, queryUrl: value}); }
-    function handleQueryFileUpload(value) { setQuery({...query, queryFile: value }); }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -72,17 +67,7 @@ function EndpointQuery(props) {
             <Form onSubmit={handleSubmit}>
                 <EndpointInput value={endpoint}
                                handleOnChange={handleEndpointChange}/>
-                <QueryTabs activeTab={query.queryActiveTab}
-                           handleTabChange={handleQueryTabChange}
-
-                           textAreaValue={query.queryTextArea}
-                           handleByTextChange={handleQueryByTextChange}
-
-                           urlValue={query.queryUrl}
-                           handleDataUrlChange={handleQueryUrlChange}
-
-                           handleFileUpload={handleQueryFileUpload}
-                />
+                {mkQueryTabs(query, setQuery)}
                 <Button variant="primary"
                         type="submit">Query endpoint</Button>
             </Form>

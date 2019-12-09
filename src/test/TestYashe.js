@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
-import ShExForm from '../ShExForm'
-import QueryForm from '../QueryForm'
+import ShExForm from '../shex/ShExForm'
+import QueryForm from '../query/QueryForm'
 import Form from "react-bootstrap/Form";
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';

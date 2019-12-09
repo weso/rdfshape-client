@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
 import Code from "./Code";
-import { format2mode } from '../Utils';
+import { format2mode } from '../utils/Utils';
 
 function ByText(props) {
 
@@ -18,9 +18,7 @@ function ByText(props) {
   if (props.inputForm) {
          inputText = props.inputForm
      } else {
-         inputText =  <div>
-             <p>Code: {code}</p>
-             <Code value={code}
+         inputText =  <Code value={code}
                            mode={format2mode(props.textFormat)}
                            onChange={handleChange}
                            setCodeMirror={props.setCodeMirror}
@@ -28,7 +26,7 @@ function ByText(props) {
                            readonly='false'
                            fromParams={props.fromParams}
                            resetFromParams={props.resetFromParams}
-         /></div>
+         />
      }
      return (
         <Form.Group>

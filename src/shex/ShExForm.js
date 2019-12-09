@@ -16,7 +16,7 @@ function ShExForm(props) {
             const y = Yashe.fromTextArea(
                 textAreaRef.current, 
                 options);
-            // if (props.setCodeMirror) props.setCodeMirror(y);
+            if (props.setCodeMirror) props.setCodeMirror(y);
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())
                 props.onChange(cm.getValue(), y);
@@ -34,6 +34,7 @@ function ShExForm(props) {
         props.placeholder,
         props.fromParams,
         props.resetFromParams,
+        props.setCodeMirror,
         props.value]
     );
 

@@ -1,5 +1,6 @@
 import API from "../API";
-import {convertTabSchema} from "../Utils";
+import ShExTabs from "./ShExTabs";
+import React from "react";
 
 
 export const InitialShEx = {
@@ -8,8 +9,23 @@ export const InitialShEx = {
     url: '',
     file: null,
     format: API.defaultShExFormat,
-    fromParams: false
+    fromParams: false,
+    codeMirror: null
 };
+
+export function convertTabSchema(key) {
+    switch (key) {
+        case API.byTextTab:
+            return "#schemaTextArea";
+        case API.byFileTab:
+            return "#schemaFile";
+        case API.byUrlTab:
+            return "#schemaUrl";
+        default:
+            console.log("Unknown schemaTab: " + key);
+            return key
+    }
+}
 
 export function paramsFromStateShEx(state) {
     const activeTab = state.activeTab;
@@ -68,4 +84,55 @@ export function updateStateShEx(params, shex) {
         }
     }
     return shex;
+}
+
+export function mkShExTabs(shex,setShEx) {
+    function handleShExTabChange(value) {
+        setShEx({...shex, activeTab: value});
+    }
+
+    function handleShExFormatChange(value) {
+        setShEx({...shex, format: value});
+    }
+
+    function handleShExByTextChange(value) {
+        setShEx({...shex, textArea: value});
+    }
+
+    function handleShExUrlChange(value) {
+        setShEx({...shex, url: value});
+    }
+
+    function handleShExFileUpload(value) {
+        setShEx({...shex, file: value});
+    }
+
+    return (
+        <ShExTabs activeTab={shex.activeTab}
+                  handleTabChange={handleShExTabChange}
+
+                  textAreaValue={shex.textArea}
+                  handleByTextChange={handleShExByTextChange}
+
+                  urlValue={shex.url}
+                  handleShExUrlChange={handleShExUrlChange}
+
+                  handleFileUpload={handleShExFileUpload}
+
+                  selectedFormat={shex.format}
+                  handleShExFormatChange={handleShExFormatChange}
+                  setCodeMirror={(cm) => setShEx({...shex, codeMirror: cm})}
+
+                  fromParams={shex.fromParams}
+                  resetFromParams={() => setShEx({...shex, fromParams: false})}
+        />
+    );
+}
+
+export function shExParamsFromQueryParams(params) {
+    let newParams = {};
+    if (params.schema) newParams["schema"] = params.schema;
+    if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
+    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
+    return newParams;
 }

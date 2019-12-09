@@ -1,5 +1,5 @@
 import React from 'react';
-import InputTabsWithFormat from "../InputTabsWithFormat";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
 import API from "../API"
 import PropTypes from 'prop-types';
 
@@ -32,6 +32,8 @@ function ShapeMapTabs(props) {
 
             fromParams={props.fromParams}
             resetFromParams={props.resetFromParams}
+
+            setCodeMirror={props.setCodeMirror}
         />
     </div>
     );

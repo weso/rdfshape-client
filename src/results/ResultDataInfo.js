@@ -1,6 +1,6 @@
 import React from 'react';
 import Code from '../components/Code';
-import { mkMode } from "../Utils";
+import { mkMode } from "../utils/Utils";
 import Alert from 'react-bootstrap/Alert';
 
 function ResultDataInfo(props) {

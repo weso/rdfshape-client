@@ -1,6 +1,6 @@
 import React from 'react';
-import InputTabsWithFormat from "../InputTabsWithFormat";
-import ShExForm from "../ShExForm";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
+import ShExForm from "./ShExForm";
 import API from "../API";
 import PropTypes from "prop-types";
 
@@ -30,7 +30,7 @@ function ShExTabs(props) {
 
                 byUrlName="ShEx URL"
                 handleUrlChange={props.handleShExUrlChange}
-                urlValue={props.shExUrl}
+                urlValue={props.urlValue}
                 byURLPlaceholder="http://..."
 
                 byFileName="ShEx File"
@@ -55,7 +55,7 @@ ShExTabs.propTypes = {
     handleByTextChange: PropTypes.func.isRequired,
     setCodeMirror:PropTypes.func.isRequired,
 
-    shExUrl: PropTypes.string.isRequired,
+    urlValue: PropTypes.string.isRequired,
     handleShExUrlChange: PropTypes.func.isRequired,
 
     handleFileUpload: PropTypes.func.isRequired,

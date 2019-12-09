@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Alert from "react-bootstrap/Alert";
-import InputEntitiesByText from "../InputEntitiesByText";
+import InputEntitiesByText from "../components/InputEntitiesByText";
 import Table from "react-bootstrap/Table";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";

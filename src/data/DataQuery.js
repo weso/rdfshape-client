@@ -3,18 +3,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "./DataTabs"
-import QueryTabs from "../QueryTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import ResultQuery from "../results/ResultQuery";
-import {InitialQuery, paramsFromStateQuery} from "../Utils";
+import {InitialQuery, paramsFromStateQuery, mkQueryTabs} from "../query/Query";
 import {params2Form} from "../Permalink";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
-import {InitialData, paramsFromStateData} from "./Data";
+import {InitialData, mkDataTabs, paramsFromStateData} from "./Data";
+
 
 function DataQuery(props)  {
     const [data, setData] = useState(InitialData);
@@ -24,16 +23,7 @@ function DataQuery(props)  {
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState('');
 
-    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
-    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
-    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
-    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
-    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
 
-    function handleQueryTabChange(value) { setQuery({...query, queryActiveTab: value}); }
-    function handleQueryByTextChange(value) { setQuery({...query, queryTextArea: value}); }
-    function handleQueryUrlChange(value) { setQuery( {...query, queryUrl: value}); }
-    function handleQueryFileUpload(value) { setQuery({...query, queryFile: value }); }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -78,33 +68,8 @@ function DataQuery(props)  {
                     }
                     <Col>
                 <Form onSubmit={handleSubmit}>
-                    <DataTabs activeTab={data.dataActiveTab}
-                              handleTabChange={handleDataTabChange}
-
-                              textAreaValue={data.dataTextArea}
-                              handleByTextChange={handleDataByTextChange}
-
-                              dataUrl={data.dataUrl}
-                              handleDataUrlChange={handleDataUrlChange}
-
-                              handleFileUpload={handleDataFileUpload}
-
-                              dataFormat={data.dataFormat}
-                              handleDataFormatChange={handleDataFormatChange}
-                              fromParams={data.fromParamsData}
-                              resetFromParams={() => setData({...data, fromParamsData: false}) }
-                    />
-                    <QueryTabs activeTab={query.queryActiveTab}
-                              handleTabChange={handleQueryTabChange}
-
-                              textAreaValue={query.queryTextArea}
-                              handleByTextChange={handleQueryByTextChange}
-
-                              urlValue={query.queryUrl}
-                              handleDataUrlChange={handleQueryUrlChange}
-
-                              handleFileUpload={handleQueryFileUpload}
-                    />
+                    { mkDataTabs(data, setData) }
+                    { mkQueryTabs(query, setQuery) }
                     <Button variant="primary" type="submit">Query</Button>
                 </Form>
                     </Col>

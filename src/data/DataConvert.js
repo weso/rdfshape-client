@@ -7,13 +7,13 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import axios from "axios";
-import SelectFormat from "../SelectFormat";
+import SelectFormat from "../components/SelectFormat";
 import ResultDataConvert from "../results/ResultDataConvert";
-import {dataParamsFromQueryParams} from "../Utils";
+import {dataParamsFromQueryParams} from "../utils/Utils";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import {mkPermalink, params2Form} from "../Permalink";
-import {InitialData, paramsFromStateData, updateStateData} from "./Data";
+import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
 
 function DataConvert(props) {
 
@@ -25,11 +25,6 @@ function DataConvert(props) {
     const [data,setData] = useState(InitialData);
     const [targetDataFormat, setTargetDataFormat] = useState(API.defaultDataFormat);
 
-    function handleDataTabChange(value) { setData({...data, dataActiveTab: value}); }
-    function handleDataFormatChange(value) {  setData({...data, dataFormat: value}); }
-    function handleDataByTextChange(value) { setData({...data, dataTextArea: value}); }
-    function handleDataUrlChange(value) { setData( {...data, dataUrl: value}); }
-    function handleDataFileUpload(value) { setData({...data, dataFile: value }); }
     function handleTargetDataFormatChange(value) { setTargetDataFormat(value); }
 
     useEffect(() => {
@@ -93,22 +88,7 @@ function DataConvert(props) {
              }
           <Col>
            <Form onSubmit={handleSubmit}>
-               <DataTabs activeTab={data.dataActiveTab}
-                         handleTabChange={handleDataTabChange}
-
-                         textAreaValue={data.dataTextArea}
-                         handleByTextChange={handleDataByTextChange}
-
-                         dataUrl={data.dataUrl}
-                         handleDataUrlChange={handleDataUrlChange}
-
-                         handleFileUpload={handleDataFileUpload}
-
-                         dataFormat={data.dataFormat}
-                         handleDataFormatChange={handleDataFormatChange}
-                         fromParams={data.fromParamsData}
-                         resetFromParams={() => setData({...data, fromParamsData: false}) }
-               />
+               { mkDataTabs(data,setData) }
                <SelectFormat name="Target data format"
                              selectedFormat={targetDataFormat}
                              handleFormatChange={handleTargetDataFormatChange}

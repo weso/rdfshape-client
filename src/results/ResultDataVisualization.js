@@ -1,7 +1,7 @@
 import React from 'react';
 import Cyto from "../components/Cyto";
 import Container from "react-bootstrap/Container";
-import {dot2svg} from "../Utils";
+import {dot2svg} from "../utils/Utils";
 import Viz from 'viz.js/viz.js';
 const {Module, render} = require('viz.js/full.render.js');
 

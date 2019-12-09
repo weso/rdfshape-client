@@ -3,14 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
-import { mkPermalink, params2Form, Permalink } from "../Permalink";
+import { mkPermalink, Permalink } from "../Permalink";
 import API from "../API";
 import Pace from "react-pace-progress";
-import ResultValidate from "../results/ResultValidate";
 import Form from "react-bootstrap/Form";
-import QueryTabs from "../QueryTabs";
 import Button from "react-bootstrap/Button";
-import {convertTabQuery} from "../Utils";
+import {InitialQuery, mkQueryTabs, queryParamsFromQueryParams} from "../query/Query";
 import axios from "axios";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 
@@ -19,40 +17,13 @@ function WikidataQuery(props) {
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error,setError] = useState(null);
-
-    const [queryTextArea, setQueryTextArea] = useState('');
-    const [queryUrl, setQueryUrl] = useState('');
-    const [queryFile, setQueryFile] = useState('');
-    const [queryActiveTab, setQueryActiveTab] = useState('ByText');
+    const [query, setQuery] = useState(InitialQuery);
     const serverUrl = API.endpointQuery ;
 
-    function queryParams() {
-        let params = {} ;
-        params['activeTab'] = convertTabQuery(queryActiveTab);
-        switch (queryActiveTab) {
-            case API.byTextTab:
-                params['query'] = queryTextArea;
-                break;
-            case API.byUrlTab:
-                params['queryURL'] = queryUrl;
-                break;
-            case API.byFileTab:
-                params['queryFile'] = queryFile;
-                break;
-            default:
-                console.log(`Unknown value queryActiveTab: ${queryActiveTab}`)
-        }
-        return params ;
-    }
-
-    function formParams() {
-        let params = {} ;
-        return params ;
-    }
 
     function handleSubmit(event) {
         event.preventDefault();
-        const permalinkParams = queryParams();
+        const permalinkParams = queryParamsFromQueryParams();
         let serviceParams = permalinkParams ;
         serviceParams['endpoint'] = API.wikidataUrl ;
         let permalink = mkPermalink(API.wikidataQueryRoute, permalinkParams);
@@ -76,22 +47,6 @@ function WikidataQuery(props) {
         ;
     }
 
-    function handleTabChangeQuery(value) {
-        setQueryActiveTab(value)
-    }
-
-    function handleByTextChangeQuery(value) {
-        setQueryTextArea(value)
-    }
-
-    function handleUrlChangeQuery(value) {
-        setQueryUrl(value)
-    }
-
-    function handleFileUploadQuery(value) {
-        setQueryFile(value)
-    }
-
     return (
        <Container>
          <h1>Query Wikidata</h1>
@@ -108,17 +63,7 @@ function WikidataQuery(props) {
              }
              <Col>
                  <Form onSubmit={handleSubmit}>
-                     <QueryTabs activeTab={queryActiveTab}
-                                handleTabChange={handleTabChangeQuery}
-
-                                textAreaValue={queryTextArea}
-                                handleByTextChange={handleByTextChangeQuery}
-
-                                urlValue={queryUrl}
-                                handleDataUrlChange={handleUrlChangeQuery}
-
-                                handleFileUpload={handleFileUploadQuery}
-                     />
+                     {mkQueryTabs(query,setQuery)}
                      <Button variant="primary"
                              type="submit">Query wikidata</Button>
                  </Form>
