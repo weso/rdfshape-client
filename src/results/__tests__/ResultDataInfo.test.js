@@ -5,7 +5,6 @@ import axios from 'axios';
 import '@testing-library/jest-dom/extend-expect'
 import {wait, waitForElement, getByText, getByRole} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
-import ResultDataInfo from "../ResultDataInfo";
 import DataInfo from "../../data/DataInfo";
 
 jest.mock('axios');
@@ -18,7 +17,7 @@ function before() {
 test("ResultDataInfo - shows results after data submit", async () => {
 
     const location = before();
-    const {getByText, getByTestId, container} = render(<DataInfo location={location}/>);
+    const {getByText, container} = render(<DataInfo location={location}/>);
 
     // submit empty form
     fireEvent.click(getByText(/info about/i));
