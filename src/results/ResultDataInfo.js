@@ -4,11 +4,11 @@ import { mkMode } from "../utils/Utils";
 import Alert from 'react-bootstrap/Alert';
 
 function ResultDataInfo(props) {
-    const result = props.result
+    const result = props.result;
     let msg = null;
     if (result) {
-        const mode = mkMode(result.dataFormat)
-        console.log(`Mode: ${mode}`)
+        const mode = mkMode(result.dataFormat);
+        console.log(`Mode: ${mode}`);
         if (result.error) {
             msg = <Alert variant='danger'>{result.error}</Alert>
         } else {
