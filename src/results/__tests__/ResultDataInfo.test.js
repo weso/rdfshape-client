@@ -1,11 +1,12 @@
 import React from 'react'
 
 import {render, fireEvent} from '@testing-library/react';
-import DataInfo from "../DataInfo";
 import axios from 'axios';
 import '@testing-library/jest-dom/extend-expect'
-import {wait, waitForElement, getByText} from "@testing-library/dom";
+import {wait, waitForElement, getByText, getByRole} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
+import ResultDataInfo from "../ResultDataInfo";
+import DataInfo from "../../data/DataInfo";
 
 jest.mock('axios');
 
@@ -14,18 +15,10 @@ function before() {
     return {search: ''};
 }
 
-test("DataInfo - shows data", async () => {
+test("ResultDataInfo - shows results after data submit", async () => {
 
     const location = before();
-    const {getByText} = render(<DataInfo location={location}/>);
-    const element = await waitForElement(() => getByText(/Data Info/i));
-    expect(element).toBeInTheDocument();
-});
-
-test("DataInfo - submit data and show permalink after data submit", async () => {
-
-    const location = before();
-    const {getByText} = render(<DataInfo location={location}/>);
+    const {getByText, getByTestId, container} = render(<DataInfo location={location}/>);
 
     // submit empty form
     fireEvent.click(getByText(/info about/i));
@@ -35,6 +28,8 @@ test("DataInfo - submit data and show permalink after data submit", async () => 
     // Expect permalink
     let permalinkElement = await waitForElement(() => getByText(/permalink/i));
     expect(permalinkElement).toBeInTheDocument();
-    let dataInfoElement = await waitForElement(() => getByText(/Data Info/i));
-    expect(dataInfoElement).toBeInTheDocument();
+
+    // Expect alert with results
+    let resultsElement = await waitForElement(() => getByRole(container, "alert"));
+    expect(resultsElement).toBeInTheDocument();
 });
