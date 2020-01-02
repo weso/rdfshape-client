@@ -145,7 +145,7 @@ function ShExValidate(props) {
                 <Row>
                     <Col>
                         { mkDataTabs(data, setData)}
-                        <Button variant="primary" onClick={setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
+                        <Button variant="primary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
                                            handleOnChange={handleEndpointChange}/>
