@@ -1,8 +1,5 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
-import DataTabs from "../data/DataTabs"
-import ShExTabs from "./ShExTabs"
-import ShapeMapTabs from "../shapeMap/ShapeMapTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
@@ -40,6 +37,7 @@ function ShExValidate(props) {
     const [data, setData] = useState(InitialData);
     const [shex, setShEx] = useState(InitialShEx);
     const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+    const [withEndpoint, setWithEndpoint] = useState(false);
 
     const [endpoint, setEndpoint] = useState('');
 
@@ -66,9 +64,9 @@ function ShExValidate(props) {
         },
         [
             props.location.search,
-            data.codeMirror,
-            shex.codeMirror,
-            shapeMap.codeMirror
+//            data.codeMirror,
+//            shex.codeMirror,
+//            shapeMap.codeMirror
         ]
     );
 
@@ -76,10 +74,12 @@ function ShExValidate(props) {
         const newData = updateStateData(params,data) || data ;
         setData(newData);
 
-        const newShEx = updateStateShEx(params,shex) || shex
+        const newShEx = updateStateShEx(params,shex) || shex;
+        console.log(`updateStateValidate: newShEx: ${JSON.stringify(newShEx)}`);
         setShEx(newShEx);
 
         const newShapeMap = updateStateShapeMap(params,shapeMap) || shapeMap;
+        console.log(`updateStateValidate: newShapeMap: ${JSON.stringify(newShapeMap)}`);
         setShapeMap(newShapeMap);
     }
 
@@ -145,11 +145,13 @@ function ShExValidate(props) {
                 <Row>
                     <Col>
                         { mkDataTabs(data, setData)}
-                        <EndpointInput value={endpoint}
-                                       handleOnChange={handleEndpointChange}/>
+                        { withEndpoint?
+                            <EndpointInput value={endpoint}
+                                           handleOnChange={handleEndpointChange}/> : null
+                        }
                     </Col>
                     <Col>
-                        { mkShExTabs(shex,setShapeMap)}
+                        { mkShExTabs(shex,setShEx)}
                     </Col>
                 </Row>
                 <Row>

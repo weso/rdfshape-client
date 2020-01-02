@@ -6,11 +6,7 @@ import { format2mode } from '../utils/Utils';
 
 function ByText(props) {
 
-  const [code,setCode] = useState(props.textAreaValue);
-
   function handleChange(value) {
-    setCode(value);
-    console.log(`ByText: handleChange ${value}`)
     props.handleByTextChange(value);
   }
 
@@ -18,7 +14,7 @@ function ByText(props) {
   if (props.inputForm) {
          inputText = props.inputForm
      } else {
-         inputText =  <Code value={code}
+         inputText =  <Code value={props.textAreaValue}
                            mode={format2mode(props.textFormat)}
                            onChange={handleChange}
                            setCodeMirror={props.setCodeMirror}

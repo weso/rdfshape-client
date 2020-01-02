@@ -5,8 +5,9 @@ import PropTypes from "prop-types";
 
 function InputTabsWithFormat(props) {
 
+    console.log(`inputTabsWithFormat: ${props.nameInputTab} ${props.textAreaValue}`)
     function handleTextChange(value) {
-        console.log(`HandleChange...`);
+        // console.log(`HandleChange...`);
         props.handleByTextChange(value);
     }
 

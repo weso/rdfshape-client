@@ -14,7 +14,7 @@ function SelectFormat(props) {
         axios.get(url).then(response => response.data)
             .then((data) => {
                 setFormats(data)
-                console.log(`Formats: ${formats}`)
+                //console.log(`Formats: ${formats}`)
             })
     }, [props.urlFormats]);
 

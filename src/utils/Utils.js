@@ -17,13 +17,13 @@ function *intersperse(a, delim) {
 }*/
 
 export function dot2svg(dot,cb) {
-    console.log("### Dot2SVG!!!" + dot);
+    // console.log("### Dot2SVG!!!" + dot);
     const digraph = 'digraph { a -> b; }';
     const viz = new Viz({ Module, render });
     const opts = {engine: 'dot'};
     viz.renderSVGElement(digraph, opts).then(function(svg) {
-      console.log("SVG converted!!");
-      console.log(svg);
+      // console.log("SVG converted!!");
+      // console.log(svg);
       cb(svg);
     });
 }
@@ -44,7 +44,7 @@ const defaultMode = "xml";
 
 export function mkMode(format) {
     let mode = format ? formatModes[format.toLowerCase()] || defaultMode: defaultMode;
-    console.log(`mkMode(${format}) = ${mode}`);
+    // console.log(`mkMode(${format}) = ${mode}`);
     return mode; 
 }
 
@@ -65,7 +65,7 @@ export function dataParamsFromQueryParams(params) {
 
 
 export function showQualify(node, prefixMap) {
-    console.log(`node: ${JSON.stringify(node)}`)
+    // console.log(`node: ${JSON.stringify(node)}`)
     if (node) {
         const relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
         const matchBase = relativeBaseRegex.exec(node);
@@ -169,11 +169,11 @@ export function showQualify(node, prefixMap) {
 }
 
 export function showQualified(qualified, prefixes) {
-    console.log(`showQualified ${JSON.stringify(qualified)}`)
+    // console.log(`showQualified ${JSON.stringify(qualified)}`)
     switch (qualified.type) {
         case 'RelativeIRI': return <span>{qualified.str}</span>
         case 'QualifiedName':
-            console.log(`QualifiedName: ${qualified.prefix}`)
+            // console.log(`QualifiedName: ${qualified.prefix}`)
             if (prefixes.includes(qualified.prefix)) {
                 return <Fragment>
                     <a href={API.wikidataOutgoingRoute + "?node=" + encodeURIComponent(qualified.uri)}>{qualified.str}</a>
@@ -186,7 +186,7 @@ export function showQualified(qualified, prefixes) {
         case 'Literal' : return <span>{qualified.str}</span>
         case 'LangLiteral' : return <span>{qualified.str}</span>
         default:
-            console.log(`Unknown type for qualified value`)
+            console.error(`Unknown type for qualified value`)
             return <span>{qualified.str}</span>
     }
 }
@@ -199,7 +199,7 @@ export function cnvValueFromSPARQL(value) {
             if (value['xml:lang']) return `"${value.value}"@${value['xml:lang']}`
             return `"${value.value}"`
         default:
-            console.error(`cnvValue: Unknown value type for ${value}`)
+            console.error(`cnvValueFromSPARQL: Unknown value type for ${value}`)
             return value
     }
 }

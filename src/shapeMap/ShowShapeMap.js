@@ -1,11 +1,10 @@
 import React from 'react';
-// import Table from "react-bootstrap/Table";
 import BootstrapTable from 'react-bootstrap-table-next';
 import Alert from "react-bootstrap/Alert";
 
 function showQualify(node, prefix) {
-    console.log("showQualify node)");
-    console.log(node);
+    // console.log("showQualify node");
+    // console.log(node);
     const relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
     const matchBase = relativeBaseRegex.exec(node);
     if (matchBase) {
@@ -19,7 +18,7 @@ function showQualify(node, prefix) {
             for (const key in prefix) {
                 if (rawNode.startsWith(prefix[key])) {
                     const localName = rawNode.slice(prefix[key].length);
-                    console.log("qualifying " + localName)
+                    // console.log("qualifying " + localName)
                     /*       if (localName.indexOf("/") > -1) {
                             return "&lt;" + rawNode + "&gt;" ;
                            } else */
@@ -30,13 +29,13 @@ function showQualify(node, prefix) {
             return <a href={rawNode}>{"<" + rawNode + ">"}</a>;
         }
         if (node.match(/^[0-9"'_]/)) return node;
-        console.log("Unknown format for node: " + node);
+        console.error("Unknown format for node: " + node);
         return node;
     }
 }
 
 function shapeMap2Table(shapeMap, nodesPrefixMap, shapesPrefixMap) {
-   console.log("ShapeMap: " + shapeMap)
+   // console.log("ShapeMap: " + shapeMap)
    return shapeMap.map((assoc,key) => ({
       'id': key,
       'node': showQualify(assoc.node, nodesPrefixMap),
@@ -54,7 +53,7 @@ function shapeFormatter(cell, row) {
 }
 
 function detailsFormatter(cell, row) {
-    console.log("DetailsFormatter, cell: " + cell + " Row: " + row)
+    // console.log("DetailsFormatter, cell: " + cell + " Row: " + row)
     return (
         <details>
          <pre>{row.details}</pre>
@@ -63,12 +62,12 @@ function detailsFormatter(cell, row) {
 
 function ShowShapeMap(props) {
     const shapeMap = props.shapeMap
-    console.log(`ShapeMap: ${shapeMap} isString? ${typeof shapeMap}`)
+    // console.log(`ShapeMap: ${shapeMap} isString? ${typeof shapeMap}`)
     if (typeof shapeMap === 'string') {
        return <Alert variant="info">{shapeMap}</Alert>
     } else {
         const table = shapeMap2Table(shapeMap, props.nodesPrefixMap, props.shapesPrefixMap)
-        console.log("Table data: " + table)
+        // console.log("Table data: " + table)
         const columns = [
             {
                 dataField: 'id',

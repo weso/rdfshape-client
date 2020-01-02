@@ -59,7 +59,7 @@ export function updateStateShapeMap(params, shapeMap) {
             ...shapeMap,
             activeTab: API.byTextTab,
             textArea: params['shapeMap'],
-            shapeMap: true,
+            fromParams: true,
             format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
         };
     }
