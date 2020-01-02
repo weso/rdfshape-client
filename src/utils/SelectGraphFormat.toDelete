@@ -3,7 +3,8 @@ import Form from "react-bootstrap/Form";
 import axios from 'axios';
 import API from "./API"
 
-class SelectGraphFormat extends React.Component {
+function SelectGraphFormat(props) {
+
     constructor(props) {
         super(props);
         this.state = {

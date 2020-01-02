@@ -16,6 +16,7 @@ import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
+import SelectFormat from "../components/SelectFormat";
 const {Module, render} = require('viz.js/full.render.js');
 
 function  DataVisualize(props) {
@@ -114,9 +115,10 @@ function  DataVisualize(props) {
          <Col>
          <Form onSubmit={handleSubmit}>
              { mkDataTabs(data,setData)}
-             <SelectGraphFormat name="Target graph format"
-                               default={targetGraphFormat}
-                               handleChange={handleTargetGraphFormatChange}
+             <SelectFormat name="Target graph format"
+                           handleFormatChange={handleTargetGraphFormatChange}
+                           urlFormats={API.dataVisualFormats}
+                           selectedFormat={targetGraphFormat}
              />
          <Button variant="primary" type="submit">Visualize</Button>
          </Form>
