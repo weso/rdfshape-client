@@ -40,6 +40,38 @@ export function convertTabQuery(key) {
     }
 }
 
+export function updateStateQuery(params, query) {
+    if (params['query']) {
+        return {
+            ...query,
+            activeTab: API.byTextTab,
+            textArea: params['query'],
+            fromParams: true,
+            format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
+        };
+    }
+    if (params['queryUrl']) {
+        return {
+            ...query,
+            activeTab: API.byUrlTab,
+            url: params['queryUrl'],
+            fromParams: false,
+            format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
+        }
+    }
+    if (params['queryFile']) {
+        return {
+            ...query,
+            activeTab: API.byFileTab,
+            file: params['queryFile'],
+            fromParams: false,
+            format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
+        }
+    }
+    return query;
+}
+
+
 export function mkQueryTabs(query,setQuery) {
 
     function handleQueryTabChange(value) { setQuery({...query, activeTab: value}); }

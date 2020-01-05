@@ -71,6 +71,8 @@ class API {
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
+    static defaultQueryFormat = "SPARQL";
+
 
     static wikidataUrl =  "https://query.wikidata.org/sparql" ;
     static dbpediaUrl = "https://dbpedia.org/sparql" ;

@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -8,21 +8,39 @@ import API from "../API";
 import axios from "axios";
 import {mkPermalink, params2Form} from "../Permalink";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
-import {InitialQuery, paramsFromStateQuery, mkQueryTabs} from "../query/Query"
+import {InitialQuery, paramsFromStateQuery, mkQueryTabs, updateStateQuery} from "../query/Query"
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
+import qs from "query-string";
+import {queryParamsFromQueryParams} from "../query/Query";
+import {endpointParamsFromQueryParams} from "./Endpoint";
 
 function EndpointQuery(props) {
     const [loading,setLoading] = useState(false);
     const [error, setError] = useState('');
     const [result, setResult] = useState('');
     const [endpoint, setEndpoint] = useState('');
-
     const [query, setQuery] = useState(InitialQuery);
 
     const [permalink, setPermalink] = useState(null);
+
+    useEffect(() => {
+            if (props.location.search) {
+                const queryParams = qs.parse(props.location.search);
+                let paramsQuery = queryParamsFromQueryParams(queryParams);
+                let paramsEndpoint = endpointParamsFromQueryParams(queryParams);
+                let params = {...paramsQuery, ...paramsEndpoint};
+                console.log(`Params: ${JSON.stringify(params)}`);
+                const formData = params2Form(params);
+                postQuery(API.endpointQuery, formData, () => updateStateQuery(params))
+            }
+        },
+        [
+            props.location.search,
+        ]
+    );
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -66,7 +84,8 @@ function EndpointQuery(props) {
             <Col>
             <Form onSubmit={handleSubmit}>
                 <EndpointInput value={endpoint}
-                               handleOnChange={handleEndpointChange}/>
+                               handleOnChange={handleEndpointChange}
+                />
                 {mkQueryTabs(query, setQuery)}
                 <Button variant="primary"
                         type="submit">Query endpoint</Button>
