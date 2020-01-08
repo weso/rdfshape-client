@@ -4,7 +4,7 @@ import {render, fireEvent} from '@testing-library/react';
 import DataInfo from "../DataInfo";
 import axios from 'axios';
 import '@testing-library/jest-dom/extend-expect'
-import {wait, waitForElement, getByText} from "@testing-library/dom";
+import {waitForElement} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
 
 jest.mock('axios');

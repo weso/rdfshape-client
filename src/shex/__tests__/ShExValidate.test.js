@@ -7,7 +7,7 @@ import '@testing-library/jest-dom/extend-expect'
 import {waitForElement} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
 
-test('DataInfo - shows data', async () => {
+test('ShExValidate - shows data', async () => {
 
     addCreateTextRangePolyfill();
 
