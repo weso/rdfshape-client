@@ -7,6 +7,7 @@ import '@testing-library/jest-dom/extend-expect'
 import {wait, waitForElement, getByText, getByLabelText} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
 import DataConvert from "../DataConvert";
+import DataVisualize from "../DataVisualize";
 
 jest.mock('axios');
 
@@ -15,12 +16,12 @@ function before() {
     return {search: ''};
 }
 
-test("DataConvert - shows data", async () => {
+test("DataVisualize - shows data", async () => {
 
     const location = before();
-    const {queryByText, queryAllByRole} = render(<DataConvert location={location}/>);
+    const {queryByText, queryAllByRole} = render(<DataVisualize location={location}/>);
     // Page title
-    const title = await waitForElement(() => queryByText(/Convert RDF data/i));
+    const title = await waitForElement(() => queryByText(/Visualize RDF data/i));
     expect(title).toBeInTheDocument();
     // 3 input tabs
     const tabs = await waitForElement(() => queryAllByRole("tab"));
@@ -28,21 +29,21 @@ test("DataConvert - shows data", async () => {
     // Data format selector
     const dataFormat = await waitForElement(() => queryByText(/^Data format$/i));
     expect(dataFormat).toBeInTheDocument();
-    // Data target format selector
-    const targetDataFormat = await waitForElement(() => queryByText(/Target data format/i));
+    // Data graph format selector
+    const targetDataFormat = await waitForElement(() => queryByText(/Target graph format/i));
     expect(targetDataFormat).toBeInTheDocument();
     // Submit btn
-    const btn = await waitForElement(() => queryByText(/Convert data/i));
+    const btn = await waitForElement(() => queryByText(/^Visualize$/i));
     expect(btn).toBeInTheDocument();
 });
 
-test("DataConvert - submit data and show permalink after data submit", async () => {
+test("DataVisualize - submit data and show permalink after data submit", async () => {
 
     const location = before();
-    const {queryByText} = render(<DataConvert location={location}/>);
+    const {queryByText} = render(<DataVisualize location={location}/>);
 
     // submit form
-    fireEvent.click(queryByText(/Convert data/i));
+    fireEvent.click(queryByText(/^Visualize$/i));
 
     expect(axios.post).toHaveBeenCalledTimes(1);
 
