@@ -24,33 +24,34 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href={API.dataExtractRoute}>Extract ShEx</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Endpoint" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/endpointInfo">Endpoint Info</NavDropdown.Item>
-                            <NavDropdown.Item href="/endpointQuery">Query</NavDropdown.Item>
-                            <NavDropdown.Item href="/endpointExtract">Extract ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href={API.endpointInfoRoute}>Endpoint Info</NavDropdown.Item>
+                            <NavDropdown.Item href={API.endpointQueryRoute}>Query</NavDropdown.Item>
+                            <NavDropdown.Item href={API.endpointExtractRoute}>Extract ShEx</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="ShEx" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/shexValidate">Validate data with ShEx</NavDropdown.Item>
-                            <NavDropdown.Item href="/shexValidateEndpoint">Validate endpoint data with ShEx</NavDropdown.Item>
-                            <NavDropdown.Item href="/shexInfo">Info about ShEx schema</NavDropdown.Item>
-                            <NavDropdown.Item href="/shexVisualize">Visualize ShEx schema</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shExValidateRoute} >Validate data with ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shExValidateEndpointRoute}>Validate endpoint data with ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shExInfoRoute}>Info about ShEx schema</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shExVisualizeRoute}>Visualize ShEx schema</NavDropdown.Item>
 {/*                            <NavDropdown.Item href="/shexVisualizeCytoscape">Visualize ShEx schema (Cytoscape)</NavDropdown.Item>*/}
-                            <NavDropdown.Item href="/shexConvert">Convert ShEx formats</NavDropdown.Item>
-                            <NavDropdown.Item href="/shex2shacl">ShEx &#8594; SHACL</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shExConvertRoute}>Convert ShEx formats</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shEx2ShaclRoute}>ShEx &#8594; SHACL</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="SHACL" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/shaclValidate">Validate data with SHACL</NavDropdown.Item>
-                            <NavDropdown.Item href="/shaclConvert">Convert SHACL formats</NavDropdown.Item>
-                            <NavDropdown.Item href="/shacl2shex">SHACL &#8594; ShEx</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shaclValidateRoute}>Validate data with SHACL</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shaclConvertRoute}>Convert SHACL formats</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shacl2ShExRoute}>SHACL &#8594; ShEx</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="ShapeMap" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/shapeMapInfo">Info about ShapeMap</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shapeMapInfoRoute}>Info about ShapeMap</NavDropdown.Item>
 {/*
                             <NavDropdown.Item href="/shapeMapFix">Fix shapeMap with RDFData</NavDropdown.Item>
                             <NavDropdown.Item href="/shapeMapConvert">Convert ShapeMap format</NavDropdown.Item>
 */}
                         </NavDropdown>
                         <NavDropdown title="SPARQL" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="/endpoint">SPARQL</NavDropdown.Item>
+                            <NavDropdown.Item href={API.dataQueryRoute}>Query</NavDropdown.Item>
+                            <NavDropdown.Item href={API.endpointQueryRoute}>Query endpoint</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Wikidata" id="basic-nav-dropdown">
                             <NavDropdown.Item href="http://wikishape.weso.es">Wikishape</NavDropdown.Item>

@@ -81,6 +81,11 @@ function ShExValidate(props) {
         const newShapeMap = updateStateShapeMap(params,shapeMap) || shapeMap;
         console.log(`updateStateValidate: newShapeMap: ${JSON.stringify(newShapeMap)}`);
         setShapeMap(newShapeMap);
+
+        if (params['endpoint']) {
+            setEndpoint(params['endpoint'])
+        }
+
     }
 
     function handleSubmit(event) {

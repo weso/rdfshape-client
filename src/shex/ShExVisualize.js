@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import ShExTabs from "./ShExTabs"
@@ -18,6 +18,9 @@ import {
     shExParamsFromQueryParams,
     updateStateShEx
 } from "./ShEx";
+import Alert from "react-bootstrap/Alert";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
 const url = API.schemaVisualize ;
 
@@ -80,12 +83,23 @@ function ShExVisualize(props) {
     return (
             <Container fluid={true}>
                 <h1>ShEx: Visualize ShEx schemas</h1>
+
+                { loading || result || permalink || error ?
+                    <Fragment>
+                        <Row>
+                         <Col>
+                        {loading ? <Pace color="#27ae60"/> :
+                         error ? <Alert variant="danger">{error}</Alert> :
+                         result ? <ResultShExVisualize result={result} /> :
+                         null
+                        }
+                        { permalink &&  <Permalink url={permalink} /> }
+                         </Col>
+                        </Row>
+                    </Fragment> :
+                    null
+                }
                 <Form onSubmit={handleSubmit}>
-                    {loading ? <Pace color="#27ae60"/> :
-                        result ?
-                            <ResultShExVisualize result={result} /> : null
-                    }
-                    { permalink &&  <Permalink url={permalink} /> }
                     { mkShExTabs(shex, setShex)}
                     <Button variant="primary" type="submit">Visualize</Button>
                 </Form>
