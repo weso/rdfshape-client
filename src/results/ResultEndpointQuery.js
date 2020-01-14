@@ -1,6 +1,6 @@
 import React from 'react';
-import ResultQuery from "./ResultQuery"
-import {Permalink} from '../Permalink'
+import ResultQuery from "./ResultQuery";
+import {Permalink} from '../Permalink';
 
 function ResultEndpointInfo(props) {
     return (

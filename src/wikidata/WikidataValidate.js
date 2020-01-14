@@ -8,7 +8,7 @@ import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ShExTabs from "../shex/ShExTabs";
-import API from "../API"
+import API from "../API";
 import axios from "axios";
 import Tab from "react-bootstrap/Tab";
 import InputShapeLabel from "../components/InputShapeLabel";

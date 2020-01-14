@@ -1,7 +1,7 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 import axios from 'axios';
-import API from "./API"
+import API from "./API";
 
 function SelectGraphFormat(props) {
 

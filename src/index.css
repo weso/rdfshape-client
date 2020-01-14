@@ -19,3 +19,8 @@ a.dropdown-item {
 .CodeMirror {
   font-size: 14px !important;
 }
+
+
+a.dropdown-item {
+  white-space: normal;
+}

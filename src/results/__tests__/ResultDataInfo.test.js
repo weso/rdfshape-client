@@ -1,17 +1,17 @@
-import React from 'react'
+import React from "react";
 
-import {render, fireEvent} from '@testing-library/react';
-import axios from 'axios';
-import '@testing-library/jest-dom/extend-expect'
-import {wait, waitForElement, getByText, getByRole} from "@testing-library/dom";
+import {render, fireEvent} from "@testing-library/react";
+import axios from "axios";
+import "@testing-library/jest-dom/extend-expect";
+import {waitForElement, getByRole} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
 import DataInfo from "../../data/DataInfo";
 
-jest.mock('axios');
+jest.mock("axios");
 
 function before() {
     addCreateTextRangePolyfill();
-    return {search: ''};
+    return {search: ""};
 }
 
 test("ResultDataInfo - shows results after data submit", async () => {

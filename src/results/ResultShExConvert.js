@@ -1,7 +1,6 @@
 import React from 'react';
-import Code from '../components/Code'
-import { Permalink } from "../Permalink"
-import { mkMode } from "../utils/Utils"
+import Code from '../components/Code';
+import { mkMode } from "../utils/Utils";
 
 
 function ResultShExConvert(props) {
