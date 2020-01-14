@@ -1,17 +1,17 @@
-import React from 'react'
+import React from "react";
 
-import {render, fireEvent} from '@testing-library/react';
-import axios from 'axios';
-import '@testing-library/jest-dom/extend-expect'
+import {render, fireEvent} from "@testing-library/react";
+import axios from "axios";
+import "@testing-library/jest-dom/extend-expect";
 import {waitForElement} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
 import ShExConvert from "../ShExConvert";
 
-jest.mock('axios');
+jest.mock("axios");
 
 function before() {
     addCreateTextRangePolyfill();
-    return {search: ''};
+    return {search: ""};
 }
 
 test("ShExConvert - shows data", async () => {

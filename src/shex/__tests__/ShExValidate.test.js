@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 
-import {render, fireEvent} from '@testing-library/react';
+import {render, fireEvent} from "@testing-library/react";
 import ShExValidate from "../ShExValidate";
 import '@testing-library/jest-dom/extend-expect'
 import {waitForElement} from "@testing-library/dom";
@@ -9,7 +9,7 @@ import axios from "axios";
 
 function before() {
     addCreateTextRangePolyfill();
-    return {search: ''};
+    return {search: ""};
 }
 
 test("ShExValidate - shows data", async () => {

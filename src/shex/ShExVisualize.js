@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
-import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
