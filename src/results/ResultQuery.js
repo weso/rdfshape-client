@@ -11,9 +11,9 @@ function ResultQuery(props)  {
   if (!result || result === '') {
          msg = null
   } else
-  if (result.error) {
+  if (result.result.error) {
          msg =
-             <div><p>Error: {result.error}</p>
+             <div><p>Error: {result.result.error}</p>
                  <details><pre>{JSON.stringify(result)}</pre></details>
                 </div>
    } else {

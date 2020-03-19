@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import API from "../API";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import ResultQuery from "../results/ResultQuery";
 import {
     InitialQuery,
     paramsFromStateQuery,
@@ -21,6 +20,7 @@ import Row from "react-bootstrap/Row";
 import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
 import qs from "query-string";
 import {dataParamsFromQueryParams} from "../utils/Utils";
+import ResultEndpointQuery from "../results/ResultEndpointQuery";
 
 
 function DataQuery(props)  {
@@ -88,9 +88,7 @@ function DataQuery(props)  {
                             <Col>
                                 {loading ? <Pace color="#27ae60"/> :
                                     error? <Alert variant='danger'>{error}</Alert> :
-                                        result ?
-                                            <ResultQuery result={result} /> : null }
-                                { permalink? <Permalink url={permalink} />: null }
+                                        result ? <ResultEndpointQuery result={result} error={error} permalink={permalink} />: null }
                             </Col>
                         </Fragment> : null
                     }
