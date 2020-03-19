@@ -61,8 +61,8 @@ function DataQuery(props)  {
                             <Col>
                                 {loading ? <Pace color="#27ae60"/> :
                                     error? <Alert variant='danger'>{error}</Alert> :
-                                        result && result.result ?
-                                            <ResultQuery result={result.result} /> : null }
+                                        result ?
+                                            <ResultQuery result={result} /> : null }
                             </Col>
                         </Fragment> : null
                     }
