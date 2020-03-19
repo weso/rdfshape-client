@@ -13,9 +13,7 @@ function ShExForm(props) {
                 placeholder: props.placeholder,
                 readonly: props.readonly
             };
-            const y = Yashe.fromTextArea(
-                textAreaRef.current, 
-                options);
+            const y = Yashe.fromTextArea(textAreaRef.current, options);
             if (props.setCodeMirror) props.setCodeMirror(y);
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())
@@ -50,6 +48,7 @@ ShExForm.propTypes = {
     readonly: PropTypes.bool,
     fromParams: PropTypes.bool,
     resetFromParams: PropTypes.func,
+    setCodeMirror: PropTypes.func
 };
 
 ShExForm.defaultProps = {

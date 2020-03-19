@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -6,13 +6,21 @@ import API from "../API";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import ResultQuery from "../results/ResultQuery";
-import {InitialQuery, paramsFromStateQuery, mkQueryTabs} from "../query/Query";
-import {params2Form} from "../Permalink";
+import {
+    InitialQuery,
+    paramsFromStateQuery,
+    mkQueryTabs,
+    updateStateQuery,
+    queryParamsFromQueryParams
+} from "../query/Query";
+import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
-import {InitialData, mkDataTabs, paramsFromStateData} from "./Data";
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
+import qs from "query-string";
+import {dataParamsFromQueryParams} from "../utils/Utils";
 
 
 function DataQuery(props)  {
@@ -23,17 +31,36 @@ function DataQuery(props)  {
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState('');
 
-
+    useEffect(() => {
+            if (props.location.search) {
+                const queryParams = qs.parse(props.location.search);
+                let paramsData = dataParamsFromQueryParams(queryParams);
+                let paramsQuery = queryParamsFromQueryParams(queryParams);
+                let params = {...paramsData,...paramsQuery};
+                // console.log(`dataQueryParams: ${JSON.stringify(dataQueryParams)}`);
+                // const infoUrl = API.dataInfo + "?" + qs.stringify(dataParams);
+                postQuery(API.dataQuery, params2Form(params), () => {
+                    const newData = updateStateData(params,data) || data ;
+                    setData(newData);
+                    const newQuery = updateStateQuery(params,query) || query ;
+                    setQuery(newQuery);
+                });
+            }},
+        [props.location.search]
+    );
 
     function handleSubmit(event) {
         event.preventDefault();
         const infoUrl = API.dataQuery;
         let paramsData = paramsFromStateData(data);
-        console.log(`DataQuery paramsData: ${JSON.stringify(paramsData)}`)
+        console.log(`DataQuery paramsData: ${JSON.stringify(paramsData)}`);
         let paramsQuery = paramsFromStateQuery(query);
-        console.log(`DataQuery paramsQuery: ${JSON.stringify(paramsQuery)}`)
+        console.log(`DataQuery paramsQuery: ${JSON.stringify(paramsQuery)}`);
         let params = {...paramsData,...paramsQuery}
-        console.log(`DataQuery submit params: ${JSON.stringify(params)}`)
+        console.log(`DataQuery submit params: ${JSON.stringify(params)}`);
+        let permalink = mkPermalink(API.dataQueryRoute, params);
+        setPermalink(permalink);
+        console.log("Permalink created: " + JSON.stringify(permalink));
         let form = params2Form(params);
         postQuery(infoUrl, form);
     }
@@ -63,6 +90,7 @@ function DataQuery(props)  {
                                     error? <Alert variant='danger'>{error}</Alert> :
                                         result ?
                                             <ResultQuery result={result} /> : null }
+                                { permalink? <Permalink url={permalink} />: null }
                             </Col>
                         </Fragment> : null
                     }

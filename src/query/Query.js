@@ -1,6 +1,7 @@
 import API from "../API";
 import QueryTabs from "./QueryTabs";
 import React from "react";
+import ShExTabs from "../shex/ShExTabs";
 
 export const InitialQuery = {
     activeTab: API.defaultTab,
@@ -90,6 +91,8 @@ export function mkQueryTabs(query,setQuery) {
                    handleDataUrlChange={handleQueryUrlChange}
 
                    handleFileUpload={handleQueryFileUpload}
+                   setCodeMirror={(cm) => setQuery({...query, codeMirror: cm})}
+
                    fromParams={query.fromParams}
                    resetFromParams={() => setQuery({...query, fromParams: false}) }
 
