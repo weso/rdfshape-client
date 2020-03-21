@@ -150,7 +150,9 @@ export function showQualify(node, prefixMap) {
                     node: node
                 }
             }
-          if (node.match(/\"(.*)\"/g)) return {
+          const literalRegex = /\"(.*)\"/g;
+          const matchLiteral = literalRegex.exec(node);
+          if (matchLiteral) return {
                 type: 'Literal',
                 prefix: '',
                 localName: '',
