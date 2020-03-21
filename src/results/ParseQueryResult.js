@@ -14,9 +14,12 @@ export function parseData(data, prefixes) {
             let row = {_id: idx};
             vars.map(v => {
                 const b = binding[v]
-                const converted = cnvValueFromSPARQL(b);
-                const qualify = showQualify(converted, prefixes);
-                const value = showQualified(qualify, prefixes);
+                let value='';
+                if (b) {
+                    const converted = cnvValueFromSPARQL(b);
+                    const qualify = showQualify(converted, prefixes);
+                    const value = showQualified(qualify, prefixes);
+                }
                 row[v] = value
             });
             return row;
