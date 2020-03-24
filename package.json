@@ -32,7 +32,7 @@
     "react-scripts": "3.1.0",
     "viz.js": "^2.1.2",
     "yasgui-yasqe": "^2.11.22",
-    "yashe": "^1.2.9"
+    "yashe": "^1.2.12"
   },
   "scripts": {
     "start": "react-scripts start",
