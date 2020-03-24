@@ -64,6 +64,18 @@ export function dataParamsFromQueryParams(params) {
 }
 
 
+/**
+ * Converts Turtle representation of values to a structure
+ * @param node
+ * @param prefixMap
+ * @returns {{str: string,
+    localName: string: Local name,
+    node: *,
+    prefix: string,
+    type: string,
+    uri: any
+ }
+ */
 export function showQualify(node, prefixMap) {
     // console.log(`node: ${JSON.stringify(node)}`)
     if (node) {
@@ -110,37 +122,44 @@ export function showQualify(node, prefixMap) {
             const datatypeLiteralRegex = /\"(.*)\"\^\^(.*)/g
             const matchDatatypeLiteral = datatypeLiteralRegex.exec(node);
             if (matchDatatypeLiteral) {
-                const literal = matchDatatypeLiteral[1]
-                const datatype = matchDatatypeLiteral[2]
-                const datatypeQualified = showQualify(datatype, prefixMap)
+                const literal = matchDatatypeLiteral[1];
+                const datatype = matchDatatypeLiteral[2];
+                const datatypeQualified = showQualify(datatype, prefixMap);
+                const datatypeElement = showQualified(datatypeQualified, prefixMap);
                 return {
-                    type: 'Literal',
+                    type: 'DatatypeLiteral',
                     prefix: '',
                     localName: '',
-                    str: `"${literal}"^^<${datatypeQualified.str}>`,
+                    str: `"${literal}"`,
+                    datatype: datatype,
+                    datatypeElement: datatypeElement,
                     node: node
                 }
             }
-            const langLiteralRegex = /\"(.*)\"@(.*)/g
-            const matchLangLiteral = langLiteralRegex.exec(node)
+            const langLiteralRegex = /\"(.*)\"@(.*)/g;
+            const matchLangLiteral = langLiteralRegex.exec(node);
             if (matchLangLiteral) {
-                const literal = matchLangLiteral[1]
-                const lang = matchLangLiteral[2]
+                const literal = matchLangLiteral[1];
+                const lang = matchLangLiteral[2];
                 return {
                     type: 'LangLiteral',
                     prefix: '',
                     localName: '',
                     str: `"${literal}"@${lang}`,
+                    datatype: null,
                     node: node
                 }
             }
-          /*  if (node.match(/^[0-9\"\'\_]/)) return {
+          const literalRegex = /\"(.*)\"/g;
+          const matchLiteral = literalRegex.exec(node);
+          if (matchLiteral) return {
                 type: 'Literal',
                 prefix: '',
                 localName: '',
                 str: node,
+                datatype: null,
                 node: node
-            };*/
+          };
           if (node.type === 'bnode') return {
               type: 'BNode',
               prefix: '',
@@ -154,6 +173,7 @@ export function showQualify(node, prefixMap) {
                 prefix: '',
                 localName: '',
                 str: node,
+                datatype: null,
                 node: node
             };
         }
@@ -182,22 +202,30 @@ export function showQualified(qualified, prefixes) {
             } else {
                 return <fragment>{qualified.str} <a href={qualified.uri}><ExternalLinkIcon/></a></fragment>
             }
-        case 'FullIRI': return <a href={qualified.uri}>{qualified.str}</a>
-        case 'Literal' : return <span>{qualified.str}</span>
-        case 'LangLiteral' : return <span>{qualified.str}</span>
+        case 'FullIRI': return <a href={qualified.uri}>{qualified.str}</a>;
+        case 'DatatypeLiteral' : return <span>{qualified.str}^^<a href={qualified.datatype}>&lt;{qualified.datatype}&gt;</a></span>;
+        case 'Literal' : return <span>{qualified.str}</span>;
+        case 'LangLiteral' : return <span>{qualified.str}</span>;
         default:
-            console.error(`Unknown type for qualified value`)
+            console.error(`Unknown type for qualified value`);
             return <span>{qualified.str}</span>
     }
 }
 
+/* Converts SPARQL representation to Turtle representation */
 export function cnvValueFromSPARQL(value) {
     switch (value.type) {
         case 'uri': return `<${value.value}>`;
         case 'literal':
-            if (value.datatype) return `"${value.value}"^^<${value.datatype}>`;
-            if (value['xml:lang']) return `"${value.value}"@${value['xml:lang']}`
-            return `"${value.value}"`
+            if (value.datatype) {
+                switch (value.datatype) {
+                    case "http://www.w3.org/2001/XMLSchema#integer": return `${value.value}` ;
+                    case "http://www.w3.org/2001/XMLSchema#decimal": return `${value.value}` ;
+                    default: return `"${value.value}"^^${value.datatype}`;
+                }
+            }
+            if (value['xml:lang']) return `"${value.value}"@${value['xml:lang']}`;
+            return `"${value.value}"`;
         default:
             console.error(`cnvValueFromSPARQL: Unknown value type for ${value}`)
             return value
