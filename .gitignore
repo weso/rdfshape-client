@@ -6,6 +6,7 @@
 .pnp.js
 
 /target
+/project
 
 # testing
 /coverage
