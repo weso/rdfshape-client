@@ -11,9 +11,14 @@ function ShExForm(props) {
         if (!yashe) {
             const options = {
                 placeholder: props.placeholder,
-                readonly: props.readonly
+                readonly: props.readonly,
+                start: { line: 0 }
             };
+            console.log(`Before Yashe.fromTextArea`);
+            console.log(`Before Yashe.fromTextArea`);
+            console.log(textAreaRef.current);
             const y = Yashe.fromTextArea(textAreaRef.current, options);
+            console.log(`After Yashe.fromTextArea`);
             if (props.setCodeMirror) props.setCodeMirror(y);
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())
