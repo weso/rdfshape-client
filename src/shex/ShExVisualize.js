@@ -53,6 +53,8 @@ function ShExVisualize(props) {
         params['schemaEngine']='ShEx'
         let formData = params2Form(params);
         let permalink = mkPermalink(API.shExVisualizeRoute, params);
+        setError(null);
+        setResult('');
         setLoading(true);
         setPermalink(permalink);
         postVisualize(url,formData)
