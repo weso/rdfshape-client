@@ -84,7 +84,7 @@ function Routes() {
       <Route path={API.wikidataExtractRoute} component={WikidataExtract} />
       <Route path={API.aboutRoute} component={About} />
 
-      /* The following route is for backwards compatibility  */
+      {/*The following route is for backwards compatibility*/}
       <Route path="/validate" component={ShExValidate} />
 
 

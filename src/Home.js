@@ -1,8 +1,7 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 
-class Home extends React.Component {
- render() {
+function Home()  {
      return (
        <Container>
          <h1>RDFShape</h1>
@@ -18,7 +17,6 @@ class Home extends React.Component {
            </ul>
        </Container>
      );
- }
 }
 
 export default Home;

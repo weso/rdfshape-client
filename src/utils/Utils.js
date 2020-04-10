@@ -119,7 +119,7 @@ export function showQualify(node, prefixMap) {
                 };
             }
             // const matchString =
-            const datatypeLiteralRegex = /\"(.*)\"\^\^(.*)/g
+            const datatypeLiteralRegex = /"(.*)"\^\^(.*)/g
             const matchDatatypeLiteral = datatypeLiteralRegex.exec(node);
             if (matchDatatypeLiteral) {
                 const literal = matchDatatypeLiteral[1];
@@ -136,7 +136,7 @@ export function showQualify(node, prefixMap) {
                     node: node
                 }
             }
-            const langLiteralRegex = /\"(.*)\"@(.*)/g;
+            const langLiteralRegex = /"(.*)"@(.*)/g;
             const matchLangLiteral = langLiteralRegex.exec(node);
             if (matchLangLiteral) {
                 const literal = matchLangLiteral[1];
@@ -150,7 +150,7 @@ export function showQualify(node, prefixMap) {
                     node: node
                 }
             }
-          const literalRegex = /\"(.*)\"/g;
+          const literalRegex = /"(.*)"/g;
           const matchLiteral = literalRegex.exec(node);
           if (matchLiteral) return {
                 type: 'Literal',

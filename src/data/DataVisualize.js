@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import API from "../API";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
-import SelectGraphFormat from "../utils/SelectGraphFormat.toDelete";
+// import SelectGraphFormat from "../utils/SelectGraphFormat.toDelete";
 import {dataParamsFromQueryParams} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";

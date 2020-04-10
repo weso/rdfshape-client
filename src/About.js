@@ -3,8 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import API from "./API";
 
-class About extends React.Component {
- render() {
+function About()  {
      return (
        <Container>
          <h1>About RDFShape</h1>
@@ -33,7 +32,6 @@ class About extends React.Component {
            <details>Server: <code>{API.rootApi}</code></details>
        </Container>
      );
- }
 }
 
 export default About;

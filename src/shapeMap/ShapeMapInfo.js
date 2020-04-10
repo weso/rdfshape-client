@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-import ShapeMapTabs from "./ShapeMapTabs.delete";
+// import ShapeMapTabs from "./ShapeMapTabs.delete";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";

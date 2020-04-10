@@ -4,8 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointTabs from "./EndpointInput";
 
-class EndpointExtract extends React.Component {
- render() {
+function EndpointExtract() {
      return (
        <Container fluid={true}>
          <h1>Extract schema from Endpoint node</h1>
@@ -15,7 +14,6 @@ class EndpointExtract extends React.Component {
            </Form>
        </Container>
      );
- }
 }
 
 export default EndpointExtract;
