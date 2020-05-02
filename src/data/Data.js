@@ -1,6 +1,7 @@
 import API from '../API';
 import DataTabs from "./DataTabs";
 import React from "react";
+import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
     activeTab: API.defaultTab,
@@ -8,6 +9,7 @@ export const InitialData = {
     url: '',
     file: null,
     format: API.defaultDataFormat,
+    inference: API.defaultInference,
     fromParams: false,
     codeMirror: null
 };
@@ -61,6 +63,7 @@ export function paramsFromStateData(data) {
     let params = {};
     params['activeTab'] = convertTabData(data.activeTab);
     params['dataFormat'] = data.format;
+    params['inference'] = data.inference;
     switch (data.activeTab) {
         case API.byTextTab:
             params['data'] = data.textArea;
@@ -87,8 +90,12 @@ export function mkDataTabs(data, setData, name) {
     function handleDataByTextChange(value) { setData({...data, textArea: value}); }
     function handleDataUrlChange(value) { setData( {...data, url: value}); }
     function handleDataFileUpload(value) { setData({...data, file: value }); }
+    function handleInferenceChange(value) {  setData({...data, inference: value}); }
+    const resetParams = () => setData({...data, fromParams: false}) ;
 
-    return (<DataTabs
+    return (
+      <React.Fragment>
+       <DataTabs
               name={name || "RDF data"}
               activeTab={data.activeTab}
               handleTabChange={handleDataTabChange}
@@ -104,8 +111,16 @@ export function mkDataTabs(data, setData, name) {
               selectedFormat={data.format}
               handleDataFormatChange={handleDataFormatChange}
               setCodeMirror={(cm) => setData({...data, codeMirror: cm}) }
+
+
               fromParams={data.fromParams}
-              resetFromParams={() => setData({...data, fromParams: false}) }
-    />);
+              resetFromParams={resetParams} />
+        <SelectInferenceEngine
+            handleInferenceChange={handleInferenceChange}
+            selectedInference={data.inference}
+            fromParams={data.fromParams}
+            resetFromParams={resetParams} />
+      </React.Fragment>
+   );
 
 }

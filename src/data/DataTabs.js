@@ -55,8 +55,13 @@ DataTabs.propTypes = {
     urlValue: PropTypes.string.isRequired,
     handleDataUrlChange: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
+
     selectedFormat: PropTypes.string.isRequired,
     handleDataFormatChange: PropTypes.func.isRequired,
+
+    handleInferenceChange: PropTypes.func.isRequired,
+    selectedInference: PropTypes.string.isRequired,
+
     resetFromParams: PropTypes.func,
     fromParams: PropTypes.bool
 };

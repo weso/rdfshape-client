@@ -10,6 +10,7 @@ class API {
     static dataConvert = API.rootApi + "data/convert";
     static dataVisualize = API.rootApi + "data/visualize";
     static dataFormats = API.rootApi + "data/formats";
+    static inferenceEngines = API.rootApi + "data/inferenceEngines";
     static dataQuery = API.rootApi + "data/query";
     static dataExtract = API.rootApi + "data/extract";
     static dataVisualFormats = API.rootApi + "data/visualize/formats";
@@ -68,6 +69,7 @@ class API {
     static byFileTab = "byFile";
     static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
+    static defaultInference = "None" ;
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";

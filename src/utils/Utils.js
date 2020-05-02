@@ -60,6 +60,7 @@ export function dataParamsFromQueryParams(params) {
     if (params.data) newParams["data"] = params.data ;
     if (params.dataFormat) newParams["dataFormat"] = params.dataFormat ;
     if (params.dataUrl) newParams["dataUrl"] = params.dataUrl ;
+    if (params.inference) newParams["inference"] = params.inference ;
     return newParams;
 }
 

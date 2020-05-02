@@ -38,6 +38,8 @@ function InputTabsWithFormat(props) {
                           selectedFormat={props.selectedFormat}
                           handleFormatChange={props.handleFormatChange}
                           urlFormats={props.urlFormats}
+                          fromParams={props.fromParams}
+                          resetFromParams={props.resetFromParams}
             />
             </div>
         );
