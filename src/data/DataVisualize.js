@@ -10,14 +10,13 @@ import {dataParamsFromQueryParams} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import qs from "query-string";
 import ShowSVG from "../svg/ShowSVG";
-import Viz from 'viz.js/viz.js';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
 import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
 import SelectFormat from "../components/SelectFormat";
-const {Module, render} = require('viz.js/full.render.js');
+import { convertDot } from './dotUtils'
 
 function  DataVisualize(props) {
 
@@ -49,7 +48,7 @@ function  DataVisualize(props) {
 
     function processData(d, targetFormat) {
        console.log(`Process data: ${JSON.stringify(d)}`);
-       convertDot(d.result,'dot','SVG')
+       convertDot(d.result,'dot','SVG', setLoading, setError, setSVG)
     }
 
     function handleSubmit(event) {
@@ -79,22 +78,6 @@ function  DataVisualize(props) {
                 setError(`Error doing request to ${url}: ${error.message}`)
             });
     }
-    function convertDot(dot, engine, format) {
-        let viz = new Viz({Module, render});
-        const opts = {engine: 'dot'};
-        viz.renderSVGElement(dot, opts).then(svg => {
-            setLoading(false);
-            setSVG({
-                svg: svg.outerHTML
-            });
-        }).catch(error => {
-            // Create a new Viz instance (@see Caveats page for more info)
-            viz = new Viz({Module, render});
-            setLoading(false);
-            setError(`Error converting to ${format}: ${error}\nDOT:\n${dot}`)
-        });
-    }
-
 
      return (
        <Container fluid={true}>

@@ -46,6 +46,8 @@ import TestYate from './test/TestYate.js'
 import TestSearch from './test/TestSearch.js'
 import TestGithubSearch from './test/TestGithubSearch.js'
 import TestInputTabsWithFormat from "./test/TestInputTabsWithFormat";
+import DataMerge from "./data/DataMerge";
+import DataMergeVisualize from "./data/DataMergeVisualize";
 
 function Routes() {
 
@@ -59,6 +61,8 @@ function Routes() {
       <Route path={API.cytoVisualizeRoute} component={CytoVisualize} />
       <Route path={API.dataQueryRoute} component={DataQuery} />
       <Route path={API.dataExtractRoute} component={DataExtract} />
+      <Route path={API.dataMerge} component={DataMerge} />
+      <Route path={API.dataMergeVisualize} component={DataMergeVisualize} />
 
       <Route path={API.endpointInfoRoute} component={EndpointInfo} />
       <Route path={API.endpointQueryRoute} component={EndpointQuery} />

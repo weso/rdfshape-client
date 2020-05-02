@@ -112,7 +112,6 @@ export function mkDataTabs(data, setData, name) {
               handleDataFormatChange={handleDataFormatChange}
               setCodeMirror={(cm) => setData({...data, codeMirror: cm}) }
 
-
               fromParams={data.fromParams}
               resetFromParams={resetParams} />
         <SelectInferenceEngine
