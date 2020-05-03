@@ -60,6 +60,7 @@ export function convertTabData(key) {
 }
 
 export function paramsFromStateData(data) {
+    console.log(`ParamsFromStateData, data = ${JSON.stringify(data)}`)
     let params = {};
     params['activeTab'] = convertTabData(data.activeTab);
     params['dataFormat'] = data.format;

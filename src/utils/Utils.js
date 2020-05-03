@@ -28,25 +28,6 @@ export function dot2svg(dot,cb) {
     });
 }
 
-const formatModes = {
-    "html": "html",
-    "json": "javascript",
-    "rdf/json": "javascript",
-    "rdf/xml": "xml",
-    "shexc": "shex",
-    "shexj": "javascript",
-    "trig": "xml",
-    "turtle": "turtle",
-    "sparql": "sparql",
-  };
-
-const defaultMode = "xml";
-
-export function mkMode(format) {
-    let mode = format ? formatModes[format.toLowerCase()] || defaultMode: defaultMode;
-    // console.log(`mkMode(${format}) = ${mode}`);
-    return mode; 
-}
 
 /*export function maybeAdd(maybe,name,obj) {
     if (maybe) obj[name] = maybe ;
@@ -240,28 +221,56 @@ export function paramsFromStateEndpoint(state) {
     return params;
 }
 
-
 export function format2mode(format) {
     if (format) {
-        switch (format.toUpperCase()) {
-            case 'TURTLE':
+        switch (format.toLowerCase()) {
+            case 'turtle':
                 return 'turtle';
-            case 'RDF/XML':
+            case 'rdf/xml':
                 return 'xml';
-            case 'SPARQL':
+            case 'sparql':
                 return 'sparql';
-            case 'HTML':
-                return 'xml';
-            case 'JSON-LD':
+            case 'html':
+                return 'htmlmixed';
+            case 'json-ld':
                 return 'javascript';
-            case 'RDF/JSON':
+            case 'rdf/json':
                 return 'javascript';
-            case 'TRIG':
+            case 'trig':
                 return 'xml';
-            case 'SHEXC':
+            case 'shexc':
                 return 'shex';
+            case 'html-microdata':
+                return 'htmlmixed';
+            case 'html-rdfa11':
+                return 'htmlmixed';
+            case 'html':
+                return 'htmlmixed';
             default:
                 return 'turtle'
         }
     } else return 'turtle'
 }
+const formatModes = {
+        "html": "htmlmixed",
+        "json": "javascript",
+        "rdf/json": "javascript",
+        "rdf/xml": "xml",
+        "shexc": "shex",
+        "shexj": "javascript",
+        "trig": "xml",
+        "turtle": "turtle",
+        "sparql": "sparql",
+        "html-microdata": "htmlmixed",
+        "html-rdfa11": "htmlmixed"
+    };
+
+const defaultMode = "turtle";
+
+// TODO: replace format2mode by mkMode ?
+export function mkMode(format) {
+ let mode = format ? formatModes[format.toLowerCase()] || defaultMode: defaultMode;
+  // console.log(`mkMode(${format}) = ${mode}`);
+  return mode;
+}
+

@@ -31,7 +31,7 @@ function getHost() {
 
 export function Permalink(props) {
     if (props.url)
-        return <Button variant="secondary" href={props.url}>Permalink</Button>
+        return <Button variant="success" href={props.url}>Permalink</Button>
     else
         return null
 }

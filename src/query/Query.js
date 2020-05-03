@@ -1,7 +1,7 @@
 import API from "../API";
 import QueryTabs from "./QueryTabs";
 import React from "react";
-import ShExTabs from "../shex/ShExTabs";
+// import ShExTabs from "../shex/ShExTabs";
 
 export const InitialQuery = {
     activeTab: API.defaultTab,

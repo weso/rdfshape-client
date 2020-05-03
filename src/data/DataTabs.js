@@ -6,12 +6,13 @@ import PropTypes from 'prop-types';
 
 function DataTabs(props) {
 
-    const turtleForm = <TurtleForm
+    const turtleForm = null ;
+    /*props.selectedFormat.toUpperCase() == "TURTLE" ? <TurtleForm
         onChange={props.handleByTextChange}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
         value={props.textAreaValue}
-    />;
+    /> : null ; */
 
     return (
             <div>
@@ -38,7 +39,7 @@ function DataTabs(props) {
                        nameFormat="Data format"
                        selectedFormat={props.selectedFormat}
                        handleFormatChange={props.handleDataFormatChange}
-                       urlFormats={API.dataFormats}
+                       urlFormats={API.dataFormatsInput}
                        setCodeMirror={props.setCodeMirror}
                        fromParams = {props.fromParams}
                        resetFromParams={props.resetFromParams}
@@ -68,8 +69,8 @@ DataTabs.propTypes = {
 
 DataTabs.defaultProps = {
     name: 'RDF data',
-    activeTab: 'ByText',
-    dataFormat: 'TURTLE'
+    activeTab: 'ByText' ,
+    // dataFormat: 'TURTLE'
 };
 
 

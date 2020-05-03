@@ -6,10 +6,12 @@ class API {
     // Routes in server
     static rootApi = process.env.REACT_APP_RDFSHAPE_HOST + "/api/"; // "http://localhost:8080/api/";
 
+    static healthServer = API.rootApi + "health";
     static dataInfo = API.rootApi + "data/info";
     static dataConvert = API.rootApi + "data/convert";
     static dataVisualize = API.rootApi + "data/visualize";
-    static dataFormats = API.rootApi + "data/formats";
+    static dataFormatsInput = API.rootApi + "data/formats/input";
+    static dataFormatsOutput = API.rootApi + "data/formats/output";
     static inferenceEngines = API.rootApi + "data/inferenceEngines";
     static dataQuery = API.rootApi + "data/query";
     static dataExtract = API.rootApi + "data/extract";

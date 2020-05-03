@@ -21,7 +21,7 @@
     "react-bootstrap": "^1.0.0-beta.16",
     "react-bootstrap-table-next": "^3.2.1",
     "react-bootstrap-typeahead": "^3.4.7",
-    "react-codemirror2": "^6.0.0",
+    "react-codemirror2": "^6.0.1",
     "react-color": "^2.17.3",
     "react-cytoscapejs": "^1.2.0",
     "react-dom": "^16.10.2",

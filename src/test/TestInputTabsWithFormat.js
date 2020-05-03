@@ -176,7 +176,7 @@ function TestInputTabsWithFormat(props) {
 
                             format={data.format}
                             handleFormatChange={handleFormatChange}
-                            urlFormats={API.dataFormats}
+                            urlFormats={API.dataFormatsInput}
                             fromParams={data.fromParams}
                             resetFromParams={() => setData({...data, fromParams: false}) }
                         />

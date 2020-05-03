@@ -14,8 +14,10 @@ function ByText(props) {
   if (props.inputForm) {
          inputText = props.inputForm
      } else {
-         inputText =  <Code value={props.textAreaValue}
-                           mode={format2mode(props.textFormat)}
+      const mode = format2mode(props.textFormat)
+      console.log(`ByText: Mode: ${mode}`)
+      inputText =  <Code value={props.textAreaValue}
+                           mode={mode}
                            onChange={handleChange}
                            setCodeMirror={props.setCodeMirror}
                            placeholder={props.placeholder}

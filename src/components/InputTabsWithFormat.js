@@ -4,7 +4,8 @@ import SelectFormat from "./SelectFormat";
 import PropTypes from "prop-types";
 
 function InputTabsWithFormat(props) {
-    // console.log(`inputTabsWithFormat: ${props.nameInputTab} ${props.textAreaValue}`)
+
+
     function handleTextChange(value) {
         // console.log(`HandleChange...`);
         props.handleByTextChange(value);
@@ -18,9 +19,10 @@ function InputTabsWithFormat(props) {
 
                        byTextName={props.byTextName}
                        textAreaValue={props.textAreaValue}
-                       textFormat={props.textFormat}
+                       textFormat={props.selectedFormat}
                        handleByTextChange={handleTextChange}
                        byTextPlaceholder={props.byTextPlaceholder}
+
                        inputForm = {props.inputForm}
                        setCodeMirror = {props.setCodeMirror}
 

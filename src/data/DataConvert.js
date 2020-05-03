@@ -92,7 +92,7 @@ function DataConvert(props) {
                <SelectFormat name="Target data format"
                              selectedFormat={targetDataFormat}
                              handleFormatChange={handleTargetDataFormatChange}
-                             urlFormats={API.dataFormats}
+                             urlFormats={API.dataFormatsOutput}
                />
                <Button variant="primary" type="submit">Convert data</Button>
            </Form>

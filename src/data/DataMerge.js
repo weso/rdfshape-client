@@ -110,7 +110,7 @@ function DataMerge(props) {
              <SelectFormat name="Target data format"
                            selectedFormat={targetDataFormat}
                            handleFormatChange={handleTargetDataFormatChange}
-                           urlFormats={API.dataFormats}
+                           urlFormats={API.dataFormatsOutput}
              />
          <Button id="submit" variant="primary" type="submit">Merge & convert</Button>
          </Form>

@@ -1,7 +1,7 @@
 import React from 'react';
 import Code from '../components/Code'
 import { Permalink } from "../Permalink"
-import { mkMode } from "../utils/Utils"
+import {format2mode} from "../utils/Utils"
 
 
 function ResultDataConvert(props) {
@@ -22,7 +22,7 @@ function ResultDataConvert(props) {
          <Code
            value={result.result}
            readOnly
-           mode={mkMode(result.dataFormat)}
+           mode={format2mode(result.targetDataFormat)}
            theme="material"
          />)}
        <details><pre>{JSON.stringify(result)}</pre></details>

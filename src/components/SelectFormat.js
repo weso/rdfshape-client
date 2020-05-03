@@ -8,7 +8,6 @@ function SelectFormat(props) {
     const [formats,setFormats] = useState([]);
     const [format,setFormat] = useState(props.selectedFormat);
 
-
     useEffect(() => {
         const url = props.urlFormats;
         axios.get(url).then(response => response.data)

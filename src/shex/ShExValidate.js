@@ -38,7 +38,6 @@ function ShExValidate(props) {
     const [shex, setShEx] = useState(InitialShEx);
     const [shapeMap, setShapeMap] = useState(InitialShapeMap);
     const [withEndpoint, setWithEndpoint] = useState(false);
-
     const [endpoint, setEndpoint] = useState('');
 
 
@@ -89,6 +88,7 @@ function ShExValidate(props) {
     }
 
     function handleSubmit(event) {
+        event.preventDefault();
         let paramsData = paramsFromStateData(data);
         let paramsShEx = paramsFromStateShEx(shex);
         let paramsShapeMap = paramsFromStateShapeMap(shapeMap);
@@ -106,7 +106,7 @@ function ShExValidate(props) {
         setPermalink(permalink);
         let formData = params2Form(params);
         postValidate(url, formData);
-        event.preventDefault();
+        window.scrollTo(0, 0)
     }
 
     function processResult(data) {
@@ -150,7 +150,7 @@ function ShExValidate(props) {
                 <Row>
                     <Col>
                         { mkDataTabs(data, setData)}
-                        <Button variant="primary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
+                        <Button variant="secondary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
                                            handleOnChange={handleEndpointChange}/>
