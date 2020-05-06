@@ -136,3 +136,4 @@ export function shExParamsFromQueryParams(params) {
     if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
     return newParams;
 }
+
