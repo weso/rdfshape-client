@@ -42,6 +42,8 @@ function SHACLValidate(props) {
                 let paramsEndpoint = {};
                 if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint;
                 let params = {...paramsData, ...paramsShacl, ...paramsEndpoint};
+                if (queryParams.triggerMode) params["triggerMode"] = queryParams.triggerMode;
+                if (queryParams.schemaEngine) params["schemaEngine"] = queryParams.schemaEngine;
                 console.log(`Params: ${JSON.stringify(params)}`);
                 const formData = params2Form(params);
                 postValidate(url, formData, () => updateStateValidate(params))
