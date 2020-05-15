@@ -82,7 +82,7 @@ function EndpointQuery(props) {
                     </Col>
                 </Fragment> : null }
             <Col>
-            <Form onSubmit={handleSubmit}>
+            <Form id="common-endpoints" onSubmit={handleSubmit}>
                 <EndpointInput value={endpoint}
                                handleOnChange={handleEndpointChange}
                 />
