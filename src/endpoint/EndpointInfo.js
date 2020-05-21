@@ -47,7 +47,7 @@ function EndpointInfo(props) {
                 error={error}
                 permalink={permalink}
             />
-            <Form onSubmit={handleSubmit}>
+            <Form id="common-endpoints" onSubmit={handleSubmit}>
                 <EndpointInput
                     value={endpoint}
                     handleOnChange={handleOnChange}

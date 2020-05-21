@@ -20,7 +20,59 @@ a.dropdown-item {
   font-size: 14px !important;
 }
 
+.yashe .yashe_buttons {
+  top: unset !important;
+  bottom: 5px !important;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group > button {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.form-group > .dropdown {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+#common-endpoints .dropdown {
+  bottom: 0;
+  right: 0;
+}
 
 a.dropdown-item {
   white-space: normal;
+}
+
+.container-fluid {
+  padding: 0 !important;
+}
+
+.container-fluid > .container-fluid, .container-fluid > .container {
+  margin: 2% auto;
+}
+
+@media only screen and (min-width: 600px) {
+  .container-fluid > .container-fluid, .container-fluid > .container{
+    max-width: 80%;
+  }
+}
+
+.container-fluid .container-fluid > h4, .container-fluid .container > h4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container-fluid > .row {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+table td {
+  overflow-x: auto;
 }
