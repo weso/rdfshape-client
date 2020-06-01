@@ -25,6 +25,11 @@ a.dropdown-item {
   bottom: 5px !important;
 }
 
+.yasqe .yasqe_buttons {
+  top: unset !important;
+  bottom: 5px !important;
+}
+
 .form-group {
   position: relative;
 }
