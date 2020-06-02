@@ -10,7 +10,6 @@ import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
 import {
-    convertTabSchema,
     InitialShEx,
     mkShExTabs,
     paramsFromStateShEx,
@@ -48,16 +47,15 @@ function ShExVisualize(props) {
     }
 
 
-    function handleSubmit(event) {
-        let params =  paramsFromStateShEx(shex);
-        params['schemaEngine']='ShEx'
+    async function handleSubmit(event) {
+        let params = paramsFromStateShEx(shex);
+        params['schemaEngine'] = 'ShEx'
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.shExVisualizeRoute, params);
         setError(null);
         setResult('');
         setLoading(true);
-        setPermalink(permalink);
-        postVisualize(url,formData)
+        setPermalink(await mkPermalink(API.shExVisualizeRoute, params));
+        postVisualize(url, formData)
         event.preventDefault();
     }
 

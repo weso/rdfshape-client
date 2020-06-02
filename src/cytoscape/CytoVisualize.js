@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "../data/DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import {dataParamsFromQueryParams} from "../utils/Utils";
@@ -54,17 +53,16 @@ function CytoVisualize(props) {
             });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         const url = API.dataConvert;
         let params = paramsFromStateData(data);
         let formData = params2Form(params);
         //console.log(`CytoVisualize state: ${JSON.stringify(this.state)}`)
         //console.log(`CytoVisualize submit params: ${JSON.stringify(params)}`)
-        let permalink = mkPermalink(API.cytoVisualizeRoute, params);
         formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
         setLoading(true);
-        setPermalink(permalink);
-        postConvert(url,formData);
+        setPermalink(await mkPermalink(API.cytoVisualizeRoute, params));
+        postConvert(url, formData);
         event.preventDefault();
     }
 

@@ -87,7 +87,7 @@ function ShExValidate(props) {
 
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let paramsData = paramsFromStateData(data);
         let paramsShEx = paramsFromStateShEx(shex);
@@ -101,9 +101,8 @@ function ShExValidate(props) {
         params['schemaEngine'] = 'ShEx';
         params['triggerMode'] = 'shapeMap';
         console.log(`ShExValidate. Post params = ${JSON.stringify(params)}`);
-        let permalink = mkPermalink(API.shExValidateRoute, params);
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.shExValidateRoute, params));
         let formData = params2Form(params);
         postValidate(url, formData);
         window.scrollTo(0, 0)

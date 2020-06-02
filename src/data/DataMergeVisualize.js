@@ -6,7 +6,6 @@ import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
 // import DataTabs from "./DataTabs";
-import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
 import {dataParamsFromQueryParams} from "../utils/Utils";
@@ -14,8 +13,6 @@ import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Row from "react-bootstrap/Row";
 import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
-import ResultDataConvert from "../results/ResultDataConvert";
-import SelectFormat from "../components/SelectFormat";
 import {convertDot} from "./dotUtils";
 import ShowSVG from "../svg/ShowSVG";
 
@@ -58,20 +55,19 @@ function DataMergeVisualize(props) {
     }
 
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params1 = paramsFromStateData(data1);
         let params2 = paramsFromStateData(data2);
         console.log(`params1: ${JSON.stringify(params1)}`);
         console.log(`params2: ${JSON.stringify(params2)}`);
-        let params = mergeParams(params1,params2);
+        let params = mergeParams(params1, params2);
         params['targetDataFormat'] = 'dot'; // It converts to dot in the server
         let formData = params2Form(params);
         console.log(`formData: ${JSON.stringify(formData)}`);
-        let permalink = mkPermalink(API.dataInfoRoute, formData);
         console.log("Permalink created: " + JSON.stringify(permalink));
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.dataInfoRoute, formData));
         postVisualize(API.dataConvert, formData);
     }
 

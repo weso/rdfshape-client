@@ -34,7 +34,7 @@ function  DataVisualize(props) {
                 const queryParams = qs.parse(props.location.search);
                 let params = dataParamsFromQueryParams(queryParams);
                 params['targetDataFormat'] = 'dot'; // It converts to dot in the server
-                setPermalink(mkPermalink(API.dataVisualizeRoute,queryParams));
+                mkPermalink(API.dataConvertRoute,params).then( link => setPermalink(link));
                 postVisualize(API.dataConvert, params2Form(params), () => updateStateVisualize(params))
         }},
         [props.location.search
@@ -51,18 +51,18 @@ function  DataVisualize(props) {
        convertDot(d.result,'dot','SVG', setLoading, setError, setSVG)
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateData(data);
         params['targetGraphFormat'] = targetGraphFormat;
         let formData = params2Form(params);
-        const targetFormat = targetGraphFormat ;
+        const targetFormat = targetGraphFormat;
         formData.append('targetDataFormat', 'dot'); // It converts to dot in the server
-        params['targetDataFormat'] = targetFormat ; // But it keeps the original target format for permalink
+        params['targetDataFormat'] = targetFormat; // But it keeps the original target format for permalink
         setLoading(true);
         setError(null);
-        setPermalink(mkPermalink(API.dataVisualizeRoute, params));
-        postVisualize(API.dataConvert,formData)
+        setPermalink(await mkPermalink(API.dataVisualizeRoute, params));
+        postVisualize(API.dataConvert, formData)
     }
 
     function postVisualize(url, formData, cb) {

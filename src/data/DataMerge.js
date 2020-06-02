@@ -5,8 +5,6 @@ import Alert from 'react-bootstrap/Alert';
 import API from "../API";
 import axios from 'axios';
 import Form from "react-bootstrap/Form";
-// import DataTabs from "./DataTabs";
-import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string';
 import { mkPermalink, params2Form, Permalink} from "../Permalink";
 import {dataParamsFromQueryParams} from "../utils/Utils";
@@ -49,20 +47,18 @@ function DataMerge(props) {
         return {"compoundData": JSON.stringify([params1, params2]) };
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params1 = paramsFromStateData(data1);
         let params2 = paramsFromStateData(data2);
         console.log(`params1: ${JSON.stringify(params1)}`);
         console.log(`params2: ${JSON.stringify(params2)}`);
-        let params = mergeParams(params1,params2);
-        params['targetDataFormat'] = targetDataFormat ;
+        let params = mergeParams(params1, params2);
+        params['targetDataFormat'] = targetDataFormat;
         let formData = params2Form(params);
         console.log(`formData: ${JSON.stringify(formData)}`);
-        let permalink = mkPermalink(API.dataInfoRoute, formData);
-        console.log("Permalink created: " + JSON.stringify(permalink));
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.dataInfoRoute, formData));
         postMerge(API.dataConvert, formData);
     }
 

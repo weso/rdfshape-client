@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
@@ -47,17 +46,16 @@ function ShExConvert(props) {
         setShex(updateStateShEx(params,shex))
     }
 
-    function handleSubmit(event) {
-        let params =  paramsFromStateShEx(shex);
-        params['schemaEngine']='ShEx';
+    async function handleSubmit(event) {
+        let params = paramsFromStateShEx(shex);
+        params['schemaEngine'] = 'ShEx';
         console.log(`handleSubmit| targetSchemaFormat: ${targetSchemaFormat}`)
         let formData = params2Form(params);
         formData.append('targetSchemaFormat', targetSchemaFormat);
-        params['targetSchemaFormat'] = targetSchemaFormat ;
-        let perm = mkPermalink(API.shExConvertRoute, params);
+        params['targetSchemaFormat'] = targetSchemaFormat;
         setLoading(true);
-        setPermalink(perm);
-        postConvert(url,formData)
+        setPermalink(await mkPermalink(API.shExConvertRoute, params));
+        postConvert(url, formData)
         event.preventDefault();
     }
 

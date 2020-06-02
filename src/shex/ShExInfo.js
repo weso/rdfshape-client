@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
-import ShExTabs from "./ShExTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
@@ -10,7 +9,6 @@ import ResultShExInfo from "../results/ResultShExInfo";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
-import Col from "react-bootstrap/Col";
 import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams, updateStateShEx} from "./ShEx";
 
 const url = API.schemaInfo ;
@@ -37,14 +35,13 @@ function ShExInfo(props) {
     },[props.location.search]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         let params = paramsFromStateShEx(shex);
-        params['schemaEngine']='ShEx';
+        params['schemaEngine'] = 'ShEx';
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.shExInfoRoute, params);
         setLoading(true);
-        setPermalink(permalink);
-        postRequest(url,formData);
+        setPermalink(await mkPermalink(API.shExInfoRoute, params));
+        postRequest(url, formData);
         event.preventDefault();
     }
 

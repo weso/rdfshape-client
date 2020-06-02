@@ -101,19 +101,19 @@ function WikidataValidate(props) {
         return shapeMap;
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         const paramsShEx = paramsFromShEx(shEx)
         const shapeMap = shapeMapFromEntities(entities, shapeLabel)
-        const paramsEndpoint = { endpoint: API.wikidataUrl };
-        let params = {...paramsEndpoint,...paramsShEx};
-        params['schemaEngine']='ShEx';
-        params['triggerMode']='shapeMap';
-        params['shapeMap']=shapeMap;
-        params['shapeMapFormat']='Compact';
+        const paramsEndpoint = {endpoint: API.wikidataUrl};
+        let params = {...paramsEndpoint, ...paramsShEx};
+        params['schemaEngine'] = 'ShEx';
+        params['triggerMode'] = 'shapeMap';
+        params['shapeMap'] = shapeMap;
+        params['shapeMapFormat'] = 'Compact';
         const formData = params2Form(params);
-        setPermalink(mkPermalink(API.wikidataValidateRoute,params));
-        postValidate(urlServer,formData);
+        setPermalink(await mkPermalink(API.wikidataValidateRoute, params));
+        postValidate(urlServer, formData);
     }
 
     function postValidate(url, formData, cb) {

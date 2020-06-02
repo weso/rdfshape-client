@@ -36,14 +36,13 @@ function DataInfo(props) {
         [props.location.search]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateData(data);
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.dataInfoRoute, params);
         console.log("Permalink created: " + JSON.stringify(permalink));
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.dataInfoRoute, params));
         postDataInfo(API.dataInfo, formData);
     }
 

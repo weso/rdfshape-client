@@ -1,7 +1,6 @@
 import React from 'react';
 
-import {render, fireEvent} from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react-hooks'
+import {render} from '@testing-library/react'
 
 import Code from "../Code";
 import '@testing-library/jest-dom/extend-expect'

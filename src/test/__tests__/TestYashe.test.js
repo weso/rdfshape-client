@@ -1,6 +1,6 @@
 import React from "react";
 
-import {render, fireEvent} from "@testing-library/react";
+import {render} from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import {waitForElement} from "@testing-library/dom";
 import {addCreateTextRangePolyfill} from "../../utils/TestPolyfill";
@@ -14,7 +14,7 @@ function before() {
 test("Test Yashe", async () => {
 
     const location = before();
-    const {queryByText, queryAllByRole} = render(<TestYashe location={location}/>);
+    const {queryByText} = render(<TestYashe location={location}/>);
     // Page title
     const selectInput = await waitForElement(() => queryByText(/Select Input/i));
     expect(selectInput).toBeInTheDocument();

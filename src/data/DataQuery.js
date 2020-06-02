@@ -12,7 +12,7 @@ import {
     updateStateQuery,
     queryParamsFromQueryParams
 } from "../query/Query";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
+import {mkPermalink, params2Form} from "../Permalink";
 import Col from "react-bootstrap/Col";
 import Pace from "react-pace-progress";
 import Alert from "react-bootstrap/Alert";
@@ -49,17 +49,16 @@ function DataQuery(props)  {
         [props.location.search]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         const infoUrl = API.dataQuery;
         let paramsData = paramsFromStateData(data);
         console.log(`DataQuery paramsData: ${JSON.stringify(paramsData)}`);
         let paramsQuery = paramsFromStateQuery(query);
         console.log(`DataQuery paramsQuery: ${JSON.stringify(paramsQuery)}`);
-        let params = {...paramsData,...paramsQuery}
+        let params = {...paramsData, ...paramsQuery}
         console.log(`DataQuery submit params: ${JSON.stringify(params)}`);
-        let permalink = mkPermalink(API.dataQueryRoute, params);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.dataQueryRoute, params));
         console.log("Permalink created: " + JSON.stringify(permalink));
         let form = params2Form(params);
         postQuery(infoUrl, form);

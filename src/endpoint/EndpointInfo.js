@@ -18,24 +18,24 @@ function EndpointInfo(props) {
         setEndpoint(value)
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         const infoUrl = API.endpointInfo;
         let params = {};
         params['endpoint'] = endpoint;
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.endpointInfoRoute, params);
-        axios.post(infoUrl,formData)
-            .then (response => response.data)
+        let permalink = await mkPermalink(API.endpointInfoRoute, params);
+        axios.post(infoUrl, formData)
+            .then(response => response.data)
             .then((data) => {
                 setResult(data);
                 setPermalink(permalink);
             })
             .catch(function (error) {
-                const msg = `Error invoking ${infoUrl}: ${JSON.stringify(error,null,2)}`
+                const msg = `Error invoking ${infoUrl}: ${JSON.stringify(error, null, 2)}`
                 setError(msg);
                 console.log(msg);
             })
-            ;
+        ;
         event.preventDefault();
     }
 

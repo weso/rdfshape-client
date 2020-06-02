@@ -79,6 +79,8 @@ class API {
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
 
+    static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
+
 
     static wikidataUrl =  "https://query.wikidata.org/sparql" ;
     static dbpediaUrl = "https://dbpedia.org/sparql" ;

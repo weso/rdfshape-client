@@ -57,13 +57,13 @@ function DataExtract(props) {
             });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateData(data);
-        params['nodeSelector'] = nodeSelector ;
+        params['nodeSelector'] = nodeSelector;
         let formData = params2Form(params);
-        setPermalink(mkPermalink(API.dataExtractRoute, params));
-        postExtract(url,formData);
+        setPermalink(await mkPermalink(API.dataExtractRoute, params));
+        postExtract(url, formData);
     }
 
     return (

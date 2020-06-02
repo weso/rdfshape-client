@@ -2,7 +2,6 @@ import React from 'react';
 import InputTabs from "../components/InputTabs";
 import PropTypes from "prop-types";
 import QueryForm from "./QueryForm";
-import ShExForm from "../shex/ShExForm";
 
 function QueryTabs(props) {
 

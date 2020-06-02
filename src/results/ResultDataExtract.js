@@ -1,6 +1,5 @@
 import React from 'react';
 import Code from '../components/Code'
-import { mkMode } from "../utils/Utils"
 
 function ResultDataExtract(props) {
      const result = props.result

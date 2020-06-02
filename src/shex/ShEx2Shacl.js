@@ -98,16 +98,15 @@ export default function ShEx2Shacl(props) {
         return queryParams;
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         let serverParams = mkServerParams();
         serverParams['schemaEngine'] = 'ShEx';
         serverParams['targetSchemaEngine'] = 'SHACL';
         console.log(`Making permalink...with ${JSON.stringify(serverParams)}`)
         let clientParams = queryParamsFromServerParams(serverParams)
-        let permalink = mkPermalink(API.shEx2ShaclRoute, clientParams);
         console.log(`Permalink created: ${permalink}`)
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.shEx2ShaclRoute, clientParams));
         let formData = params2Form(serverParams);
         postRequest(url, formData);
         event.preventDefault();

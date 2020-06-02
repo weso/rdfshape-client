@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import DataTabs from "./DataTabs"
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
@@ -32,7 +31,7 @@ function DataConvert(props) {
             const queryParams = qs.parse(props.location.search);
             let params = dataParamsFromQueryParams(queryParams);
             params['targetDataFormat']=queryParams.targetDataFormat;
-            setPermalink(mkPermalink(API.dataConvertRoute,params));
+            mkPermalink(API.dataConvertRoute,params).then( link => setPermalink(link));
             const formData = params2Form(params);
             postConvert(url, formData, () => updateState(params))
         }
@@ -62,14 +61,13 @@ function DataConvert(props) {
             });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateData(data);
-        params['targetDataFormat'] = targetDataFormat ;
+        params['targetDataFormat'] = targetDataFormat;
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.dataConvertRoute, params);
-        setPermalink(permalink);
-        postConvert(url,formData);
+        setPermalink(await mkPermalink(API.dataConvertRoute, params));
+        postConvert(url, formData);
     }
 
  return (

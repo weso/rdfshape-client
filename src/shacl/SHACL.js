@@ -1,10 +1,8 @@
 import API from '../API';
 import {convertTabSchema} from "../shex/ShEx";
 import React from "react";
-import DataTabs from "../data/DataTabs";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
 import SHACLTabs from "./SHACLTabs";
-import {convertTabData} from "../data/Data";
 
 
 /*export const initialSHACLStatus = {

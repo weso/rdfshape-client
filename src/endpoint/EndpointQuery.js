@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import EndpointInput from "./EndpointInput";
-import QueryTabs from "../query/QueryTabs";
 import API from "../API";
 import axios from "axios";
 import {mkPermalink, params2Form} from "../Permalink";
@@ -42,12 +41,12 @@ function EndpointQuery(props) {
         ]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateQuery(query);
         params['endpoint'] = endpoint;
         let formData = params2Form(params);
-        setPermalink(mkPermalink(API.endpointQueryRoute, params));
+        setPermalink(await mkPermalink(API.endpointQueryRoute, params));
         postQuery(API.endpointQuery, formData)
     }
 
