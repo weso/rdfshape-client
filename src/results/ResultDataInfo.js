@@ -24,6 +24,7 @@ function ResultDataInfo(props) {
                         resetFromParams={props.resetFromParams}
                     />
                 )}
+                <br/>
                 <ul>
                     <li>Number of statements: {result.numberStatements}</li>
                     <li>DataFormat: <span>{result.dataFormat}</span></li>

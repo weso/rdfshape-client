@@ -82,30 +82,32 @@ function  DataVisualize(props) {
      return (
        <Container fluid={true}>
          <h1>Visualize RDF data</h1>
-           <Row> { loading || error || svg ?
-              <Fragment>
-               { loading ? <Pace color="#27ae60"/> :
-                 error ? <Alert variant='danger'>{error}</Alert> :
-                 svg && svg.svg ?
-                   <Col>
-                    <ShowSVG svg={svg.svg}/>
-                    { permalink? <Permalink url={permalink} /> : null }
-                   </Col> : null
+           <Row>
+             <Form className={"width-100"} onSubmit={handleSubmit}>
+                 { mkDataTabs(data,setData)}
+                 <SelectFormat name="Target graph format"
+                               handleFormatChange={handleTargetGraphFormatChange}
+                               urlFormats={API.dataVisualFormats}
+                               selectedFormat={targetGraphFormat}
+                 />
+                <Button variant="primary" type="submit">Visualize</Button>
+             </Form>
+          </Row>
+           <Row>
+               { loading || error || svg ?
+                   <Fragment>
+                       { loading ? <Pace color="#27ae60"/> :
+                           error ? <Alert variant='danger'>{error}</Alert> :
+                               svg && svg.svg ?
+                                       <div style={{position: "relative"}} className={"width-100"}>
+                                           <ShowSVG svg={svg.svg}/>
+                                            { permalink? <Permalink style={{position: "absolute", top: "5px"}}
+                                                url={permalink} /> : null }
+                                       </div> : null
+                       }
+                   </Fragment> :
+                   null
                }
-              </Fragment> :
-               null
-           }
-         <Col>
-         <Form onSubmit={handleSubmit}>
-             { mkDataTabs(data,setData)}
-             <SelectFormat name="Target graph format"
-                           handleFormatChange={handleTargetGraphFormatChange}
-                           urlFormats={API.dataVisualFormats}
-                           selectedFormat={targetGraphFormat}
-             />
-         <Button variant="primary" type="submit">Visualize</Button>
-         </Form>
-           </Col>
            </Row>
        </Container>
    );

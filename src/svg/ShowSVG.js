@@ -3,7 +3,7 @@ import React from 'react';
 class ShowSVG extends React.Component {
 
     render() {
-        return <div className="SVG" border="1"
+        return <div style={{overflow: "auto"}} className="SVG" border="1"
                     dangerouslySetInnerHTML={{__html: this.props.svg}}
         />
     }

@@ -70,15 +70,15 @@ function Code(props) {
              }}
              editorDidMount={editor => { setEditor(editor) }}
             />
-               <DropdownButton id="dropdown-basic-button" title="Theme" variant="secondary">
-                   { ThemeList.map((t) =>
-                       <Dropdown.Item onSelect={() => setTheme(t)}
-                           // href={setTheme(t)}
-                       >
-                       {t}
-                      </Dropdown.Item>
-                   )}
-               </DropdownButton>
+               {/*<DropdownButton id="dropdown-basic-button" title="Theme" variant="secondary">*/}
+               {/*    { ThemeList.map((t) =>*/}
+               {/*        <Dropdown.Item onSelect={() => setTheme(t)}*/}
+               {/*            // href={setTheme(t)}*/}
+               {/*        >*/}
+               {/*        {t}*/}
+               {/*       </Dropdown.Item>*/}
+               {/*    )}*/}
+               {/*</DropdownButton>*/}
            </React.Fragment>
 
                }

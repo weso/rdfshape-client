@@ -78,6 +78,38 @@ a.dropdown-item {
   margin-bottom: 10px;
 }
 
+.btn-with-icon {
+  margin: 5px auto;
+  display: inline-flex !important;
+  padding: 5px;
+}
+
+.btn-with-icon > svg {
+  margin: auto 5px auto 10px;
+}
+
+.white-icon {
+  fill: white;
+  transform: scale(1.5);
+  margin: auto 5px;
+}
+
+.white-background {
+  background-color: white !important; /* "!important" overrides bootstrap */
+}
+
 table td {
   overflow-x: auto;
+}
+
+.disabled {
+  cursor: not-allowed !important; /* "!important" overrides bootstrap */
+}
+
+.progress {
+  margin: 6px 0;
+}
+
+.width-100 {
+  width: 100%;
 }

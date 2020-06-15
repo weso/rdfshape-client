@@ -46,7 +46,7 @@ function TurtleForm(props) {
     );
 
     return (
-        <textarea ref={textAreaRef}/>
+        <textarea id={"Turtle-TextArea"} ref={textAreaRef}/>
     );
 }
 

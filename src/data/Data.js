@@ -1,6 +1,6 @@
 import API from '../API';
 import DataTabs from "./DataTabs";
-import React from "react";
+import React, {useEffect} from "react";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
@@ -92,12 +92,12 @@ export function mkDataTabs(data, setData, name) {
     function handleDataUrlChange(value) { setData( {...data, url: value}); }
     function handleDataFileUpload(value) { setData({...data, file: value }); }
     function handleInferenceChange(value) {  setData({...data, inference: value}); }
-    const resetParams = () => setData({...data, fromParams: false}) ;
+    const resetParams = () => setData({...data, fromParams: false});
 
     return (
       <React.Fragment>
        <DataTabs
-              name={name || "RDF data"}
+              name={name || "RDF input"}
               activeTab={data.activeTab}
               handleTabChange={handleDataTabChange}
 
