@@ -23,7 +23,6 @@ export function mkPermalink(route, params) {
         }
     })
         .then( res => {
-            if (res.data.includes("wrong")) return permalink
             return res.data
         })
         .catch ( err => {
@@ -41,7 +40,6 @@ export function mkPermalinkLong(route, params) {
 export function params2Form(params) {
     let formData = new FormData()
     Object.keys(params).forEach(key => {
-        console.log("Adding to formData: " + key + " =>" + params[key]);
         formData.append(key,params[key])
     });
     console.log("FormData in mkFormData: " + JSON.stringify(formData));

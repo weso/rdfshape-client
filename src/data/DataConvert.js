@@ -33,22 +33,23 @@ function DataConvert(props) {
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
-            let dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: queryParams.targetDataFormat};
+            const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: queryParams.targetDataFormat};
 
             setData(updateStateData(dataParams,data) || data);
+
             // Update text area correctly
             const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
             if (codeMirror) codeMirror.setValue(dataParams.data)
 
-            setParams(dataParams) // Trigger validation when changing params
-            setLastParams(dataParams) // Trigger validation when changing params
+            setParams(dataParams)
+            setLastParams(dataParams)
         }
     },
      [props.location.search]
    );
 
     useEffect( () => {
-        if (params){
+        if (params && params.data){
             resetState()
             setUpHistory()
             postConvert()

@@ -31,7 +31,7 @@ function DataInfo(props) {
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
-            let dataParams = dataParamsFromQueryParams(queryParams);
+            const dataParams = dataParamsFromQueryParams(queryParams);
 
             setData(updateStateData(dataParams,data) || data);
             // Update text area correctly
@@ -45,7 +45,7 @@ function DataInfo(props) {
     );
 
     useEffect( () => {
-        if (params){
+        if (params && params.data){
             resetState()
             setUpHistory()
             postDataInfo()
@@ -59,6 +59,7 @@ function DataInfo(props) {
     }
 
     function postDataInfo(cb) {
+
         setLoading(true)
         setProgressPercent(20)
         const formData = params2Form(params)
