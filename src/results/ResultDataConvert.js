@@ -2,6 +2,7 @@ import React from 'react';
 import Code from '../components/Code'
 import { Permalink } from "../Permalink"
 import {format2mode} from "../utils/Utils"
+import Alert from "react-bootstrap/Alert";
 
 
 function ResultDataConvert(props) {
@@ -11,22 +12,19 @@ function ResultDataConvert(props) {
         msg = null
   } 
   else if (result.error) {
-    msg = <div><p>Error: {result.error}</p>
-            <details><pre>{JSON.stringify(result)}</pre></details>
-           </div>
+    msg = <Alert variant='danger'>{result.error}</Alert>
     } 
   else {
     msg = <div>
-      <p>{result.msg}</p>
+      <Alert variant='success'>{result.msg}</Alert>
          {result.result && result.dataFormat && (
          <Code
            value={result.result}
            readOnly
            mode={format2mode(result.targetDataFormat)}
-           theme="material"
+           theme="light"
          />)}
        <details><pre>{JSON.stringify(result)}</pre></details>
-       <Permalink url={props.permalink} />
     </div>
  }
 

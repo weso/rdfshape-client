@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, Fragment} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -38,8 +38,8 @@ function DataInfo(props) {
             const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
             if (codeMirror) codeMirror.setValue(dataParams.data)
 
-            setParams(dataParams) // Trigger validation when changing params
-            setLastParams(dataParams) // Trigger validation when changing params
+            setParams(dataParams)
+            setLastParams(dataParams)
         }},
         [props.location.search]
     );
@@ -82,23 +82,11 @@ function DataInfo(props) {
         // Store the last search URL in the browser history to allow going back
         if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
             // eslint-disable-next-line no-restricted-globals
-            history.pushState(null, document.title, mkPermalinkLong(API.dataInfoRoute, {
-                activeTab: lastParams.activeTab || '',
-                data: lastParams.data || '',
-                dataFormat: lastParams.dataFormat || '',
-                dataFormatTextArea: lastParams.dataFormatTextArea || '',
-                inference: lastParams.inference || ''
-            }))
+            history.pushState(null, document.title, mkPermalinkLong(API.dataInfoRoute, lastParams))
         }
         // Change current url for shareable links
         // eslint-disable-next-line no-restricted-globals
-        history.replaceState(null, document.title ,mkPermalinkLong(API.dataInfoRoute, {
-            activeTab: params.activeTab || '',
-            data: params.data || '',
-            dataFormat: params.dataFormat || '',
-            dataFormatTextArea: params.dataFormatTextArea || '',
-            inference: params.inference || ''
-        }))
+        history.replaceState(null, document.title ,mkPermalinkLong(API.dataInfoRoute, params))
 
         setLastParams(params)
     }
@@ -117,9 +105,8 @@ function DataInfo(props) {
             <h1>RDF Data info</h1>
         </Row>
         <Row>
-            <Col style={{ borderRight: '1px solid black' }}>
+            <Col className={"border-right"}>
                 <Form onSubmit={handleSubmit}>
-                    {console.error("RENDER")}
                     { mkDataTabs(data,setData) }
                     <Button id="submit" variant="primary" type="submit"
                             className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>

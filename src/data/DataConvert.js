@@ -9,35 +9,51 @@ import axios from "axios";
 import SelectFormat from "../components/SelectFormat";
 import ResultDataConvert from "../results/ResultDataConvert";
 import {dataParamsFromQueryParams} from "../utils/Utils";
-import Pace from "react-pace-progress";
 import qs from "query-string";
-import {mkPermalink, params2Form} from "../Permalink";
+import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
 import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
+import Alert from "react-bootstrap/Alert";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 function DataConvert(props) {
-
-    const url = API.dataConvert;
     const [result, setResult] = useState('');
+    const [params, setParams] = useState(null);
+    const [lastParams, setLastParams] = useState(null);
     const [permalink, setPermalink] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error,setError] = useState(null);
     const [data,setData] = useState(InitialData);
     const [targetDataFormat, setTargetDataFormat] = useState(API.defaultDataFormat);
+    const [progressPercent,setProgressPercent] = useState(0);
+
+    const url = API.dataConvert;
 
     function handleTargetDataFormatChange(value) { setTargetDataFormat(value); }
 
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
-            let params = dataParamsFromQueryParams(queryParams);
-            params['targetDataFormat']=queryParams.targetDataFormat;
-            mkPermalink(API.dataConvertRoute,params).then( link => setPermalink(link));
-            const formData = params2Form(params);
-            postConvert(url, formData, () => updateState(params))
+            let dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: queryParams.targetDataFormat};
+
+            setData(updateStateData(dataParams,data) || data);
+            // Update text area correctly
+            const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
+            if (codeMirror) codeMirror.setValue(dataParams.data)
+
+            setParams(dataParams) // Trigger validation when changing params
+            setLastParams(dataParams) // Trigger validation when changing params
         }
     },
-     [props.location.search, url]
+     [props.location.search]
    );
+
+    useEffect( () => {
+        if (params){
+            resetState()
+            setUpHistory()
+            postConvert()
+        }
+    }, [params])
 
     function updateState(params) {
         setData(updateStateData(params,data));
@@ -45,57 +61,85 @@ function DataConvert(props) {
           setTargetDataFormat(params['targetDataFormat']);
     }
 
-    function postConvert(url, formData, cb) {
+    function handleSubmit(event) {
+        event.preventDefault();
+        setParams({...paramsFromStateData(data), targetDataFormat})
+    }
+
+    function postConvert(cb) {
         setLoading(true)
+        setProgressPercent(20)
+        let formData = params2Form(params);
+
         axios.post(url,formData).then (response => response.data)
-            .then((data) => {
-                setLoading(false);
+            .then(async data => {
+                setProgressPercent(70)
                 setResult(data)
+                setPermalink(await mkPermalink(API.dataConvertRoute, params));
+                setProgressPercent(80)
                 if (cb) cb()
+                setProgressPercent(100)
             })
             .catch(function (error) {
                 setError(error);
-                setLoading(false);
-                console.log('Error doing server request');
-                console.log(error);
-            });
+            })
+            .finally( () => setLoading(false));
     }
 
-    async function handleSubmit(event) {
-        event.preventDefault();
-        let params = paramsFromStateData(data);
-        params['targetDataFormat'] = targetDataFormat;
-        let formData = params2Form(params);
-        setPermalink(await mkPermalink(API.dataConvertRoute, params));
-        postConvert(url, formData);
+    function setUpHistory() {
+        // Store the last search URL in the browser history to allow going back
+        if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
+            // eslint-disable-next-line no-restricted-globals
+            history.pushState(null, document.title, mkPermalinkLong(API.dataConvertRoute, lastParams))
+        }
+        // Change current url for shareable links
+        // eslint-disable-next-line no-restricted-globals
+        history.replaceState(null, document.title ,mkPermalinkLong(API.dataConvertRoute, params))
+
+        setLastParams(params)
+    }
+
+    function resetState() {
+        setResult(null)
+        setParams(null)
+        setPermalink(null)
+        setError(null)
+        setProgressPercent(0)
     }
 
  return (
        <Container fluid={true}>
+       <Row>
          <h1>Convert RDF data</h1>
-         <Row>
-             { result || loading || error ?
+       </Row>
+       <Row>
+           <Col className={"border-right"}>
+               <Form onSubmit={handleSubmit}>
+                   { mkDataTabs(data,setData) }
+                   <SelectFormat name="Target data format"
+                                 selectedFormat={targetDataFormat}
+                                 handleFormatChange={handleTargetDataFormatChange}
+                                 urlFormats={API.dataFormatsOutput}
+                   />
+                   <Button variant="primary" type="submit"
+                           className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                       Convert data</Button>
+               </Form>
+           </Col>
+           { loading || result || permalink ?
              <Col>
-                 { loading ? <Pace color="#27ae60"/> :
-                   result ?  <ResultDataConvert result={result}
-                                                permalink={permalink} /> :
+                 {  loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
+                    error? <Alert variant='danger'>{error}</Alert> :
+                    result ?  <ResultDataConvert result={result}/> :
                     null
                  }
+                 { permalink? <Permalink url={permalink} />: null }
              </Col>
-                 : null
+                 : <Col>
+                     <Alert variant='info'>Conversion results will appear here</Alert>
+                 </Col>
              }
-          <Col>
-           <Form onSubmit={handleSubmit}>
-               { mkDataTabs(data,setData) }
-               <SelectFormat name="Target data format"
-                             selectedFormat={targetDataFormat}
-                             handleFormatChange={handleTargetDataFormatChange}
-                             urlFormats={API.dataFormatsOutput}
-               />
-               <Button variant="primary" type="submit">Convert data</Button>
-           </Form>
-          </Col>
-         </Row>
+       </Row>
        </Container>
  );
 }
