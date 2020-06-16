@@ -59,10 +59,16 @@ function  DataVisualize(props) {
     );
 
     useEffect( () => {
-        if (params && params.data){
-            resetState()
-            setUpHistory()
-            postVisualize()
+        if (params){
+            if (params.data){
+                resetState()
+                setUpHistory()
+                postVisualize()
+            }
+            else {
+                setError("No RDF data provided")
+            }
+            window.scrollTo(0, 0)
         }
     }, [params])
 
@@ -88,7 +94,10 @@ function  DataVisualize(props) {
             .catch(function (error) {
                 setError(`Error doing request to ${url}: ${error.message}`)
             })
-            .finally( () => setLoading(false));
+            .finally( () => {
+                setLoading(false)
+                window.scrollTo(0, 0)
+            });
     }
 
     function processData(d, targetFormat) {
@@ -136,6 +145,7 @@ function  DataVisualize(props) {
             <Col className={"border-right"}>
              <Form className={"width-100"} onSubmit={handleSubmit}>
                  { mkDataTabs(data,setData)}
+                 <hr/>
                  <SelectFormat name="Target graph format"
                                handleFormatChange={handleTargetGraphFormatChange}
                                urlFormats={API.dataVisualFormats}

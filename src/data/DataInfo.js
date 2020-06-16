@@ -45,10 +45,16 @@ function DataInfo(props) {
     );
 
     useEffect( () => {
-        if (params && params.data){
-            resetState()
-            setUpHistory()
-            postDataInfo()
+        if (params){
+            if (params.data) {
+                resetState()
+                setUpHistory()
+                postDataInfo()
+            }
+            else {
+                setError("No RDF data provided")
+            }
+            window.scrollTo(0, 0)
         }
     }, [params])
 
@@ -114,7 +120,7 @@ function DataInfo(props) {
                         Info about data</Button>
                 </Form>
             </Col>
-           { loading || result || permalink ?
+           { loading || result || error || permalink ?
                <Fragment>
                    <Col>
                        {loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :

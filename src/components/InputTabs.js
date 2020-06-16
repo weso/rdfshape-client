@@ -18,7 +18,7 @@ function InputTabs(props) {
 
     return (
         <Form.Group>
-            <Form.Label>{props.name}</Form.Label>
+            <Form.Label style={{fontWeight:'bold'}}>{props.name}</Form.Label>
             <Tabs activeKey={activeTab}
                   transition={false}
                   id="dataTabs"

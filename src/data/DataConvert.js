@@ -49,18 +49,18 @@ function DataConvert(props) {
    );
 
     useEffect( () => {
-        if (params && params.data){
-            resetState()
-            setUpHistory()
-            postConvert()
+        if (params){
+            if (params.data) {
+                resetState()
+                setUpHistory()
+                postConvert()
+            }
+            else {
+                setError("No RDF data provided")
+            }
+            window.scrollTo(0, 0)
         }
     }, [params])
-
-    function updateState(params) {
-        setData(updateStateData(params,data));
-        if (params['targetDataFormat'])
-          setTargetDataFormat(params['targetDataFormat']);
-    }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -117,6 +117,7 @@ function DataConvert(props) {
            <Col className={"border-right"}>
                <Form onSubmit={handleSubmit}>
                    { mkDataTabs(data,setData) }
+                   <hr/>
                    <SelectFormat name="Target data format"
                                  selectedFormat={targetDataFormat}
                                  handleFormatChange={handleTargetDataFormatChange}
@@ -127,7 +128,7 @@ function DataConvert(props) {
                        Convert data</Button>
                </Form>
            </Col>
-           { loading || result || permalink ?
+           { loading || result || error || permalink ?
              <Col>
                  {  loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
