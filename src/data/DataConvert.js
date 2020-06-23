@@ -33,16 +33,21 @@ function DataConvert(props) {
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
-            const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: queryParams.targetDataFormat};
+            if (queryParams.data){
+                const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: queryParams.targetDataFormat};
 
-            setData(updateStateData(dataParams,data) || data);
+                setData(updateStateData(dataParams,data) || data);
 
-            // Update text area correctly
-            const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-            if (codeMirror) codeMirror.setValue(dataParams.data)
+                // Update text area correctly
+                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
+                if (codeMirror) codeMirror.setValue(dataParams.data)
 
-            setParams(dataParams)
-            setLastParams(dataParams)
+                setParams(dataParams)
+                setLastParams(dataParams)
+            }
+            else {
+                setError("Could not parse URL data")
+            }
         }
     },
      [props.location.search]

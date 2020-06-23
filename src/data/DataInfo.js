@@ -31,15 +31,20 @@ function DataInfo(props) {
     useEffect(() => {
         if (props.location.search) {
             const queryParams = qs.parse(props.location.search);
-            const dataParams = dataParamsFromQueryParams(queryParams);
+            if (queryParams.data){
+                const dataParams = dataParamsFromQueryParams(queryParams);
 
-            setData(updateStateData(dataParams,data) || data);
-            // Update text area correctly
-            const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-            if (codeMirror) codeMirror.setValue(dataParams.data)
+                setData(updateStateData(dataParams,data) || data);
+                // Update text area correctly
+                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
+                if (codeMirror) codeMirror.setValue(dataParams.data)
 
-            setParams(dataParams)
-            setLastParams(dataParams)
+                setParams(dataParams)
+                setLastParams(dataParams)
+            }
+            else {
+                setError("Could not parse URL data")
+            }
         }},
         [props.location.search]
     );
@@ -115,6 +120,7 @@ function DataInfo(props) {
             <Col className={"border-right"}>
                 <Form onSubmit={handleSubmit}>
                     { mkDataTabs(data,setData) }
+                    <hr/>
                     <Button id="submit" variant="primary" type="submit"
                             className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                         Info about data</Button>

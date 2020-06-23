@@ -42,20 +42,23 @@ function  DataVisualize(props) {
     useEffect(() => {
             if (props.location.search) {
                 const queryParams = qs.parse(props.location.search);
-                const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: 'dot'};
+                if (queryParams.data){
+                    const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: 'dot'};
 
-                setData(updateStateData(dataParams,data) || data);
+                    setData(updateStateData(dataParams,data) || data);
 
-                // Update text area correctly
-                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                if (codeMirror) codeMirror.setValue(dataParams.data)
+                    // Update text area correctly
+                    const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
+                    if (codeMirror) codeMirror.setValue(dataParams.data)
 
-                setParams(dataParams)
-                setLastParams(dataParams)
-
+                    setParams(dataParams)
+                    setLastParams(dataParams)
+                }
+                else {
+                    setError("Could not parse URL data")
+                }
         }},
-        [props.location.search
-        ]
+        [props.location.search]
     );
 
     useEffect( () => {
@@ -151,15 +154,16 @@ function  DataVisualize(props) {
                                urlFormats={API.dataVisualFormats}
                                selectedFormat={targetGraphFormat}
                  />
+
                 <Button variant="primary" type="submit"
                         className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                     Visualize</Button>
              </Form>
             </Col>
                { loading || error || svg ?
-                   <Col style={{height: "70vh"}}>
+                   <Col className="visual-column">
                        <Fragment>
-                           { permalink? <div className={"d-flex"}>
+                           { permalink && !error? <div className={"d-flex"}>
                                <Permalink url={permalink} />
                                <Button onClick={() => zoomSvg(false)} className="btn-zoom" variant="secondary"
                                        disabled={svgZoom <= minSvgZoom}>

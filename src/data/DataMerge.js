@@ -45,14 +45,23 @@ function DataMerge(props) {
                 setData2(newData2);
 
                 // Update code mirrors
-                const texts = JSON.parse(queryParams.compoundData)
-                const codemirrors = document.querySelectorAll('.react-codemirror2')
-                for (let i = 0; i < codemirrors.length; i++) {
-                    const cm = codemirrors[i].firstChild.CodeMirror
-                    if (cm && texts[i]) cm.setValue(texts[i].data)
-                }
+                try {
+                    const texts = JSON.parse(queryParams.compoundData)
+                    const codemirrors = document.querySelectorAll('.react-codemirror2')
+                    for (let i = 0; i < codemirrors.length; i++) {
+                        const cm = codemirrors[i].firstChild.CodeMirror
+                        if (cm && texts[i]) cm.setValue(texts[i].data)
+                    }
 
-                setParams(queryParams)
+                    setParams(queryParams)
+                    setLastParams(queryParams)
+                }
+                catch {
+                    setError("Could not parse URL data")
+                }
+            }
+            else {
+                setError("Could not parse URL data")
             }
 
         }},
@@ -60,7 +69,6 @@ function DataMerge(props) {
     );
 
     useEffect( () => {
-        console.log("PARAMS ==> ", params)
         if (params && params.compoundData){
             const parameters = JSON.parse(params.compoundData)
             if (parameters.some( p => p.data !== "")) { // Check if some data was uploaded
@@ -127,7 +135,6 @@ function DataMerge(props) {
 
     function resetState() {
         setResult(null)
-        setParams(null)
         setPermalink(null)
         setError(null)
         setProgressPercent(0)
@@ -141,9 +148,9 @@ function DataMerge(props) {
         <Row>
             <Col className={"border-right"}>
                 <Form onSubmit={handleSubmit}>
-                    { mkDataTabs(data1,setData1, "RDF Input 1") }
+                    { mkDataTabs(data1, setData1, "RDF Input 1") }
                     <hr/>
-                    { mkDataTabs(data2,setData2, "RDF Input 2") }
+                    { mkDataTabs(data2, setData2, "RDF Input 2") }
                     <hr/>
                     <SelectFormat name="Target data format"
                                   selectedFormat={targetDataFormat}

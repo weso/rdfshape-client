@@ -116,6 +116,10 @@ table td {
   margin: 6px 0;
 }
 
+.visual-column {
+  height: 70vh;
+}
+
 .width-100 {
   width: 100%;
 }
