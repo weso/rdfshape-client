@@ -85,7 +85,7 @@ function CytoVisualize(props) {
                 if (cb) cb();
                 setProgressPercent(100)
             })
-            .catch(error =>
+            .catch( error =>
                 setError(error)
             )
             .finally( () => {

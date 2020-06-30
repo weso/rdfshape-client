@@ -69,7 +69,6 @@ function DataQuery(props)  {
 
     useEffect( () => {
         if (params){
-            console.info("PARAMS ==>", params)
             if (params.data && params.query){
                 resetState()
                 setUpHistory()
