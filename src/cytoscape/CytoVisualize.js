@@ -3,94 +3,164 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import API from "../API";
-import DataTabs from "../data/DataTabs"
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import {dataParamsFromQueryParams} from "../utils/Utils";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
+import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
 import Cyto from "../components/Cyto";
-import Pace from 'react-pace-progress';
 import qs from 'query-string';
 import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "../data/Data";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 function CytoVisualize(props) {
 
+    const url = API.dataConvert;
+    const cose = "cose"
+    const circle = "circle"
+
     const [data, setData] = useState(InitialData);
+    const [params, setParams] = useState(null);
+    const [lastParams, setLastParams] = useState(null);
     const [error,setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState(null);
-    const [elements,setElements] = useState([]);
+    const [elements,setElements] = useState(null);
+    const [layoutName, setLayoutName] = useState(cose);
+    const [progressPercent,setProgressPercent] = useState(0);
 
     useEffect(() => {
             if (props.location.search) {
                 const queryParams = qs.parse(props.location.search);
-                let dataParams = dataParamsFromQueryParams(queryParams);
-                dataParams['targetDataFormat'] = "JSON"; // Converts to JSON elements which are visualized by Cytoscape
-                postConvert(API.dataConvert, params2Form(dataParams), () => setData(updateStateData(dataParams,data)));
+                if (queryParams.data){
+                    const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: 'JSON'};
+                    setData(updateStateData(dataParams,data) || data);
+
+                    // Update text area correctly
+                    const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
+                    if (codeMirror) codeMirror.setValue(dataParams.data)
+
+                    setParams(dataParams)
+                    setLastParams(dataParams)
+                }
+                else {
+                    setError("Could not parse URL data")
+                }
             }},
         [props.location.search]
     );
 
-    function processData(data) {
-        const elements = JSON.parse(data.result);
-        setElements(elements);
+    useEffect( () => {
+        if (params){
+            if (params.data){
+                resetState()
+                setUpHistory()
+                postConvert()
+            }
+            else {
+                setError("No RDF data provided")
+            }
+            window.scrollTo(0, 0)
+        }
+    }, [params])
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        setParams(paramsFromStateData(data));
     }
 
-    function postConvert(url, formData, cb) {
+    function postConvert(cb) {
+        setLoading(true)
+        const formData = params2Form(params);
+        formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
+        setProgressPercent(20)
         axios.post(url,formData).then (response => response.data)
-            .then((data) => {
-                setLoading(false);
+            .then(async data => {
+                setProgressPercent(70)
                 processData(data);
+                setProgressPercent(80)
+                setPermalink(await mkPermalink(API.cytoVisualizeRoute, params));
                 if (cb) cb();
+                setProgressPercent(100)
             })
-            .catch(function (error) {
-                setLoading(false);
-                setError(error);
-                console.log('Error doing server request')
-                console.log(error);
+            .catch( error =>
+                setError(error)
+            )
+            .finally( () => {
+                setLoading(false)
+                window.scrollTo(0, 0)
             });
     }
 
-    function handleSubmit(event) {
-        const url = API.dataConvert;
-        let params = paramsFromStateData(data);
-        let formData = params2Form(params);
-        //console.log(`CytoVisualize state: ${JSON.stringify(this.state)}`)
-        //console.log(`CytoVisualize submit params: ${JSON.stringify(params)}`)
-        let permalink = mkPermalink(API.cytoVisualizeRoute, params);
-        formData.append('targetDataFormat', "JSON"); // Converts to JSON elements which are visualized by Cytoscape
-        setLoading(true);
-        setPermalink(permalink);
-        postConvert(url,formData);
-        event.preventDefault();
+    function processData(data) {
+        if (data.error) setError(data.error)
+        else {
+            const elements = JSON.parse(data.result);
+            setElements(elements);
+        }
+    }
+
+    function setUpHistory() {
+        // Store the last search URL in the browser history to allow going back
+        if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
+            // eslint-disable-next-line no-restricted-globals
+            history.pushState(null, document.title, mkPermalinkLong(API.cytoVisualizeRoute, lastParams))
+        }
+        // Change current url for shareable links
+        // eslint-disable-next-line no-restricted-globals
+        history.replaceState(null, document.title ,mkPermalinkLong(API.cytoVisualizeRoute, params))
+
+        setLastParams(params)
+    }
+
+    function resetState() {
+        setElements(null)
+        setPermalink(null)
+        setError(null)
+        setProgressPercent(0)
     }
 
 return (
        <Container fluid={true}>
            <Row>
-           <h1>Visualize RDF data</h1>
+                <h1>Visualize RDF data</h1>
            </Row>
            <Row>
-               { loading || elements || permalink ?
-                   <Fragment>
-                       <Col>
-                           {loading ? <Pace color="#27ae60"/> :
-                               error ? <Alert variant='danger'>{error}</Alert> :
-                                   elements ? <Cyto elements={elements}/> : null
-                           }
-                           { permalink? <Permalink url={permalink} />: null }
-                       </Col>
-                   </Fragment> : null
-               }
-               <Col>
-         <Form onSubmit={handleSubmit}>
-             { mkDataTabs(data,setData)}
-         <Button variant="primary" type="submit">Visualize</Button>
-         </Form>
+               <Col className={"border-right"}>
+                   <Form onSubmit={handleSubmit}>
+                       { mkDataTabs(data,setData)}
+                       <Button variant="primary" type="submit"
+                               className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                           Visualize</Button>
+                   </Form>
                </Col>
+               { loading || elements || error ?
+                   <Col className="visual-column">
+                       <Fragment>
+                           { permalink && !error? <div className={"d-flex"}>
+                               <Permalink url={permalink} />
+                               <Button onClick={() => setLayoutName(cose)} className="btn-zoom" variant="secondary"
+                                       disabled={layoutName === cose}>
+                                   COSE layout
+                               </Button>
+                               <Button onClick={() => setLayoutName(circle)} style={{marginLeft: "1px"}} className="btn-zoom" variant="secondary"
+                                       disabled={layoutName === circle}>
+                                   Circle layout
+                               </Button>
+                           </div> : null }
+
+                           { loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
+                               error ? <Alert variant='danger'>{error}</Alert> :
+                            elements ? <Cyto className={"width-100 height-100 border"} layout={layoutName} elements={elements}/> : null
+                           }
+                       </Fragment>
+                   </Col> :
+                   <Col>
+                       <Alert variant='info'>Visualizations will appear here</Alert>
+                   </Col>
+               }
            </Row>
        </Container>
      );

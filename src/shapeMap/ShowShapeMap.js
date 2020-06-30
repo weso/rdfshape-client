@@ -47,7 +47,7 @@ function shapeMap2Table(shapeMap, nodesPrefixMap, shapesPrefixMap) {
 
 function shapeFormatter(cell, row) {
     if (row.status ==='conformant') {
-        return (<span style={ { color:'green'} }>{cell}</span> );
+        return (<span style={ { color:'green'}}>{cell}</span> );
     } else
         return (<span style={ {color: 'red'}}>!{cell}</span> );
 }

@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import PropTypes from "prop-types";
 import {Typeahead, Token} from 'react-bootstrap-typeahead';
-import API from "../API";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import 'react-bootstrap-typeahead/css/Typeahead-bs4.min.css';
 import axios from "axios";

@@ -56,7 +56,7 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href={API.endpointQueryRoute}>Query endpoint</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="Wikidata" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="http://wikishape.weso.es">Wikishape</NavDropdown.Item>
+                            <NavDropdown.Item target="_blank" href="http://wikishape.weso.es">Wikishape</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                     <Nav>

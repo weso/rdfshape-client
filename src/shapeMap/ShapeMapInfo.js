@@ -40,14 +40,13 @@ function ShapeMapInfo(props) {
         [props.location.search]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromStateShapeMap(shapeMap);
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.shapeMapInfoRoute, params);
         console.log("Permalink created: " + JSON.stringify(permalink));
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.shapeMapInfoRoute, params));
         postShapeMapInfo(API.shapeMapInfo, formData);
     }
 

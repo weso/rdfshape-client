@@ -1,16 +1,10 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import Container from 'react-bootstrap/Container';
-import ShExTabs from "./ShExTabs";
-import ShapeMapTabs from "../shapeMap/ShapeMapTabs";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import axios from "axios";
 import ResultValidate from "../results/ResultValidate";
-import {
-    dataParamsFromQueryParams,
-    paramsFromStateEndpoint
-} from "../utils/Utils";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
 import Pace from "react-pace-progress";
 import qs from "query-string";
@@ -22,8 +16,6 @@ import {
     shapeMapParamsFromQueryParams,
     updateStateShapeMap
 } from "../shapeMap/ShapeMap";
-import {endpointParamsFromQueryParams} from "../endpoint/Endpoint";
-import {paramsFromStateData, updateStateData} from "../data/Data";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
@@ -81,7 +73,7 @@ function ShExValidateEndpoint(props) {
 
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         let paramsShEx = paramsFromStateShEx(shex);
         let paramsShapeMap = paramsFromStateShapeMap(shapeMap);
 
@@ -93,9 +85,8 @@ function ShExValidateEndpoint(props) {
         params['schemaEngine'] = 'ShEx';
         params['triggerMode'] = 'shapeMap';
         console.log(`ShExValidateEndpoint. Post params = ${JSON.stringify(params)}`);
-        let permalink = mkPermalink(API.shExValidateEndpointRoute, params);
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.shExValidateEndpointRoute, params));
         let formData = params2Form(params);
         postValidate(url, formData);
         event.preventDefault();
@@ -138,10 +129,8 @@ function ShExValidateEndpoint(props) {
                     : null
                 }
                 <Form onSubmit={handleSubmit}>
-                    <Row>
                     <EndpointInput value={endpoint}
                                    handleOnChange={handleEndpointChange} />
-                    </Row>
                     <Row>
                         <Col>
                         { mkShExTabs(shex,setShEx) }

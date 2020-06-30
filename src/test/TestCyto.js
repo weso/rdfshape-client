@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "codemirror/lib/codemirror.css"
 import "codemirror/mode/turtle/turtle"
@@ -10,7 +10,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import { SketchPicker } from 'react-color';
-import nodeHtmlLabel from 'cytoscape-node-html-label';
 
 function CytoSchema(props) {
 

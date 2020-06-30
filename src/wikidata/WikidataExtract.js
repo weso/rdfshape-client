@@ -1,11 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Alert from "react-bootstrap/Alert";
 import InputEntitiesByText from "../components/InputEntitiesByText";
 import Table from "react-bootstrap/Table";
-import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import DataTabs from "../data/DataTabs";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import {mkPermalink, params2Form, Permalink} from "../Permalink";
@@ -25,18 +23,18 @@ function WikidataExtract(props) {
         setEntities(es);
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         const url = API.dataExtract;
-        let params={}
-        params['endpoint'] = API.wikidataUrl ;
-        if (entities.length > 0 && entities[0].uri ) {
+        let params = {}
+        params['endpoint'] = API.wikidataUrl;
+        if (entities.length > 0 && entities[0].uri) {
             const nodeSelector = entities[0].uri
             params['nodeSelector'] = "<" + nodeSelector + ">";
             console.log(`Node selector: ${nodeSelector}`);
-            setPermalink(mkPermalink(API.dataExtractRoute, params));
+            setPermalink(await mkPermalink(API.dataExtractRoute, params));
             let formData = params2Form(params);
-            postConvert(url,formData);
+            postConvert(url, formData);
         } else {
             setError(`No entities selected`)
         }

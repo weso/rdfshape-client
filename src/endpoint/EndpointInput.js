@@ -27,7 +27,7 @@ function EndpointInput(props) {
     }
 
     return (
-        <Form.Group>
+        <Form.Group id="common-endpoints" >
             <Form.Label>Endpoint</Form.Label>
             <Form.Control as="input"
                           type="url"

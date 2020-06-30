@@ -1,17 +1,17 @@
 import React from 'react';
 import Code from '../components/Code'
-import { mkMode } from "../utils/Utils"
+import Alert from "react-bootstrap/Alert";
 
 function ResultDataExtract(props) {
      const result = props.result
-     let msg ;
+     let msg;
      if (result === "") {
          msg = null
      } else
      if (result.error) {
          msg =
              <div>
-                 <p>Error: {result.error}</p>
+                 <Alert variant="danger">Error: {result.error}</Alert>
              </div>
      } else {
          msg = <div>
@@ -33,7 +33,7 @@ function ResultDataExtract(props) {
      return (
          <div>
              {msg}
-             { result && <details><pre>{JSON.stringify(result)}</pre></details> }
+             { !result.error ? result && <details><pre>{JSON.stringify(result)}</pre></details> : null }
          </div>
      );
 }

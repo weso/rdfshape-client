@@ -1,4 +1,4 @@
-import React, {useReducer, useEffect, useState, Fragment} from 'react';
+import React, {useEffect, useState, Fragment} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -70,19 +70,20 @@ function SHACLValidate(props) {
     }
 
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         const paramsShacl = paramsFromStateShacl(shacl);
         const paramsData = paramsFromStateData(data);
         let paramsEndpoint = {};
-        if (endpoint !== '') { paramsEndpoint['endpoint'] = endpoint; }
+        if (endpoint !== '') {
+            paramsEndpoint['endpoint'] = endpoint;
+        }
         let params = {...paramsData, ...paramsEndpoint, ...paramsShacl};
         params['schemaEngine'] = 'Shaclex';
         params['triggerMode'] = 'targetDecls';
         console.log(`ShExValidate. Post params = ${JSON.stringify(params)}`);
-        let permalink = mkPermalink(API.shaclValidateRoute, params);
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.shaclValidateRoute, params));
         let formData = params2Form(params);
         postValidate(url, formData);
         window.scrollTo(0, 0)
