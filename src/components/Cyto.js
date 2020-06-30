@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -39,7 +39,6 @@ function CytoSchema(props) {
             }
         }
     ]
-    const style = {width: '100%', height: '1000px', border: 'solid'}
 
     return <div>
         <CytoscapeComponent
@@ -58,18 +57,7 @@ function CytoSchema(props) {
 }
 
 function Cyto(props) {
-    const cose = "cose";
-    const random = "random";
-    const circle = "circle" ;
 
-    const [layoutName, setLayoutName] = useState(random);
-
-    const style2 = {
-        width: '60vw',
-        height: '60vh',
-        border: 'solid',
-        backgroundColor: 'rgb(250, 250, 250)'
-    }
     const stylesheet = [ // the stylesheet for the graph
         {
             selector: 'node',
@@ -92,21 +80,13 @@ function Cyto(props) {
             }
         }
     ]
-    const style = {width: '100%', height: '1000px', border: 'solid'}
 
-    return <div>
-    <CytoscapeComponent
+    return <CytoscapeComponent className={"width-100 height-100 border"}
+                               style={{ backgroundColor: 'rgb(250, 250, 250)'}}
         elements={props.elements}
-        style={style2}
         stylesheet={stylesheet}
-        layout={{name: layoutName}}
+        layout={{name: props.layout || "cose"}}
     />
-    <Form.Group>
-        <Button variant="secondary" onClick={() => setLayoutName(cose)} value="cose">COSE Layaout</Button>
-        <Button variant="secondary" onClick={() => setLayoutName(random)} value="random">Random</Button>
-        <Button variant="secondary" onClick={() => setLayoutName(circle)} value="circle">Circle</Button>
-    </Form.Group>
-    </div>
 }
 
 export default Cyto;
