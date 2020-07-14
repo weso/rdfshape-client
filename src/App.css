@@ -35,3 +35,7 @@ html {
     transform: rotate(360deg);
   }
 }
+
+.half-col {
+  max-width: 50% !important;
+}

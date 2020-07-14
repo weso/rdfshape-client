@@ -126,7 +126,7 @@ function DataExtract(props) {
                     <h1>Extract schema from data</h1>
                 </Row>
                 <Row>
-                    <Col className={"border-right"}>
+                    <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
                             { mkDataTabs(data, setData) }
                             <NodeSelector
@@ -140,7 +140,7 @@ function DataExtract(props) {
                     </Col>
 
                     { loading || result || error ?
-                        <Col>
+                        <Col className={"half-col"}>
                             <Fragment>
                                 { loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                                   error? <Alert variant="danger">{error}</Alert> :
@@ -150,7 +150,7 @@ function DataExtract(props) {
                             </Fragment>
                         </Col>
                         :
-                        <Col>
+                        <Col className={"half-col"}>
                             <Alert variant='info'>Extraction results will appear here</Alert>
                         </Col>
                     }

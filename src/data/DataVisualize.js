@@ -145,7 +145,7 @@ function  DataVisualize(props) {
             <h1>Visualize RDF data</h1>
            </Row>
            <Row>
-            <Col className={"border-right"}>
+            <Col className={"half-col border-right"}>
              <Form className={"width-100"} onSubmit={handleSubmit}>
                  { mkDataTabs(data,setData)}
                  <hr/>
@@ -161,7 +161,7 @@ function  DataVisualize(props) {
              </Form>
             </Col>
                { loading || error || svg ?
-                   <Col className="visual-column">
+                   <Col className="half-col visual-column">
                        <Fragment>
                            { permalink && !error? <div className={"d-flex"}>
                                <Permalink url={permalink} />
@@ -183,7 +183,7 @@ function  DataVisualize(props) {
                            }
                        </Fragment>
                    </Col>   :
-                   <Col>
+                   <Col className={"half-col"}>
                        <Alert variant='info'>Visualizations will appear here</Alert>
                    </Col>
                }

@@ -117,18 +117,18 @@ function DataInfo(props) {
             <h1>RDF Data info</h1>
         </Row>
         <Row>
-            <Col className={"border-right"}>
+            <Col className={"half-col border-right"}>
                 <Form onSubmit={handleSubmit}>
                     { mkDataTabs(data,setData) }
                     <hr/>
                     <Button id="submit" variant="primary" type="submit"
-                            className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            classtylesName={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                         Info about data</Button>
                 </Form>
             </Col>
            { loading || result || error || permalink ?
                <Fragment>
-                   <Col>
+                   <Col className={"half-col"}>
                        {loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                         error? <Alert variant='danger'>{error}</Alert> :
                         result ?
@@ -141,7 +141,7 @@ function DataInfo(props) {
                        { permalink? <Permalink url={permalink} />: null }
                    </Col>
                </Fragment>
-             : <Col>
+             : <Col className={"half-col"}>
                    <Alert variant='info'>Validation results will appear here</Alert>
                </Col>
            }

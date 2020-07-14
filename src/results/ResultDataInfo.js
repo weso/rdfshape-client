@@ -11,6 +11,9 @@ function ResultDataInfo(props) {
         console.log(`Mode: ${mode}`);
         if (result.error) {
             msg = <Alert variant='danger'>{result.error}</Alert>
+        }
+        else if (result.msg && result.msg.toLowerCase().startsWith("error")){
+                msg = <Alert variant='danger'>{result.msg}</Alert>
         } else {
             msg = <div>
                 <Alert variant='success'>{result.msg}</Alert>

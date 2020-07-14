@@ -146,7 +146,7 @@ function DataMerge(props) {
             <h1>Merge & convert RDF data</h1>
         </Row>
         <Row>
-            <Col className={"border-right"}>
+            <Col className={"half-col border-right"}>
                 <Form onSubmit={handleSubmit}>
                     { mkDataTabs(data1, setData1, "RDF Input 1") }
                     <hr/>
@@ -163,7 +163,7 @@ function DataMerge(props) {
                 </Form>
             </Col>
            { loading || result || error || permalink ?
-               <Col>
+               <Col className={"half-col"}>
                <Fragment>
 
                    {loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
@@ -177,7 +177,7 @@ function DataMerge(props) {
 
                    </Fragment>
                </Col>
-               : <Col>
+               : <Col className={"half-col"}>
                    <Alert variant='info'>Merge results will appear here</Alert>
                </Col>
            }

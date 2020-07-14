@@ -138,7 +138,7 @@ function DataQuery(props)  {
                     <h1>Data Query</h1>
                 </Row>
                 <Row>
-                    <Col className={"border-right"}>
+                    <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
                             { mkDataTabs(data, setData) }
                             { mkQueryTabs(query, setQuery) }
@@ -149,7 +149,7 @@ function DataQuery(props)  {
                         </Form>
                     </Col>
                     { loading || result || error ?
-                        <Col>
+                        <Col className={"half-col"}>
                             <Fragment>
                                 <Col>
                                     { loading? <ProgressBar striped animated variant="info" now={progressPercent}/> :
@@ -164,7 +164,7 @@ function DataQuery(props)  {
                                 </Col>
                             </Fragment>
                         </Col> :
-                        <Col>
+                        <Col className={"half-col"}>
                             <Alert variant='info'>Query results will appear here</Alert>
                         </Col>
                     }

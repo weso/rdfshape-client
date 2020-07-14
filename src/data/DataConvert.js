@@ -119,7 +119,7 @@ function DataConvert(props) {
          <h1>Convert RDF data</h1>
        </Row>
        <Row>
-           <Col className={"border-right"}>
+           <Col className={"half-col border-right"}>
                <Form onSubmit={handleSubmit}>
                    { mkDataTabs(data,setData) }
                    <hr/>
@@ -134,7 +134,7 @@ function DataConvert(props) {
                </Form>
            </Col>
            { loading || result || error || permalink ?
-             <Col>
+             <Col className={"half-col"}>
                  {  loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
                     result ?  <ResultDataConvert result={result}/> :
@@ -142,7 +142,7 @@ function DataConvert(props) {
                  }
                  { permalink? <Permalink url={permalink} />: null }
              </Col>
-                 : <Col>
+                 : <Col className={"half-col"}>
                      <Alert variant='info'>Conversion results will appear here</Alert>
                  </Col>
              }
