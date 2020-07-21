@@ -3,11 +3,11 @@ import { Permalink}  from '../Permalink'
 
 function ResultEndpointInfo(props) {
     return (
-       <div>
+       <div style={{width: '100%'}}>
+           <Permalink url={props.permalink} />
            { props.error? <p>{props.error}</p> : null }
            { props.result ?
-              <details><pre>{JSON.stringify(props.result)}</pre></details> : null }
-           <Permalink url={props.permalink} />
+              <details><p>{JSON.stringify(props.result)}</p></details> : null }
        </div>
     )
 }

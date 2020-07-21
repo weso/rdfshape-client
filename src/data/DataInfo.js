@@ -64,7 +64,7 @@ function DataInfo(props) {
     }, [params])
 
 
-    async function handleSubmit(event) {
+    function handleSubmit(event) {
         event.preventDefault();
         setParams(paramsFromStateData(data))
     }
@@ -122,7 +122,7 @@ function DataInfo(props) {
                     { mkDataTabs(data,setData) }
                     <hr/>
                     <Button id="submit" variant="primary" type="submit"
-                            classtylesName={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                         Info about data</Button>
                 </Form>
             </Col>
