@@ -140,8 +140,8 @@ function DataQuery(props)  {
                 <Row>
                     <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
-                            { mkDataTabs(data, setData) }
-                            { mkQueryTabs(query, setQuery) }
+                            { mkDataTabs(data, setData, "RDF input") }
+                            { mkQueryTabs(query, setQuery, "Query (SPARQL)") }
                             <hr/>
                             <Button variant="primary" type="submit"
                                     className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>

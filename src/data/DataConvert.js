@@ -122,7 +122,7 @@ function DataConvert(props) {
        <Row>
            <Col className={"half-col border-right"}>
                <Form onSubmit={handleSubmit}>
-                   { mkDataTabs(data,setData) }
+                   { mkDataTabs(data,setData, "RDF input") }
                    <hr/>
                    <SelectFormat name="Target data format"
                                  selectedFormat={targetDataFormat}

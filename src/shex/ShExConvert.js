@@ -83,19 +83,19 @@ function ShExConvert(props) {
         <Container fluid={true}>
         <h1>ShEx: Convert ShEx schemas</h1>
         <Row>
-        { loading || result || error ? 
+        { loading || result || error ?
         <Col>
           { loading ? <Pace color="#27ae60"/> :
-            result ?  <ResultShExConvert result={result} /> : 
-            null 
+            result ?  <ResultShExConvert result={result} /> :
+            null
           }
           { permalink &&  <Permalink url={permalink} /> }
-        </Col>        
-        : null 
+        </Col>
+        : null
         }
         <Col>
         <Form onSubmit={handleSubmit}>
-            { mkShExTabs(shex,setShex)}
+            { mkShExTabs(shex,setShex, "ShEx Input")}
             <SelectFormat name="Target schema format"
                       selectedFormat={targetSchemaFormat}
                       handleFormatChange={handleTargetSchemaFormatChange}

@@ -148,7 +148,7 @@ function ShExValidate(props) {
             <Form onSubmit={handleSubmit}>
                 <Row>
                     <Col>
-                        { mkDataTabs(data, setData)}
+                        { mkDataTabs(data, setData, "RDF input")}
                         <Button variant="secondary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
@@ -157,7 +157,7 @@ function ShExValidate(props) {
                         }
                     </Col>
                     <Col>
-                        { mkShExTabs(shex,setShEx)}
+                        { mkShExTabs(shex,setShEx, "Shapes graph (ShEx)")}
                     </Col>
                 </Row>
                 <Row>

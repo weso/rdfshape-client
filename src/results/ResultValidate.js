@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Alert from "react-bootstrap/Alert";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
+import {Permalink} from "../Permalink";
 
 function ResultValidate(props) {
 
@@ -11,20 +12,29 @@ function ResultValidate(props) {
     } else
     if (result.error) {
         msg =
-            <div><p>Error: {result.error}</p>
-                <details><pre>{JSON.stringify(result)}</pre></details>
-            </div>
+            <div><Alert variant="danger">Error: {result.error}</Alert></div>
     } else {
+        console.log("RESULTS: ", result)
         msg = <div>
-            { result.message && <Alert variant="success">{result.message} </Alert> }
-            { result.errors && <div> { result.errors.map((e,idx) => <Alert id={idx} variant="danger">{e.type}: {e.error}</Alert> )}</div>
+            { result.errors.length > 0 ?
+                <Alert variant="danger">Partially invalid data: check the details of each node to learn more</Alert> :
+                result.message && <Alert variant="success">{result.message} </Alert>
             }
-            { result.shapeMap && <ShowShapeMap
+            {/*{ result.errors && <div> { result.errors.map((e,idx) => <Alert id={idx} variant="danger">{e.type}: {e.error}</Alert> )}</div>}*/}
+            {result.shapeMap.length === 0 && <Alert variant="info">
+                Validation was successful but no results were obtained, check the if the input data is coherent</Alert>}
+            { props.permalink && result.errors.length === 0 &&
+            <Fragment>
+                <Permalink url={props.permalink}/>
+                <hr/>
+            </Fragment>
+            }
+            { result.shapeMap && result.shapeMap.length > 0 && <ShowShapeMap
                 shapeMap={result.shapeMap}
                 nodesPrefixMap={result.nodesPrefixMap}
                 shapesPrefixMap={result.shapesPrefixMap}
             /> }
-            <details><pre>{JSON.stringify(result)}</pre></details>
+            <details><p className="word-break">{JSON.stringify(result)}</p></details>
         </div>
     }
 

@@ -7,11 +7,11 @@ function ShapeMapTabs(props) {
     return ( <div>
         <InputTabsWithFormat
             defaultFormat={"Compact"}
-            nameInputTab="ShapeMap"
+            nameInputTab={props.name || ""}
             activeTab={props.activeTab}
             handleTabChange={props.handleTabChange}
 
-            byTextName="Input shapeMap"
+            byTextName={props.subname || ""}
             textAreaValue={props.textAreaValue}
             byTextPlaceholder="<node>@<Shape>...>"
             handleByTextChange={props.handleByTextChange}

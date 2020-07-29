@@ -119,7 +119,7 @@ function DataInfo(props) {
         <Row>
             <Col className={"half-col border-right"}>
                 <Form onSubmit={handleSubmit}>
-                    { mkDataTabs(data,setData) }
+                    { mkDataTabs(data,setData, "RDF input") }
                     <hr/>
                     <Button id="submit" variant="primary" type="submit"
                             className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>

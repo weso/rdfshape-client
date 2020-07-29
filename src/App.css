@@ -39,3 +39,7 @@ html {
 .half-col {
   max-width: 50% !important;
 }
+
+.word-break {
+  word-break: break-word;
+}

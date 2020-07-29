@@ -133,7 +133,7 @@ function ShExValidateEndpoint(props) {
                                    handleOnChange={handleEndpointChange} />
                     <Row>
                         <Col>
-                        { mkShExTabs(shex,setShEx) }
+                        { mkShExTabs(shex,setShEx, "ShEx Input") }
                         </Col>
                     </Row>
                     <Row>

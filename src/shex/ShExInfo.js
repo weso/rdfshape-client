@@ -66,13 +66,13 @@ function ShExInfo(props) {
                 <h1>ShEx: Info ShEx schema</h1>
                     {loading ? <Pace color="#27ae60"/> :
                         result ?
-                            <ResultShExInfo result={result} /> : 
+                            <ResultShExInfo result={result} /> :
                             error?
                               <p>Error: {error}</p>: null
                     }
                     { permalink &&  <Permalink url={permalink} /> }
                   <Form onSubmit={handleSubmit}>
-                      { mkShExTabs(shex,setShEx)}
+                      { mkShExTabs(shex,setShEx, "ShEx Input")}
                     <Button variant="primary" type="submit">Info about ShEx schema</Button>
                 </Form>
             </Container>

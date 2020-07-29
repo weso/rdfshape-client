@@ -16,13 +16,13 @@ function SHACLTabs(props) {
     return (
         <div>
             <InputTabsWithFormat
-                nameInputTab={props.name}
+                nameInputTab={props.name || ""}
                 activeTab={props.activeTab}
                 handleTabChange={props.handleTabChange}
 
-                byTextName="RDF data"
+                byTextName={props.subname || ""}
                 textAreaValue={props.textAreaValue}
-                byTextPlaceholder="RDF data..."
+                byTextPlaceholder="SHACL data..."
                 handleByTextChange={props.handleByTextChange}
                 inputForm={turtleForm}
 

@@ -20,7 +20,7 @@ function DataTabs(props) {
                        activeTab={props.activeTab}
                        handleTabChange={props.handleTabChange}
 
-                       byTextName="RDF data"
+                       byTextName={props.subname || ""}
                        textAreaValue={props.textAreaValue}
                        byTextPlaceholder="RDF data..."
                        handleByTextChange={props.handleByTextChange}
@@ -67,7 +67,7 @@ DataTabs.propTypes = {
 };
 
 DataTabs.defaultProps = {
-    name: 'RDF data',
+    name: '',
     activeTab: 'ByText' ,
     // dataFormat: 'TURTLE'
 };

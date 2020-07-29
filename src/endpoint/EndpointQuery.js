@@ -154,7 +154,7 @@ function EndpointQuery(props) {
                                handleOnChange={handleOnChange}
                                handleOnSelect={handleOnSelect}
                 />
-                {mkQueryTabs(query, setQuery)}
+                {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
                 <Button variant="primary" type="submit"
                         className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                     Query endpoint</Button>

@@ -60,7 +60,7 @@ export function convertTabData(key) {
 }
 
 export function paramsFromStateData(data) {
-    console.log(`ParamsFromStateData, data = ${JSON.stringify(data)}`)
+    // console.log(`ParamsFromStateData, data = ${JSON.stringify(data)}`)
     let params = {};
     params['activeTab'] = convertTabData(data.activeTab);
     params['dataFormat'] = data.format;
@@ -84,7 +84,7 @@ export function paramsFromStateData(data) {
 }
 
 
-export function mkDataTabs(data, setData, name) {
+export function mkDataTabs(data, setData, name, subname) {
 
     function handleDataTabChange(value) { setData({...data, activeTab: value}); }
     function handleDataFormatChange(value) {  setData({...data, format: value}); }
@@ -97,7 +97,8 @@ export function mkDataTabs(data, setData, name) {
     return (
       <React.Fragment>
        <DataTabs
-              name={name || "RDF input"}
+              name={name}
+              subname={subname}
               activeTab={data.activeTab}
               handleTabChange={handleDataTabChange}
 

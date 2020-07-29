@@ -130,7 +130,7 @@ return (
            <Row>
                <Col className={"half-col border-right"}>
                    <Form onSubmit={handleSubmit}>
-                       { mkDataTabs(data,setData)}
+                       { mkDataTabs(data,setData, "RDF input")}
                        <Button variant="primary" type="submit"
                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                            Visualize</Button>

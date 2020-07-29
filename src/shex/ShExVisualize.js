@@ -99,7 +99,7 @@ function ShExVisualize(props) {
                     null
                 }
                 <Form onSubmit={handleSubmit}>
-                    { mkShExTabs(shex, setShex)}
+                    { mkShExTabs(shex, setShex, "ShEx Input")}
                     <Button variant="primary" type="submit">Visualize</Button>
                 </Form>
             </Container>

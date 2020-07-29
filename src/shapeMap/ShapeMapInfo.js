@@ -42,11 +42,10 @@ function ShapeMapInfo(props) {
                     const params = {...paramsFromStateShapeMap(shapeMap), shapeMap: queryParams.shapeMap}
 
                     // Update codemirror
-                    if (queryParams.shapeMapActiveTab && queryParams.shapeMapActiveTab.includes("TextArea")) {
-                        const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
-                        if (codeMirrorElement && codeMirrorElement.CodeMirror)
-                            codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap)
-                    }
+                    const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap)
+
 
                     setParams(params)
                     setLastParams(params)
@@ -96,7 +95,10 @@ function ShapeMapInfo(props) {
             .catch(function (error) {
                 setError(`Error calling server at ${url}: ${error}.\n Try again later`)
             })
-            .finally( () => setLoading(false))
+            .finally( () => {
+                setLoading(false)
+                window.scrollTo(0, 0) // Scroll top to results
+            })
     }
 
     function setUpHistory() {
@@ -128,7 +130,7 @@ function ShapeMapInfo(props) {
             <Row>
                 <Col className={"half-col border-right"}>
                     <Form onSubmit={handleSubmit}>
-                        { mkShapeMapTabs(shapeMap, setShapeMap) }
+                        { mkShapeMapTabs(shapeMap, setShapeMap, "Input ShapeMap") }
                         <hr/>
                         <Button variant="primary" type="submit"
                                 className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>

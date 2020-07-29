@@ -153,24 +153,26 @@ export default function ShEx2Shacl(props) {
                 }
                 <Col>
                     <Form onSubmit={handleSubmit}>
-                        <ShExTabs activeTab={shex.activeTab}
-                                  handleTabChange={handleShExTabChange}
+                        <ShExTabs
+                            name={"Shex input"}
+                            activeTab={shex.activeTab}
+                            handleTabChange={handleShExTabChange}
 
-                                  textAreaValue={shex.textArea}
-                                  handleByTextChange={handleShExByTextChange}
+                            textAreaValue={shex.textArea}
+                            handleByTextChange={handleShExByTextChange}
 
-                                  shExUrl={shex.url}
-                                  handleShExUrlChange={handleShExUrlChange}
+                            shExUrl={shex.url}
+                            handleShExUrlChange={handleShExUrlChange}
 
-                                  handleFileUpload={handleShExFileUpload}
+                            handleFileUpload={handleShExFileUpload}
 
-                                  selectedFormat={shex.format}
-                                  handleShExFormatChange={handleShExFormatChange}
-                                  setCodeMirror={(cm) => {
-                                      setYashe(cm);
-                                  }}
-                                  fromParams={shex.fromParams}
-                                  resetFromParams={() => setShEx({...shex, fromParams: false})}
+                            selectedFormat={shex.format}
+                            handleShExFormatChange={handleShExFormatChange}
+                            setCodeMirror={(cm) => {
+                            setYashe(cm);
+                            }}
+                            fromParams={shex.fromParams}
+                            resetFromParams={() => setShEx({...shex, fromParams: false})}
                         />
 
                         <SelectFormat name="SHACL format"

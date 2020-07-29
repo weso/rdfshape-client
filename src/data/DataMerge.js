@@ -164,7 +164,6 @@ function DataMerge(props) {
             </Col>
            { loading || result || error || permalink ?
                <Col className={"half-col"}>
-               <Fragment>
 
                    {loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
@@ -175,7 +174,6 @@ function DataMerge(props) {
                    }
                    { permalink? <Permalink url={permalink} />: null }
 
-                   </Fragment>
                </Col>
                : <Col className={"half-col"}>
                    <Alert variant='info'>Merge results will appear here</Alert>

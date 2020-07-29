@@ -129,7 +129,7 @@ function DataExtract(props) {
                 <Row>
                     <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
-                            { mkDataTabs(data, setData) }
+                            { mkDataTabs(data, setData, "RDF input") }
                             <NodeSelector
                                 value={nodeSelector}
                                 handleChange={(value) => setNodeSelector(value)} />

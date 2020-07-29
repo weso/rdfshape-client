@@ -148,7 +148,7 @@ function  DataVisualize(props) {
            <Row>
             <Col className={"half-col border-right"}>
              <Form className={"width-100"} onSubmit={handleSubmit}>
-                 { mkDataTabs(data,setData)}
+                 { mkDataTabs(data,setData, "RDF input")}
                  <hr/>
                  <SelectFormat name="Target graph format"
                                handleFormatChange={handleTargetGraphFormatChange}
