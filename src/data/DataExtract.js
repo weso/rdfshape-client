@@ -41,8 +41,9 @@ function DataExtract(props) {
                 if (dataParams['nodeSelector']) setNodeSelector(dataParams['targetDataFormat']);
 
                 // Update Codemirror
-                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                if (codeMirror) codeMirror.setValue(dataParams.data)
+                const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                    codeMirrorElement.CodeMirror.setValue(dataParams.data)
 
                 setParams(queryParams)
                 setLastParams(queryParams)

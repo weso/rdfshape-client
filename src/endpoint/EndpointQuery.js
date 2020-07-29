@@ -163,9 +163,9 @@ function EndpointQuery(props) {
             <div id={resultsElementId}>
                 {loading || result || error || permalink ?
                     <Row style={{margin: '10px auto 10% auto'}}>
-                        {loading ? <ProgressBar style={{width: '100%'}} striped animated variant="info"
+                        {loading ? <ProgressBar className="width-100" striped animated variant="info"
                                                 now={progressPercent}/> :
-                            error ? <Alert style={{width: '100%'}} variant='danger'>{error}</Alert> :
+                            error ? <Alert className="width-100" variant='danger'>{error}</Alert> :
                                 result ? <ResultEndpointQuery
                                     result={result}
                                     error={error}

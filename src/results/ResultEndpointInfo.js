@@ -3,7 +3,7 @@ import { Permalink}  from '../Permalink'
 
 function ResultEndpointInfo(props) {
     return (
-       <div style={{width: '100%'}}>
+       <div className="width-100">
            <Permalink url={props.permalink} />
            { props.error? <p>{props.error}</p> : null }
            { props.result ?

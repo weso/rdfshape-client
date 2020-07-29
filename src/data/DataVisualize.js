@@ -48,8 +48,9 @@ function  DataVisualize(props) {
                     setData(updateStateData(dataParams,data) || data);
 
                     // Update text area correctly
-                    const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                    if (codeMirror) codeMirror.setValue(dataParams.data)
+                    const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(dataParams.data)
 
                     setParams(dataParams)
                     setLastParams(dataParams)
