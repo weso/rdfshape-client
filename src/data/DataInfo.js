@@ -1,23 +1,22 @@
-import React, {useState, useEffect, Fragment} from 'react';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import API from "../API";
-import axios from 'axios';
-import Form from "react-bootstrap/Form";
-// import DataTabs from "./DataTabs";
+import React, {useState, useEffect, Fragment} from 'react'
+import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
+import Alert from 'react-bootstrap/Alert'
+import API from "../API"
+import axios from 'axios'
+import Form from "react-bootstrap/Form"
 import ResultDataInfo from "../results/ResultDataInfo";
-import qs from 'query-string';
-import { mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams} from "../utils/Utils";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import qs from 'query-string'
+import { mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import {dataParamsFromQueryParams} from "../utils/Utils"
+import Col from "react-bootstrap/Col"
+import Row from "react-bootstrap/Row"
+import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 function DataInfo(props) {
 
-    const [data, setData] = useState(InitialData);
+    const [data, setData] = useState(InitialData)
     const [params, setParams] = useState(null)
     const [lastParams, setLastParams] = useState(null)
     const [result,setResult] = useState(null)
@@ -79,16 +78,16 @@ function DataInfo(props) {
         axios.post(url,formData).then (response => response.data)
             .then(async data => {
                 setProgressPercent(70)
-                setResult(data);
-                setPermalink(await mkPermalink(API.dataInfoRoute, params));
+                setResult(data)
+                setPermalink(await mkPermalink(API.dataInfoRoute, params))
                 setProgressPercent(80)
                 if (cb) cb()
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError("Error calling server at " + url + ": " + error);
+                setError("Error calling server at " + url + ": " + error)
             })
-            .finally( () => setLoading(false));
+            .finally( () => setLoading(false))
     }
 
     function setUpHistory() {

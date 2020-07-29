@@ -1,48 +1,48 @@
-import React, {useState, useEffect, Fragment} from 'react';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import API from "../API";
-import axios from 'axios';
-import Form from "react-bootstrap/Form";
-import qs from 'query-string';
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
-import {dataParamsFromQueryParams} from "../utils/Utils";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data";
-import ResultDataConvert from "../results/ResultDataConvert";
-import SelectFormat from "../components/SelectFormat";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import React, {useState, useEffect, Fragment} from 'react'
+import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
+import Alert from 'react-bootstrap/Alert'
+import API from "../API"
+import axios from 'axios'
+import Form from "react-bootstrap/Form"
+import qs from 'query-string'
+import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import {dataParamsFromQueryParams} from "../utils/Utils"
+import Col from "react-bootstrap/Col"
+import Row from "react-bootstrap/Row"
+import {InitialData, paramsFromStateData, updateStateData, mkDataTabs} from "./Data"
+import ResultDataConvert from "../results/ResultDataConvert"
+import SelectFormat from "../components/SelectFormat"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 function DataMerge(props) {
 
-    const [data1, setData1] = useState(InitialData);
-    const [data2, setData2] = useState(InitialData);
-    const [params, setParams] = useState(null);
-    const [lastParams, setLastParams] = useState(null);
-    const [targetDataFormat, setTargetDataFormat] = useState(API.defaultDataFormat);
-    const [result,setResult] = useState(null);
-    const [error,setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [permalink, setPermalink] = useState(null);
-    const [progressPercent,setProgressPercent] = useState(0);
+    const [data1, setData1] = useState(InitialData)
+    const [data2, setData2] = useState(InitialData)
+    const [params, setParams] = useState(null)
+    const [lastParams, setLastParams] = useState(null)
+    const [targetDataFormat, setTargetDataFormat] = useState(API.defaultDataFormat)
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [permalink, setPermalink] = useState(null)
+    const [progressPercent,setProgressPercent] = useState(0)
 
     const url = API.dataConvert
 
-    function handleTargetDataFormatChange(value) { setTargetDataFormat(value); }
+    function handleTargetDataFormatChange(value) { setTargetDataFormat(value) }
 
     useEffect(() => {
         if (props.location.search) {
-            const queryParams = qs.parse(props.location.search);
+            const queryParams = qs.parse(props.location.search)
             if (queryParams.compoundData){
                 let dataParams = {...dataParamsFromQueryParams(queryParams),
-                    targetDataFormat: queryParams.targetDataFormat || ''};
+                    targetDataFormat: queryParams.targetDataFormat || ''}
 
-                const newData1 = updateStateData(dataParams,data1) || data1 ;
-                const newData2 = updateStateData(dataParams,data2) || data2 ;
-                setData1(newData1);
-                setData2(newData2);
+                const newData1 = updateStateData(dataParams,data1) || data1
+                const newData2 = updateStateData(dataParams,data2) || data2
+                setData1(newData1)
+                setData2(newData2)
 
                 // Update code mirrors
                 try {
@@ -66,7 +66,7 @@ function DataMerge(props) {
 
         }},
         [props.location.search]
-    );
+    )
 
     useEffect( () => {
         if (params && params.compoundData){
@@ -83,41 +83,41 @@ function DataMerge(props) {
         }
     }, [params])
 
-    async function handleSubmit(event) {
-        event.preventDefault();
+    async function handleSubmit(event){
+        event.preventDefault()
         // Combine params
-        let params1 = paramsFromStateData(data1);
-        let params2 = paramsFromStateData(data2);
+        let params1 = paramsFromStateData(data1)
+        let params2 = paramsFromStateData(data2)
         setParams({...mergeParams(params1, params2), targetDataFormat})
     }
 
     function mergeParams(params1,params2) {
-        return {"compoundData": JSON.stringify([params1, params2]) };
+        return {"compoundData": JSON.stringify([params1, params2])}
     }
 
     function postMerge(cb) {
         setLoading(true)
         setProgressPercent(15)
 
-        const formData = params2Form(params);
+        const formData = params2Form(params)
         setProgressPercent(35)
 
         axios.post(url,formData).then (response => response.data)
             .then(async data => {
                 setProgressPercent(75)
-                setResult(data);
-                setPermalink(await mkPermalink(API.dataMerge, params));
+                setResult(data)
+                setPermalink(await mkPermalink(API.dataMerge, params))
                 setProgressPercent(90)
                 if (cb) cb()
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError("Error calling server at " + url + ": " + error);
+                setError("Error calling server at " + url + ": " + error)
             })
             .finally( () => {
                 setLoading(false)
                 window.scrollTo(0, 0) // Scroll top to results
-            });
+            })
     }
 
     function setUpHistory() {
@@ -183,7 +183,7 @@ function DataMerge(props) {
            }
        </Row>
        </Container>
-     );
+     )
 }
 
-export default DataMerge;
+export default DataMerge

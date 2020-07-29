@@ -38,6 +38,13 @@ function EndpointQuery(props) {
                     paramsQuery = queryParamsFromQueryParams(queryParams)
                     console.log("PARAMS QUERY: ", paramsQuery)
                     setQuery(paramsQuery)
+
+                    // Update codemirror
+                    if (params.activeTab && params.activeTab.includes("TextArea")) {
+                        const codeMirrorElement = document.querySelector('.CodeMirror')
+                        if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                            codeMirrorElement.CodeMirror.setValue(params.query)
+                    }
                 }
                 if (queryParams.endpoint) {
                     paramsEndpoint = endpointParamsFromQueryParams(queryParams)
@@ -46,13 +53,6 @@ function EndpointQuery(props) {
                 }
 
                 let params = {...paramsQuery, ...paramsEndpoint};
-
-                // Update codemirror
-                if (params.activeTab.includes("TextArea") && params.query) {
-                    const codeMirrorElement = document.querySelector('.CodeMirror')
-                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
-                        codeMirrorElement.CodeMirror.setValue(params.query)
-                }
 
                 setParams(params)
                 setLastParams(params)
