@@ -7,7 +7,6 @@ import Alert from "react-bootstrap/Alert";
 
 function ResultQuery(props)  {
   const result = props.result;
-  console.log("ResultQuery " + JSON.stringify(result));
   let msg ;
   if (!result || result === '') {
          msg = null
@@ -32,7 +31,7 @@ function ResultQuery(props)  {
                  striped
                  hover
                  condensed />
-             <p>{result.msg}></p>
+             <p>{result.msg}</p>
              <details><pre>{JSON.stringify(result)}</pre></details>
          </div>
      }

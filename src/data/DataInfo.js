@@ -18,13 +18,13 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 function DataInfo(props) {
 
     const [data, setData] = useState(InitialData);
-    const [params, setParams] = useState(null);
-    const [lastParams, setLastParams] = useState(null);
-    const [result,setResult] = useState(null);
-    const [error,setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [permalink, setPermalink] = useState(null);
-    const [progressPercent,setProgressPercent] = useState(0);
+    const [params, setParams] = useState(null)
+    const [lastParams, setLastParams] = useState(null)
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [permalink, setPermalink] = useState(null)
+    const [progressPercent,setProgressPercent] = useState(0)
 
     const url = API.dataInfo
 

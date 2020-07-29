@@ -4,9 +4,8 @@ import ShowShapeMap from "../shapeMap/ShowShapeMap";
 
 function ResultValidate(props) {
 
-    let result = props.result ;
-    console.log("ResultQuery" + JSON.stringify(result));
-    let msg ;
+    let result = props.result
+    let msg
     if (result === "") {
         msg = null
     } else
@@ -34,4 +33,4 @@ function ResultValidate(props) {
      );
 }
 
-export default ResultValidate;
+export default ResultValidate

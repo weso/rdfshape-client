@@ -20,7 +20,7 @@ function EndpointInfo(props) {
     const [error,setError] = useState('')
     const [loading, setLoading] = useState(false);
     const [permalink, setPermalink] = useState(null);
-    const [progressPercent,setProgressPercent] = useState(0);
+    const [progressPercent,setProgressPercent] = useState(0)
 
     const infoUrl = API.endpointInfo;
 
@@ -43,7 +43,7 @@ function EndpointInfo(props) {
     );
 
     useEffect( () => {
-        if (params){
+        if (params && !loading){
             if (params.endpoint) {
                 resetState()
                 setUpHistory()
@@ -111,19 +111,19 @@ function EndpointInfo(props) {
     return (
         <Container fluid={true}>
             <h1>Endpoint Info</h1>
-                <Form id="common-endpoints" onSubmit={handleSubmit}>
-                    <EndpointInput
-                        value={endpoint}
-                        handleOnChange={handleOnChange}
-                        handleOnSelect={handleOnSelect}
-                    />
-                    <Button variant="primary" type="submit"
-                            className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
-                        Info about endpoint</Button>
-                </Form>
+            <Form id="common-endpoints" onSubmit={handleSubmit}>
+                <EndpointInput
+                    value={endpoint}
+                    handleOnChange={handleOnChange}
+                    handleOnSelect={handleOnSelect}
+                />
+                <Button variant="primary" type="submit"
+                        className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                    Info about endpoint</Button>
+            </Form>
 
             {loading || result || error || permalink ?
-                <Row>
+                <Row style={{margin: '10px auto 10% auto'}}>
                     {loading ? <ProgressBar style={{width: '100%'}} striped animated variant="info" now={progressPercent}/> :
                         error ? <Alert style={{width: '100%'}} variant='danger'>{error}</Alert> :
                             result ?

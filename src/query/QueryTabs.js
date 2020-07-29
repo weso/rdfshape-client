@@ -33,8 +33,7 @@ function QueryTabs(props) {
 
                            byFileName="Query file"
                            handleFileUpload={props.handleFileUpload}
-
-                />
+               />
             </div>
         );
 }
