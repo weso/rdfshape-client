@@ -38,13 +38,11 @@ function ShExValidateEndpoint(props) {
     useEffect(() => {
             if (props.location.search) {
                 const queryParams = qs.parse(props.location.search);
-                console.log("Parameters: " + JSON.stringify(queryParams));
                 let paramsShEx = shExParamsFromQueryParams(queryParams);
                 let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
                 let paramsEndpoint = {};
                 if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint;
                 let params = {...paramsShEx, ...paramsShapeMap, ...paramsEndpoint};
-                console.log(`Params: ${JSON.stringify(params)}`);
                 const formData = params2Form(params);
                 postValidate(url, formData, () => updateStateValidate(params))
             }

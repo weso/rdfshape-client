@@ -9,7 +9,6 @@ function ResultDataInfo(props) {
     let msg = null;
     if (result) {
         const mode = mkMode(result.dataFormat);
-        console.log(`Mode: ${mode}`);
         if (result.error) {
             msg = <Alert variant='danger'>{result.error}</Alert>
         }

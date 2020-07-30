@@ -37,7 +37,6 @@ function EndpointQuery(props) {
                 let paramsQuery, paramsEndpoint = {}
                 if (queryParams.query) {
                     paramsQuery = queryParamsFromQueryParams(queryParams)
-                    console.log("PARAMS QUERY: ", paramsQuery)
                     setQuery(paramsQuery)
 
                     // Update codemirror
@@ -49,7 +48,6 @@ function EndpointQuery(props) {
                 }
                 if (queryParams.endpoint) {
                     paramsEndpoint = endpointParamsFromQueryParams(queryParams)
-                    console.log("PARAMS ENDPOINT: ", paramsEndpoint)
                     setEndpoint(paramsEndpoint.endpoint)
                 }
 

@@ -13,13 +13,11 @@ function About()  {
         axios.get(url).then(response => response.data)
             .then((data) => {
                 setStatus({ msg: data })
-                //console.log(`Formats: ${formats}`)
             }).catch((error) => {
             setStatus({
                 msg : `Server error: ${error}. Server address: ${API.healthServer}`,
                 error: error
             })
-            console.log(error);
         })
     }, []);
 

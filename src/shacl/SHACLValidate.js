@@ -19,8 +19,10 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 function SHACLValidate(props) {
     const [shacl, setShacl] = useState(InitialShacl)
     const [data, setData] = useState(InitialData)
-    const [withEndpoint, setWithEndpoint] = useState(false)
+
     const [endpoint, setEndpoint] = useState('')
+    const [withEndpoint, setWithEndpoint] = useState(false)
+
     const [result, setResult] = useState('')
 
     const [params, setParams] = useState(null)
@@ -37,28 +39,21 @@ function SHACLValidate(props) {
     useEffect(() => {
         if (props.location.search) {
                 const queryParams = qs.parse(props.location.search)
-                console.log("QUERY PARAMS: ", queryParams)
                 let paramsData, paramsShacl, paramsEndpoint = {}
                 if (queryParams.data){
                     paramsData = dataParamsFromQueryParams(queryParams)
                     // Update codemirror 1
                     const codeMirrorElement = document.querySelectorAll('.react-codemirror2')[0].firstChild
-                    console.log("CODEMIRROR 1: ", codeMirrorElement)
-                    if (codeMirrorElement && codeMirrorElement.CodeMirror) {
-                        console.log("CODEMIRROR 1: ", queryParams.data)
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
                         codeMirrorElement.CodeMirror.setValue(queryParams.data)
-                    }
 
                 }
                 if (queryParams.schema){
                     paramsShacl = shaclParamsFromQueryParams(queryParams)
                     // Update codemirror 2
                     const codeMirrorElement = document.querySelectorAll('.react-codemirror2')[1].firstChild
-                    console.log("CODEMIRROR 2: ", codeMirrorElement)
-                    if (codeMirrorElement && codeMirrorElement.CodeMirror) {
-                        console.log("CODEMIRROR 2: ", queryParams.schema)
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
                         codeMirrorElement.CodeMirror.setValue(queryParams.schema)
-                    }
 
                 }
 
@@ -137,12 +132,10 @@ function SHACLValidate(props) {
     function setUpHistory() {
         // Store the last search URL in the browser history to allow going back
         if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
-            console.info("PUSHING STATE")
             // eslint-disable-next-line no-restricted-globals
             history.pushState(null, document.title, mkPermalinkLong(API.shaclValidateRoute, lastParams))
         }
         // Change current url for shareable links
-        console.info("REPLACING STATE")
         // eslint-disable-next-line no-restricted-globals
         history.replaceState(null, document.title ,mkPermalinkLong(API.shaclValidateRoute, params))
 
@@ -159,14 +152,17 @@ function SHACLValidate(props) {
     return (
         <Container>
             <Row>
-            <h1>Validate RDF data with SHACL</h1>
+                <h1>Validate RDF data with SHACL</h1>
             </Row>
             <Row>
                 <Col className={"half-col border-right"}>
                     <Form onSubmit={handleSubmit}>
 
                         { mkDataTabs(data, setData, "RDF input")}
-                        <Button variant="secondary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint
+                        </Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
                                            handleOnChange={handleEndpointChange}/>
