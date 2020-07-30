@@ -10,10 +10,10 @@ function ResultDataConvert(props) {
   let msg ;
   if (result === "") {
         msg = null
-  } 
+  }
   else if (result.error) {
     msg = <Alert variant='danger'>{result.error}</Alert>
-    } 
+    }
   else {
     msg = <div>
       <Alert variant='success'>{result.msg}</Alert>
@@ -24,7 +24,8 @@ function ResultDataConvert(props) {
            mode={format2mode(result.targetDataFormat)}
            theme="light"
          />)}
-       <details><pre>{JSON.stringify(result)}</pre></details>
+        <details><pre>{JSON.stringify(result)}</pre></details>
+        { props.permalink && <Permalink url={props.permalink} /> }
     </div>
  }
 

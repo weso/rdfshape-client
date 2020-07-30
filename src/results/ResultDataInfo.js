@@ -2,6 +2,7 @@ import React from 'react';
 import Code from '../components/Code';
 import { mkMode } from "../utils/Utils";
 import Alert from 'react-bootstrap/Alert';
+import {Permalink} from "../Permalink";
 
 function ResultDataInfo(props) {
     const result = props.result;
@@ -35,6 +36,7 @@ function ResultDataInfo(props) {
                 <details>
                     <pre>{JSON.stringify(result)}</pre>
                 </details>
+                { props.permalink && <Permalink url={props.permalink} /> }
             </div>
         }
         return (

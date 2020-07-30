@@ -136,9 +136,9 @@ function DataInfo(props) {
                                 result={result}
                                 fromParams={data.fromParams}
                                 resetFromParams={() => setData({ ...data, fromParams: false})}
+                                permalink={permalink}
                             /> : null
                        }
-                       { permalink? <Permalink url={permalink} />: null }
                    </Col>
                </Fragment>
              : <Col className={"half-col"}>

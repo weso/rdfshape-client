@@ -104,7 +104,7 @@ function DataQuery(props)  {
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError(error.message);
+                setError(`Error calling server at ${url}: ${error.message}.\n Check your input or try again later`)
             })
             .finally( () => {
                 setLoading(false)

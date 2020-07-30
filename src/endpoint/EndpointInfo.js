@@ -117,6 +117,7 @@ function EndpointInfo(props) {
                     handleOnChange={handleOnChange}
                     handleOnSelect={handleOnSelect}
                 />
+                <hr/>
                 <Button variant="primary" type="submit"
                         className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                     Info about endpoint</Button>

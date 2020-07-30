@@ -25,6 +25,7 @@ function EndpointQuery(props) {
     const [permalink, setPermalink] = useState(null)
     const [loading,setLoading] = useState(false)
     const [progressPercent,setProgressPercent] = useState(0)
+    const [controlPressed, setControlPressed] = useState(false);
 
     const url = API.endpointQuery
     const resultsElementId = "results"
@@ -40,10 +41,10 @@ function EndpointQuery(props) {
                     setQuery(paramsQuery)
 
                     // Update codemirror
-                    if (params.activeTab && params.activeTab.includes("TextArea")) {
+                    if (queryParams.activeTab && queryParams.activeTab.includes("TextArea")) {
                         const codeMirrorElement = document.querySelector('.CodeMirror')
                         if (codeMirrorElement && codeMirrorElement.CodeMirror)
-                            codeMirrorElement.CodeMirror.setValue(params.query)
+                            codeMirrorElement.CodeMirror.setValue(queryParams.query)
                     }
                 }
                 if (queryParams.endpoint) {
@@ -90,6 +91,19 @@ function EndpointQuery(props) {
     function handleOnSelect(){
         setLoading(false)
     }
+
+    // Used to query the server on "Control + Enter"
+    function onKeyDown(event) {
+        const key = event.which || event.keyCode;
+        if (key === 17) setControlPressed(true);
+        else if (key === 13 && controlPressed) handleSubmit(event)
+    }
+
+    function onKeyUp(event) {
+        const key = event.which || event.keyCode;
+        if (key === 17) setControlPressed(false)
+    }
+
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -149,15 +163,16 @@ function EndpointQuery(props) {
     return (
         <Container fluid={true}>
             <h1>Endpoint query</h1>
-            <Form id="common-endpoints" onSubmit={handleSubmit}>
+            <Form id="common-endpoints" onSubmit={handleSubmit} onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
                 <EndpointInput value={endpoint}
                                handleOnChange={handleOnChange}
                                handleOnSelect={handleOnSelect}
                 />
                 {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
+                <hr/>
                 <Button variant="primary" type="submit"
                         className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
-                    Query endpoint</Button>
+                    Query endpoint (Ctrl+Enter)</Button>
             </Form>
 
             <div id={resultsElementId}>

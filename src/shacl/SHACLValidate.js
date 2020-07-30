@@ -1,17 +1,16 @@
-import React, {useEffect, useState, Fragment} from 'react'
+import React, {useEffect, useState} from 'react'
 import Container from 'react-bootstrap/Container'
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "../data/Data"
+import {InitialData, mkDataTabs, paramsFromStateData} from "../data/Data"
 import qs from "query-string"
 import {dataParamsFromQueryParams} from "../utils/Utils"
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
-import {InitialShacl, mkShaclTabs, paramsFromStateShacl, shaclParamsFromQueryParams, updateStateShacl} from "./SHACL"
+import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
+import {InitialShacl, mkShaclTabs, paramsFromStateShacl, shaclParamsFromQueryParams} from "./SHACL"
 import API from "../API"
 import axios from "axios"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
-import Pace from "react-pace-progress"
 import Alert from "react-bootstrap/Alert"
 import ResultValidate from "../results/ResultValidate"
 import EndpointInput from "../endpoint/EndpointInput"
@@ -93,17 +92,6 @@ function SHACLValidate(props) {
         }
     }, [params])
 
-    function updateStateValidate(params) {
-        const newData = updateStateData(params,data) || data
-        setData(newData)
-
-        const newShacl = updateStateShacl(params,shacl) || shacl
-        console.log(`updateStateValidate: newShacl: ${JSON.stringify(newShacl)}`)
-        setShacl(newShacl)
-
-        if (params['endpoint']) { setEndpoint(params['endpoint']) }
-    }
-
     function handleEndpointChange(value) {
         setEndpoint(value)
     }
@@ -178,7 +166,7 @@ function SHACLValidate(props) {
                     <Form onSubmit={handleSubmit}>
 
                         { mkDataTabs(data, setData, "RDF input")}
-                        <Button variant="secondary"onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
+                        <Button variant="secondary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
                                            handleOnChange={handleEndpointChange}/>

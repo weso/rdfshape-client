@@ -167,12 +167,13 @@ function DataMerge(props) {
 
                    {loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
-                    result ? <ResultDataConvert result={result}
-                                             fromParams={data1.fromParams}
-                                             resetFromParams={() => setData1({ ...data1, fromParams: false})}
+                    result ? <ResultDataConvert
+                        result={result}
+                        fromParams={data1.fromParams}
+                        resetFromParams={() => setData1({ ...data1, fromParams: false})}
+                        permalink={permalink}
                     /> : null
                    }
-                   { permalink? <Permalink url={permalink} />: null }
 
                </Col>
                : <Col className={"half-col"}>

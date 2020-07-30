@@ -138,10 +138,12 @@ function DataConvert(props) {
              <Col className={"half-col"}>
                  {  loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
-                    result ?  <ResultDataConvert result={result}/> :
+                    result ?  <ResultDataConvert
+                            result={result}
+                            permalink={permalink}
+                        /> :
                     null
                  }
-                 { permalink? <Permalink url={permalink} />: null }
              </Col>
                  : <Col className={"half-col"}>
                      <Alert variant='info'>Conversion results will appear here</Alert>
