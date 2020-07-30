@@ -7,7 +7,7 @@ import axios from 'axios'
 import Form from "react-bootstrap/Form"
 import ResultDataInfo from "../results/ResultDataInfo";
 import qs from 'query-string'
-import { mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import { mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
 import {dataParamsFromQueryParams} from "../utils/Utils"
 import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
@@ -17,9 +17,12 @@ import ProgressBar from "react-bootstrap/ProgressBar"
 function DataInfo(props) {
 
     const [data, setData] = useState(InitialData)
+
+    const [result,setResult] = useState(null)
+
     const [params, setParams] = useState(null)
     const [lastParams, setLastParams] = useState(null)
-    const [result,setResult] = useState(null)
+
     const [error,setError] = useState(null)
     const [loading, setLoading] = useState(false)
     const [permalink, setPermalink] = useState(null)
@@ -50,7 +53,7 @@ function DataInfo(props) {
     );
 
     useEffect( () => {
-        if (params){
+        if (params && !loading){
             if (params.data) {
                 resetState()
                 setUpHistory()
@@ -105,7 +108,6 @@ function DataInfo(props) {
 
     function resetState() {
         setResult(null)
-        setParams(null)
         setPermalink(null)
         setError(null)
         setProgressPercent(0)

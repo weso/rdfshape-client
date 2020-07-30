@@ -189,7 +189,7 @@ function ShExValidate(props) {
                         { mkShExTabs(shex,setShEx, "Shapes graph (ShEx)")}
                         <hr/>
                         { mkShapeMapTabs(shapeMap,setShapeMap, "ShapeMap") }
-
+                        <hr/>
                         <Button variant="primary" type="submit"
                                 className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                             Validate

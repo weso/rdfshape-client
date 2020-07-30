@@ -5,7 +5,7 @@ import {Permalink} from "../Permalink";
 
 function ResultValidate(props) {
 
-    let result = props.result
+    const result = props.result
     let msg
     if (result === "") {
         msg = null
@@ -14,10 +14,9 @@ function ResultValidate(props) {
         msg =
             <div><Alert variant="danger">Error: {result.error}</Alert></div>
     } else {
-        console.log("RESULTS:" ,result)
         msg = <div>
             {
-                !Array.isArray(result.shapeMap) ? <Alert variant="danger">{result.message} </Alert>
+                !Array.isArray(result.shapeMap) ? <Alert variant="danger">{result.message}</Alert>
                     :
                 <Fragment>
                     { result.errors.length > 0 ?

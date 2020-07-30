@@ -78,9 +78,9 @@ function ShExValidateEndpoint(props) {
 
     useEffect( () => {
         if (params && !loading){
-            if (!params.schema) setError("No ShEx schema provided")
+            if (!endpoint) setError("Specify a valid endpoint URL")
+            else if (!params.schema) setError("No ShEx schema provided")
             else if (!params.shapeMap) setError("No ShapeMap provided")
-            else if (!endpoint) setError("Specify a valid endpoint URL")
             else {
                 resetState()
                 setUpHistory()
@@ -158,14 +158,14 @@ function ShExValidateEndpoint(props) {
                             <EndpointInput
                                 value={endpoint}
                                 handleOnChange={handleEndpointChange} />
-
+                                <hr/>
                                 { mkShExTabs(shex,setShEx, "ShEx Input") }
                                 <hr/>
                                 { mkShapeMapTabs(shapeMap,setShapeMap, "ShapeMap Input") }
                                 <hr/>
                                 <Button variant="primary" type="submit"
                                         className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
-                                    Validate from Endpoint
+                                    Validate from endpoint
                                 </Button>
                         </Form>
                     </Col>
