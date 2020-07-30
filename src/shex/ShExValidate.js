@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment} from "react"
+import React, {useState, useEffect} from "react"
 import Container from "react-bootstrap/Container"
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
@@ -8,23 +8,21 @@ import ResultValidate from "../results/ResultValidate"
 import {
     dataParamsFromQueryParams
 } from "../utils/Utils"
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
 import qs from "query-string"
 import EndpointInput from "../endpoint/EndpointInput"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Alert from "react-bootstrap/Alert"
-import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams, updateStateShEx} from "./ShEx"
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "../data/Data"
+import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams} from "./ShEx"
+import {InitialData, mkDataTabs, paramsFromStateData} from "../data/Data"
 import {
     InitialShapeMap,
     mkShapeMapTabs,
     paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams,
-    updateStateShapeMap
+    shapeMapParamsFromQueryParams
 } from "../shapeMap/ShapeMap"
 import ProgressBar from "react-bootstrap/ProgressBar"
-import {shaclParamsFromQueryParams} from "../shacl/SHACL";
 
 function ShExValidate(props) {
 
@@ -46,24 +44,6 @@ function ShExValidate(props) {
     const [progressPercent,setProgressPercent] = useState(0)
 
     const url = API.schemaValidate
-
-    // useEffect(() => {
-    //         if (props.location.search) {
-    //             const queryParams = qs.parse(props.location.search)
-    //             console.log("Parameters: " + JSON.stringify(queryParams))
-    //             let paramsData = dataParamsFromQueryParams(queryParams)
-    //             let paramsShEx = shExParamsFromQueryParams(queryParams)
-    //             let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams)
-    //             let paramsEndpoint = {}
-    //             if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint
-    //             let params = {...paramsData, ...paramsShEx, ...paramsShapeMap, ...paramsEndpoint}
-    //             console.log(`Params: ${JSON.stringify(params)}`)
-    //             const formData = params2Form(params)
-    //             postValidate(formData, () => updateStateValidate(params))
-    //         }
-    //     },
-    //     [props.location.search]
-    // )
 
     useEffect(() => {
             if (props.location.search) {
@@ -160,7 +140,7 @@ function ShExValidate(props) {
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError(error.message)
+                setError(`Error calling server at ${url}: ${error.message}.\n Try again later.`)
             })
             .finally( () => setLoading(false))
     }
@@ -226,7 +206,7 @@ function ShExValidate(props) {
                                         result={result}
                                         permalink={permalink}
                                     />
-                                    : null}
+                                    : null }
                     </Col> :
                     <Col className={"half-col"}>
                         <Alert variant='info'>Validation results will appear here</Alert>
