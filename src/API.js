@@ -64,7 +64,7 @@ class API {
 
     static wikidataQueryRoute = "/wikidataQuery";
     static wikidataValidateRoute = "/wikidataValidate";
-    static wikidataExtractRoute = "/wikidataExtract";
+    static wikidataExtractRoute = "/wikTURTLEidataExtract";
 
     static aboutRoute = "/about";
 

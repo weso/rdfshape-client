@@ -8,7 +8,6 @@ import PrintJson from "../utils/PrintJson";
 
 function ResultShExConvert(props) {
   const result = props.result
-  console.log("RESULT: ", result)
   const mode = mkMode(result.targetSchemaFormat)
   let msg ;
   if (result === "") {
@@ -19,7 +18,7 @@ function ResultShExConvert(props) {
       <div>
         <Alert variant="danger">Invalid ShEx schema</Alert>
         <ul>
-          <li>{result.error || result.msg}</li>
+          <li className="word-break">{result.error || result.msg}</li>
         </ul>
       </div>
     }
@@ -45,7 +44,7 @@ function ResultShExConvert(props) {
 
  return (
    <div>{msg}</div>
-  );
+  )
 }
 
 export default ResultShExConvert;

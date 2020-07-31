@@ -17,7 +17,7 @@ function ResultShExVisualize(props) {
       <div>
         <Alert variant="danger">Invalid ShEx schema</Alert>
         <ul>
-          <li>{result.error}</li>
+          <li className="word-break">{result.error}</li>
         </ul>
       </div>
 
