@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import BootstrapTable from "react-bootstrap-table-next";
 import {parseData} from "./ParseQueryResult";
 import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
 
 
 function ResultQuery(props)  {
@@ -16,7 +17,7 @@ function ResultQuery(props)  {
              <div>
                  <Alert variant='danger'>Error: {result.result.error}</Alert>
                  {
-                     !result.result.error ? <details><pre>{JSON.stringify(result)}</pre></details> : null
+                     !result.result.error ? <details><PrintJson json={result} /></details> : null
                  }
             </div>
    } else {
@@ -32,7 +33,7 @@ function ResultQuery(props)  {
                  hover
                  condensed />
              <p>{result.msg}</p>
-             <details><pre>{JSON.stringify(result)}</pre></details>
+             <details><PrintJson json={result} /></details>
          </div>
      }
 

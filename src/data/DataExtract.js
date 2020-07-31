@@ -140,14 +140,16 @@ function DataExtract(props) {
                         </Form>
                     </Col>
 
-                    { loading || result || error ?
+                    { loading || result || error || permalink ?
                         <Col className={"half-col"}>
                             <Fragment>
                                 { loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                                   error? <Alert variant="danger">{error}</Alert> :
-                                  result ? <ResultDataExtract result={result} /> : null
+                                  result ? <ResultDataExtract
+                                    result={result}
+                                    permalink={permalink}
+                                  /> : null
                                 }
-                                { permalink && !error ? <Permalink url={permalink} /> : null }
                             </Fragment>
                         </Col>
                         :

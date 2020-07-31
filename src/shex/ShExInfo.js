@@ -73,7 +73,6 @@ function ShExInfo(props) {
     }
 
     function postRequest(cb) {
-
         setLoading(true)
         setProgressPercent(20)
         const formData = params2Form(params)

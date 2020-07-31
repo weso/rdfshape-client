@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import Alert from "react-bootstrap/Alert";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import {Permalink} from "../Permalink";
+import PrintJson from "../utils/PrintJson";
 
 function ResultValidate(props) {
 
@@ -40,7 +41,7 @@ function ResultValidate(props) {
                 </Fragment>
 
             }
-            <details><p className="word-break">{JSON.stringify(result)}</p></details>
+            <details><PrintJson json={result} /></details>
         </div>
     }
 

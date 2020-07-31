@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Code from '../components/Code'
 import { Permalink } from "../Permalink"
 import {format2mode} from "../utils/Utils"
 import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
 
 
 function ResultDataConvert(props) {
@@ -24,8 +25,14 @@ function ResultDataConvert(props) {
            mode={format2mode(result.targetDataFormat)}
            theme="light"
          />)}
-        <details><pre>{JSON.stringify(result)}</pre></details>
-        { props.permalink && <Permalink url={props.permalink} /> }
+
+        <details><PrintJson json={result} /></details>
+      { props.permalink &&
+      <Fragment>
+        <hr/>
+        <Permalink url={props.permalink}/>
+      </Fragment>
+      }
     </div>
  }
 

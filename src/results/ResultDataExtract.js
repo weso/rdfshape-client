@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Code from '../components/Code'
 import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
+import {Permalink} from "../Permalink";
 
 function ResultDataExtract(props) {
      const result = props.result
@@ -27,13 +29,19 @@ function ResultDataExtract(props) {
                      theme="material"
                  />
              )}
+           { props.permalink &&
+             <Fragment>
+               <Permalink url={props.permalink}/>
+               <hr/>
+             </Fragment>
+           }
          </div>
      }
 
      return (
          <div>
              {msg}
-             { !result.error ? result && <details><pre>{JSON.stringify(result)}</pre></details> : null }
+             { !result.error ? result && <details><PrintJson json={result} /></details> : null }
          </div>
      );
 }

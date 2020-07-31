@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Code from '../components/Code';
 import { mkMode } from "../utils/Utils";
 import Alert from 'react-bootstrap/Alert';
 import {Permalink} from "../Permalink";
+import PrintJson from "../utils/PrintJson";
 
 function ResultDataInfo(props) {
     const result = props.result;
@@ -33,9 +34,14 @@ function ResultDataInfo(props) {
                     <li>DataFormat: <span>{result.dataFormat}</span></li>
                 </ul>
                 <details>
-                    <pre>{JSON.stringify(result)}</pre>
+                    <PrintJson json={result} />
                 </details>
-                { props.permalink && <Permalink url={props.permalink} /> }
+                { props.permalink &&
+                <Fragment>
+                    <hr/>
+                    <Permalink url={props.permalink}/>
+                </Fragment>
+                }
             </div>
         }
         return (
