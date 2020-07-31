@@ -23,6 +23,7 @@ function EndpointInput(props) {
     }
 
     function handleOnSelect(e) {
+        if (props.handleOnSelect) props.handleOnSelect()
         props.handleOnChange(e);
     }
 

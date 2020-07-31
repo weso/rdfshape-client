@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Container from 'react-bootstrap/Container';
 import API from "./API";
 import axios from "axios";
+import PrintJson from "./utils/PrintJson";
 
 function About()  {
     const [status,setStatus] =useState({msg: `Asking info to server`});
@@ -13,13 +14,11 @@ function About()  {
         axios.get(url).then(response => response.data)
             .then((data) => {
                 setStatus({ msg: data })
-                //console.log(`Formats: ${formats}`)
             }).catch((error) => {
             setStatus({
                 msg : `Server error: ${error}. Server address: ${API.healthServer}`,
                 error: error
             })
-            console.log(error);
         })
     }, []);
 
@@ -51,7 +50,7 @@ function About()  {
            <details>
                <p>Server: <code>{API.rootApi}</code></p>
                <p>Server status: <code>{status.msg}</code>
-                   { status.error? <details><pre>{JSON.stringify(status.error)}</pre></details>: null}
+                   { status.error? <details><PrintJson json={status.error} /></details>: null}
                </p>
            </details>
            <h2>Authors & contributors</h2>

@@ -118,7 +118,6 @@ start [shape=Mdiamond];
                 </div>
         } else {
             if (this.state.innerHtml) {
-                console.log("SVG");
                 msg = <div><p>SVG</p>
                     <div dangerouslySetInnerHTML={mkInner(this.state.innerHtml)}/>
                     <details>

@@ -42,7 +42,6 @@ export function params2Form(params) {
     Object.keys(params).forEach(key => {
         formData.append(key,params[key])
     });
-    console.log("FormData in mkFormData: " + JSON.stringify(formData));
     return formData;
 }
 

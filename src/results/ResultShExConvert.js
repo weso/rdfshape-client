@@ -1,23 +1,27 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Code from '../components/Code';
 import { mkMode } from "../utils/Utils";
+import {Permalink} from "../Permalink";
+import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
 
 
 function ResultShExConvert(props) {
   const result = props.result
   const mode = mkMode(result.targetSchemaFormat)
-  console.log(`ResultShExConvert:`);
-  console.log(result);
-  console.log(`Mode: ${mode}`)
   let msg ;
   if (result === "") {
         msg = null
-  } 
-  else if (result.error) {
-    msg = <div><p>Error: {result.error}</p>
-            <details><pre>{JSON.stringify(result)}</pre></details>
-           </div>
-    } 
+  }
+  else if (result.error || result.msg.startsWith("Error")) {
+    msg =
+      <div>
+        <Alert variant="danger">Invalid ShEx schema</Alert>
+        <ul>
+          <li className="word-break">{result.error || result.msg}</li>
+        </ul>
+      </div>
+    }
   else {
     msg = <div>
       <p>{result.msg}</p>
@@ -27,13 +31,20 @@ function ResultShExConvert(props) {
            mode={mode}
            theme="material"
          />)}
-       <details><pre>{JSON.stringify(result)}</pre></details>
+        {
+          props.permalink &&
+          <Fragment>
+            <Permalink url={props.permalink}/>
+            <hr/>
+          </Fragment>
+        }
+       <details><PrintJson json={result}/></details>
     </div>
  }
 
  return (
    <div>{msg}</div>
-  );
+  )
 }
 
 export default ResultShExConvert;

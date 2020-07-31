@@ -148,7 +148,7 @@ export function shaclParamsFromQueryParams(params) {
     return newParams;
 }
 
-export function mkShaclTabs(shacl, setShacl, name) {
+export function mkShaclTabs(shacl, setShacl, name, subname) {
 
     function handleShaclTabChange(value) { setShacl({...shacl, activeTab: value}); }
     function handleShaclFormatChange(value) {  setShacl({...shacl, format: value}); }
@@ -161,7 +161,8 @@ export function mkShaclTabs(shacl, setShacl, name) {
     return (
         <React.Fragment>
             <SHACLTabs
-                name={name || "SHACL shapes"}
+                name={name}
+                subname={subname}
                 activeTab={shacl.activeTab}
                 handleTabChange={handleShaclTabChange}
 

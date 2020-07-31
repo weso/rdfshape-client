@@ -51,10 +51,14 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href="/shapeMapConvert">Convert ShapeMap format</NavDropdown.Item>
 */}
                         </NavDropdown>
+                        {
+                        // SPARQL Options are redundant
+                        /*
                         <NavDropdown title="SPARQL" id="basic-nav-dropdown">
                             <NavDropdown.Item href={API.dataQueryRoute}>Query</NavDropdown.Item>
                             <NavDropdown.Item href={API.endpointQueryRoute}>Query endpoint</NavDropdown.Item>
-                        </NavDropdown>
+                        </NavDropdown>*/
+                        }
                         <NavDropdown title="Wikidata" id="basic-nav-dropdown">
                             <NavDropdown.Item target="_blank" href="http://wikishape.weso.es">Wikishape</NavDropdown.Item>
                         </NavDropdown>

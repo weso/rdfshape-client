@@ -1,55 +1,56 @@
-import React, {useState, useEffect, Fragment} from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import API from "../API";
-import Form from "react-bootstrap/Form";
-import Alert from "react-bootstrap/Alert";
-import axios from "axios";
-import ResultDataExtract from "../results/ResultDataExtract";
-import NodeSelector from "../shex/NodeSelector";
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
+import React, {useState, useEffect, Fragment} from 'react'
+import "bootstrap/dist/css/bootstrap.min.css"
+import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
+import API from "../API"
+import Form from "react-bootstrap/Form"
+import Alert from "react-bootstrap/Alert"
+import axios from "axios"
+import ResultDataExtract from "../results/ResultDataExtract"
+import NodeSelector from "../shex/NodeSelector"
+import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
 import {dataParamsFromQueryParams} from "../utils/Utils"
-import qs from "query-string";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import qs from "query-string"
+import Col from "react-bootstrap/Col"
+import Row from "react-bootstrap/Row"
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 
 function DataExtract(props) {
-    const [data, setData] = useState(InitialData);
-    const [params, setParams] = useState(null);
-    const [lastParams, setLastParams] = useState(null);
-    const [loading,setLoading] = useState(false);
-    const [error,setError] = useState(null);
-    const [result, setResult] = useState('');
-    const [permalink, setPermalink] = useState(null);
-    const [nodeSelector, setNodeSelector] = useState('');
-    const [progressPercent,setProgressPercent] = useState(0);
+    const [data, setData] = useState(InitialData)
+    const [params, setParams] = useState(null)
+    const [lastParams, setLastParams] = useState(null)
+    const [loading,setLoading] = useState(false)
+    const [error,setError] = useState(null)
+    const [result, setResult] = useState('')
+    const [permalink, setPermalink] = useState(null)
+    const [nodeSelector, setNodeSelector] = useState('')
+    const [progressPercent,setProgressPercent] = useState(0)
 
-    const url = API.dataExtract;
+    const url = API.dataExtract
 
     useEffect(() => {
         if (props.location.search) {
-            const queryParams = qs.parse(props.location.search);
+            const queryParams = qs.parse(props.location.search)
             if (queryParams.data) {
                 const dataParams = {...dataParamsFromQueryParams(queryParams),
-                    nodeSelector: queryParams.nodeSelector | nodeSelector};
+                    nodeSelector: queryParams.nodeSelector | nodeSelector}
 
-                setData(updateStateData(dataParams, data));
-                if (dataParams['nodeSelector']) setNodeSelector(dataParams['targetDataFormat']);
+                setData(updateStateData(dataParams, data))
+                if (dataParams['nodeSelector']) setNodeSelector(dataParams['targetDataFormat'])
 
                 // Update Codemirror
-                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                if (codeMirror) codeMirror.setValue(dataParams.data)
+                const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                    codeMirrorElement.CodeMirror.setValue(dataParams.data)
 
                 setParams(queryParams)
                 setLastParams(queryParams)
             }
             else setError("Could not parse URL data")
         }
-     }, [props.location.search]);
+     }, [props.location.search])
 
     useEffect( () => {
         console.info("PARAMS ==>", params)
@@ -67,13 +68,13 @@ function DataExtract(props) {
     }, [params])
 
     async function handleSubmit(event) {
-        event.preventDefault();
+        event.preventDefault()
         setParams({...paramsFromStateData(data), nodeSelector})
     }
 
     function postExtract(cb) {
-        setLoading(true);
-        const formData = params2Form(params);
+        setLoading(true)
+        const formData = params2Form(params)
         setProgressPercent(20)
         axios.post(url,formData)
             .then (response => response.data)
@@ -86,18 +87,18 @@ function DataExtract(props) {
                     setResult({error: data.msg})
                 }
                 else setResult(data)
-                setPermalink(await mkPermalink(API.dataExtractRoute, params));
+                setPermalink(await mkPermalink(API.dataExtractRoute, params))
                 setProgressPercent(80)
                 if (cb) cb()
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError(`Error in request: ${url}: ${error.message}`);
+                setError(`Error in request: ${url}: ${error.message}`)
             })
             .finally( () => {
                 setLoading(false)
                 window.scrollTo(0, 0)
-            });
+            })
     }
 
     function setUpHistory() {
@@ -126,9 +127,9 @@ function DataExtract(props) {
                     <h1>Extract schema from data</h1>
                 </Row>
                 <Row>
-                    <Col className={"border-right"}>
+                    <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
-                            { mkDataTabs(data, setData) }
+                            { mkDataTabs(data, setData, "RDF input") }
                             <NodeSelector
                                 value={nodeSelector}
                                 handleChange={(value) => setNodeSelector(value)} />
@@ -139,24 +140,26 @@ function DataExtract(props) {
                         </Form>
                     </Col>
 
-                    { loading || result || error ?
-                        <Col>
+                    { loading || result || error || permalink ?
+                        <Col className={"half-col"}>
                             <Fragment>
                                 { loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                                   error? <Alert variant="danger">{error}</Alert> :
-                                  result ? <ResultDataExtract result={result} /> : null
+                                  result ? <ResultDataExtract
+                                    result={result}
+                                    permalink={permalink}
+                                  /> : null
                                 }
-                                { permalink && !error ? <Permalink url={permalink} /> : null }
                             </Fragment>
                         </Col>
                         :
-                        <Col>
+                        <Col className={"half-col"}>
                             <Alert variant='info'>Extraction results will appear here</Alert>
                         </Col>
                     }
                 </Row>
             </Container>
-    );
+    )
 }
 
-export default DataExtract;
+export default DataExtract

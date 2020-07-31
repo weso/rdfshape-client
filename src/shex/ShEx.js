@@ -1,6 +1,7 @@
 import API from "../API";
 import ShExTabs from "./ShExTabs";
 import React from "react";
+import SHACLTabs from "../shacl/SHACLTabs";
 
 
 export const InitialShEx = {
@@ -86,7 +87,7 @@ export function updateStateShEx(params, shex) {
     return shex;
 }
 
-export function mkShExTabs(shex,setShEx) {
+export function mkShExTabs(shex,setShEx, name, subname) {
     function handleShExTabChange(value) {
         setShEx({...shex, activeTab: value});
     }
@@ -108,23 +109,26 @@ export function mkShExTabs(shex,setShEx) {
     }
 
     return (
-        <ShExTabs activeTab={shex.activeTab}
-                  handleTabChange={handleShExTabChange}
+        <ShExTabs
+            name={name}
+            subname={subname}
+            activeTab={shex.activeTab}
+            handleTabChange={handleShExTabChange}
 
-                  textAreaValue={shex.textArea}
-                  handleByTextChange={handleShExByTextChange}
+            textAreaValue={shex.textArea}
+            handleByTextChange={handleShExByTextChange}
 
-                  urlValue={shex.url}
-                  handleShExUrlChange={handleShExUrlChange}
+            urlValue={shex.url}
+            handleShExUrlChange={handleShExUrlChange}
 
-                  handleFileUpload={handleShExFileUpload}
+            handleFileUpload={handleShExFileUpload}
 
-                  selectedFormat={shex.format}
-                  handleShExFormatChange={handleShExFormatChange}
-                  setCodeMirror={(cm) => setShEx({...shex, codeMirror: cm})}
+            selectedFormat={shex.format}
+            handleShExFormatChange={handleShExFormatChange}
+            setCodeMirror={(cm) => setShEx({...shex, codeMirror: cm})}
 
-                  fromParams={shex.fromParams}
-                  resetFromParams={() => setShEx({...shex, fromParams: false})}
+            fromParams={shex.fromParams}
+            resetFromParams={() => setShEx({...shex, fromParams: false})}
         />
     );
 }

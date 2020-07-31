@@ -165,7 +165,7 @@ function DataMergeVisualize(props) {
             <h1>Merge & visualize RDF data</h1>
         </Row>
         <Row>
-            <Col className={"border-right"}>
+            <Col className={"half-col border-right"}>
                 <Form onSubmit={handleSubmit}>
                     { mkDataTabs(data1, setData1, "RDF Input 1") }
                     <hr/>
@@ -177,7 +177,7 @@ function DataMergeVisualize(props) {
                 </Form>
             </Col>
           { loading || error || svg ?
-              <Col className="visual-column">
+              <Col className="half-col visual-column">
                 <Fragment>
                     { permalink && !error? <div className={"d-flex"}>
                         <Permalink url={permalink} />
@@ -201,7 +201,7 @@ function DataMergeVisualize(props) {
                 </Fragment>
               </Col>
               :
-              <Col>
+              <Col className={"half-col"}>
                   <Alert variant='info'>Merge results will appear here</Alert>
               </Col>
           }

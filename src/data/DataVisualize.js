@@ -1,35 +1,35 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import API from "../API";
-import Form from "react-bootstrap/Form";
-import axios from "axios";
-import {dataParamsFromQueryParams} from "../utils/Utils";
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink";
-import qs from "query-string";
-import ShowSVG from "../svg/ShowSVG";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Alert from "react-bootstrap/Alert";
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data";
-import SelectFormat from "../components/SelectFormat";
+import React, {Fragment, useEffect, useState} from 'react'
+import "bootstrap/dist/css/bootstrap.min.css"
+import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
+import API from "../API"
+import Form from "react-bootstrap/Form"
+import axios from "axios"
+import {dataParamsFromQueryParams} from "../utils/Utils"
+import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import qs from "query-string"
+import ShowSVG from "../svg/ShowSVG"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Alert from "react-bootstrap/Alert"
+import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data"
+import SelectFormat from "../components/SelectFormat"
 import { convertDot } from './dotUtils'
-import {ZoomInIcon, ZoomOutIcon} from "react-open-iconic-svg";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import {ZoomInIcon, ZoomOutIcon} from "react-open-iconic-svg"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 function  DataVisualize(props) {
 
-    const [data, setData] = useState(InitialData);
-    const [params, setParams] = useState(null);
-    const [lastParams, setLastParams] = useState(null);
-    const [error,setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [permalink, setPermalink] = useState(null);
-    const [targetGraphFormat, setTargetGraphFormat] = useState('SVG');
-    const [svg, setSVG] = useState(null);
-    const [svgZoom,setSvgZoom] = useState(1);
-    const [progressPercent,setProgressPercent] = useState(0);
+    const [data, setData] = useState(InitialData)
+    const [params, setParams] = useState(null)
+    const [lastParams, setLastParams] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [permalink, setPermalink] = useState(null)
+    const [targetGraphFormat, setTargetGraphFormat] = useState('SVG')
+    const [svg, setSVG] = useState(null)
+    const [svgZoom,setSvgZoom] = useState(1)
+    const [progressPercent,setProgressPercent] = useState(0)
 
     const url = API.dataConvert
 
@@ -37,19 +37,20 @@ function  DataVisualize(props) {
     const maxSvgZoom = 1.9
     const svgZoomStep = 0.1
 
-    function handleTargetGraphFormatChange(value) {  setTargetGraphFormat(value);  }
+    function handleTargetGraphFormatChange(value) {  setTargetGraphFormat(value)  }
 
     useEffect(() => {
             if (props.location.search) {
-                const queryParams = qs.parse(props.location.search);
+                const queryParams = qs.parse(props.location.search)
                 if (queryParams.data){
-                    const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: 'dot'};
+                    const dataParams = {...dataParamsFromQueryParams(queryParams), targetDataFormat: 'dot'}
 
-                    setData(updateStateData(dataParams,data) || data);
+                    setData(updateStateData(dataParams,data) || data)
 
                     // Update text area correctly
-                    const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                    if (codeMirror) codeMirror.setValue(dataParams.data)
+                    const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(dataParams.data)
 
                     setParams(dataParams)
                     setLastParams(dataParams)
@@ -59,7 +60,7 @@ function  DataVisualize(props) {
                 }
         }},
         [props.location.search]
-    );
+    )
 
     useEffect( () => {
         if (params){
@@ -76,20 +77,20 @@ function  DataVisualize(props) {
     }, [params])
 
     function handleSubmit(event) {
-        event.preventDefault();
-        setParams({...paramsFromStateData(data), targetGraphFormat, targetDataFormat: targetGraphFormat});
+        event.preventDefault()
+        setParams({...paramsFromStateData(data), targetGraphFormat, targetDataFormat: targetGraphFormat})
     }
 
     function postVisualize(cb) {
         setLoading(true)
-        const formData = params2Form(params);
-        formData.append('targetDataFormat', 'dot'); // It converts to dot in the server
+        const formData = params2Form(params)
+        formData.append('targetDataFormat', 'dot') // It converts to dot in the server
         setProgressPercent(20)
         axios.post(url,formData).then (response => response.data)
             .then(async data => {
                 setProgressPercent(70)
-                processData(data);
-                setPermalink(await mkPermalink(API.dataVisualizeRoute, params));
+                processData(data)
+                setPermalink(await mkPermalink(API.dataVisualizeRoute, params))
                 setProgressPercent(80)
                 if (cb) cb()
                 setProgressPercent(100)
@@ -100,7 +101,7 @@ function  DataVisualize(props) {
             .finally( () => {
                 setLoading(false)
                 window.scrollTo(0, 0)
-            });
+            })
     }
 
     function processData(d, targetFormat) {
@@ -145,9 +146,9 @@ function  DataVisualize(props) {
             <h1>Visualize RDF data</h1>
            </Row>
            <Row>
-            <Col className={"border-right"}>
+            <Col className={"half-col border-right"}>
              <Form className={"width-100"} onSubmit={handleSubmit}>
-                 { mkDataTabs(data,setData)}
+                 { mkDataTabs(data,setData, "RDF input")}
                  <hr/>
                  <SelectFormat name="Target graph format"
                                handleFormatChange={handleTargetGraphFormatChange}
@@ -161,7 +162,7 @@ function  DataVisualize(props) {
              </Form>
             </Col>
                { loading || error || svg ?
-                   <Col className="visual-column">
+                   <Col className="half-col visual-column">
                        <Fragment>
                            { permalink && !error? <div className={"d-flex"}>
                                <Permalink url={permalink} />
@@ -183,13 +184,13 @@ function  DataVisualize(props) {
                            }
                        </Fragment>
                    </Col>   :
-                   <Col>
+                   <Col className={"half-col"}>
                        <Alert variant='info'>Visualizations will appear here</Alert>
                    </Col>
                }
            </Row>
        </Container>
-   );
+   )
 }
 
-export default DataVisualize;
+export default DataVisualize

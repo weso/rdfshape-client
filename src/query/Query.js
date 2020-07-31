@@ -1,6 +1,7 @@
 import API from "../API";
 import QueryTabs from "./QueryTabs";
 import React from "react";
+import DataTabs from "../data/DataTabs";
 // import ShExTabs from "../shex/ShExTabs";
 
 export const InitialQuery = {
@@ -73,7 +74,7 @@ export function updateStateQuery(params, query) {
 }
 
 
-export function mkQueryTabs(query,setQuery) {
+export function mkQueryTabs(query,setQuery, name, subname) {
 
     function handleQueryTabChange(value) { setQuery({...query, activeTab: value}); }
     function handleQueryByTextChange(value) { setQuery({...query, textArea: value}); }
@@ -81,20 +82,23 @@ export function mkQueryTabs(query,setQuery) {
     function handleQueryFileUpload(value) { setQuery({...query, file: value }); }
 
     return (
-        <QueryTabs activeTab={query.activeTab}
-                   handleTabChange={handleQueryTabChange}
+        <QueryTabs
+            name={name}
+            subname={subname}
+            activeTab={query.activeTab}
+            handleTabChange={handleQueryTabChange}
 
-                   textAreaValue={query.textArea}
-                   handleByTextChange={handleQueryByTextChange}
+            textAreaValue={query.textArea}
+            handleByTextChange={handleQueryByTextChange}
 
-                   urlValue={query.url}
-                   handleDataUrlChange={handleQueryUrlChange}
+            urlValue={query.url}
+            handleDataUrlChange={handleQueryUrlChange}
 
-                   handleFileUpload={handleQueryFileUpload}
-                   setCodeMirror={(cm) => setQuery({...query, codeMirror: cm})}
+            handleFileUpload={handleQueryFileUpload}
+            setCodeMirror={(cm) => setQuery({...query, codeMirror: cm})}
 
-                   fromParams={query.fromParams}
-                   resetFromParams={() => setQuery({...query, fromParams: false}) }
+            fromParams={query.fromParams}
+            resetFromParams={() => setQuery({...query, fromParams: false})}
 
         />
     );

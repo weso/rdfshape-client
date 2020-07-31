@@ -39,8 +39,9 @@ function DataConvert(props) {
                 setData(updateStateData(dataParams,data) || data);
 
                 // Update text area correctly
-                const codeMirror = document.querySelector('.react-codemirror2').firstChild.CodeMirror
-                if (codeMirror) codeMirror.setValue(dataParams.data)
+                const codeMirrorElement = document.querySelector('.react-codemirror2').firstChild
+                if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                    codeMirrorElement.CodeMirror.setValue(dataParams.data)
 
                 setParams(dataParams)
                 setLastParams(dataParams)
@@ -119,9 +120,9 @@ function DataConvert(props) {
          <h1>Convert RDF data</h1>
        </Row>
        <Row>
-           <Col className={"border-right"}>
+           <Col className={"half-col border-right"}>
                <Form onSubmit={handleSubmit}>
-                   { mkDataTabs(data,setData) }
+                   { mkDataTabs(data,setData, "RDF input") }
                    <hr/>
                    <SelectFormat name="Target data format"
                                  selectedFormat={targetDataFormat}
@@ -134,15 +135,17 @@ function DataConvert(props) {
                </Form>
            </Col>
            { loading || result || error || permalink ?
-             <Col>
+             <Col className={"half-col"}>
                  {  loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                     error? <Alert variant='danger'>{error}</Alert> :
-                    result ?  <ResultDataConvert result={result}/> :
+                    result ?  <ResultDataConvert
+                            result={result}
+                            permalink={permalink}
+                        /> :
                     null
                  }
-                 { permalink? <Permalink url={permalink} />: null }
              </Col>
-                 : <Col>
+                 : <Col className={"half-col"}>
                      <Alert variant='info'>Conversion results will appear here</Alert>
                  </Col>
              }

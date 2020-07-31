@@ -128,16 +128,16 @@ return (
                 <h1>Visualize RDF data</h1>
            </Row>
            <Row>
-               <Col className={"border-right"}>
+               <Col className={"half-col border-right"}>
                    <Form onSubmit={handleSubmit}>
-                       { mkDataTabs(data,setData)}
+                       { mkDataTabs(data,setData, "RDF input")}
                        <Button variant="primary" type="submit"
                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                            Visualize</Button>
                    </Form>
                </Col>
                { loading || elements || error ?
-                   <Col className="visual-column">
+                   <Col className="half-col visual-column">
                        <Fragment>
                            { permalink && !error? <div className={"d-flex"}>
                                <Permalink url={permalink} />
@@ -157,7 +157,7 @@ return (
                            }
                        </Fragment>
                    </Col> :
-                   <Col>
+                   <Col className={"half-col"}>
                        <Alert variant='info'>Visualizations will appear here</Alert>
                    </Col>
                }

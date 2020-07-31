@@ -1,15 +1,21 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import ResultQuery from "./ResultQuery";
 import {Permalink} from '../Permalink';
-import Alert from "react-bootstrap/Alert";
 
 function ResultEndpointInfo(props) {
     return (
-        <div>
-        {props.error ? <Alert variant='danger'>{props.error}</Alert> : null}
-        {props.result ? <div>
+        <div className="width-100">
+          {props.permalink &&
+              <Fragment>
+                <hr/>
+                <Permalink url={props.permalink}/>
+              </Fragment>
+          }
+          { props.error && <p>Failed to resolve query ({props.error}). Check input data or try again later.</p> }
+          {props.result &&
+          <div>
                 <ResultQuery result={props.result}/>
-        </div> : null
+          </div>
         }
         </div>
     )

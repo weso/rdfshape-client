@@ -1,112 +1,165 @@
-import React, {useState, useEffect} from 'react';
-import Container from 'react-bootstrap/Container';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import API from "../API";
-import axios from "axios";
-import ResultShExConvert from "../results/ResultShExConvert";
-import SelectFormat from "../components/SelectFormat";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import Pace from "react-pace-progress";
-import qs from "query-string";
-import {InitialShEx, paramsFromStateShEx, mkShExTabs, updateStateShEx, shExParamsFromQueryParams} from "./ShEx";
+import React, {useState, useEffect} from 'react'
+import Container from 'react-bootstrap/Container'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
+import Form from "react-bootstrap/Form"
+import Button from "react-bootstrap/Button"
+import API from "../API"
+import axios from "axios"
+import ResultShExConvert from "../results/ResultShExConvert"
+import SelectFormat from "../components/SelectFormat"
+import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
+import qs from "query-string"
+import {InitialShEx, paramsFromStateShEx, mkShExTabs, shExParamsFromQueryParams} from "./ShEx"
+import Alert from "react-bootstrap/Alert"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 
 function ShExConvert(props) {
 
-    const [result, setResult] = useState('');
-    const [permalink, setPermalink] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error,setError] = useState(null);
-    const [targetSchemaFormat, setTargetSchemaFormat] = useState(API.defaultShExFormat);
-    const [shex,setShex] = useState(InitialShEx);
+  const [targetSchemaFormat, setTargetSchemaFormat] = useState(API.defaultShExFormat)
+  const [shex,setShex] = useState(InitialShEx)
 
-    const url = API.schemaConvert ;
+  const [result, setResult] = useState('')
 
-    function handleTargetSchemaFormatChange(value) {  setTargetSchemaFormat(value); }
+  const [params, setParams] = useState(null)
+  const [lastParams, setLastParams] = useState(null)
 
-    useEffect(() => {
-        if (props.location.search) {
-            const queryParams = qs.parse(props.location.search);
-            let paramsShEx = shExParamsFromQueryParams(queryParams);
-            let params = paramsShEx;
-            params['targetSchemaFormat'] = queryParams.targetSchemaFormat
-            const formData = params2Form(params);
-            console.log(`useEffect. props.location.search => FormData: ${JSON.stringify(formData)}`)
-            postConvert(url, formData, () => updateStateConvert(params))
+  const [permalink, setPermalink] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error,setError] = useState(null)
+  const [progressPercent,setProgressPercent] = useState(0)
+
+  const url = API.schemaConvert
+
+  function handleTargetSchemaFormatChange(value) {  setTargetSchemaFormat(value) }
+
+  useEffect(() => {
+      if (props.location.search) {
+        const queryParams = qs.parse(props.location.search)
+        let paramsShEx = {}
+
+        if (queryParams.schema){
+          paramsShEx = shExParamsFromQueryParams(queryParams)
+          // Update codemirror
+          const codeMirrorElement = document.querySelector('.yashe .CodeMirror')
+          if (codeMirrorElement && codeMirrorElement.CodeMirror)
+            codeMirrorElement.CodeMirror.setValue(queryParams.schema)
         }
-    },
-     [props.location.search, url]
-   );
 
+        let params =  {...paramsShEx}
+        setParams(params)
+        setLastParams(params)
 
-    function updateStateConvert(params) {
-        setShex(updateStateShEx(params,shex))
+      }
+    },[props.location.search]
+  )
+
+  useEffect( () => {
+    if (params && !loading){
+      if (params.schema) {
+        resetState()
+        setUpHistory()
+        postConvert()
+      }
+      else {
+        setError("No ShEx schema provided")
+      }
+      window.scrollTo(0, 0)
     }
+  }, [params])
 
-    async function handleSubmit(event) {
-        let params = paramsFromStateShEx(shex);
-        params['schemaEngine'] = 'ShEx';
-        console.log(`handleSubmit| targetSchemaFormat: ${targetSchemaFormat}`)
-        let formData = params2Form(params);
-        formData.append('targetSchemaFormat', targetSchemaFormat);
-        params['targetSchemaFormat'] = targetSchemaFormat;
-        setLoading(true);
-        setPermalink(await mkPermalink(API.shExConvertRoute, params));
-        postConvert(url, formData)
-        event.preventDefault();
+  function handleSubmit(event) {
+    event.preventDefault()
+    setParams({
+      ...paramsFromStateShEx(shex),
+      schemaEngine: 'ShEx',
+      targetSchemaFormat
+    })
+  }
+
+  function postConvert(cb) {
+    setLoading(true)
+    setProgressPercent(20)
+    const formData = params2Form(params)
+    formData.append('targetSchemaFormat', targetSchemaFormat)
+
+    axios.post(url, formData).then (response => response.data)
+        .then( async data => {
+          setProgressPercent(70)
+          setResult(data)
+          setPermalink(await mkPermalink(API.shExConvertRoute, params))
+          setProgressPercent(90)
+          if (cb) cb()
+          setProgressPercent(100)
+        })
+        .catch(function (error) {
+          setError("Error calling server at " + url + ": " + error)
+        })
+      .finally( () => setLoading(false))
+  }
+
+  function setUpHistory() {
+    // Store the last search URL in the browser history to allow going back
+    if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
+      // eslint-disable-next-line no-restricted-globals
+      history.pushState(null, document.title, mkPermalinkLong(API.shExConvertRoute, lastParams))
     }
+    // Change current url for shareable links
+    // eslint-disable-next-line no-restricted-globals
+    history.replaceState(null, document.title ,mkPermalinkLong(API.shExConvertRoute, params))
 
-    function processResult(data) {
-        setResult(data);
-    }
+    setLastParams(params)
+  }
 
-    function postConvert(url, formData, cb) {
-        console.log(`postConvert: ${url}`)
-        axios.post(url,formData).then (response => response.data)
-            .then((data) => {
-                setLoading(false);
-                processResult(data);
-                if (cb) cb()
-            })
-            .catch(function (error) {
-                setLoading(false);
-                setError(`Error doing POST request to ${url}: ${error}`);
-                console.log('Error doing server request')
-                console.log(error);
-            });
-    }
+  function resetState() {
+    setResult(null)
+    setPermalink(null)
+    setError(null)
+    setProgressPercent(0)
+  }
 
-    return (
-        <Container fluid={true}>
+  return (
+      <Container fluid={true}>
+      <Row>
         <h1>ShEx: Convert ShEx schemas</h1>
-        <Row>
-        { loading || result || error ? 
-        <Col>
-          { loading ? <Pace color="#27ae60"/> :
-            result ?  <ResultShExConvert result={result} /> : 
-            null 
-          }
-          { permalink &&  <Permalink url={permalink} /> }
-        </Col>        
-        : null 
-        }
-        <Col>
-        <Form onSubmit={handleSubmit}>
-            { mkShExTabs(shex,setShex)}
+      </Row>
+      <Row>
+        <Col className={"half-col border-right"}>
+          <Form onSubmit={handleSubmit}>
+            { mkShExTabs(shex,setShex, "ShEx Input")}
+            <hr/>
             <SelectFormat name="Target schema format"
-                      selectedFormat={targetSchemaFormat}
-                      handleFormatChange={handleTargetSchemaFormatChange}
-                      urlFormats={API.shExFormats}
-             />
-            <Button variant="primary" type="submit">Convert</Button>
-        </Form>
+                          selectedFormat={targetSchemaFormat}
+                          handleFormatChange={handleTargetSchemaFormatChange}
+                          urlFormats={API.shExFormats}
+            />
+            <hr/>
+            <Button variant="primary" type="submit"
+                    className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+              Convert
+            </Button>
+          </Form>
         </Col>
-        </Row>
-     </Container>
-    );
+        { loading || result || error || permalink ?
+          <Col className={"half-col"}>
+            { loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
+              error ? <Alert variant='danger'>{error}</Alert> :
+              result ?  <ResultShExConvert
+                  result={result}
+                  permalink={permalink}
+                /> :
+              null
+            }
+          </Col>
+          :
+          <Col className={"half-col"}>
+            <Alert variant='info'>Conversion results will appear here</Alert>
+          </Col>
+        }
+      </Row>
+   </Container>
+  )
 }
 
-export default ShExConvert;
+export default ShExConvert

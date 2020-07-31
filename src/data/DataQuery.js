@@ -104,7 +104,7 @@ function DataQuery(props)  {
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError(error.message);
+                setError(`Error calling server at ${url}: ${error.message}.\n Check your input or try again later`)
             })
             .finally( () => {
                 setLoading(false)
@@ -138,10 +138,10 @@ function DataQuery(props)  {
                     <h1>Data Query</h1>
                 </Row>
                 <Row>
-                    <Col className={"border-right"}>
+                    <Col className={"half-col border-right"}>
                         <Form onSubmit={handleSubmit}>
-                            { mkDataTabs(data, setData) }
-                            { mkQueryTabs(query, setQuery) }
+                            { mkDataTabs(data, setData, "RDF input") }
+                            { mkQueryTabs(query, setQuery, "Query (SPARQL)") }
                             <hr/>
                             <Button variant="primary" type="submit"
                                     className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
@@ -149,7 +149,7 @@ function DataQuery(props)  {
                         </Form>
                     </Col>
                     { loading || result || error ?
-                        <Col>
+                        <Col className={"half-col"}>
                             <Fragment>
                                 <Col>
                                     { loading? <ProgressBar striped animated variant="info" now={progressPercent}/> :
@@ -164,7 +164,7 @@ function DataQuery(props)  {
                                 </Col>
                             </Fragment>
                         </Col> :
-                        <Col>
+                        <Col className={"half-col"}>
                             <Alert variant='info'>Query results will appear here</Alert>
                         </Col>
                     }

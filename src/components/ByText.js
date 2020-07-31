@@ -15,7 +15,6 @@ function ByText(props) {
          inputText = props.inputForm
      } else {
       const mode = format2mode(props.textFormat)
-      console.log(`ByText: Mode: ${mode}`)
       inputText =  <Code value={props.textAreaValue}
                            mode={mode}
                            onChange={handleChange}

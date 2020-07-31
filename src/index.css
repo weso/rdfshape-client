@@ -50,6 +50,10 @@ a.dropdown-item {
   right: 0;
 }
 
+#common-endpoints > .dropdown {
+  position: initial;
+}
+
 a.dropdown-item {
   white-space: normal;
 }
@@ -106,6 +110,7 @@ a.dropdown-item {
 
 table td {
   overflow-x: auto;
+  word-break: break-word;
 }
 
 .disabled {
