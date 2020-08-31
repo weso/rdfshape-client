@@ -23,11 +23,12 @@ function EndpointInput(props) {
     }
 
     function handleOnSelect(e) {
+        if (props.handleOnSelect) props.handleOnSelect()
         props.handleOnChange(e);
     }
 
     return (
-        <Form.Group>
+        <Form.Group id="common-endpoints" >
             <Form.Label>Endpoint</Form.Label>
             <Form.Control as="input"
                           type="url"

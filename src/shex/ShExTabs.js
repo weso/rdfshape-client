@@ -16,11 +16,11 @@ function ShExTabs(props) {
     return (
         <div>
             <InputTabsWithFormat
-                nameInputTab="ShEx input"
+                nameInputTab={props.name || ""}
                 activeTab={props.activeTab}
                 handleTabChange={props.handleTabChange}
 
-                byTextName="RDF shEx"
+                byTextName={props.subname || ""}
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="RDF shEx..."
                 handleByTextChange={props.handleByTextChange}

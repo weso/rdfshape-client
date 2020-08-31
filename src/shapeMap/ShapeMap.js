@@ -1,6 +1,7 @@
 import API from "../API";
 import ShapeMapTabs from "./ShapeMapTabs";
 import React from "react";
+import QueryTabs from "../query/QueryTabs";
 
 export const InitialShapeMap = {
     activeTab: API.defaultTab,
@@ -92,7 +93,7 @@ export function shapeMapParamsFromQueryParams(params) {
     return newParams;
 }
 
-export function mkShapeMapTabs(shapeMap, setShapeMap) {
+export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
 
     function handleShapeMapTabChange(value) {
         setShapeMap({...shapeMap, activeTab: value});
@@ -115,24 +116,27 @@ export function mkShapeMapTabs(shapeMap, setShapeMap) {
     }
 
     return(
-        <ShapeMapTabs activeTab={shapeMap.activeTab}
-                      handleTabChange={handleShapeMapTabChange}
+        <ShapeMapTabs
+            name={name}
+            subname={subname}
+            activeTab={shapeMap.activeTab}
+            handleTabChange={handleShapeMapTabChange}
 
-                      textAreaValue={shapeMap.textArea}
-                      handleByTextChange={handleShapeMapByTextChange}
+            textAreaValue={shapeMap.textArea}
+            handleByTextChange={handleShapeMapByTextChange}
 
-                      urlValue={shapeMap.url}
-                      handleUrlChange={handleShapeMapUrlChange}
+            urlValue={shapeMap.url}
+            handleUrlChange={handleShapeMapUrlChange}
 
-                      handleFileUpload={handleShapeMapFileUpload}
+            handleFileUpload={handleShapeMapFileUpload}
 
-                      selectedFormat={shapeMap.format}
-                      handleFormatChange={handleShapeMapFormatChange}
+            selectedFormat={shapeMap.format}
+            handleFormatChange={handleShapeMapFormatChange}
 
-                      setCodeMirror={(cm) => setInterval({...shapeMap, codeMirror: cm })}
+            setCodeMirror={(cm) => setInterval({...shapeMap, codeMirror: cm })}
 
-                      fromParams={shapeMap.fromParams}
-                      resetFromParams={() => setShapeMap({...shapeMap, fromParams: false})}
+            fromParams={shapeMap.fromParams}
+            resetFromParams={() => setShapeMap({...shapeMap, fromParams: false})}
         />
     );
 

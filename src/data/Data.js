@@ -1,6 +1,6 @@
 import API from '../API';
 import DataTabs from "./DataTabs";
-import React from "react";
+import React, {useEffect} from "react";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
@@ -60,7 +60,7 @@ export function convertTabData(key) {
 }
 
 export function paramsFromStateData(data) {
-    console.log(`ParamsFromStateData, data = ${JSON.stringify(data)}`)
+    // console.log(`ParamsFromStateData, data = ${JSON.stringify(data)}`)
     let params = {};
     params['activeTab'] = convertTabData(data.activeTab);
     params['dataFormat'] = data.format;
@@ -84,7 +84,7 @@ export function paramsFromStateData(data) {
 }
 
 
-export function mkDataTabs(data, setData, name) {
+export function mkDataTabs(data, setData, name, subname) {
 
     function handleDataTabChange(value) { setData({...data, activeTab: value}); }
     function handleDataFormatChange(value) {  setData({...data, format: value}); }
@@ -92,12 +92,13 @@ export function mkDataTabs(data, setData, name) {
     function handleDataUrlChange(value) { setData( {...data, url: value}); }
     function handleDataFileUpload(value) { setData({...data, file: value }); }
     function handleInferenceChange(value) {  setData({...data, inference: value}); }
-    const resetParams = () => setData({...data, fromParams: false}) ;
+    const resetParams = () => setData({...data, fromParams: false});
 
     return (
       <React.Fragment>
        <DataTabs
-              name={name || "RDF data"}
+              name={name}
+              subname={subname}
               activeTab={data.activeTab}
               handleTabChange={handleDataTabChange}
 

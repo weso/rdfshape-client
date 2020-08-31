@@ -2,24 +2,27 @@ import React from 'react';
 import PropTypes from "prop-types";
 import BootstrapTable from "react-bootstrap-table-next";
 import {parseData} from "./ParseQueryResult";
+import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
 
 
 function ResultQuery(props)  {
   const result = props.result;
-  console.log("ResultQuery " + JSON.stringify(result));
   let msg ;
   if (!result || result === '') {
          msg = null
   } else
   if (result.result.error) {
          msg =
-             <div><p>Error: {result.result.error}</p>
-                 <details><pre>{JSON.stringify(result)}</pre></details>
-                </div>
+             <div>
+                 <Alert variant='danger'>Error: {result.result.error}</Alert>
+                 {
+                     !result.result.error ? <details><PrintJson json={result} /></details> : null
+                 }
+            </div>
    } else {
       const prefixes = [] ;
       const table = parseData(result.result, prefixes);
-//      console.log(`ResultQuery. Table = ${JSON.stringify(table)}`);
       msg = <div>
          <BootstrapTable
                  keyField='_id'
@@ -30,7 +33,7 @@ function ResultQuery(props)  {
                  hover
                  condensed />
              <p>{result.msg}</p>
-             <details><pre>{JSON.stringify(result)}</pre></details>
+             <details><PrintJson json={result} /></details>
          </div>
      }
 

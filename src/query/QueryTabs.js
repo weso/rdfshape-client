@@ -2,7 +2,6 @@ import React from 'react';
 import InputTabs from "../components/InputTabs";
 import PropTypes from "prop-types";
 import QueryForm from "./QueryForm";
-import ShExForm from "../shex/ShExForm";
 
 function QueryTabs(props) {
 
@@ -17,25 +16,25 @@ function QueryTabs(props) {
 
     return (
             <div>
-                <InputTabs name="SPARQL"
-                           activeTab={props.activeTab}
-                           handleTabChange={props.handleTabChange}
+                <InputTabs
+                    name={props.name}
+                    activeTab={props.activeTab}
+                    handleTabChange={props.handleTabChange}
 
-                           byTextName="Input Query"
-                           textAreaValue={props.textAreaValue}
-                           handleByTextChange={props.handleByTextChange}
-                           byTextPlaceholder="SELECT..."
-                           inputForm={queryForm}
+                    byTextName={props.subname || ""}
+                    textAreaValue={props.textAreaValue}
+                    handleByTextChange={props.handleByTextChange}
+                    byTextPlaceholder="SELECT..."
+                    inputForm={queryForm}
 
-                           byUrlName="URL query"
-                           urlValue={props.urlValue}
-                           handleUrlChange={props.handleUrlChange}
-                           byUrlPlaceholder="http://..."
+                    byUrlName="URL query"
+                    urlValue={props.urlValue}
+                    handleUrlChange={props.handleUrlChange}
+                    byUrlPlaceholder="http://..."
 
-                           byFileName="Query file"
-                           handleFileUpload={props.handleFileUpload}
-
-                />
+                    byFileName="Query file"
+                    handleFileUpload={props.handleFileUpload}
+               />
             </div>
         );
 }

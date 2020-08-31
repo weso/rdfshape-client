@@ -80,14 +80,14 @@ class ShExVisualizeCytoscape extends React.Component {
         }
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         let params = paramsFromStateShEx(this.state);
-        params['schemaEngine']='ShEx';
+        params['schemaEngine'] = 'ShEx';
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.shExVisualizeRoute, params);
-        this.setState({loading:true});
+        let permalink = await mkPermalink(API.shExVisualizeRoute, params);
+        this.setState({loading: true});
         this.setState({permalink: permalink});
-        this.postVisualize(url,formData);
+        this.postVisualize(url, formData);
         event.preventDefault();
     }
 

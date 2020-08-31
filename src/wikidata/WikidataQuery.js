@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -21,12 +21,12 @@ function WikidataQuery(props) {
     const serverUrl = API.endpointQuery ;
 
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         const permalinkParams = queryParamsFromQueryParams();
-        let serviceParams = permalinkParams ;
-        serviceParams['endpoint'] = API.wikidataUrl ;
-        let permalink = mkPermalink(API.wikidataQueryRoute, permalinkParams);
+        let serviceParams = permalinkParams;
+        serviceParams['endpoint'] = API.wikidataUrl;
+        let permalink = await mkPermalink(API.wikidataQueryRoute, permalinkParams);
         setLoading(true);
         postProcess(serverUrl, serviceParams, permalink);
     }

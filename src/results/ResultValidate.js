@@ -1,31 +1,47 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Alert from "react-bootstrap/Alert";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
+import {Permalink} from "../Permalink";
+import PrintJson from "../utils/PrintJson";
 
 function ResultValidate(props) {
 
-    let result = props.result ;
-    console.log("ResultQuery" + JSON.stringify(result));
-    let msg ;
+    const result = props.result
+    let msg
     if (result === "") {
         msg = null
     } else
     if (result.error) {
         msg =
-            <div><p>Error: {result.error}</p>
-                <details><pre>{JSON.stringify(result)}</pre></details>
-            </div>
+            <div><Alert variant="danger">Error: {result.error}</Alert></div>
     } else {
         msg = <div>
-            { result.message && <Alert variant="success">{result.message} </Alert> }
-            { result.errors && <div> { result.errors.map((e,idx) => <Alert id={idx} variant="danger">{e.type}: {e.error}</Alert> )}</div>
+            {
+                !Array.isArray(result.shapeMap) ? <Alert variant="danger">{result.message}</Alert>
+                    :
+                <Fragment>
+                    { result.errors.length > 0 ?
+                        <Alert variant="danger">Partially invalid data: check the details of each node to learn more</Alert> :
+                        result.message && <Alert variant="success">{result.message} </Alert>
+                    }
+                    {result.shapeMap.length === 0 && <Alert variant="info">
+                        Validation was successful but no results were obtained, check the if the input data is coherent</Alert>}
+                    { props.permalink &&
+                    <Fragment>
+                        <Permalink url={props.permalink}/>
+                        <hr/>
+                    </Fragment>
+                    }
+                    { result.shapeMap && result.shapeMap.length > 0 && <ShowShapeMap
+                        shapeMap={result.shapeMap}
+                        nodesPrefixMap={result.nodesPrefixMap}
+                        shapesPrefixMap={result.shapesPrefixMap}
+                    />
+                    }
+                </Fragment>
+
             }
-            { result.shapeMap && <ShowShapeMap
-                shapeMap={result.shapeMap}
-                nodesPrefixMap={result.nodesPrefixMap}
-                shapesPrefixMap={result.shapesPrefixMap}
-            /> }
-            <details><pre>{JSON.stringify(result)}</pre></details>
+            <details><PrintJson json={result} /></details>
         </div>
     }
 
@@ -34,4 +50,4 @@ function ResultValidate(props) {
      );
 }
 
-export default ResultValidate;
+export default ResultValidate

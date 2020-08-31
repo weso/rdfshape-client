@@ -64,7 +64,7 @@ class API {
 
     static wikidataQueryRoute = "/wikidataQuery";
     static wikidataValidateRoute = "/wikidataValidate";
-    static wikidataExtractRoute = "/wikidataExtract";
+    static wikidataExtractRoute = "/wikTURTLEidataExtract";
 
     static aboutRoute = "/about";
 
@@ -78,6 +78,8 @@ class API {
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
+
+    static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
 
 
     static wikidataUrl =  "https://query.wikidata.org/sparql" ;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
 import Code from "./Code";
@@ -15,7 +15,6 @@ function ByText(props) {
          inputText = props.inputForm
      } else {
       const mode = format2mode(props.textFormat)
-      console.log(`ByText: Mode: ${mode}`)
       inputText =  <Code value={props.textAreaValue}
                            mode={mode}
                            onChange={handleChange}

@@ -1,179 +1,220 @@
-import React, {useState, useEffect, Fragment} from "react";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import API from "../API";
-import axios from "axios";
-import ResultValidate from "../results/ResultValidate";
+import React, {useState, useEffect} from "react"
+import Container from "react-bootstrap/Container"
+import Form from "react-bootstrap/Form"
+import Button from "react-bootstrap/Button"
+import API from "../API"
+import axios from "axios"
+import ResultValidate from "../results/ResultValidate"
 import {
     dataParamsFromQueryParams
-} from "../utils/Utils";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import Pace from "react-pace-progress";
-import qs from "query-string";
-import EndpointInput from "../endpoint/EndpointInput";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Alert from "react-bootstrap/Alert";
-import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams, updateStateShEx} from "./ShEx";
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "../data/Data";
+} from "../utils/Utils"
+import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
+import qs from "query-string"
+import EndpointInput from "../endpoint/EndpointInput"
+import Row from "react-bootstrap/Row"
+import Col from "react-bootstrap/Col"
+import Alert from "react-bootstrap/Alert"
+import {InitialShEx, mkShExTabs, paramsFromStateShEx, shExParamsFromQueryParams} from "./ShEx"
+import {InitialData, mkDataTabs, paramsFromStateData} from "../data/Data"
 import {
     InitialShapeMap,
     mkShapeMapTabs,
     paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams,
-    updateStateShapeMap
-} from "../shapeMap/ShapeMap";
-
-const url = API.schemaValidate;
+    shapeMapParamsFromQueryParams
+} from "../shapeMap/ShapeMap"
+import ProgressBar from "react-bootstrap/ProgressBar"
 
 function ShExValidate(props) {
 
-    const [result, setResult] = useState('');
-    const [permalink, setPermalink] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [shex, setShEx] = useState(InitialShEx)
+    const [data, setData] = useState(InitialData)
+    const [shapeMap, setShapeMap] = useState(InitialShapeMap)
 
-    const [data, setData] = useState(InitialData);
-    const [shex, setShEx] = useState(InitialShEx);
-    const [shapeMap, setShapeMap] = useState(InitialShapeMap);
-    const [withEndpoint, setWithEndpoint] = useState(false);
-    const [endpoint, setEndpoint] = useState('');
+    const [endpoint, setEndpoint] = useState('')
+    const [withEndpoint, setWithEndpoint] = useState(false)
 
+    const [result, setResult] = useState('')
 
+    const [params, setParams] = useState(null)
+    const [lastParams, setLastParams] = useState(null)
 
-    function handleEndpointChange(value) {
-        setEndpoint(value);
-    }
+    const [permalink, setPermalink] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [progressPercent,setProgressPercent] = useState(0)
+
+    const url = API.schemaValidate
 
     useEffect(() => {
             if (props.location.search) {
-                const queryParams = qs.parse(props.location.search);
-                console.log("Parameters: " + JSON.stringify(queryParams));
-                let paramsData = dataParamsFromQueryParams(queryParams);
-                let paramsShEx = shExParamsFromQueryParams(queryParams);
-                let paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-                let paramsEndpoint = {};
-                if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint;
-                let params = {...paramsData, ...paramsShEx, ...paramsShapeMap, ...paramsEndpoint};
-                console.log(`Params: ${JSON.stringify(params)}`);
-                const formData = params2Form(params);
-                postValidate(url, formData, () => updateStateValidate(params))
+                const queryParams = qs.parse(props.location.search)
+                let paramsData, paramsShEx, paramsShapeMap, paramsEndpoint = {}
+
+                if (queryParams.data){
+                    paramsData = dataParamsFromQueryParams(queryParams)
+                    // Update codemirror 1
+                    const codeMirrorElement = document.querySelectorAll('.react-codemirror2')[0].firstChild
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(queryParams.data)
+
+                }
+                if (queryParams.schema){
+                    paramsShEx = shExParamsFromQueryParams(queryParams)
+                    // Update codemirror 2
+                    const codeMirrorElement = document.querySelector('.yashe .CodeMirror')
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(queryParams.schema)
+
+                }
+
+                if (queryParams.shapeMap){
+                    paramsShapeMap = shapeMapParamsFromQueryParams(queryParams)
+                    // Update codemirror 3
+                    const codeMirrorElement = document.querySelectorAll('.react-codemirror2')[1].firstChild
+                    if (codeMirrorElement && codeMirrorElement.CodeMirror)
+                        codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap)
+                }
+
+                if (queryParams.endpoint) paramsEndpoint["endpoint"] = queryParams.endpoint
+                let params = {...paramsData, ...paramsShEx, ...paramsShapeMap, ...paramsEndpoint}
+
+                setParams(params)
+                setLastParams(params)
+
             }
         },
         [
             props.location.search,
-//            data.codeMirror,
-//            shex.codeMirror,
-//            shapeMap.codeMirror
         ]
-    );
+    )
 
-    function updateStateValidate(params) {
-        const newData = updateStateData(params,data) || data ;
-        setData(newData);
-
-        const newShEx = updateStateShEx(params,shex) || shex;
-        console.log(`updateStateValidate: newShEx: ${JSON.stringify(newShEx)}`);
-        setShEx(newShEx);
-
-        const newShapeMap = updateStateShapeMap(params,shapeMap) || shapeMap;
-        console.log(`updateStateValidate: newShapeMap: ${JSON.stringify(newShapeMap)}`);
-        setShapeMap(newShapeMap);
-
-        if (params['endpoint']) {
-            setEndpoint(params['endpoint'])
+    useEffect( () => {
+        if (params && !loading){
+            if (!params.data) setError("No RDF data provided")
+            else if (!params.schema) setError("No ShEx schema provided")
+            else if (!params.shapeMap) setError("No ShapeMap provided")
+            else {
+                resetState()
+                setUpHistory()
+                postValidate()
+            }
+            window.scrollTo(0, 0)
         }
+    }, [params])
 
+    function handleEndpointChange(value) {
+        setEndpoint(value)
     }
 
     function handleSubmit(event) {
-        event.preventDefault();
-        let paramsData = paramsFromStateData(data);
-        let paramsShEx = paramsFromStateShEx(shex);
-        let paramsShapeMap = paramsFromStateShapeMap(shapeMap);
+        event.preventDefault()
 
-        let paramsEndpoint = {};
+        const paramsEndpoint = {}
         if (endpoint !== '') {
-            paramsEndpoint['endpoint'] = endpoint;
+            paramsEndpoint['endpoint'] = endpoint
         }
-        let params = {...paramsData, ...paramsEndpoint, ...paramsShEx, ...paramsShapeMap};
-        params['schemaEngine'] = 'ShEx';
-        params['triggerMode'] = 'shapeMap';
-        console.log(`ShExValidate. Post params = ${JSON.stringify(params)}`);
-        let permalink = mkPermalink(API.shExValidateRoute, params);
-        setLoading(true);
-        setPermalink(permalink);
-        let formData = params2Form(params);
-        postValidate(url, formData);
-        window.scrollTo(0, 0)
+
+        setParams({
+            ...paramsFromStateData(data),
+            ...paramsFromStateShEx(shex),
+            ...paramsFromStateShapeMap(shapeMap),
+            ...paramsEndpoint,
+            schemaEngine: 'ShEx',
+            triggerMode: 'shapeMap'
+        })
     }
 
-    function processResult(data) {
-        setResult(data);
-    }
+    function postValidate(cb) {
+        setLoading(true)
+        setProgressPercent(15)
+        const formData = params2Form(params)
+        setProgressPercent(30)
 
-    function postValidate(url, formData, cb) {
         axios.post(url, formData).then(response => response.data)
-            .then((data) => {
-                setLoading(false);
-                processResult(data);
+            .then(async data => {
+                setResult(data)
+                setProgressPercent(70)
+                setPermalink(await mkPermalink(API.shExValidateRoute, params))
+                setProgressPercent(80)
                 if (cb) cb()
+                setProgressPercent(100)
             })
             .catch(function (error) {
-                setLoading(false);
-                setError(error.message);
-                console.log('Error doing server request');
-                console.log(error);
-            });
+                setError(`Error calling server at ${url}: ${error.message}.\n Try again later.`)
+            })
+            .finally( () => setLoading(false))
+    }
+
+    function setUpHistory() {
+        // Store the last search URL in the browser history to allow going back
+        if (params && lastParams && JSON.stringify(params) !== JSON.stringify(lastParams)){
+            // eslint-disable-next-line no-restricted-globals
+            history.pushState(null, document.title, mkPermalinkLong(API.shExValidateRoute, lastParams))
+        }
+        // Change current url for shareable links
+        // eslint-disable-next-line no-restricted-globals
+        history.replaceState(null, document.title ,mkPermalinkLong(API.shExValidateRoute, params))
+
+        setLastParams(params)
+    }
+
+    function resetState() {
+        setResult(null)
+        setPermalink(null)
+        setError(null)
+        setProgressPercent(0)
     }
 
 
     return (
         <Container fluid={true}>
-            <h1>ShEx: Validate RDF data</h1>
-            {loading || result || permalink || error ?
-                <Fragment>
-                    <Row>
-                        <Col>
-                            {loading ? <Pace color="#27ae60"/> :
-                                error ? <Alert variant="danger">{error}</Alert> :
-                                    result ?
-                                        <ResultValidate result={result}/> : null}
-                            {permalink && <Permalink url={permalink}/>}
-                        </Col>
-                    </Row>
-                </Fragment>
-                : null
-            }
-            <Form onSubmit={handleSubmit}>
-                <Row>
-                    <Col>
-                        { mkDataTabs(data, setData)}
-                        <Button variant="secondary" onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint</Button>
+            <Row>
+                <h1>Validate RDF data with ShEx</h1>
+            </Row>
+            <Row>
+                <Col className={"half-col border-right"}>
+                    <Form onSubmit={handleSubmit}>
+
+                        { mkDataTabs(data, setData, "RDF input")}
+                        <Button
+                            variant="secondary"
+                            onClick={() => setWithEndpoint(!withEndpoint)}>{withEndpoint? "Remove":"Add" } endpoint
+                        </Button>
                         { withEndpoint?
                             <EndpointInput value={endpoint}
                                            handleOnChange={handleEndpointChange}/>
-                        : null
+                            : null
                         }
+                        <hr/>
+                        { mkShExTabs(shex,setShEx, "Shapes graph (ShEx)")}
+                        <hr/>
+                        { mkShapeMapTabs(shapeMap,setShapeMap, "ShapeMap") }
+                        <hr/>
+                        <Button variant="primary" type="submit"
+                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            Validate
+                        </Button>
+                    </Form>
+                </Col>
+                {loading || result || permalink || error ?
+                    <Col className={"half-col"}>
+                        {
+                            loading ? <ProgressBar className="width-100" striped animated variant="info" now={progressPercent}/> :
+                            error   ? <Alert variant="danger">{error}</Alert> :
+                            result  ?
+                                    <ResultValidate
+                                        result={result}
+                                        permalink={permalink}
+                                    />
+                                    : null }
+                    </Col> :
+                    <Col className={"half-col"}>
+                        <Alert variant='info'>Validation results will appear here</Alert>
                     </Col>
-                    <Col>
-                        { mkShExTabs(shex,setShEx)}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        { mkShapeMapTabs(shapeMap,setShapeMap) }
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Button variant="primary" type="submit">Validate</Button>
-                    </Col>
-                </Row>
-            </Form>
+                }
+            </Row>
         </Container>
-    );
+    )
 }
 
-export default ShExValidate;
+export default ShExValidate

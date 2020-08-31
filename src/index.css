@@ -20,7 +20,115 @@ a.dropdown-item {
   font-size: 14px !important;
 }
 
+.yashe .yashe_buttons {
+  top: unset !important;
+  bottom: 5px !important;
+}
+
+.yasqe .yasqe_buttons {
+  top: unset !important;
+  bottom: 5px !important;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group > button {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.form-group > .dropdown {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+#common-endpoints .dropdown {
+  bottom: 0;
+  right: 0;
+}
+
+#common-endpoints > .dropdown {
+  position: initial;
+}
 
 a.dropdown-item {
   white-space: normal;
+}
+
+.container-fluid {
+  padding: 0 !important;
+}
+
+.container-fluid > .container-fluid, .container-fluid > .container {
+  margin: 2% auto;
+}
+
+@media only screen and (min-width: 600px) {
+  .container-fluid > .container-fluid, .container-fluid > .container{
+    max-width: 80%;
+  }
+}
+
+.container-fluid .container-fluid > h4, .container-fluid .container > h4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container-fluid > .row {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-with-icon {
+  margin: 5px auto;
+  display: inline-flex !important;
+  padding: 5px;
+}
+
+.btn-zoom {
+  margin: 5px 0 5px 5px;
+  display: inline-flex !important;
+  padding: 5px;
+}
+
+.btn-with-icon > svg {
+  margin: auto 5px auto 10px;
+}
+
+.white-icon {
+  fill: white;
+  transform: scale(1.5);
+  margin: auto 5px;
+}
+
+.white-background {
+  background-color: white !important; /* "!important" overrides bootstrap */
+}
+
+table td {
+  overflow-x: auto;
+  word-break: break-word;
+}
+
+.disabled {
+  cursor: not-allowed !important; /* "!important" overrides bootstrap */
+}
+
+.progress {
+  margin: 6px 0;
+}
+
+.visual-column {
+  height: 70vh;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.height-100 {
+  height: 100%;
 }

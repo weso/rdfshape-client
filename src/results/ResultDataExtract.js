@@ -1,17 +1,19 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Code from '../components/Code'
-import { mkMode } from "../utils/Utils"
+import Alert from "react-bootstrap/Alert";
+import PrintJson from "../utils/PrintJson";
+import {Permalink} from "../Permalink";
 
 function ResultDataExtract(props) {
      const result = props.result
-     let msg ;
+     let msg;
      if (result === "") {
          msg = null
      } else
      if (result.error) {
          msg =
              <div>
-                 <p>Error: {result.error}</p>
+                 <Alert variant="danger">Error: {result.error}</Alert>
              </div>
      } else {
          msg = <div>
@@ -27,13 +29,19 @@ function ResultDataExtract(props) {
                      theme="material"
                  />
              )}
+           { props.permalink &&
+             <Fragment>
+               <Permalink url={props.permalink}/>
+               <hr/>
+             </Fragment>
+           }
          </div>
      }
 
      return (
          <div>
              {msg}
-             { result && <details><pre>{JSON.stringify(result)}</pre></details> }
+             { !result.error ? result && <details><PrintJson json={result} /></details> : null }
          </div>
      );
 }

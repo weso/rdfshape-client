@@ -3,6 +3,7 @@ import Viz from 'viz.js/viz.js';
 import React, {Fragment} from "react";
 import API from "../API";
 import {ExternalLinkIcon} from "react-open-iconic-svg";
+import {Slide} from "react-toastify";
 
 const { Module, render } = require('viz.js/full.render.js');
 
@@ -56,7 +57,7 @@ export function dataParamsFromQueryParams(params) {
     prefix: string,
     type: string,
     uri: any
- }
+ }}
  */
 export function showQualify(node, prefixMap) {
     // console.log(`node: ${JSON.stringify(node)}`)
@@ -266,6 +267,19 @@ const formatModes = {
     };
 
 const defaultMode = "turtle";
+
+export const notificationSettings = {
+    permalinkText: 'Link copied to clipboard!',
+    position: 'bottom-right',
+    autoClose: 2500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnFocusLoss: false,
+    pauseOnHover: true,
+    closeButton: false,
+    transition: Slide,
+    limit: 1
+}
 
 // TODO: replace format2mode by mkMode ?
 export function mkMode(format) {

@@ -109,14 +109,13 @@ function TestInputTabsWithFormat(props) {
         [props.location.search]
     );
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
         let params = paramsFromState(data);
         let formData = params2Form(params);
-        let permalink = mkPermalink(API.testInputTabsWithFormatRoute, params);
         console.log("Permalink created: " + JSON.stringify(permalink));
         setLoading(true);
-        setPermalink(permalink);
+        setPermalink(await mkPermalink(API.testInputTabsWithFormatRoute, params));
         postInfo(formData);
     }
 
