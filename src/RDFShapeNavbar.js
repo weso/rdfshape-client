@@ -38,6 +38,7 @@ class RDFShapeNavbar extends React.Component {
 {/*                            <NavDropdown.Item href="/shexVisualizeCytoscape">Visualize ShEx schema (Cytoscape)</NavDropdown.Item>*/}
                             <NavDropdown.Item href={API.shExConvertRoute}>Convert ShEx formats</NavDropdown.Item>
                             <NavDropdown.Item href={API.shEx2ShaclRoute}>ShEx &#8594; SHACL</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shEx2XMIRoute}>ShEx &#10231; XMI</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="SHACL" id="basic-nav-dropdown">
                             <NavDropdown.Item href={API.shaclValidateRoute}>Validate data with SHACL</NavDropdown.Item>

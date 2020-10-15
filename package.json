@@ -32,12 +32,13 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
     "react-toastify": "^6.0.5",
+    "shumlex": "^0.1.5",
     "viz.js": "^2.1.2",
     "yasgui-yasqe": "^2.11.22",
     "yashe": "^1.2.22"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --max_old_space_size=4096 start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
