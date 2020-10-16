@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import axios from "axios";
+import qs from "query-string";
+import React, { Fragment, useEffect, useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import EndpointInput from "./EndpointInput";
-import ResultEndpointInfo from "../results/ResultEndpointInfo";
-import API from "../API";
-import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink";
-import axios from "axios";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
-import qs from "query-string";
+import API from "../API";
+import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import ResultEndpointInfo from "../results/ResultEndpointInfo";
+import EndpointInput from "./EndpointInput";
 
 function EndpointInfo(props) {
     const [endpoint, setEndpoint] = useState('')
@@ -82,7 +82,7 @@ function EndpointInfo(props) {
                 setProgressPercent(100)
             })
             .catch(function (error) {
-                setError(`Error calling server at ${infoUrl}: ${error}.\n Did you input a valid SPARQL endpoint?`)
+                setError(`Error calling server at ${infoUrl}: ${error}. Did you input a valid SPARQL endpoint?`)
             })
             .finally( () => setLoading(false))
         ;
@@ -123,16 +123,20 @@ function EndpointInfo(props) {
                     Info about endpoint</Button>
             </Form>
 
-            {loading || result || error || permalink ?
+            { loading || result || error || permalink ?
                 <Row style={{margin: '10px auto 10% auto'}}>
                     {loading ? <ProgressBar className="width-100" striped animated variant="info" now={progressPercent}/> :
                         error ? <Alert className="width-100" variant='danger'>{error}</Alert> :
                             result ?
-                                <ResultEndpointInfo
-                                    result={result}
-                                    error={error}
-                                    permalink={permalink}
-                                /> : null
+                                <Fragment>
+                                    <Alert className="width-100" variant='success'>Endpoint ONLINE</Alert>
+                                    <ResultEndpointInfo
+                                        result={result}
+                                        error={error}
+                                        permalink={permalink}
+                                    />
+                                </Fragment>
+                                 : null
                     }
                 </Row> : null
             }

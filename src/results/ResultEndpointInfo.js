@@ -1,5 +1,5 @@
 import React from 'react';
-import { Permalink}  from '../Permalink'
+import { Permalink } from '../Permalink';
 
 function ResultEndpointInfo(props) {
     return (
@@ -7,7 +7,7 @@ function ResultEndpointInfo(props) {
            <Permalink url={props.permalink} />
            { props.error? <p>{props.error}</p> : null }
            { props.result ?
-              <details><summary>Endpoint response</summary><p>{JSON.stringify(props.result)}</p></details> : null }
+              <details><summary>Endpoint response (raw)</summary><p>{JSON.stringify(props.result)}</p></details> : null }
        </div>
     )
 }
