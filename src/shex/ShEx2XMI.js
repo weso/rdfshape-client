@@ -5,20 +5,24 @@ import Row from 'react-bootstrap/Row'
 import Form from "react-bootstrap/Form"
 import Button from "react-bootstrap/Button"
 import ResultShEx2XMI from "../results/ResultShEx2XMI"
+import ResultXMI2ShEx from "../results/ResultXMI2ShEx"
 import {mkPermalink, mkPermalinkLong, params2Form} from "../Permalink"
 import API from "../API"
-import SelectFormat from "../components/SelectFormat"
+//import SelectFormat from "../components/SelectFormat"
 import qs from "query-string"
 import axios from "axios"
 import {convertTabSchema, InitialShEx, mkShExTabs, shExParamsFromQueryParams} from "./ShEx"
+import {InitialUML, mkUMLTabs, UMLParamsFromQueryParams} from "../uml/UML"
 import Alert from "react-bootstrap/Alert"
 import ProgressBar from "react-bootstrap/ProgressBar"
 import shumlex from "shumlex"
+import $ from "jquery"
 
 export default function ShEx2XMI(props) {
 
     const [shex, setShEx] = useState(InitialShEx)
-    const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat)
+    const [xmi, setXmi] = useState(InitialUML)
+    const [targetFormat, setTargetFormat] = useState("RDF/XML")
 
     const [result, setResult] = useState('')
 
@@ -32,6 +36,8 @@ export default function ShEx2XMI(props) {
     const [progressPercent,setProgressPercent] = useState(0)
 
     const url = API.schemaConvert
+	
+	const [isShEx2UML, setIsShEx2UML] = useState(true)
 
     useEffect(() => {
           if (props.location.search) {
@@ -51,7 +57,7 @@ export default function ShEx2XMI(props) {
                   ...mkServerParams(queryParams.targetFormat),
                   schema: queryParams.schema,
                   schemaEngine: 'ShEx',
-                  targetSchemaEngine: 'XML'
+                  targetSchemaEngine: 'xml'
               }
 
               setParams(params)
@@ -82,7 +88,7 @@ export default function ShEx2XMI(props) {
             case 'RDF/XML': return 'xml'
             case 'TRIG': return 'xml'
             case 'JSON-LD': return 'javascript'
-            default: return 'turtle'
+            default: return 'xml'
         }
     }
 
@@ -129,7 +135,7 @@ export default function ShEx2XMI(props) {
         setParams({
             ...mkServerParams(),
             schemaEngine: 'ShEx',
-            targetSchemaEngine: 'SHACL'
+            targetSchemaEngine: 'xml'
         })
     }
 
@@ -165,12 +171,21 @@ export default function ShEx2XMI(props) {
         setError(null)
         setProgressPercent(0)
     }
+	
+	$("#uml2shex").click(loadOppositeConversion)
+	$("#shex2uml").click(loadOppositeConversion)
+	
+	function loadOppositeConversion() {
+		resetState()
+		setIsShEx2UML(!isShEx2UML)
+	}
 
     return (
         <Container fluid={true}>
             <Row>
-                <h1>Convert ShEx to XMI</h1>
+                <h1>Convert ShEx to UML</h1>
             </Row>
+			{ isShEx2UML && <>
             <Row>
                 <Col className={"half-col border-right"}>
                     <Form onSubmit={handleSubmit}>
@@ -178,7 +193,7 @@ export default function ShEx2XMI(props) {
                         <hr/>
                         <Button variant="primary" type="submit"
                                 className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
-                            Convert to XMI
+                            Convert to UML
                         </Button>
                     </Form>
                 </Col>
@@ -189,10 +204,10 @@ export default function ShEx2XMI(props) {
                         error ? <Alert variant='danger'>{error}</Alert> :
                         result ? <ResultShEx2XMI
                             result={result}
-                            mode={targetFormatMode(targetFormat)}
+                            mode={targetFormatMode('xml')}
                             permalink={permalink}
                           /> :
-                          null
+                          ""
                         }
                   </Col> :
                   <Col className={"half-col"}>
@@ -200,6 +215,54 @@ export default function ShEx2XMI(props) {
                   </Col>
                 }
             </Row>
+			
+			<Row>
+				<Button id="uml2shex" variant="secondary"
+                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            Load UML to ShEx converter
+                </Button>
+			</Row>
+			</>
+			}
+			{ !isShEx2UML &&
+			<>
+			<Row>
+                <Col className={"half-col border-right"}>
+                    <Form onSubmit={handleSubmit}>
+                        { mkUMLTabs(xmi,setXmi, "UML Input")}
+                        <hr/>
+                        <Button variant="primary" type="submit"
+                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            Convert to ShEx
+                        </Button>
+                    </Form>
+                </Col>
+                { loading || result || error || permalink ?
+                  <Col className={"half-col"}>
+                      {
+                        loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
+                        error ? <Alert variant='danger'>{error}</Alert> :
+                        result ? <ResultXMI2ShEx
+                            result={result}
+                            mode={targetFormatMode(targetFormat)}
+                            permalink={permalink}
+                          /> :
+                          ""
+                        }
+                  </Col> :
+                  <Col className={"half-col"}>
+                      <Alert variant='info'>Conversion results will appear here</Alert>
+                  </Col>
+                }
+            </Row>
+			<Row>
+				<Button id="shex2uml" variant="secondary"
+                                className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
+                            Load ShEx to UML converter
+                        </Button>
+			</Row>
+			</>
+			}
         </Container>
     )
 }
