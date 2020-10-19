@@ -79,6 +79,7 @@ class API {
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
+    static defaultXMLFormat = "xml";
 
     static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
 

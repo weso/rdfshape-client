@@ -18,27 +18,27 @@ function UMLTabs(props) {
             <InputTabs
                 name={"UML Input (XMI)"}
                 activeTab={props.activeTab}
-                handleTabChange={props.handleTabChange}
+                handleTabChange={props.handleXmiTabChange}
 
                 byTextName={props.subname || ""}
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="XMI..."
-                handleByTextChange={props.handleByTextChange}
+                handleByTextChange={props.handleXmiByTextChange}
                 setCodeMirror = {props.setCodeMirror}
                 inputForm={umlForm}
 
                 byUrlName="XMI URL"
-                handleUrlChange={props.handleShExUrlChange}
+                handleUrlChange={props.handleXmiUrlChange}
                 urlValue={props.urlValue}
                 byURLPlaceholder="http://..."
 
                 byFileName="XMI File"
-                handleFileUpload={props.handleFileUpload}
+                handleFileUpload={props.handleXmiFileUpload}
 
-                //nameFormat="XMI format"
-                //selectedFormat={props.selectedFormat}
-               // handleFormatChange={props.handleShExFormatChange}
-                //urlFormats={API.shExFormats}
+                nameFormat="XMI format"
+                mode={props.selectedFormat}
+                handleFormatChange={props.handleXmiFormatChange}
+                urlFormats={API.shExFormats}
 
                 fromParams = {props.fromParams}
                 resetFromParams={props.resetFromParams}

@@ -43,9 +43,9 @@ export default function ShEx2XMI(props) {
           if (props.location.search) {
               const queryParams = qs.parse(props.location.search)
               let paramsShEx = {}
-
+		
               if (queryParams.schema){
-                  paramsShEx = shExParamsFromQueryParams(queryParams)
+                  paramsShEx = isShEx2UML ? shExParamsFromQueryParams(queryParams) : UMLParamsFromQueryParams(queryParams)
                   // Update codemirror
                   const codeMirrorElement = document.querySelector('.yashe .CodeMirror')
                   if (codeMirrorElement && codeMirrorElement.CodeMirror)
@@ -56,10 +56,10 @@ export default function ShEx2XMI(props) {
                   ...paramsShEx,
                   ...mkServerParams(queryParams.targetFormat),
                   schema: queryParams.schema,
-                  schemaEngine: 'ShEx',
-                  targetSchemaEngine: 'xml'
+                  schemaEngine: isShEx2UML ? 'ShEx' : 'xml',
+                  targetSchemaEngine: isShEx2UML ? 'xml' : 'ShEx' 
               }
-
+			  
               setParams(params)
               setLastParams(params)
 
@@ -94,21 +94,22 @@ export default function ShEx2XMI(props) {
 
     function mkServerParams(format) {
         let params = {}
-        params['activeSchemaTab'] = convertTabSchema(shex.activeTab)
+		let source = isShEx2UML ? shex : xmi
+        params['activeSchemaTab'] = convertTabSchema(source.activeTab)
         params['schemaEmbedded'] = false
-        params['schemaFormat'] = shex.format
-        switch (shex.activeTab) {
+        params['schemaFormat'] = source.format
+        switch (source.activeTab) {
             case API.byTextTab:
-                params['schema'] = shex.textArea
-                params['schemaFormatTextArea'] = shex.format
+                params['schema'] = source.textArea
+                params['schemaFormatTextArea'] = source.format
                 break
             case API.byUrlTab:
-                params['schemaURL'] = shex.url
-                params['schemaFormatUrl'] = shex.format
+                params['schemaURL'] = source.url
+                params['schemaFormatUrl'] = source.format
                 break
             case API.byFileTab:
-                params['schemaFile'] = shex.file
-                params['schemaFormatFile'] = shex.format
+                params['schemaFile'] = source.file
+                params['schemaFormatFile'] = source.format
                 break
             default:
         }
@@ -132,17 +133,34 @@ export default function ShEx2XMI(props) {
 
     function handleSubmit(event) {
         event.preventDefault()
-        setParams({
+		if(isShEx2UML) {
+			setParams({
             ...mkServerParams(),
             schemaEngine: 'ShEx',
             targetSchemaEngine: 'xml'
         })
+		}
+		else {
+			setParams({
+            ...mkServerParams('ShEx'),
+            schemaEngine: 'xml',
+            targetSchemaEngine: 'ShEx'
+        })
+		}
+        
     }
 
     function doRequest(cb) {
         setLoading(true)
         setProgressPercent(20)
-		let xmi = shumlex.shExToXMI(params.schema)
+		let xmi = ""
+		if(isShEx2UML) {
+			xmi = shumlex.shExToXMI(params.schema)
+		}
+		else {
+			xmi = shumlex.XMIToShEx(params.schema)
+		}
+		
 		setProgressPercent(90)
 		let result = { result: xmi, msg: "Éxito en la conversión" }
 		setResult(result)
@@ -244,7 +262,7 @@ export default function ShEx2XMI(props) {
                         error ? <Alert variant='danger'>{error}</Alert> :
                         result ? <ResultXMI2ShEx
                             result={result}
-                            mode={targetFormatMode(targetFormat)}
+                            mode={targetFormatMode('TURTLE')}
                             permalink={permalink}
                           /> :
                           ""

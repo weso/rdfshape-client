@@ -8,7 +8,7 @@ export const InitialUML = {
     textArea: '',
     url: '',
     file: null,
-    format: API.defaultShExFormat,
+    format: API.defaultXMLFormat,
     fromParams: false,
     codeMirror: null
 };
@@ -55,35 +55,35 @@ export function paramsFromStateUML(state) {
     return params;
 }
 
-export function updateStateUML(params, shex) {
+export function updateStateUML(params, xmi) {
     if (params['schema']) {
         return {
-            ...shex,
+            ...xmi,
             activeTab: API.byTextTab,
             textArea: params['schema'],
             fromParams: true,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shex.format
+            format: params['schemaFormat'] ? params['schemaFormat'] : xmi.format
         };
     }
     if (params['schemaUrl']) {
         return {
-            ...shex,
+            ...xmi,
             activeTab: API.byUrlTab,
             url: params['schemaUrl'],
             fromParams: false,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shex.format
+            format: params['schemaFormat'] ? params['schemaFormat'] : xmi.format
         }
     }
     if (params['schemaFile']) {
         return {
-            ...shex,
+            ...xmi,
             activeTab: API.byFileTab,
             file: params['schemaFile'],
             fromParams: false,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shex.format
+            format: params['schemaFormat'] ? params['schemaFormat'] : xmi.format
         }
     }
-    return shex;
+    return xmi;
 }
 
 export function mkUMLTabs(xmi,setXmi, name, subname) {
@@ -122,6 +122,8 @@ export function mkUMLTabs(xmi,setXmi, name, subname) {
 
             handleFileUpload={handleXmiFileUpload}
 
+			selectedFormat={xmi.format}
+			handleDataFormatChange={handleXmiFormatChange}
             setCodeMirror={(cm) => setXmi({...xmi, codeMirror: cm})}
 
             fromParams={xmi.fromParams}
