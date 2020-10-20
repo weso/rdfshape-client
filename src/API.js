@@ -72,6 +72,8 @@ class API {
     static byTextTab = "byText";
     static byUrlTab = "byUrl";
     static byFileTab = "byFile";
+    static xmiTab = "XMI";
+    static umlTab = "UML";
     static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
     static defaultInference = "None" ;

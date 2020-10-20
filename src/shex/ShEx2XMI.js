@@ -153,16 +153,19 @@ export default function ShEx2XMI(props) {
     function doRequest(cb) {
         setLoading(true)
         setProgressPercent(20)
-		let xmi = ""
+		let res = ""
+		let grf = ""
 		if(isShEx2UML) {
-			xmi = shumlex.shExToXMI(params.schema)
+			res = shumlex.shExToXMI(params.schema)
+			grf = shumlex.crearDiagramaUML(res)
 		}
 		else {
-			xmi = shumlex.XMIToShEx(params.schema)
+			res = shumlex.XMIToShEx(params.schema)
+			grf = shumlex.crearGrafo(res)
 		}
 		
 		setProgressPercent(90)
-		let result = { result: xmi, msg: "Éxito en la conversión" }
+		let result = { result: res, grafico: grf, msg: "Éxito en la conversión" }
 		setResult(result)
 		setProgressPercent(100)
 		setLoading(false)
@@ -264,6 +267,7 @@ export default function ShEx2XMI(props) {
                             result={result}
                             mode={targetFormatMode('TURTLE')}
                             permalink={permalink}
+							activeTab="XMI"
                           /> :
                           ""
                         }
