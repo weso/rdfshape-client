@@ -1,22 +1,22 @@
-import React, {Fragment, useEffect, useState} from 'react'
-import "bootstrap/dist/css/bootstrap.min.css"
-import Container from 'react-bootstrap/Container'
-import Button from 'react-bootstrap/Button'
-import API from "../API"
-import Form from "react-bootstrap/Form"
 import axios from "axios"
-import {dataParamsFromQueryParams} from "../utils/Utils"
-import {mkPermalink, mkPermalinkLong, params2Form, Permalink} from "../Permalink"
+import "bootstrap/dist/css/bootstrap.min.css"
 import qs from "query-string"
-import ShowSVG from "../svg/ShowSVG"
-import Row from "react-bootstrap/Row"
-import Col from "react-bootstrap/Col"
+import React, { Fragment, useEffect, useState } from 'react'
 import Alert from "react-bootstrap/Alert"
-import {InitialData, mkDataTabs, paramsFromStateData, updateStateData} from "./Data"
-import SelectFormat from "../components/SelectFormat"
-import { convertDot } from './dotUtils'
-import {ZoomInIcon, ZoomOutIcon} from "react-open-iconic-svg"
+import Button from 'react-bootstrap/Button'
+import Col from "react-bootstrap/Col"
+import Container from 'react-bootstrap/Container'
+import Form from "react-bootstrap/Form"
 import ProgressBar from "react-bootstrap/ProgressBar"
+import Row from "react-bootstrap/Row"
+import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg"
+import API from "../API"
+import SelectFormat from "../components/SelectFormat"
+import { mkPermalink, mkPermalinkLong, params2Form, Permalink } from "../Permalink"
+import ShowSVG from "../svg/ShowSVG"
+import { dataParamsFromQueryParams } from "../utils/Utils"
+import { InitialData, mkDataTabs, paramsFromStateData, updateStateData } from "./Data"
+import { convertDot } from './dotUtils'
 
 function  DataVisualize(props) {
 

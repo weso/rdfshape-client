@@ -1,9 +1,8 @@
-import React, {Fragment} from 'react'
 import PropTypes from "prop-types"
-import PrintJson from "../utils/PrintJson"
+import React, { Fragment } from 'react'
 import Alert from 'react-bootstrap/Alert'
-import {Permalink} from "../Permalink"
-import {error} from "cytoscape/src/util";
+import { Permalink } from "../Permalink"
+import PrintJson from "../utils/PrintJson"
 
 function ResultShExInfo(props) {
 

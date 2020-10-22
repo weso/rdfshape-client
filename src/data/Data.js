@@ -1,6 +1,6 @@
+import React from "react";
 import API from '../API';
 import DataTabs from "./DataTabs";
-import React, {useEffect} from "react";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
@@ -118,7 +118,7 @@ export function mkDataTabs(data, setData, name, subname) {
               resetFromParams={resetParams} />
         <SelectInferenceEngine
             handleInferenceChange={handleInferenceChange}
-            selectedInference={data.inference}
+            selectedInference={data.inference || InitialData.inference}
             fromParams={data.fromParams}
             resetFromParams={resetParams} />
       </React.Fragment>
