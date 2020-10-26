@@ -1,8 +1,8 @@
-import React, {Fragment} from 'react';
-import Code from '../components/Code';
-import { mkMode } from "../utils/Utils";
+import React, { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import {Permalink} from "../Permalink";
+import Code from '../components/Code';
+import { Permalink } from "../Permalink";
+import { mkMode } from "../utils/Utils";
 
 function ResultShapeMapInfo(props) {
     const result = props.result
@@ -42,6 +42,11 @@ function ResultShapeMapInfo(props) {
             </div>
         );
     }
+    else return (
+        <div>
+            <Alert variant='danger'>ShapeMap by URL/File not implemented</Alert>
+        </div>
+    );
 }
 
 

@@ -46,12 +46,23 @@ function ShExConvert(props) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
-      if (queryParams.schema) {
+      if (
+        queryParams.schema ||
+        queryParams.schemaURL ||
+        queryParams.schemaFile
+      ) {
         paramsShEx = shExParamsFromQueryParams(queryParams);
         // Update codemirror
-        const codeMirrorElement = document.querySelector(".yashe .CodeMirror");
-        if (codeMirrorElement && codeMirrorElement.CodeMirror)
-          codeMirrorElement.CodeMirror.setValue(queryParams.schema);
+        if (queryParams.schema) {
+          const codeMirrorElement = document.querySelector(
+            ".yashe .CodeMirror"
+          );
+          if (codeMirrorElement && codeMirrorElement.CodeMirror)
+            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
+        }
+
+        queryParams.schemaURL &&
+          setShex({ ...shex, url: queryParams.schemaURL });
       }
 
       let params = { ...paramsShEx };
@@ -62,7 +73,7 @@ function ShExConvert(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema) {
+      if (params.schema || params.schemaURL || params.schemaFile) {
         resetState();
         setUpHistory();
         postConvert();
@@ -176,7 +187,7 @@ function ShExConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExConvert result={result} permalink={permalink} />
+              <ResultShExConvert result={result} permalink={!params.schemaFile && permalink} />
             ) : null}
           </Col>
         ) : (
