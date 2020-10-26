@@ -39,6 +39,7 @@ function CytoSchema(props) {
             }
         }
     ]
+	
 
     return <div>
         <CytoscapeComponent
