@@ -24,11 +24,11 @@ export function updateStateData(params, data) {
             format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
         };
     }
-    if (params['dataUrl']) {
+    if (params['dataURL']) {
         return {
             ...data,
             activeTab: API.byUrlTab,
-            url: params['dataUrl'],
+            url: params['dataURL'],
             fromParams: false,
             format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
         }
