@@ -1,53 +1,53 @@
 import React from 'react';
-import './App.css';
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-import NotFound from './NotFound.js';
 import About from './About.js';
-import Home from './Home.js';
-
-import DataInfo from './data/DataInfo.js';
-import DataConvert from './data/DataConvert.js';
-import DataVisualize from './data/DataVisualize.js';
+import API from './API.js';
+import './App.css';
 import CytoVisualize from './cytoscape/CytoVisualize.js';
-import DataQuery from './data/DataQuery.js';
+import DataConvert from './data/DataConvert.js';
 import DataExtract from './data/DataExtract.js';
-
+import DataInfo from './data/DataInfo.js';
+import DataMerge from "./data/DataMerge";
+import DataMergeVisualize from "./data/DataMergeVisualize";
+import DataQuery from './data/DataQuery.js';
+import DataVisualize from './data/DataVisualize.js';
+import EndpointExtract from './endpoint/EndpointExtract.js';
 import EndpointInfo from './endpoint/EndpointInfo.js';
 import EndpointQuery from './endpoint/EndpointQuery.js';
-import EndpointExtract from './endpoint/EndpointExtract.js';
-
+import Home from './Home.js';
+import NotFound from './NotFound.js';
+import SHACL2ShEx from './shacl/SHACL2ShEx.js';
+import SHACLConvert from './shacl/SHACLConvert.js';
+import SHACLInfo from './shacl/SHACLInfo.js';
+import SHACLValidate from './shacl/SHACLValidate.js';
+import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
+import ShEx2Shacl from './shex/ShEx2Shacl.js';
+import ShExConvert from './shex/ShExConvert.js';
 import ShExInfo from './shex/ShExInfo.js';
 import ShExValidate from './shex/ShExValidate.js';
 import ShExValidateEndpoint from './shex/ShExValidateEndpoint.js';
-import ShExConvert from './shex/ShExConvert.js';
 import ShExVisualize from './shex/ShExVisualize.js';
 import ShExVisualizeCytoscape from './shex/ShExVisualizeCytoscape.js';
-import ShEx2Shacl from './shex/ShEx2Shacl.js';
-
-import SHACLInfo from './shacl/SHACLInfo.js';
-import SHACLValidate from './shacl/SHACLValidate.js';
-import SHACLConvert from './shacl/SHACLConvert.js';
-import SHACL2ShEx from './shacl/SHACL2ShEx.js';
-
-import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
-
-import WikidataValidate from './wikidata/WikidataValidate.js';
-import WikidataQuery from './wikidata/WikidataQuery.js';
-import WikidataExtract from './wikidata/WikidataExtract.js';
-import API from './API.js';
-
-// Only for testing
-import TestYashe from './test/TestYashe.js'
-import TestYasqe from './test/TestYasqe.js'
-import TestRDFArea from './test/TestRDFArea.js'
-import TestCyto from './test/TestCyto.js'
-import TestCode from './test/TestCode.js'
-import TestYate from './test/TestYate.js'
-import TestSearch from './test/TestSearch.js'
-import TestGithubSearch from './test/TestGithubSearch.js'
+import TestCode from './test/TestCode.js';
+import TestCyto from './test/TestCyto.js';
+import TestGithubSearch from './test/TestGithubSearch.js';
 import TestInputTabsWithFormat from "./test/TestInputTabsWithFormat";
-import DataMerge from "./data/DataMerge";
-import DataMergeVisualize from "./data/DataMergeVisualize";
+import TestRDFArea from './test/TestRDFArea.js';
+import TestSearch from './test/TestSearch.js';
+// Only for testing
+import TestYashe from './test/TestYashe.js';
+import TestYasqe from './test/TestYasqe.js';
+import TestYate from './test/TestYate.js';
+import WikidataExtract from './wikidata/WikidataExtract.js';
+import WikidataQuery from './wikidata/WikidataQuery.js';
+import WikidataValidate from './wikidata/WikidataValidate.js';
+
+
+
+
+
+
+
 
 function Routes() {
 

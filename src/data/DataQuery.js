@@ -11,25 +11,26 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import {
-    InitialQuery,
-    mkQueryTabs,
-    paramsFromStateQuery,
-    queryParamsFromQueryParams,
-    updateStateQuery
+  convertTabQuery,
+  InitialQuery,
+  mkQueryTabs,
+  paramsFromStateQuery,
+  queryParamsFromQueryParams,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataQuery(props) {
@@ -52,28 +53,29 @@ function DataQuery(props) {
         (queryParams.data || queryParams.dataURL || queryParams.dataFile) &&
         (queryParams.query || queryParams.queryURL || queryParams.queryFile)
       ) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          ...queryParamsFromQueryParams(queryParams),
-        };
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const queryDataParams = queryParamsFromQueryParams(queryParams);
+
         setData(updateStateData(dataParams, data) || data);
-        setQuery(updateStateQuery(dataParams, query) || query);
+        setQuery(updateStateQuery(queryDataParams, query) || query);
 
-        // Update text areas correctly
-        const codemirrors = document.querySelectorAll(".react-codemirror2");
-        if (codemirrors.length > 0) {
-          if (queryParams.data && codemirrors[0]) {
-            const cm = codemirrors[0].firstChild.CodeMirror;
-            if (cm) cm.setValue(queryParams.data);
-          }
-          if (queryParams.query && codemirrors[1]) {
-            const cm = codemirrors[1].firstChild.CodeMirror;
-            if (cm) cm.setValue(queryParams.query);
-          }
-        }
+        // setParams({ ...paramsFromStateData(dataParams), ...paramsFromStateQuery(queryDataParams) });
+        // setLastParams({ ...paramsFromStateData(dataParams), ...paramsFromStateQuery(queryDataParams) });
 
-        setParams(dataParams);
-        setLastParams(dataParams);
+        // console.log("DATA: ", data)
+        // console.log("DATA PARAMS: ", dataParams)
+        console.log("QUERY PARAMS: ", queryDataParams);
+
+        const activeTab = queryDataParams.query
+          ? convertTabQuery(API.byTextTab)
+          : queryDataParams.queryURL
+          ? convertTabQuery(API.byUrlTab)
+          : queryDataParams.queryFile
+          ? convertTabQuery(API.byFileTab)
+          : "unknown";
+
+        setParams({ ...dataParams, ...queryDataParams, activeTab });
+        setLastParams({ ...dataParams, ...queryDataParams , activeTab});
       } else {
         setError("Could not parse URL data");
       }
@@ -199,10 +201,22 @@ function DataQuery(props) {
                 ) : result ? (
                   <ResultEndpointQuery result={result} error={error} />
                 ) : null}
-                {!params.dataFile &&
-                  !params.queryFile &&
-                  permalink &&
-                  !error && <Permalink url={permalink} />}
+                {permalink && !error && (
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      (data.activeTab == API.byTextTab ||
+                        query.activeTab == API.byTextTab) &&
+                      data.textArea.length + query.textArea.length >
+                        API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab == API.byFileTab ||
+                          query.activeTab == API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
+                )}
               </Col>
             </Fragment>
           </Col>

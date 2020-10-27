@@ -15,10 +15,10 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -47,12 +47,20 @@ function DataExtract(props) {
         if (dataParams["nodeSelector"])
           setNodeSelector(dataParams["targetDataFormat"]);
 
-        // Update Codemirror
         if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
+          setData({
+            ...data,
+            activeTab: API.byTextTab,
+            textArea: queryParams.data,
+          });
+        } else if (queryParams.dataURL) {
+          setData({
+            ...data,
+            activeTab: API.byUrlTab,
+            url: queryParams.dataURL,
+          });
+        } else {
+          setData({ ...data, activeTab: API.byFileTab });
         }
 
         setParams(queryParams);
@@ -180,7 +188,15 @@ function DataExtract(props) {
               ) : result ? (
                 <ResultDataExtract
                   result={result}
-                  permalink={!params.dataFile && permalink}
+                  permalink={permalink}
+                  disabled={
+                    data.activeTab == API.byTextTab &&
+                    data.textArea.length > API.byTextCharacterLimit
+                      ? API.byTextTab
+                      : data.activeTab == API.byFileTab
+                      ? API.byFileTab
+                      : false
+                  }
                 />
               ) : null}
             </Fragment>

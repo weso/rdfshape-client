@@ -12,16 +12,16 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "../data/Data";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 
@@ -41,6 +41,7 @@ function CytoVisualize(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   useEffect(() => {
+    console.log("LOADED!")
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
@@ -49,13 +50,6 @@ function CytoVisualize(props) {
           targetDataFormat: "JSON",
         };
         setData(updateStateData(dataParams, data) || data);
-
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirror = document.querySelector(".react-codemirror2")
-            .firstChild.CodeMirror;
-          if (codeMirror) codeMirror.setValue(dataParams.data);
-        }
 
         setParams(dataParams);
         setLastParams(dataParams);
@@ -170,7 +164,18 @@ function CytoVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  {!params.dataFile && <Permalink url={permalink} />}
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      data.activeTab == API.byTextTab &&
+                      data.textArea.length > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab == API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
+
                   <Button
                     onClick={() => setLayoutName(cose)}
                     className="btn-zoom"

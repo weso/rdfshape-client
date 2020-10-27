@@ -8,7 +8,8 @@ export const InitialQuery = {
     textArea: '',
     url: '',
     file: null,
-    fromParams: false
+    fromParams: false,
+    codeMirror: null
 } ;
 
 export function paramsFromStateQuery(state) {
@@ -104,6 +105,15 @@ export function mkQueryTabs(query,setQuery, name, subname) {
 }
 
 export function queryParamsFromQueryParams(params) {
-    if (params["queryURL"]) params["url"] = params["queryURL"];
-    return params;
+    // if (params["queryURL"]) params["url"] = params["queryURL"];
+    // return params;
+
+    let newParams = {};
+    if (params.query) newParams["query"] = params.query ;
+    if (params.queryURL) {
+        newParams["queryURL"] = params.queryURL;
+        // newParams["url"] = params.queryURL;
+    }
+    if (params.queryFile) newParams["queryFile"] = params.queryFile ;
+    return newParams;
 }

@@ -87,6 +87,9 @@ class API {
 
     static testInputTabsWithFormatRoute = "/test/inputTabsWithFormat"
 
+    // By text limitations
+    static byTextCharacterLimit = 2200
+
 }
 
 export default API;

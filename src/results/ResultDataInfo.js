@@ -39,7 +39,7 @@ function ResultDataInfo(props) {
                 { props.permalink &&
                 <Fragment>
                     <hr/>
-                    <Permalink url={props.permalink}/>
+                    <Permalink url={props.permalink} disabled={props.disabled}/>
                 </Fragment>
                 }
             </div>

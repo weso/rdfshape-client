@@ -32,6 +32,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
     "react-toastify": "^6.0.5",
+    "react-tooltip": "^4.2.10",
     "viz.js": "^2.1.2",
     "yasgui-yasqe": "^2.11.22",
     "yashe": "^1.2.22"

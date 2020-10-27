@@ -14,10 +14,10 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataConvert(props) {
@@ -50,14 +50,6 @@ function DataConvert(props) {
 
         setData(updateStateData(dataParams, data) || data);
 
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
-
         setParams(dataParams);
         setLastParams(dataParams);
       } else {
@@ -68,7 +60,7 @@ function DataConvert(props) {
 
   useEffect(() => {
     if (params) {
-        console.log("DATAA!: ", data)
+      console.log("DATAA!: ", data);
       if (params.data || params.dataURL || params.dataFile) {
         resetState();
         setUpHistory();
@@ -179,7 +171,15 @@ function DataConvert(props) {
             ) : result ? (
               <ResultDataConvert
                 result={result}
-                permalink={!params.dataFile && permalink}
+                permalink={permalink}
+                disabled={
+                  data.activeTab == API.byTextTab &&
+                  data.textArea.length > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data.activeTab == API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>

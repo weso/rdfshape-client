@@ -13,10 +13,10 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataInfo(props) {
@@ -39,15 +39,7 @@ function DataInfo(props) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
-
         setData(updateStateData(dataParams, data) || data);
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
 
         setParams(dataParams);
         setLastParams(dataParams);
@@ -169,7 +161,15 @@ function DataInfo(props) {
                   resetFromParams={() =>
                     setData({ ...data, fromParams: false })
                   }
-                  permalink={!params.dataFile && permalink}
+                  permalink={permalink}
+                  disabled={
+                    data.activeTab == API.byTextTab &&
+                    data.textArea.length > API.byTextCharacterLimit
+                      ? API.byTextTab
+                      : data.activeTab == API.byFileTab
+                      ? API.byFileTab
+                      : false
+                  }
                 />
               ) : null}
             </Col>

@@ -13,18 +13,18 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -60,14 +60,6 @@ function DataVisualize(props) {
         };
 
         setData(updateStateData(dataParams, data) || data);
-
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
 
         setParams(dataParams);
         setLastParams(dataParams);
@@ -203,7 +195,17 @@ function DataVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  {!params.dataFile && <Permalink url={permalink} />}
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      data.activeTab == API.byTextTab &&
+                      data.textArea.length > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab == API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
                   <Button
                     onClick={() => zoomSvg(false)}
                     className="btn-zoom"

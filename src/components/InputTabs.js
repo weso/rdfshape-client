@@ -1,15 +1,19 @@
-import React, {useState} from 'react';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-import ByURL from './ByURL';
+import Tabs from 'react-bootstrap/Tabs';
+import API from '../API';
 import ByFile from './ByFile';
 import ByText from './ByText';
-import PropTypes from "prop-types";
-import API from '../API'
+import ByURL from './ByURL';
 
 function InputTabs(props) {
     const [activeTab, setActiveTab] = useState(props.activeTab)
+
+    useEffect(() => {
+        handleTabChange(props.activeTab)
+    }, [props.activeTab])
 
     function handleTabChange(e) {
         setActiveTab(e)
