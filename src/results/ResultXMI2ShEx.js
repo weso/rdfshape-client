@@ -45,7 +45,7 @@ function ResultXMI2ShEx(props) {
 					<details><PrintJson json={result} /></details>
                 </Tab>
                 <Tab eventKey={API.umlTab} title="ShEx Graph">
-					<div id="grafoshex"></div>
+					<div id="grafoshex" style={{width: "100%", height: "650px", border: "double black", "margin-top": "1em"}}></div>
 					<details id="jsongrafo"><PrintJson json={result.grafico}/></details>
                 </Tab>
       

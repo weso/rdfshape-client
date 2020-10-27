@@ -139,30 +139,34 @@ let defaults = {
     }, [params])
 	
 	useEffect( () => {
-		
-        console.log($("#jsongrafo pre").html());
-        //console.log(JSON.parse($("#jsongrafo pre").html()));
+		let json = $("#jsongrafo pre").text();
+		let els = null;
+        
+		if(json !== "") {
+			els = JSON.parse(json);
+		}
+        console.log(els);
 		cyto.use( dagre );
 		//panzoom( cyto );
-		let elements = null;
-		if(elements != null) {
+		
+		if(els != null) {
 			let cy = cyto({
 
-        container: document.getElementById('grafoshex'), // Contenedor
+				container: document.getElementById('grafoshex'), // Contenedor
 
-        elements: null,
+				elements: els,
 
-        style: style,
+				style: style,
 
-        layout: {
-            name: 'dagre',
-            nodeSep: 60,
-            edgeSep: 40,
-            rankSep: 80
-        }
+				layout: {
+					name: 'dagre',
+					nodeSep: 60,
+					edgeSep: 40,
+					rankSep: 80
+				}
 
     });
-    cy.panzoom( defaults );
+    //cy.panzoom( defaults );
 		}	
     }, [result])
 
