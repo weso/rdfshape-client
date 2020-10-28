@@ -1,7 +1,6 @@
+import React from "react";
 import API from "../API";
 import ShapeMapTabs from "./ShapeMapTabs";
-import React from "react";
-import QueryTabs from "../query/QueryTabs";
 
 export const InitialShapeMap = {
     activeTab: API.defaultTab,
@@ -33,6 +32,7 @@ export function paramsFromStateShapeMap(state) {
     const format = state.format;
     const url = state.url;
     const file = state.file;
+    console.log(activeTab)
     let params = {};
     params['shapeMapActiveTab'] = convertTabShapeMap(activeTab);
     params['shapeMapFormat'] = format;
@@ -41,7 +41,7 @@ export function paramsFromStateShapeMap(state) {
             params['shapeMap'] = textArea;
             params['shapeMapFormatTextArea'] = format;
             break;
-        case "byURL":
+        case "byUrl":
             params['shapeMapURL'] = url;
             params['shapeMapFormatURL'] = format;
             break;

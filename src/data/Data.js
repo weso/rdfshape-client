@@ -1,6 +1,6 @@
+import React from "react";
 import API from '../API';
 import DataTabs from "./DataTabs";
-import React, {useEffect} from "react";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
@@ -24,11 +24,11 @@ export function updateStateData(params, data) {
             format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
         };
     }
-    if (params['dataUrl']) {
+    if (params['dataURL']) {
         return {
             ...data,
             activeTab: API.byUrlTab,
-            url: params['dataUrl'],
+            url: params['dataURL'],
             fromParams: false,
             format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
         }
@@ -118,7 +118,7 @@ export function mkDataTabs(data, setData, name, subname) {
               resetFromParams={resetParams} />
         <SelectInferenceEngine
             handleInferenceChange={handleInferenceChange}
-            selectedInference={data.inference}
+            selectedInference={data.inference || InitialData.inference}
             fromParams={data.fromParams}
             resetFromParams={resetParams} />
       </React.Fragment>

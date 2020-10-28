@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
-import 'yashe/dist/yashe.min.css'
-import Yashe from 'yashe/dist/yashe.bundled.min';
 import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from 'react';
+import Yashe from 'yashe/dist/yashe.bundled.min';
+import 'yashe/dist/yashe.min.css';
 
 function ShExForm(props) {
     const [yashe,setYashe] = useState(null);
@@ -14,11 +14,8 @@ function ShExForm(props) {
                 readonly: props.readonly,
                 start: { line: 0 }
             };
-            console.log(`Before Yashe.fromTextArea`);
-            console.log(`Before Yashe.fromTextArea`);
-            console.log(textAreaRef.current);
+
             const y = Yashe.fromTextArea(textAreaRef.current, options);
-            console.log(`After Yashe.fromTextArea`);
             if (props.setCodeMirror) props.setCodeMirror(y);
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())

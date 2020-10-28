@@ -1,9 +1,9 @@
 // import React from 'react';
+import React, { Fragment } from "react";
+import { ExternalLinkIcon } from "react-open-iconic-svg";
+import { Slide } from "react-toastify";
 import Viz from 'viz.js/viz.js';
-import React, {Fragment} from "react";
 import API from "../API";
-import {ExternalLinkIcon} from "react-open-iconic-svg";
-import {Slide} from "react-toastify";
 
 const { Module, render } = require('viz.js/full.render.js');
 
@@ -41,7 +41,7 @@ export function dataParamsFromQueryParams(params) {
     let newParams = {};
     if (params.data) newParams["data"] = params.data ;
     if (params.dataFormat) newParams["dataFormat"] = params.dataFormat ;
-    if (params.dataUrl) newParams["dataUrl"] = params.dataUrl ;
+    if (params.dataURL) newParams["dataURL"] = params.dataURL ;
     if (params.inference) newParams["inference"] = params.inference ;
     return newParams;
 }

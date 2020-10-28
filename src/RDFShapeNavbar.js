@@ -1,9 +1,9 @@
-import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from 'react-bootstrap/Navbar';
+import React from 'react';
 import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import API from './API.js'
+import API from './API.js';
 
 
 class RDFShapeNavbar extends React.Component {
@@ -28,7 +28,6 @@ class RDFShapeNavbar extends React.Component {
                         <NavDropdown title="Endpoint" id="basic-nav-dropdown">
                             <NavDropdown.Item href={API.endpointInfoRoute}>Endpoint Info</NavDropdown.Item>
                             <NavDropdown.Item href={API.endpointQueryRoute}>Query</NavDropdown.Item>
-                            <NavDropdown.Item href={API.endpointExtractRoute}>Extract ShEx</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="ShEx" id="basic-nav-dropdown">
                             <NavDropdown.Item href={API.shExValidateRoute} >Validate data with ShEx</NavDropdown.Item>

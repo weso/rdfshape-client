@@ -1,7 +1,6 @@
+import React from "react";
 import API from "../API";
 import QueryTabs from "./QueryTabs";
-import React from "react";
-import DataTabs from "../data/DataTabs";
 // import ShExTabs from "../shex/ShExTabs";
 
 export const InitialQuery = {
@@ -20,7 +19,7 @@ export function paramsFromStateQuery(state) {
         case "byText":
             params['query'] = state.textArea;
             break;
-        case "byURL":
+        case "byUrl":
             params['queryURL'] = state.url;
             break;
         case "byFile":
@@ -52,11 +51,11 @@ export function updateStateQuery(params, query) {
             format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
         };
     }
-    if (params['queryUrl']) {
+    if (params['queryURL']) {
         return {
             ...query,
             activeTab: API.byUrlTab,
-            url: params['queryUrl'],
+            url: params['queryURL'],
             fromParams: false,
             format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
         }
@@ -92,7 +91,7 @@ export function mkQueryTabs(query,setQuery, name, subname) {
             handleByTextChange={handleQueryByTextChange}
 
             urlValue={query.url}
-            handleDataUrlChange={handleQueryUrlChange}
+            handleUrlChange={handleQueryUrlChange}
 
             handleFileUpload={handleQueryFileUpload}
             setCodeMirror={(cm) => setQuery({...query, codeMirror: cm})}
@@ -105,5 +104,6 @@ export function mkQueryTabs(query,setQuery, name, subname) {
 }
 
 export function queryParamsFromQueryParams(params) {
+    if (params["queryURL"]) params["url"] = params["queryURL"];
     return params;
 }
