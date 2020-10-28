@@ -60,6 +60,7 @@ class API {
     static shaclConvertRoute = "/shaclConvert";
     static shacl2ShExRoute = "/shacl2ShEx";
     static shaclValidateRoute = "/shaclValidate";
+    static jenaShaclValidateRoute = "/jenaShaclValidate";
 
     static shapeMapInfoRoute = "/shapeMapInfo";
 

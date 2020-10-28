@@ -25,8 +25,10 @@ function ResultValidateShacl(props) {
                         <Alert variant="danger">Invalid data</Alert> :
                         result.message && <Alert variant="success">{result.message} </Alert>
                     }
+{/*
                     {result.shapeMap.length === 0 && <Alert variant="info">
-                        Validation was successful but no results were obtained, check the if the input data is coherent</Alert>}
+                        Validation OK </Alert>}
+*/}
                     { props.permalink &&
                     <Fragment>
                         <Code mode='turtle' value={result.validationReport} readonly={true} />

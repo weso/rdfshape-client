@@ -40,7 +40,8 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href={API.shEx2XMIRoute}>ShEx &#10231; UML</NavDropdown.Item>
                         </NavDropdown>
                         <NavDropdown title="SHACL" id="basic-nav-dropdown">
-                            <NavDropdown.Item href={API.shaclValidateRoute}>Validate data with SHACL</NavDropdown.Item>
+                            <NavDropdown.Item href={API.shaclValidateRoute}>Validate (SHaclEX)</NavDropdown.Item>
+                            <NavDropdown.Item href={API.jenaShaclValidateRoute}>Validate (JenaSHACL)</NavDropdown.Item>
                             <NavDropdown.Item href={API.shaclConvertRoute}>Convert SHACL formats</NavDropdown.Item>
                             <NavDropdown.Item href={API.shacl2ShExRoute}>SHACL &#8594; ShEx</NavDropdown.Item>
                         </NavDropdown>
