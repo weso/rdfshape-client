@@ -1,6 +1,6 @@
 import React from 'react';
-import InputTabsWithFormat from "../components/InputTabsWithFormat";
-import ShExForm from "./ShExForm";
+import InputTabs from "../components/InputTabs";
+import ShExForm from "../shex/ShExForm";
 import API from "../API";
 import PropTypes from "prop-types";
 
@@ -15,8 +15,8 @@ function ShExTabs(props) {
 
     return (
         <div>
-            <InputTabsWithFormat
-                nameInputTab={props.name || ""}
+            <InputTabs
+                name={"ShEx Input (ShExC)"}
                 activeTab={props.activeTab}
                 handleTabChange={props.handleTabChange}
 
