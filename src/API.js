@@ -54,6 +54,7 @@ class API {
     static shEx2ShaclRoute = "/shEx2Shacl";
     static shExValidateRoute = "/shExValidate";
     static shExValidateEndpointRoute = "/shExValidateEndpoint";
+	static shEx2XMIRoute = "/shEx2XMI";
 
     static shaclInfoRoute = "/shaclInfo";
     static shaclConvertRoute = "/shaclConvert";
@@ -71,6 +72,8 @@ class API {
     static byTextTab = "byText";
     static byUrlTab = "byUrl";
     static byFileTab = "byFile";
+    static xmiTab = "XMI";
+    static umlTab = "UML";
     static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
     static defaultInference = "None" ;
@@ -78,6 +81,7 @@ class API {
     static defaultSHACLFormat = "TURTLE";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
+    static defaultXMLFormat = "xml";
 
     static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
 
