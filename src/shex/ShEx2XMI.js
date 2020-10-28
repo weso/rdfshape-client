@@ -145,7 +145,6 @@ let defaults = {
 		if(json !== "") {
 			els = JSON.parse(json);
 		}
-        console.log(els);
 		cyto.use( dagre );
 		//panzoom( cyto );
 		
@@ -239,23 +238,35 @@ let defaults = {
     }
 
     function doRequest(cb) {
+		resetState();
         setLoading(true)
         setProgressPercent(20)
 		let res = ""
 		let grf = ""
-		if(isShEx2UML) {
-			res = shumlex.shExToXMI(params.schema)
-			grf = shumlex.crearDiagramaUML(res)
+		try {
+			if(isShEx2UML) {
+				res = shumlex.shExToXMI(params.schema)
+				grf = shumlex.crearDiagramaUML(res)
+			}
+			else {
+				res = shumlex.XMIToShEx(params.schema)
+				grf = shumlex.crearGrafo(res)
+			}
+			setProgressPercent(90)
+			let result = { result: res, grafico: grf, msg: "Succesful conversion" }
+			setResult(result)
+			setProgressPercent(100)
 		}
-		else {
-			res = shumlex.XMIToShEx(params.schema)
-			grf = shumlex.crearGrafo(res)
+		catch(error) {
+			console.log(error);
+			if(isShEx2UML) {
+				setError("An error has occurred while creating the UML equivalent. Check the input.");
+			}
+			else {
+				setError("An error has occurred while creating the ShEx equivalent. Check the input.");
+			}
 		}
 		
-		setProgressPercent(90)
-		let result = { result: res, grafico: grf, msg: "Éxito en la conversión" }
-		setResult(result)
-		setProgressPercent(100)
 		setLoading(false)
     }
 
@@ -307,7 +318,7 @@ let defaults = {
                     </Form>
                 </Col>
                 { loading || result || error || permalink ?
-                  <Col className={"half-col"}>
+                  <Col className={"half-col"} style={{"marginTop": "1.95em"}}>
                       {
                         loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                         error ? <Alert variant='danger'>{error}</Alert> :
@@ -350,7 +361,7 @@ let defaults = {
                     </Form>
                 </Col>
                 { loading || result || error || permalink ?
-                  <Col className={"half-col"}>
+                  <Col className={"half-col"} style={{"marginTop": "1.95em"}}>
                       {
                         loading ? <ProgressBar striped animated variant="info" now={progressPercent}/> :
                         error ? <Alert variant='danger'>{error}</Alert> :
@@ -369,7 +380,7 @@ let defaults = {
                 }
             </Row>
 			<Row>
-				<Button id="shex2uml" variant="secondary"
+				<Button id="shex2uml" variant="secondary" onClick={loadOppositeConversion}
                                 className={"btn-with-icon " + (loading ? "disabled" : "")} disabled={loading}>
                             Load ShEx to UML converter
                         </Button>

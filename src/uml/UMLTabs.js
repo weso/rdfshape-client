@@ -6,24 +6,24 @@ import PropTypes from "prop-types";
 
 function UMLTabs(props) {
 
-    const umlForm = <UMLForm // id="textAreaShEx"
+    const umlForm = null/**<UMLForm // id="textAreaShEx"
                                onChange={props.handleByTextChange}
                                setCodeMirror={props.setCodeMirror}
                                fromParams={props.fromParams}
                                resetFromParams={props.resetFromParams}
-                               value={props.textAreaValue} />;
+                               value={props.textAreaValue} />;**/
 
     return (
         <div>
             <InputTabs
                 name={"UML Input (XMI)"}
                 activeTab={props.activeTab}
-                handleTabChange={props.handleXmiTabChange}
+                handleTabChange={props.handleTabChange}
 
                 byTextName={props.subname || ""}
                 textAreaValue={props.textAreaValue}
                 byTextPlaceholder="XMI..."
-                handleByTextChange={props.handleXmiByTextChange}
+                handleByTextChange={props.handleByTextChange}
                 setCodeMirror = {props.setCodeMirror}
                 inputForm={umlForm}
 
@@ -33,11 +33,11 @@ function UMLTabs(props) {
                 byURLPlaceholder="http://..."
 
                 byFileName="XMI File"
-                handleFileUpload={props.handleXmiFileUpload}
+                handleFileUpload={props.handleFileUpload}
 
                 nameFormat="XMI format"
                 mode={props.selectedFormat}
-                handleFormatChange={props.handleXmiFormatChange}
+                handleFormatChange={props.handleFormatChange}
                 urlFormats={API.shExFormats}
 
                 fromParams = {props.fromParams}

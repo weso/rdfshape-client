@@ -123,7 +123,7 @@ export function mkUMLTabs(xmi,setXmi, name, subname) {
             handleFileUpload={handleXmiFileUpload}
 
 			selectedFormat={xmi.format}
-			handleDataFormatChange={handleXmiFormatChange}
+			handleFormatChange={handleXmiFormatChange}
             setCodeMirror={(cm) => setXmi({...xmi, codeMirror: cm})}
 
             fromParams={xmi.fromParams}

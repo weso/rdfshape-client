@@ -41,7 +41,7 @@ function ResultXMI2ShEx(props) {
                   onSelect={handleTabChange}
             >
 			<Tab eventKey={API.xmiTab} title="ShEx">
-                    { result.result && <Code value={result.result} mode={props.mode}/> }
+                    { result.result && <Code value={result.result} mode={props.mode} onChange={function (val) {return val}}/> }
 					<details><PrintJson json={result} /></details>
                 </Tab>
                 <Tab eventKey={API.umlTab} title="ShEx Graph">

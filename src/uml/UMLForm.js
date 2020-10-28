@@ -59,6 +59,7 @@ UMLForm.propTypes = {
 
 UMLForm.defaultProps = {
     value: '',
+	mode: 'xml',
     readonly: false
 }
 
