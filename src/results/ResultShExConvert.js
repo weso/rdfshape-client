@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react';
-import Code from '../components/Code';
-import { mkMode } from "../utils/Utils";
-import {Permalink} from "../Permalink";
+import React, { Fragment } from 'react';
 import Alert from "react-bootstrap/Alert";
+import Code from '../components/Code';
+import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import { mkMode } from "../utils/Utils";
 
 
 function ResultShExConvert(props) {
@@ -34,7 +34,7 @@ function ResultShExConvert(props) {
         {
           props.permalink &&
           <Fragment>
-            <Permalink url={props.permalink}/>
+            <Permalink url={props.permalink} disabled={props.disabled}/>
             <hr/>
           </Fragment>
         }

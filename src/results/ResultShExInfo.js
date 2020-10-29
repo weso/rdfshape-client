@@ -27,7 +27,7 @@ function ResultShExInfo(props) {
           {
             props.permalink &&
             <Fragment>
-              <Permalink url={props.permalink}/>
+              <Permalink url={props.permalink} disabled={props.disabled}/>
               <hr/>
             </Fragment>
           }

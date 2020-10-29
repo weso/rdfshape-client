@@ -13,10 +13,11 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import {
-    convertTabSchema,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams
+  convertTabSchema,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 export default function ShEx2Shacl(props) {
@@ -45,27 +46,27 @@ export default function ShEx2Shacl(props) {
         queryParams.shExUrl ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
+        const schemaParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
+        console.log("PARSED SCHEMA: ", finalSchema)
 
-        queryParams.shExUrl &&
-          setShEx({ ...shex, url: queryParams.shExUrl });
+        setShEx(finalSchema);
+        paramsShEx = finalSchema;
       }
 
+      // let params = {
+      //   ...paramsShEx,
+      //   ...mkServerParams(queryParams.targetFormat),
+      //   schema: queryParams.schema,
+      //   schemaEngine: "ShEx",
+      //   targetSchemaEngine: "SHACL",
+      // };
+
       let params = {
-        ...paramsShEx,
-        ...mkServerParams(queryParams.targetFormat),
-        schema: queryParams.schema,
+        ...mkServerParams(queryParams.targetFormat || "TURTLE"),
         schemaEngine: "ShEx",
         targetSchemaEngine: "SHACL",
-      };
+      }
 
       setParams(params);
       setLastParams(params);
@@ -75,6 +76,8 @@ export default function ShEx2Shacl(props) {
   useEffect(() => {
     if (params && !loading) {
       if (params.schema || params.schemaURL || params.schemaFile) {
+        console.log("SENT PARAMS:", params)
+
         resetState();
         setUpHistory();
         postRequest();
