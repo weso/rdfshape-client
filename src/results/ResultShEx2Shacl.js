@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react'
 import PropTypes from "prop-types"
-import PrintJson from "../utils/PrintJson"
+import React, { Fragment } from 'react'
+import Alert from "react-bootstrap/Alert"
 import Code from "../components/Code"
-import {Permalink} from "../Permalink"
-import Alert from "react-bootstrap/Alert";
+import { Permalink } from "../Permalink"
+import PrintJson from "../utils/PrintJson"
 
 function ResultShEx2Shacl(props) {
   const result = props.result
@@ -30,7 +30,7 @@ function ResultShEx2Shacl(props) {
       { props.permalink &&
       <Fragment>
         <hr/>
-        <Permalink url={props.permalink}/>
+        <Permalink url={props.permalink} disabled={props.disabled}/>
       </Fragment>
       }
     </div>

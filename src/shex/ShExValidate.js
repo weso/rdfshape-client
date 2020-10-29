@@ -76,7 +76,6 @@ function ShExValidate(props) {
         queryParams.schemaFile
       ) {
         const shexParams = shExParamsFromQueryParams(queryParams);
-        console.log("PARSED SHEX PARAMS: ", shexParams);
         const finalSchema = updateStateShEx(shexParams, shex) || shex;
         paramsShEx = finalSchema;
         setShEx(finalSchema);
@@ -88,7 +87,6 @@ function ShExValidate(props) {
         queryParams.shapeMapFile
       ) {
         const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
-        console.log("PARSED SHAPEMAP PARAMS: ", shapeMapParams);
         const finalShapeMap =
           updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
         paramsShapeMap = finalShapeMap;
@@ -118,8 +116,6 @@ function ShExValidate(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      console.log("SENT PARAMS: ", params);
-      console.log("SENT DATA: ", data, shex, shapeMap);
       if (!(params.data || params.dataURL || params.dataFile))
         setError("No RDF data provided");
       else if (!(params.schema || params.schemaURL || params.schemaFile))
@@ -127,7 +123,6 @@ function ShExValidate(props) {
       else if (!(params.shapeMap || params.shapeMapURL || params.shapeMapFile))
         setError("No ShapeMap provided");
       else {
-        console.log("DATA: ", data);
         resetState();
         setUpHistory();
         postValidate();
@@ -273,9 +268,9 @@ function ShExValidate(props) {
                   permalink
                 }
                 disabled={
-                  data.activeTab == API.byTextTab &&
-                  shex.activeTab == API.byTextTab &&
-                  shapeMap.activeTab == API.byTextTab &&
+                  (data.activeTab == API.byTextTab ||
+                  shex.activeTab == API.byTextTab ||
+                  shapeMap.activeTab == API.byTextTab) &&
                   data.textArea.length +
                     shex.textArea.length +
                     shapeMap.textArea.length >

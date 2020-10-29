@@ -62,6 +62,7 @@ function ShExVisualize(props) {
   useEffect(() => {
     if (params && !loading) {
       if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
+        console.log("SENT PARAMS: ", params)
         resetState();
         setUpHistory();
         postVisualize();
