@@ -9,22 +9,30 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { InitialData, mkDataTabs, paramsFromStateData } from "../data/Data";
+import {
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
+} from "../data/Data";
+import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
-    InitialShapeMap,
-    mkShapeMapTabs,
-    paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams
+  InitialShapeMap,
+  mkShapeMapTabs,
+  paramsFromStateShapeMap,
+  shapeMapParamsFromQueryParams,
+  updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExValidate(props) {
@@ -56,33 +64,22 @@ function ShExValidate(props) {
         paramsEndpoint = {};
 
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        paramsData = dataParamsFromQueryParams(queryParams);
-        // Update codemirror 1
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[0].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.data);
-        }
-        queryParams.dataURL && setData({...data, url: queryParams.dataURL})
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        paramsData = finalData;
+        setData(finalData);
       }
+
       if (
         queryParams.schema ||
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror 2
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL && setShEx({...shex, url: queryParams.schemaURL})
+        const shexParams = shExParamsFromQueryParams(queryParams);
+        console.log("PARSED SHEX PARAMS: ", shexParams);
+        const finalSchema = updateStateShEx(shexParams, shex) || shex;
+        paramsShEx = finalSchema;
+        setShEx(finalSchema);
       }
 
       if (
@@ -90,26 +87,28 @@ function ShExValidate(props) {
         queryParams.shapeMapURL ||
         queryParams.shapeMapFile
       ) {
-        paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-        // Update codemirror 3
-        if (queryParams.shapeMap) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[1].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap);
-        }
-
-        queryParams.shapeMapURL && setShapeMap({...shapeMap, url: queryParams.shapeMapURL})
+        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
+        console.log("PARSED SHAPEMAP PARAMS: ", shapeMapParams);
+        const finalShapeMap =
+          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
+        paramsShapeMap = finalShapeMap;
+        setShapeMap(finalShapeMap);
       }
 
-      if (queryParams.endpoint)
-        paramsEndpoint["endpoint"] = queryParams.endpoint;
+      // Endpoint State
+      if (queryParams.endpoint) {
+        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
+        setEndpoint(paramsEndpoint.endpoint);
+        setWithEndpoint(!!paramsEndpoint.endpoint);
+      }
+
       let params = {
-        ...paramsData,
-        ...paramsShEx,
-        ...paramsShapeMap,
-        ...paramsEndpoint,
+        ...paramsFromStateData(paramsData),
+        ...paramsFromStateShEx(paramsShEx),
+        ...paramsFromStateShapeMap(paramsShapeMap),
+        endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
+        schemaEngine: "ShEx",
+        triggerMode: "shapeMap",
       };
 
       setParams(params);
@@ -119,6 +118,8 @@ function ShExValidate(props) {
 
   useEffect(() => {
     if (params && !loading) {
+      console.log("SENT PARAMS: ", params);
+      console.log("SENT DATA: ", data, shex, shapeMap);
       if (!(params.data || params.dataURL || params.dataFile))
         setError("No RDF data provided");
       else if (!(params.schema || params.schemaURL || params.schemaFile))
@@ -126,7 +127,7 @@ function ShExValidate(props) {
       else if (!(params.shapeMap || params.shapeMapURL || params.shapeMapFile))
         setError("No ShapeMap provided");
       else {
-          console.log("DATA: ", data)
+        console.log("DATA: ", data);
         resetState();
         setUpHistory();
         postValidate();
@@ -142,16 +143,11 @@ function ShExValidate(props) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    const paramsEndpoint = {};
-    if (endpoint !== "") {
-      paramsEndpoint["endpoint"] = endpoint;
-    }
-
     setParams({
       ...paramsFromStateData(data),
       ...paramsFromStateShEx(shex),
       ...paramsFromStateShapeMap(shapeMap),
-      ...paramsEndpoint,
+      endpoint,
       schemaEngine: "ShEx",
       triggerMode: "shapeMap",
     });
@@ -225,7 +221,12 @@ function ShExValidate(props) {
             {mkDataTabs(data, setData, "RDF input")}
             <Button
               variant="secondary"
-              onClick={() => setWithEndpoint(!withEndpoint)}
+              onClick={() => {
+                setWithEndpoint(!withEndpoint);
+                if (!withEndpoint == false) {
+                  setEndpoint("");
+                }
+              }}
             >
               {withEndpoint ? "Remove" : "Add"} endpoint
             </Button>
@@ -270,6 +271,21 @@ function ShExValidate(props) {
                   !params.schemaFile &&
                   !params.shapeMapFile &&
                   permalink
+                }
+                disabled={
+                  data.activeTab == API.byTextTab &&
+                  shex.activeTab == API.byTextTab &&
+                  shapeMap.activeTab == API.byTextTab &&
+                  data.textArea.length +
+                    shex.textArea.length +
+                    shapeMap.textArea.length >
+                    API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data.activeTab == API.byFileTab ||
+                      shex.activeTab == API.byFileTab ||
+                      shapeMap.activeTab == API.byFileTab
+                    ? API.byFileTab
+                    : false
                 }
               />
             ) : null}

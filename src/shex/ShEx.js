@@ -1,7 +1,6 @@
+import React from "react";
 import API from "../API";
 import ShExTabs from "./ShExTabs";
-import React from "react";
-import SHACLTabs from "../shacl/SHACLTabs";
 
 
 export const InitialShEx = {
@@ -66,11 +65,11 @@ export function updateStateShEx(params, shex) {
             format: params['schemaFormat'] ? params['schemaFormat'] : shex.format
         };
     }
-    if (params['schemaUrl']) {
+    if (params['schemaURL']) {
         return {
             ...shex,
             activeTab: API.byUrlTab,
-            url: params['schemaUrl'],
+            url: params['schemaURL'],
             fromParams: false,
             format: params['schemaFormat'] ? params['schemaFormat'] : shex.format
         }
@@ -137,7 +136,8 @@ export function shExParamsFromQueryParams(params) {
     let newParams = {};
     if (params.schema) newParams["schema"] = params.schema;
     if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
+    if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+    if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
     return newParams;
 }
 

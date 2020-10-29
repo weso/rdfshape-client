@@ -21,7 +21,8 @@ export function updateStateData(params, data) {
             activeTab: API.byTextTab,
             textArea: params['data'],
             fromParams: true,
-            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
+            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat,
+            inference: params['inference'] ? params['inference'] : API.defaultInference
         };
     }
     if (params['dataURL']) {
@@ -30,7 +31,8 @@ export function updateStateData(params, data) {
             activeTab: API.byUrlTab,
             url: params['dataURL'],
             fromParams: false,
-            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
+            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat,
+            inference: params['inference'] ? params['inference'] : API.defaultInference
         }
     }
     if (params['dataFile']) {
@@ -39,7 +41,8 @@ export function updateStateData(params, data) {
             activeTab: API.byFileTab,
             file: params['dataFile'],
             fromParams: false,
-            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat
+            format: params['dataFormat'] ? params['dataFormat'] : API.defaultDataFormat,
+            inference: params['inference'] ? params['inference'] : API.defaultInference
         }
     }
     return data;

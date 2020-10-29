@@ -40,28 +40,12 @@ function DataExtract(props) {
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = {
           ...dataParamsFromQueryParams(queryParams),
-          nodeSelector: queryParams.nodeSelector | nodeSelector,
+          nodeSelector: queryParams.nodeSelector || nodeSelector,
         };
 
         setData(updateStateData(dataParams, data));
         if (dataParams["nodeSelector"])
-          setNodeSelector(dataParams["targetDataFormat"]);
-
-        if (queryParams.data) {
-          setData({
-            ...data,
-            activeTab: API.byTextTab,
-            textArea: queryParams.data,
-          });
-        } else if (queryParams.dataURL) {
-          setData({
-            ...data,
-            activeTab: API.byUrlTab,
-            url: queryParams.dataURL,
-          });
-        } else {
-          setData({ ...data, activeTab: API.byFileTab });
-        }
+          setNodeSelector(dataParams.nodeSelector);
 
         setParams(queryParams);
         setLastParams(queryParams);

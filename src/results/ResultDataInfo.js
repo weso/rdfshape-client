@@ -7,6 +7,7 @@ import { mkMode } from "../utils/Utils";
 
 function ResultDataInfo(props) {
     const result = props.result;
+    console.info("RESULT: ", result)
     let msg = null;
     if (result) {
         const mode = mkMode(result.dataFormat);

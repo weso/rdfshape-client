@@ -32,7 +32,6 @@ export function paramsFromStateShapeMap(state) {
     const format = state.format;
     const url = state.url;
     const file = state.file;
-    console.log(activeTab)
     let params = {};
     params['shapeMapActiveTab'] = convertTabShapeMap(activeTab);
     params['shapeMapFormat'] = format;
@@ -64,11 +63,11 @@ export function updateStateShapeMap(params, shapeMap) {
             format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
         };
     }
-    if (params['shapeMapUrl']) {
+    if (params['shapeMapURL']) {
         return {
             ...shapeMap,
             activeTab: API.byUrlTab,
-            url: params['shapeMapUrl'],
+            url: params['shapeMapURL'],
             fromParams: false,
             format: params['shapeMapFormat'] ? params['shapeMapFormat'] : API.defaultShapeMapFormat
         }
@@ -89,7 +88,8 @@ export function shapeMapParamsFromQueryParams(params) {
     let newParams = {};
     if (params.shapeMap) newParams["shapeMap"] = params.shapeMap;
     if (params.shapeMapFormat) newParams["shapeMapFormat"] = params.shapeMapFormat;
-    if (params.shapeMapUrl) newParams["shapeMapUrl"] = params.shapeMapUrl;
+    if (params.shapeMapURL) newParams["shapeMapURL"] = params.shapeMapURL;
+    if (params.shapeMapFile) newParams["shapeMapFile"] = params.shapeMapFile;
     return newParams;
 }
 

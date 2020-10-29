@@ -12,12 +12,11 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataMerge(props) {
@@ -43,27 +42,19 @@ function DataMerge(props) {
   useEffect(() => {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
+
+      if (queryParams.targetDataFormat) {
+        setTargetDataFormat(queryParams.targetDataFormat);
+      }
+
       if (queryParams.compoundData) {
-        let dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat: queryParams.targetDataFormat || "",
-        };
-
-        const newData1 = updateStateData(dataParams, data1) || data1;
-        const newData2 = updateStateData(dataParams, data2) || data2;
-
-        setData1(newData1);
-        setData2(newData2);
-
-        // Update code mirrors
         try {
-          const texts = JSON.parse(queryParams.compoundData);
+          const contents = JSON.parse(queryParams.compoundData);
+          const newData1 = updateStateData(contents[0], data1) || data1;
+          const newData2 = updateStateData(contents[1], data2) || data2;
 
-          const codemirrors = document.querySelectorAll(".react-codemirror2");
-          for (let i = 0; i < codemirrors.length; i++) {
-            const cm = codemirrors[i].firstChild.CodeMirror;
-            if (cm && texts[i] && texts[i].data) cm.setValue(texts[i].data);
-          }
+          setData1(newData1);
+          setData2(newData2);
 
           setParams(queryParams);
           setLastParams(queryParams);
@@ -96,12 +87,13 @@ function DataMerge(props) {
     // Combine params
     let params1 = paramsFromStateData(data1);
     let params2 = paramsFromStateData(data2);
-
     setParams({ ...mergeParams(params1, params2), targetDataFormat });
   }
 
   function mergeParams(params1, params2) {
-    return { compoundData: JSON.stringify([params1, params2]) };
+    return {
+      compoundData: JSON.stringify([params1, params2]),
+    };
   }
 
   function postMerge(cb) {
@@ -142,7 +134,10 @@ function DataMerge(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataMerge, lastParams)
+        mkPermalinkLong(API.dataMerge, {
+          compoundData: lastParams.compoundData,
+          targetDataFormat,
+        })
       );
     }
     // Change current url for shareable links
@@ -150,7 +145,10 @@ function DataMerge(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataMerge, params)
+      mkPermalinkLong(API.dataMerge, {
+        compoundData: params.compoundData,
+        targetDataFormat,
+      })
     );
 
     setLastParams(params);
@@ -211,6 +209,17 @@ function DataMerge(props) {
                   setData1({ ...data1, fromParams: false })
                 }
                 permalink={permalink}
+                disabled={
+                  (data1.activeTab == API.byTextTab ||
+                    data2.activeTab == API.byTextTab) &&
+                  data1.textArea.length + data2.textArea.length >
+                    API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data1.activeTab == API.byFileTab ||
+                      data2.activeTab == API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>

@@ -52,7 +52,7 @@ export function updateStateQuery(params, query) {
             format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
         };
     }
-    if (params['queryURL']) {
+    else if (params['queryURL']) {
         return {
             ...query,
             activeTab: API.byUrlTab,
@@ -61,7 +61,7 @@ export function updateStateQuery(params, query) {
             format: params['queryFormat'] ? params['queryFormat'] : API.defaultQueryFormat
         }
     }
-    if (params['queryFile']) {
+    else if (params['queryFile']) {
         return {
             ...query,
             activeTab: API.byFileTab,
@@ -80,6 +80,7 @@ export function mkQueryTabs(query,setQuery, name, subname) {
     function handleQueryByTextChange(value) { setQuery({...query, textArea: value}); }
     function handleQueryUrlChange(value) { setQuery( {...query, url: value}); }
     function handleQueryFileUpload(value) { setQuery({...query, file: value }); }
+    const resetParams = () => setQuery({...query, fromParams: false});
 
     return (
         <QueryTabs
@@ -98,7 +99,7 @@ export function mkQueryTabs(query,setQuery, name, subname) {
             setCodeMirror={(cm) => setQuery({...query, codeMirror: cm})}
 
             fromParams={query.fromParams}
-            resetFromParams={() => setQuery({...query, fromParams: false})}
+            resetFromParams={resetParams}
 
         />
     );

@@ -59,13 +59,6 @@ function DataQuery(props) {
         setData(updateStateData(dataParams, data) || data);
         setQuery(updateStateQuery(queryDataParams, query) || query);
 
-        // setParams({ ...paramsFromStateData(dataParams), ...paramsFromStateQuery(queryDataParams) });
-        // setLastParams({ ...paramsFromStateData(dataParams), ...paramsFromStateQuery(queryDataParams) });
-
-        // console.log("DATA: ", data)
-        // console.log("DATA PARAMS: ", dataParams)
-        console.log("QUERY PARAMS: ", queryDataParams);
-
         const activeTab = queryDataParams.query
           ? convertTabQuery(API.byTextTab)
           : queryDataParams.queryURL

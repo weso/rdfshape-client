@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import Form from "react-bootstrap/Form";
 // import {Typeahead, Token} from 'react-bootstrap-typeahead';
 import axios from 'axios';
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
+import Form from "react-bootstrap/Form";
 
 function SelectFormat(props) {
     const [formats,setFormats] = useState([]);
@@ -17,6 +17,11 @@ function SelectFormat(props) {
             })
     }, [props.urlFormats]);
 
+    useEffect(() => {
+        setFormat(props.selectedFormat)
+        props.handleFormatChange(props.selectedFormat)
+    }, [props.selectedFormat])
+
     function handleFormatChange(e) {
         setFormat(e.target.value)
         props.handleFormatChange(e.target.value);
@@ -25,7 +30,7 @@ function SelectFormat(props) {
     return (
             <Form.Group>
             <Form.Label>{props.name}</Form.Label>
-            <Form.Control as="select" onChange={handleFormatChange}>
+            <Form.Control as="select" onChange={handleFormatChange} value={format}>
                 { formats.map((f,key) => (
                     <option key={key} defaultValue={f === format}>{f}</option>
                 ))
