@@ -49,7 +49,7 @@ import TestGithubSearch from './test/TestGithubSearch.js'
 import TestInputTabsWithFormat from "./test/TestInputTabsWithFormat";
 import DataMerge from "./data/DataMerge";
 import DataMergeVisualize from "./data/DataMergeVisualize";
-import JenaSHACLValidate from "./shacl/JenaSHACLValidate";
+
 
 function Routes() {
 
@@ -81,7 +81,6 @@ function Routes() {
 
       <Route path={API.shaclInfoRoute} component={SHACLInfo} />
       <Route path={API.shaclValidateRoute} component={SHACLValidate} />
-      <Route path={API.jenaShaclValidateRoute} component={JenaSHACLValidate} />
       <Route path={API.shaclConvertRoute} component={SHACLConvert} />
       <Route path={API.shacl2ShExRoute} component={SHACL2ShEx} />
 

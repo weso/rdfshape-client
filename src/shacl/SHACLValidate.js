@@ -122,7 +122,7 @@ function SHACLValidate(props) {
       ...paramsFromStateShacl(shacl),
       ...paramsFromStateData(data),
       ...paramsEndpoint,
-      schemaEngine: "Shaclex",
+      schemaEngine: shacl.engine,
       triggerMode: "targetDecls",
     });
   }

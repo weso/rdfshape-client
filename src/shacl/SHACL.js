@@ -3,6 +3,7 @@ import {convertTabSchema} from "../shex/ShEx";
 import React from "react";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
 import SHACLTabs from "./SHACLTabs";
+import SelectSHACLEngine from "../components/SelectSHACLEngine";
 
 
 /*export const initialSHACLStatus = {
@@ -19,6 +20,7 @@ export const InitialShacl = {
     url: '',
     file: null,
     format: API.defaultSHACLFormat,
+    engine: API.defaultSHACLEngine,
     fromParams: false,
     codeMirror: null
 };
@@ -156,6 +158,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
     function handleShaclUrlChange(value) { setShacl( {...shacl, url: value}); }
     function handleShaclFileUpload(value) { setShacl({...shacl, file: value }); }
     function handleInferenceChange(value) {  setShacl({...shacl, inference: value}); }
+    function handleSHACLEngineChange(value) {  setShacl({...shacl, engine: value}); }
     const resetParams = () => setShacl({...shacl, fromParams: false}) ;
 
     return (
@@ -180,6 +183,12 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
 
                 fromParams={shacl.fromParams}
                 resetFromParams={resetParams} />
+            <SelectSHACLEngine
+                handleSHACLEngineChange={handleSHACLEngineChange}
+                selectedSHACLEngine={shacl.inference}
+                fromParams={shacl.fromParams}
+                resetFromParams={resetParams} />
+
             <SelectInferenceEngine
                 handleInferenceChange={handleInferenceChange}
                 selectedInference={shacl.inference}

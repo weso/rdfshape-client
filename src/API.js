@@ -27,6 +27,7 @@ class API {
     static schemaVisualize = API.rootApi + "schema/visualize";
     static schemaConvert = API.rootApi + "schema/convert";
     static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
+    static schemaSHACLEngines = API.rootApi + "schema/engines/shacl";
 
     static wikidataEntityLabel = API.rootApi + "wikidata/entityLabel";
     static wikidataSearchEntity = API.rootApi + "wikidata/searchEntity";
@@ -80,6 +81,7 @@ class API {
     static defaultInference = "None" ;
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
+    static defaultSHACLEngine = "SHACLEX";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
     static defaultXMLFormat = "xml";
