@@ -19,7 +19,7 @@ import {
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
-import ResultValidate from "../results/ResultValidate";
+import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getShaclText,
@@ -124,7 +124,7 @@ function SHACLValidate(props) {
       ...paramsFromStateShacl(shacl),
       ...paramsFromStateData(data),
       ...paramsEndpoint,
-      schemaEngine: "Shaclex",
+      schemaEngine: shacl.engine,
       triggerMode: "targetDecls",
     });
   }
@@ -236,7 +236,7 @@ function SHACLValidate(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultValidate
+              <ResultValidateShacl
                 result={result}
                 permalink={permalink}
                 disabled={

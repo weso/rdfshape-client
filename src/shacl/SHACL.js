@@ -1,5 +1,6 @@
 import React from "react";
 import API from "../API";
+import SelectSHACLEngine from "../components/SelectSHACLEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
 import { convertTabSchema } from "../shex/ShEx";
 import SHACLTabs from "./SHACLTabs";
@@ -18,9 +19,10 @@ export const InitialShacl = {
   url: "",
   file: null,
   format: API.defaultSHACLFormat,
+  engine: API.defaultSHACLEngine,
   fromParams: false,
   codeMirror: null,
-  inference: "none"
+  inference: "none",
 };
 
 /*export function shaclReducer(status,action) {
@@ -165,6 +167,10 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
   function handleInferenceChange(value) {
     setShacl({ ...shacl, inference: value });
   }
+
+  function handleSHACLEngineChange(value) {
+    setShacl({ ...shacl, engine: value });
+  }
   const resetParams = () => setShacl({ ...shacl, fromParams: false });
 
   return (
@@ -185,6 +191,13 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />
+      <SelectSHACLEngine
+        handleSHACLEngineChange={handleSHACLEngineChange}
+        selectedSHACLEngine={shacl.inference}
+        fromParams={shacl.fromParams}
+        resetFromParams={resetParams}
+      />
+
       <SelectInferenceEngine
         handleInferenceChange={handleInferenceChange}
         selectedInference={shacl.inference}
@@ -195,12 +208,11 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
   );
 }
 
-export function getShaclText (shacl) {
-  if (shacl.activeTab === API.byTextTab){
-      return shacl.textArea
+export function getShaclText(shacl) {
+  if (shacl.activeTab === API.byTextTab) {
+    return shacl.textArea;
+  } else if (shacl.activeTab === API.byUrlTab) {
+    return shacl.url;
   }
-  else if (shacl.activeTab === API.byUrlTab){
-      return shacl.url
-  }
-  return ""
+  return "";
 }

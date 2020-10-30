@@ -44,15 +44,20 @@ function DataConvert(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat: queryParams.targetDataFormat,
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        setData(finalData);
+
+        if (queryParams.targetDataFormat) {
+          setTargetDataFormat(queryParams.targetDataFormat);
+        }
+        const params = {
+          ...paramsFromStateData(finalData),
+          targetDataFormat: queryParams.targetDataFormat || undefined,
         };
 
-        setData(updateStateData(dataParams, data) || data);
-
-        setParams(dataParams);
-        setLastParams(dataParams);
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -61,7 +66,11 @@ function DataConvert(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postConvert();

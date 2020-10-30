@@ -27,6 +27,7 @@ class API {
     static schemaVisualize = API.rootApi + "schema/visualize";
     static schemaConvert = API.rootApi + "schema/convert";
     static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
+    static schemaSHACLEngines = API.rootApi + "schema/engines/shacl";
 
     static wikidataEntityLabel = API.rootApi + "wikidata/entityLabel";
     static wikidataSearchEntity = API.rootApi + "wikidata/searchEntity";
@@ -54,11 +55,13 @@ class API {
     static shEx2ShaclRoute = "/shEx2Shacl";
     static shExValidateRoute = "/shExValidate";
     static shExValidateEndpointRoute = "/shExValidateEndpoint";
+	static shEx2XMIRoute = "/shEx2XMI";
 
     static shaclInfoRoute = "/shaclInfo";
     static shaclConvertRoute = "/shaclConvert";
     static shacl2ShExRoute = "/shacl2ShEx";
     static shaclValidateRoute = "/shaclValidate";
+    static jenaShaclValidateRoute = "/jenaShaclValidate";
 
     static shapeMapInfoRoute = "/shapeMapInfo";
 
@@ -71,13 +74,17 @@ class API {
     static byTextTab = "byText";
     static byUrlTab = "byUrl";
     static byFileTab = "byFile";
+    static xmiTab = "XMI";
+    static umlTab = "UML";
     static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
     static defaultInference = "None" ;
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
+    static defaultSHACLEngine = "SHACLEX";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
+    static defaultXMLFormat = "xml";
 
     static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
 

@@ -39,11 +39,15 @@ function DataInfo(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        setData(updateStateData(dataParams, data) || data);
 
-        setParams(dataParams);
-        setLastParams(dataParams);
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        setData(finalData);
+
+        const params = paramsFromStateData(finalData);
+
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }

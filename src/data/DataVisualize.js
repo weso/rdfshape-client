@@ -56,12 +56,6 @@ function DataVisualize(props) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
-        setData(updateStateData(dataParams, data) || data);
-
-        // const dataParams = {
-        //   ...dataParamsFromQueryParams(queryParams),
-        //   targetDataFormat: "dot",
-        // };
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
 
