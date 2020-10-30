@@ -1,6 +1,6 @@
 import React from 'react';
-import Cyto from "../components/Cyto";
 import Viz from 'viz.js/viz.js';
+import Cyto from "../components/Cyto";
 const {Module, render} = require('viz.js/full.render.js');
 
 // const Viz = require('viz.js/viz.es.js');
@@ -69,7 +69,6 @@ start [shape=Mdiamond];
     }
 
     componentDidMount() {
-        console.log("ResultDataVisualization mounted!!!");
         const result = this.props.result;
         let targetGraphFormat = this.props.targetGraphFormat;
         if (targetGraphFormat) {

@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import React from 'react';
 import InputTabs from "../components/InputTabs";
-import PropTypes from "prop-types";
 import QueryForm from "./QueryForm";
 
 function QueryTabs(props) {
@@ -34,6 +34,9 @@ function QueryTabs(props) {
 
                     byFileName="Query file"
                     handleFileUpload={props.handleFileUpload}
+
+                    fromParams={props.fromParams}
+                    resetFromParams={props.resetFromParams}
                />
             </div>
         );
@@ -44,7 +47,7 @@ QueryTabs.propTypes = {
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     urlValue: PropTypes.string,
-    handleDataUrlChange: PropTypes.func.isRequired,
+    handleUrlChange: PropTypes.func.isRequired,
     handleFileUpload: PropTypes.func.isRequired,
 
     setCodeMirror:PropTypes.func.isRequired,

@@ -10,10 +10,12 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import {
+  getQueryText,
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
-  queryParamsFromQueryParams
+  queryParamsFromQueryParams,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { endpointParamsFromQueryParams } from "./Endpoint";
@@ -37,30 +39,26 @@ function EndpointQuery(props) {
   useEffect(() => {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
-
       let paramsQuery,
         paramsEndpoint = {};
+
+      // Query State
       if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
         paramsQuery = queryParamsFromQueryParams(queryParams);
-        setQuery(paramsQuery);
-
-        // Update codemirror
-        if (
-          queryParams.activeTab &&
-          queryParams.activeTab.includes("TextArea") &&
-          queryParams.query
-        ) {
-          const codeMirrorElement = document.querySelector(".CodeMirror");
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.query);
-        }
+        setQuery(updateStateQuery(paramsQuery, query) || query);
       }
+
+      // Endpoint State
       if (queryParams.endpoint) {
         paramsEndpoint = endpointParamsFromQueryParams(queryParams);
         setEndpoint(paramsEndpoint.endpoint);
       }
 
-      let params = { ...paramsQuery, ...paramsEndpoint };
+      // Params to be used in first query
+      let params = {
+        ...paramsFromStateQuery(updateStateQuery(paramsQuery, query) || query),
+        endpoint: paramsEndpoint.endpoint || endpoint,
+      };
 
       setParams(params);
       setLastParams(params);
@@ -71,7 +69,7 @@ function EndpointQuery(props) {
   useEffect(() => {
     if (params && !loading) {
       if (!params.endpoint) setError("No endpoint provided");
-      else if (!(params.query || params.queryURL || params.queryFile))
+      else if (!(params.query || params.queryURL || (params.queryFile && params.queryFile.name)))
         setError("No query provided");
       else {
         resetState();
@@ -226,7 +224,15 @@ function EndpointQuery(props) {
               <ResultEndpointQuery
                 result={result}
                 error={error}
-                permalink={!params.queryFile && permalink}
+                permalink={permalink}
+                disabled={
+                  getQueryText(query).length + endpoint.length >
+                    API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : query.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Row>

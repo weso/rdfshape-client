@@ -13,10 +13,11 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataInfo(props) {
@@ -38,19 +39,15 @@ function DataInfo(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+
         const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        setData(finalData);
 
-        setData(updateStateData(dataParams, data) || data);
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
+        const params = paramsFromStateData(finalData);
 
-        setParams(dataParams);
-        setLastParams(dataParams);
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -59,7 +56,7 @@ function DataInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
         resetState();
         setUpHistory();
         postDataInfo();
@@ -169,7 +166,14 @@ function DataInfo(props) {
                   resetFromParams={() =>
                     setData({ ...data, fromParams: false })
                   }
-                  permalink={!params.dataFile && permalink}
+                  permalink={permalink}
+                  disabled={
+                    getDataText(data).length > API.byTextCharacterLimit
+                      ? API.byTextTab
+                      : data.activeTab === API.byFileTab
+                      ? API.byFileTab
+                      : false
+                  }
                 />
               ) : null}
             </Col>

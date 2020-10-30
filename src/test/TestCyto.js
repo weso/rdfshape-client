@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/turtle/turtle"
-import "codemirror/mode/xml/xml"
-import "codemirror/mode/javascript/javascript"
-import CytoscapeComponent from "react-cytoscapejs";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
+import "codemirror/lib/codemirror.css";
+import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/turtle/turtle";
+import "codemirror/mode/xml/xml";
+import React, { useState } from 'react';
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import { SketchPicker } from 'react-color';
+import CytoscapeComponent from "react-cytoscapejs";
 
 function CytoSchema(props) {
 
@@ -148,7 +148,6 @@ function CytoSchema(props) {
             <SketchPicker
                 color={ defaultBackgroundColor }
                 onChangeComplete={(color) => {
-                    console.log(`Color change: ${color.hex}`)
                     setBackgroundColor(color.hex)
                 } }
             />
@@ -160,7 +159,6 @@ function CytoSchema(props) {
             <SketchPicker
                 color={ defaultNodesColor }
                 onChangeComplete={(color) => {
-                    console.log(`Color change: ${color.hex}`)
                     setNodesColor(color.hex)
                 } }
             />

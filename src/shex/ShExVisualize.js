@@ -12,10 +12,12 @@ import API from "../API";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
+  getShexText,
   InitialShEx,
   mkShExTabs,
   paramsFromStateShEx,
-  shExParamsFromQueryParams
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExVisualize(props) {
@@ -43,21 +45,16 @@ function ShExVisualize(props) {
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL &&
-          setShex({ ...shex, url: queryParams.schemaURL });
+        const schemaParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
+        setShex(finalSchema);
+        paramsShEx = finalSchema;
       }
 
-      let params = { ...paramsShEx };
+      let params = {
+        ...paramsFromStateShEx(paramsShEx),
+        schemaEngine: "ShEx",
+      };
       setParams(params);
       setLastParams(params);
     }
@@ -65,7 +62,7 @@ function ShExVisualize(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postVisualize();
@@ -172,7 +169,14 @@ function ShExVisualize(props) {
             ) : result ? (
               <ResultShExVisualize
                 result={result}
-                permalink={!params.schemaFile && permalink}
+                permalink={permalink}
+                disabled={
+                  getShexText(shex).length > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : shex.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>

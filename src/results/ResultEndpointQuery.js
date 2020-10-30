@@ -1,6 +1,6 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
+import { Permalink } from '../Permalink';
 import ResultQuery from "./ResultQuery";
-import {Permalink} from '../Permalink';
 
 function ResultEndpointInfo(props) {
     return (
@@ -8,7 +8,7 @@ function ResultEndpointInfo(props) {
           {props.permalink &&
               <Fragment>
                 <hr/>
-                <Permalink url={props.permalink}/>
+                <Permalink url={props.permalink} disabled={props.disabled}/>
               </Fragment>
           }
           { props.error && <p>Failed to resolve query ({props.error}). Check input data or try again later.</p> }

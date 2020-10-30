@@ -14,10 +14,11 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataConvert(props) {
@@ -43,23 +44,20 @@ function DataConvert(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat: queryParams.targetDataFormat,
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        setData(finalData);
+
+        if (queryParams.targetDataFormat) {
+          setTargetDataFormat(queryParams.targetDataFormat);
+        }
+        const params = {
+          ...paramsFromStateData(finalData),
+          targetDataFormat: queryParams.targetDataFormat || undefined,
         };
 
-        setData(updateStateData(dataParams, data) || data);
-
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
-
-        setParams(dataParams);
-        setLastParams(dataParams);
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -68,8 +66,11 @@ function DataConvert(props) {
 
   useEffect(() => {
     if (params) {
-        console.log("DATAA!: ", data)
-      if (params.data || params.dataURL || params.dataFile) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postConvert();
@@ -179,7 +180,14 @@ function DataConvert(props) {
             ) : result ? (
               <ResultDataConvert
                 result={result}
-                permalink={!params.dataFile && permalink}
+                permalink={permalink}
+                disabled={
+                  getDataText(data) > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>

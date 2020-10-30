@@ -9,16 +9,25 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { InitialData, mkDataTabs, paramsFromStateData } from "../data/Data";
+import {
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
+} from "../data/Data";
+import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialShacl,
-    mkShaclTabs,
-    paramsFromStateShacl,
-    shaclParamsFromQueryParams
+  getShaclText,
+  InitialShacl,
+  mkShaclTabs,
+  paramsFromStateShacl,
+  shaclParamsFromQueryParams,
+  updateStateShacl
 } from "./SHACL";
 
 function SHACLValidate(props) {
@@ -46,45 +55,38 @@ function SHACLValidate(props) {
       let paramsData,
         paramsShacl,
         paramsEndpoint = {};
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        paramsData = dataParamsFromQueryParams(queryParams);
-        // Update codemirror 1
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[0].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.data);
-        }
 
-        queryParams.dataURL && setData({...data, url: queryParams.dataURL})
+      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        paramsData = finalData;
+        setData(finalData);
       }
       if (
         queryParams.schema ||
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShacl = shaclParamsFromQueryParams(queryParams);
-        // Update codemirror 2
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[1].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL && setShacl({...shacl, url: queryParams.schemaURL})
+        const shaclParams = shaclParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShacl(shaclParams, shacl) || shacl;
+        paramsShacl = finalSchema;
+        setShacl(finalSchema);
       }
 
-      if (queryParams.endpoint)
-        paramsEndpoint["endpoint"] = queryParams.endpoint;
+      // Endpoint State
+      if (queryParams.endpoint) {
+        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
+        setEndpoint(paramsEndpoint.endpoint);
+        setWithEndpoint(!!paramsEndpoint.endpoint);
+      }
 
-      let params = { ...paramsData, ...paramsShacl, ...paramsEndpoint };
-      if (queryParams.triggerMode)
-        params["triggerMode"] = queryParams.triggerMode;
-      if (queryParams.schemaEngine)
-        params["schemaEngine"] = queryParams.schemaEngine;
+      let params = {
+        ...paramsFromStateData(paramsData),
+        ...paramsFromStateShacl(paramsShacl),
+        endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
+        schemaEngine: "Shaclex",
+        triggerMode: "targetDecls",
+      };
 
       setParams(params);
       setLastParams(params);
@@ -193,7 +195,12 @@ function SHACLValidate(props) {
             {mkDataTabs(data, setData, "RDF input")}
             <Button
               variant="secondary"
-              onClick={() => setWithEndpoint(!withEndpoint)}
+              onClick={() => {
+                setWithEndpoint(!withEndpoint);
+                if (!withEndpoint === false) {
+                  setEndpoint("");
+                }
+              }}
             >
               {withEndpoint ? "Remove" : "Add"} endpoint
             </Button>
@@ -231,7 +238,16 @@ function SHACLValidate(props) {
             ) : result ? (
               <ResultValidateShacl
                 result={result}
-                permalink={!params.dataFile && !params.schemaFile && permalink}
+                permalink={permalink}
+                disabled={
+                  getShaclText(shacl).length + getDataText(data).length >
+                    API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data.activeTab === API.byFileTab ||
+                      shacl.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>

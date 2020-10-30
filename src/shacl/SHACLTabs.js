@@ -1,7 +1,7 @@
-import React from 'react';
-import InputTabsWithFormat from "../components/InputTabsWithFormat";
-import API from "../API";
 import PropTypes from 'prop-types';
+import React from 'react';
+import API from "../API";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
 
 function SHACLTabs(props) {
 
@@ -59,8 +59,8 @@ SHACLTabs.propTypes = {
     selectedFormat: PropTypes.string.isRequired,
     handleDataFormatChange: PropTypes.func.isRequired,
 
-    handleInferenceChange: PropTypes.func.isRequired,
-    selectedInference: PropTypes.string.isRequired,
+    // handleInferenceChange: PropTypes.func.isRequired,
+    // selectedInference: PropTypes.string.isRequired,
 
     resetFromParams: PropTypes.func,
     fromParams: PropTypes.bool

@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react';
-import Code from '../components/Code'
-import { Permalink } from "../Permalink"
-import {format2mode} from "../utils/Utils"
+import React, { Fragment } from 'react';
 import Alert from "react-bootstrap/Alert";
+import Code from '../components/Code';
+import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import { format2mode } from "../utils/Utils";
 
 
 function ResultDataConvert(props) {
@@ -30,7 +30,7 @@ function ResultDataConvert(props) {
       { props.permalink &&
       <Fragment>
         <hr/>
-        <Permalink url={props.permalink}/>
+        <Permalink url={props.permalink} disabled={props.disabled}/>
       </Fragment>
       }
     </div>

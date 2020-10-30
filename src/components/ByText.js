@@ -1,8 +1,8 @@
+import PropTypes from "prop-types";
 import React from 'react';
 import Form from "react-bootstrap/Form";
-import PropTypes from "prop-types";
-import Code from "./Code";
 import { format2mode } from '../utils/Utils';
+import Code from "./Code";
 
 function ByText(props) {
 

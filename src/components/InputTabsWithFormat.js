@@ -1,13 +1,12 @@
+import PropTypes from "prop-types";
 import React from 'react';
 import InputTabs from "./InputTabs";
 import SelectFormat from "./SelectFormat";
-import PropTypes from "prop-types";
 
 function InputTabsWithFormat(props) {
 
 
     function handleTextChange(value) {
-        // console.log(`HandleChange...`);
         props.handleByTextChange(value);
     }
 

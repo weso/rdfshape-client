@@ -13,10 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExConvert from "../results/ResultShExConvert";
 import {
+  getShexText,
   InitialShEx,
   mkShExTabs,
   paramsFromStateShEx,
-  shExParamsFromQueryParams
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExConvert(props) {
@@ -51,21 +53,21 @@ function ShExConvert(props) {
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL &&
-          setShex({ ...shex, url: queryParams.schemaURL });
+        const schemaParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
+        setShex(finalSchema);
+        paramsShEx = finalSchema;
       }
 
-      let params = { ...paramsShEx };
+      if (queryParams.targetSchemaFormat)
+        setTargetSchemaFormat(queryParams.targetSchemaFormat)
+
+      let params = {
+        ...paramsFromStateShEx(paramsShEx),
+        schemaEngine: "ShEx",
+        targetSchemaFormat: queryParams.targetSchemaFormat ? queryParams.targetSchemaFormat : ""
+      };
+
       setParams(params);
       setLastParams(params);
     }
@@ -73,7 +75,7 @@ function ShExConvert(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postConvert();
@@ -154,7 +156,7 @@ function ShExConvert(props) {
         <h1>ShEx: Convert ShEx schemas</h1>
       </Row>
       <Row>
-        <Col className={"halfmkDataTabs-col border-right"}>
+        <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
             {mkShExTabs(shex, setShex, "ShEx Input")}
             <hr />
@@ -187,7 +189,17 @@ function ShExConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExConvert result={result} permalink={!params.schemaFile && permalink} />
+              <ResultShExConvert
+                result={result}
+                permalink={permalink}
+                disabled={
+                  getShexText(shex).length > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : shex.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
+              />
             ) : null}
           </Col>
         ) : (

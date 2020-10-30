@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
-import Container from 'react-bootstrap/Container';
-import SHACLTabs from "./SHACLTabs"
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import React, { useState } from 'react';
 import Alert from "react-bootstrap/Alert";
-import {InitialShacl, mkShaclTabs} from "./SHACL";
-import Row from "react-bootstrap/Row";
+import Button from "react-bootstrap/Button";
+import Container from 'react-bootstrap/Container';
+import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import Row from "react-bootstrap/Row";
+import { InitialShacl, mkShaclTabs } from "./SHACL";
 
 function SHACL2ShEx()  {
 
@@ -19,7 +18,6 @@ function SHACL2ShEx()  {
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log("Not implemented")
         window.scrollTo(0, 0)
     }
 

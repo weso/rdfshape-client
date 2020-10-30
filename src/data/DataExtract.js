@@ -15,10 +15,11 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -40,20 +41,12 @@ function DataExtract(props) {
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = {
           ...dataParamsFromQueryParams(queryParams),
-          nodeSelector: queryParams.nodeSelector | nodeSelector,
+          nodeSelector: queryParams.nodeSelector || nodeSelector,
         };
 
         setData(updateStateData(dataParams, data));
         if (dataParams["nodeSelector"])
-          setNodeSelector(dataParams["targetDataFormat"]);
-
-        // Update Codemirror
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
-        }
+          setNodeSelector(dataParams.nodeSelector);
 
         setParams(queryParams);
         setLastParams(queryParams);
@@ -180,7 +173,14 @@ function DataExtract(props) {
               ) : result ? (
                 <ResultDataExtract
                   result={result}
-                  permalink={!params.dataFile && permalink}
+                  permalink={permalink}
+                  disabled={
+                    getDataText(data) > API.byTextCharacterLimit
+                      ? API.byTextTab
+                      : data.activeTab === API.byFileTab
+                      ? API.byFileTab
+                      : false
+                  }
                 />
               ) : null}
             </Fragment>

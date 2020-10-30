@@ -11,25 +11,27 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import {
-    InitialQuery,
-    mkQueryTabs,
-    paramsFromStateQuery,
-    queryParamsFromQueryParams,
-    updateStateQuery
+  getQueryText,
+  InitialQuery,
+  mkQueryTabs,
+  paramsFromStateQuery,
+  queryParamsFromQueryParams,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataQuery(props) {
@@ -48,50 +50,60 @@ function DataQuery(props) {
   useEffect(() => {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
-      if (
-        (queryParams.data || queryParams.dataURL || queryParams.dataFile) &&
-        (queryParams.query || queryParams.queryURL || queryParams.queryFile)
-      ) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          ...queryParamsFromQueryParams(queryParams),
-        };
-        setData(updateStateData(dataParams, data) || data);
-        setQuery(updateStateQuery(dataParams, query) || query);
-
-        // Update text areas correctly
-        const codemirrors = document.querySelectorAll(".react-codemirror2");
-        if (codemirrors.length > 0) {
-          if (queryParams.data && codemirrors[0]) {
-            const cm = codemirrors[0].firstChild.CodeMirror;
-            if (cm) cm.setValue(queryParams.data);
-          }
-          if (queryParams.query && codemirrors[1]) {
-            const cm = codemirrors[1].firstChild.CodeMirror;
-            if (cm) cm.setValue(queryParams.query);
-          }
-        }
-
-        setParams(dataParams);
-        setLastParams(dataParams);
-      } else {
-        setError("Could not parse URL data");
+      let paramsData,
+        paramsQuery = {};
+      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const finalData = updateStateData(dataParams, data) || data;
+        paramsData = finalData;
+        setData(finalData);
       }
+
+      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
+        const queryDataParams = queryParamsFromQueryParams(queryParams);
+        const finalQuery = updateStateQuery(queryDataParams, query) || query;
+        paramsQuery = finalQuery;
+        setQuery(finalQuery);
+      }
+
+      const params = {
+        ...paramsFromStateData(paramsData),
+        ...paramsFromStateQuery(paramsQuery),
+      };
+
+      setParams(params);
+      setLastParams(params);
     }
   }, [props.location.search]);
 
   useEffect(() => {
     if (params) {
       if (
-        (params.data || params.dataURL || params.dataFile) &&
-        (params.query || params.queryURL || params.queryFile)
+        (params.data ||
+          params.dataURL ||
+          (params.dataFile && params.dataFile.name)) &&
+        (params.query ||
+          params.queryURL ||
+          (params.queryFile && params.queryFile.name))
       ) {
         resetState();
         setUpHistory();
         postQuery();
-      } else if (!(params.data || params.dataURL || params.queryFile)) {
+      } else if (
+        !(
+          params.data ||
+          params.dataURL ||
+          (params.dataFile && params.dataFile.name)
+        )
+      ) {
         setError("No RDF data provided");
-      } else if (!(params.query || params.queryURL || params.queryFile)) {
+      } else if (
+        !(
+          params.query ||
+          params.queryURL ||
+          (params.queryFile && params.queryFile.name)
+        )
+      ) {
         setError("No query provided");
       }
       window.scrollTo(0, 0);
@@ -199,10 +211,20 @@ function DataQuery(props) {
                 ) : result ? (
                   <ResultEndpointQuery result={result} error={error} />
                 ) : null}
-                {!params.dataFile &&
-                  !params.queryFile &&
-                  permalink &&
-                  !error && <Permalink url={permalink} />}
+                {permalink && !error && (
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      getDataText(data).length + getQueryText(query).length >
+                      API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab === API.byFileTab ||
+                          query.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
+                )}
               </Col>
             </Fragment>
           </Col>

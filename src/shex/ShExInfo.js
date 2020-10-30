@@ -12,10 +12,12 @@ import API from "../API";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExInfo from "../results/ResultShExInfo";
 import {
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExInfo(props) {
@@ -43,21 +45,16 @@ function ShExInfo(props) {
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL &&
-          setShEx({ ...shex, url: queryParams.schemaURL });
+        const schemaParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
+        setShEx(finalSchema);
+        paramsShEx = finalSchema;
       }
 
-      let params = { ...paramsShEx };
+      let params = {
+        ...paramsFromStateShEx(paramsShEx),
+        schemaEngine: "ShEx",
+      };
       setParams(params);
       setLastParams(params);
     }
@@ -65,7 +62,7 @@ function ShExInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postRequest();
@@ -170,7 +167,17 @@ function ShExInfo(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExInfo result={result} permalink={!params.schemaFile && permalink} />
+              <ResultShExInfo
+                result={result}
+                permalink={permalink}
+                disabled={
+                  getShexText(shex).length > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : shex.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
+              />
             ) : null}
           </Col>
         ) : (

@@ -41,7 +41,8 @@ export function dataParamsFromQueryParams(params) {
     let newParams = {};
     if (params.data) newParams["data"] = params.data ;
     if (params.dataFormat) newParams["dataFormat"] = params.dataFormat ;
-    if (params.dataURL) newParams["dataURL"] = params.dataURL ;
+    if (params.dataURL) newParams["dataURL"] = params.dataURL;
+    if (params.dataFile) newParams["dataFile"] = params.dataFile;
     if (params.inference) newParams["inference"] = params.inference ;
     return newParams;
 }
@@ -244,8 +245,6 @@ export function format2mode(format) {
             case 'html-microdata':
                 return 'htmlmixed';
             case 'html-rdfa11':
-                return 'htmlmixed';
-            case 'html':
                 return 'htmlmixed';
             default:
                 return 'turtle'

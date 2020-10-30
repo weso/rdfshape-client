@@ -1,10 +1,9 @@
-import API from '../API';
-import {convertTabSchema} from "../shex/ShEx";
 import React from "react";
-import SelectInferenceEngine from "../data/SelectInferenceEngine";
-import SHACLTabs from "./SHACLTabs";
+import API from "../API";
 import SelectSHACLEngine from "../components/SelectSHACLEngine";
-
+import SelectInferenceEngine from "../data/SelectInferenceEngine";
+import { convertTabSchema } from "../shex/ShEx";
+import SHACLTabs from "./SHACLTabs";
 
 /*export const initialSHACLStatus = {
 
@@ -15,16 +14,16 @@ import SelectSHACLEngine from "../components/SelectSHACLEngine";
 } ; */
 
 export const InitialShacl = {
-    activeTab: API.defaultTab,
-    textArea: '',
-    url: '',
-    file: null,
-    format: API.defaultSHACLFormat,
-    engine: API.defaultSHACLEngine,
-    fromParams: false,
-    codeMirror: null
+  activeTab: API.defaultTab,
+  textArea: "",
+  url: "",
+  file: null,
+  format: API.defaultSHACLFormat,
+  engine: API.defaultSHACLEngine,
+  fromParams: false,
+  codeMirror: null,
+  inference: "none",
 };
-
 
 /*export function shaclReducer(status,action) {
     switch (action.type) {
@@ -59,64 +58,63 @@ export const InitialShacl = {
     }
 }*/
 
-
 export function updateStateShacl(params, shacl) {
-    if (params['schema']) {
-        return {
-            ...shacl,
-            activeTab: API.byTextTab,
-            textArea: params['schema'],
-            fromParams: true,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shacl.format
-        };
-    }
-    if (params['schemaUrl']) {
-        return {
-            ...shacl,
-            activeTab: API.byUrlTab,
-            url: params['schemaUrl'],
-            fromParams: false,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shacl.format
-        }
-    }
-    if (params['schemaFile']) {
-        return {
-            ...shacl,
-            activeTab: API.byFileTab,
-            file: params['schemaFile'],
-            fromParams: false,
-            format: params['schemaFormat'] ? params['schemaFormat'] : shacl.format
-        }
-    }
-    return shacl;
+  if (params["schema"]) {
+    return {
+      ...shacl,
+      activeTab: API.byTextTab,
+      textArea: params["schema"],
+      fromParams: true,
+      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+    };
+  }
+  if (params["schemaURL"]) {
+    return {
+      ...shacl,
+      activeTab: API.byUrlTab,
+      url: params["schemaURL"],
+      fromParams: false,
+      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+    };
+  }
+  if (params["schemaFile"]) {
+    return {
+      ...shacl,
+      activeTab: API.byFileTab,
+      file: params["schemaFile"],
+      fromParams: false,
+      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+    };
+  }
+  return shacl;
 }
 
 export function paramsFromStateShacl(state) {
-    const activeTab = state.activeTab;
-    const textArea = state.textArea;
-    const format = state.format;
-    const url = state.url;
-    const file = state.file;
-    let params = {};
-    params['activeSchemaTab'] = convertTabSchema(activeTab);
-    params['schemaFormat'] = format;
-    params['schemaEmbedded'] = false;
-    switch (activeTab) {
-        case API.byTextTab:
-            params['schema'] = textArea;
-            params['schemaFormatTextArea'] = format;
-            break;
-        case API.byUrlTab:
-            params['schemaURL'] = url;
-            params['schemaFormatUrl'] = format;
-            break;
-        case API.byFileTab:
-            params['schemaFile'] = file;
-            params['schemaFormatFile'] = format;
-            break;
-        default:
-    }
-    return params;
+  const activeTab = state.activeTab;
+  const textArea = state.textArea;
+  const format = state.format;
+  const url = state.url;
+  const file = state.file;
+  let params = {};
+  params["activeSchemaTab"] = convertTabSchema(activeTab);
+  params["schemaFormat"] = format;
+  params["schemaEmbedded"] = false;
+  switch (activeTab) {
+    case API.byTextTab:
+      params["schema"] = textArea;
+      params["schemaFormatTextArea"] = format;
+      break;
+    case API.byUrlTab:
+      params["schemaURL"] = url;
+      params["schemaFormatUrl"] = format;
+      break;
+    case API.byFileTab:
+      params["schemaFile"] = file;
+      params["schemaFormatFile"] = format;
+      break;
+    default:
+  }
+  return params;
 }
 
 /*export function paramsFromShacl(status) {
@@ -143,58 +141,78 @@ export function paramsFromStateShacl(state) {
 }*/
 
 export function shaclParamsFromQueryParams(params) {
-    let newParams = {};
-    if (params.schema) newParams["schema"] = params.schema;
-    if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
-    return newParams;
+  let newParams = {};
+  if (params.schema) newParams["schema"] = params.schema;
+  if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
+  if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+  return newParams;
 }
 
 export function mkShaclTabs(shacl, setShacl, name, subname) {
+  function handleShaclTabChange(value) {
+    setShacl({ ...shacl, activeTab: value });
+  }
+  function handleShaclFormatChange(value) {
+    setShacl({ ...shacl, format: value });
+  }
+  function handleShaclByTextChange(value) {
+    setShacl({ ...shacl, textArea: value });
+  }
+  function handleShaclUrlChange(value) {
+    setShacl({ ...shacl, url: value });
+  }
+  function handleShaclFileUpload(value) {
+    setShacl({ ...shacl, file: value });
+  }
+  function handleInferenceChange(value) {
+    setShacl({ ...shacl, inference: value });
+  }
 
-    function handleShaclTabChange(value) { setShacl({...shacl, activeTab: value}); }
-    function handleShaclFormatChange(value) {  setShacl({...shacl, format: value}); }
-    function handleShaclByTextChange(value) { setShacl({...shacl, textArea: value}); }
-    function handleShaclUrlChange(value) { setShacl( {...shacl, url: value}); }
-    function handleShaclFileUpload(value) { setShacl({...shacl, file: value }); }
-    function handleInferenceChange(value) {  setShacl({...shacl, inference: value}); }
-    function handleSHACLEngineChange(value) {  setShacl({...shacl, engine: value}); }
-    const resetParams = () => setShacl({...shacl, fromParams: false}) ;
+  function handleSHACLEngineChange(value) {
+    setShacl({ ...shacl, engine: value });
+  }
+  const resetParams = () => setShacl({ ...shacl, fromParams: false });
 
-    return (
-        <React.Fragment>
-            <SHACLTabs
-                name={name}
-                subname={subname}
-                activeTab={shacl.activeTab}
-                handleTabChange={handleShaclTabChange}
+  return (
+    <React.Fragment>
+      <SHACLTabs
+        name={name}
+        subname={subname}
+        activeTab={shacl.activeTab}
+        handleTabChange={handleShaclTabChange}
+        textAreaValue={shacl.textArea}
+        handleByTextChange={handleShaclByTextChange}
+        urlValue={shacl.url}
+        handleDataUrlChange={handleShaclUrlChange}
+        handleFileUpload={handleShaclFileUpload}
+        selectedFormat={shacl.format}
+        handleDataFormatChange={handleShaclFormatChange}
+        setCodeMirror={(cm) => setShacl({ ...shacl, codeMirror: cm })}
+        fromParams={shacl.fromParams}
+        resetFromParams={resetParams}
+      />
+      <SelectSHACLEngine
+        handleSHACLEngineChange={handleSHACLEngineChange}
+        selectedSHACLEngine={shacl.inference}
+        fromParams={shacl.fromParams}
+        resetFromParams={resetParams}
+      />
 
-                textAreaValue={shacl.textArea}
-                handleByTextChange={handleShaclByTextChange}
+      <SelectInferenceEngine
+        handleInferenceChange={handleInferenceChange}
+        selectedInference={shacl.inference}
+        fromParams={shacl.fromParams}
+        resetFromParams={resetParams}
+      />
+    </React.Fragment>
+  );
+}
 
-                urlValue={shacl.url}
-                handleDataUrlChange={handleShaclUrlChange}
-
-                handleFileUpload={handleShaclFileUpload}
-
-                selectedFormat={shacl.format}
-                handleDataFormatChange={handleShaclFormatChange}
-                setCodeMirror={(cm) => setShacl({...shacl, codeMirror: cm}) }
-
-                fromParams={shacl.fromParams}
-                resetFromParams={resetParams} />
-            <SelectSHACLEngine
-                handleSHACLEngineChange={handleSHACLEngineChange}
-                selectedSHACLEngine={shacl.inference}
-                fromParams={shacl.fromParams}
-                resetFromParams={resetParams} />
-
-            <SelectInferenceEngine
-                handleInferenceChange={handleInferenceChange}
-                selectedInference={shacl.inference}
-                fromParams={shacl.fromParams}
-                resetFromParams={resetParams} />
-        </React.Fragment>
-    );
-
+export function getShaclText(shacl) {
+  if (shacl.activeTab === API.byTextTab) {
+    return shacl.textArea;
+  } else if (shacl.activeTab === API.byUrlTab) {
+    return shacl.url;
+  }
+  return "";
 }

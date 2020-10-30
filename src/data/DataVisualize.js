@@ -13,18 +13,19 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -54,23 +55,22 @@ function DataVisualize(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat: "dot",
-        };
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const paramsData = updateStateData(dataParams, data) || data;
+        setData(paramsData);
 
-        setData(updateStateData(dataParams, data) || data);
-
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(dataParams.data);
+        if (queryParams.targetDataFormat) {
+          setTargetGraphFormat(queryParams.targetDataFormat);
         }
 
-        setParams(dataParams);
-        setLastParams(dataParams);
+        const params = {
+          ...paramsFromStateData(paramsData),
+          targetGraphFormat: queryParams.targetDataFormat || undefined,
+          targetDataFormat: queryParams.targetDataFormat || undefined,
+        };
+
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -79,7 +79,11 @@ function DataVisualize(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postVisualize();
@@ -203,7 +207,16 @@ function DataVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  {!params.dataFile && <Permalink url={permalink} />}
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      getDataText(data) > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
                   <Button
                     onClick={() => zoomSvg(false)}
                     className="btn-zoom"

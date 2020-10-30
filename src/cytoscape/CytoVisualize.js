@@ -12,16 +12,17 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "../data/Data";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 
@@ -44,21 +45,18 @@ function CytoVisualize(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
+
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const paramsData = updateStateData(dataParams, data) || data;
+        setData(paramsData);
+
+        const params = {
+          ...paramsFromStateData(paramsData),
           targetDataFormat: "JSON",
         };
-        setData(updateStateData(dataParams, data) || data);
 
-        // Update text area correctly
-        if (queryParams.data) {
-          const codeMirror = document.querySelector(".react-codemirror2")
-            .firstChild.CodeMirror;
-          if (codeMirror) codeMirror.setValue(dataParams.data);
-        }
-
-        setParams(dataParams);
-        setLastParams(dataParams);
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -67,7 +65,7 @@ function CytoVisualize(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
         resetState();
         setUpHistory();
         postConvert();
@@ -170,7 +168,17 @@ function CytoVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  {!params.dataFile && <Permalink url={permalink} />}
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      getDataText(data) > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
+
                   <Button
                     onClick={() => setLayoutName(cose)}
                     className="btn-zoom"

@@ -1,88 +1,87 @@
-import axios from "axios";
-import qs from "query-string";
-import React, { useEffect, useState } from "react";
-import Alert from "react-bootstrap/Alert";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import ProgressBar from "react-bootstrap/ProgressBar";
-import Row from "react-bootstrap/Row";
-import API from "../API";
-import { InitialData, mkDataTabs, paramsFromStateData } from "../data/Data";
-import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
-import ResultValidate from "../results/ResultValidate";
+import axios from "axios"
+import qs from "query-string"
+import React, { useEffect, useState } from "react"
+import Alert from "react-bootstrap/Alert"
+import Button from "react-bootstrap/Button"
+import Col from "react-bootstrap/Col"
+import Container from "react-bootstrap/Container"
+import Form from "react-bootstrap/Form"
+import ProgressBar from "react-bootstrap/ProgressBar"
+import Row from "react-bootstrap/Row"
+import API from "../API"
 import {
-    InitialShapeMap,
-    mkShapeMapTabs,
-    paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams
-} from "../shapeMap/ShapeMap";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
+} from "../data/Data"
+import { endpointParamsFromQueryParams } from "../endpoint/Endpoint"
+import EndpointInput from "../endpoint/EndpointInput"
+import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink"
+import ResultValidate from "../results/ResultValidate"
 import {
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams
-} from "./ShEx";
+  getShapeMapText,
+  InitialShapeMap,
+  mkShapeMapTabs,
+  paramsFromStateShapeMap,
+  shapeMapParamsFromQueryParams,
+  updateStateShapeMap
+} from "../shapeMap/ShapeMap"
+import { dataParamsFromQueryParams } from "../utils/Utils"
+import {
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
+} from "./ShEx"
 
 function ShExValidate(props) {
-  const [shex, setShEx] = useState(InitialShEx);
-  const [data, setData] = useState(InitialData);
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  const [shex, setShEx] = useState(InitialShEx)
+  const [data, setData] = useState(InitialData)
+  const [shapeMap, setShapeMap] = useState(InitialShapeMap)
 
-  const [endpoint, setEndpoint] = useState("");
-  const [withEndpoint, setWithEndpoint] = useState(false);
+  const [endpoint, setEndpoint] = useState("")
+  const [withEndpoint, setWithEndpoint] = useState(false)
 
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState("")
 
-  const [params, setParams] = useState(null);
-  const [lastParams, setLastParams] = useState(null);
+  const [params, setParams] = useState(null)
+  const [lastParams, setLastParams] = useState(null)
 
-  const [permalink, setPermalink] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [progressPercent, setProgressPercent] = useState(0);
+  const [permalink, setPermalink] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [progressPercent, setProgressPercent] = useState(0)
 
-  const url = API.schemaValidate;
+  const url = API.schemaValidate
 
   useEffect(() => {
     if (props.location.search) {
-      const queryParams = qs.parse(props.location.search);
+      const queryParams = qs.parse(props.location.search)
       let paramsData,
         paramsShEx,
         paramsShapeMap,
-        paramsEndpoint = {};
+        paramsEndpoint = {}
 
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        paramsData = dataParamsFromQueryParams(queryParams);
-        // Update codemirror 1
-        if (queryParams.data) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[0].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.data);
-        }
-        queryParams.dataURL && setData({...data, url: queryParams.dataURL})
+        const dataParams = dataParamsFromQueryParams(queryParams)
+        const finalData = updateStateData(dataParams, data) || data
+        paramsData = finalData
+        setData(finalData)
       }
+
       if (
         queryParams.schema ||
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror 2
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL && setShEx({...shex, url: queryParams.schemaURL})
+        const shexParams = shExParamsFromQueryParams(queryParams)
+        const finalSchema = updateStateShEx(shexParams, shex) || shex
+        paramsShEx = finalSchema
+        setShEx(finalSchema)
       }
 
       if (
@@ -90,96 +89,91 @@ function ShExValidate(props) {
         queryParams.shapeMapURL ||
         queryParams.shapeMapFile
       ) {
-        paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-        // Update codemirror 3
-        if (queryParams.shapeMap) {
-          const codeMirrorElement = document.querySelectorAll(
-            ".react-codemirror2"
-          )[1].firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap);
-        }
-
-        queryParams.shapeMapURL && setShapeMap({...shapeMap, url: queryParams.shapeMapURL})
+        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams)
+        const finalShapeMap =
+          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap
+        paramsShapeMap = finalShapeMap
+        setShapeMap(finalShapeMap)
       }
 
-      if (queryParams.endpoint)
-        paramsEndpoint["endpoint"] = queryParams.endpoint;
-      let params = {
-        ...paramsData,
-        ...paramsShEx,
-        ...paramsShapeMap,
-        ...paramsEndpoint,
-      };
+      // Endpoint State
+      if (queryParams.endpoint) {
+        paramsEndpoint = endpointParamsFromQueryParams(queryParams)
+        setEndpoint(paramsEndpoint.endpoint)
+        setWithEndpoint(!!paramsEndpoint.endpoint)
+      }
 
-      setParams(params);
-      setLastParams(params);
+      let params = {
+        ...paramsFromStateData(paramsData),
+        ...paramsFromStateShEx(paramsShEx),
+        ...paramsFromStateShapeMap(paramsShapeMap),
+        endpoint: paramsEndpoint.endpoint || endpoint,
+        schemaEngine: "ShEx",
+        triggerMode: "shapeMap",
+      }
+
+      setParams(params)
+      setLastParams(params)
     }
-  }, [props.location.search]);
+  }, [props.location.search])
 
   useEffect(() => {
     if (params && !loading) {
-      if (!(params.data || params.dataURL || params.dataFile))
-        setError("No RDF data provided");
-      else if (!(params.schema || params.schemaURL || params.schemaFile))
-        setError("No ShEx schema provided");
-      else if (!(params.shapeMap || params.shapeMapURL || params.shapeMapFile))
-        setError("No ShapeMap provided");
+      if (!(params.data || params.dataURL || (params.dataFile && params.dataFile.name)))
+        setError("No RDF data provided")
+      else if (!(params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)))
+        setError("No ShEx schema provided")
+      else if (!(params.shapeMap || params.shapeMapURL || (params.shapeMapFile && params.shapeMapFile.name)))
+        setError("No ShapeMap provided")
       else {
-          console.log("DATA: ", data)
-        resetState();
-        setUpHistory();
-        postValidate();
+        resetState()
+        setUpHistory()
+        postValidate()
       }
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0)
     }
-  }, [params]);
+  }, [params])
 
   function handleEndpointChange(value) {
-    setEndpoint(value);
+    setEndpoint(value)
   }
 
   function handleSubmit(event) {
-    event.preventDefault();
-
-    const paramsEndpoint = {};
-    if (endpoint !== "") {
-      paramsEndpoint["endpoint"] = endpoint;
-    }
+    event.preventDefault()
 
     setParams({
       ...paramsFromStateData(data),
       ...paramsFromStateShEx(shex),
       ...paramsFromStateShapeMap(shapeMap),
-      ...paramsEndpoint,
+      endpoint,
       schemaEngine: "ShEx",
       triggerMode: "shapeMap",
-    });
+    })
   }
 
   function postValidate(cb) {
-    setLoading(true);
-    setProgressPercent(15);
-    const formData = params2Form(params);
-    setProgressPercent(30);
+    setLoading(true)
+    setProgressPercent(15)
+    const formData = params2Form(params)
+    setProgressPercent(30)
 
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        setResult(data);
-        setProgressPercent(70);
-        setPermalink(await mkPermalink(API.shExValidateRoute, params));
-        setProgressPercent(80);
-        if (cb) cb();
-        setProgressPercent(100);
+        setResult(data)
+        setProgressPercent(70)
+        setPermalink(await mkPermalink(API.shExValidateRoute, params))
+        setProgressPercent(80)
+        if (cb) cb()
+        setProgressPercent(100)
       })
       .catch(function(error) {
         setError(
           `Error calling server at ${url}: ${error.message}.\n Try again later.`
-        );
+        )
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoading(false))
   }
 
   function setUpHistory() {
@@ -194,7 +188,7 @@ function ShExValidate(props) {
         null,
         document.title,
         mkPermalinkLong(API.shExValidateRoute, lastParams)
-      );
+      )
     }
     // Change current url for shareable links
     // eslint-disable-next-line no-restricted-globals
@@ -202,16 +196,16 @@ function ShExValidate(props) {
       null,
       document.title,
       mkPermalinkLong(API.shExValidateRoute, params)
-    );
+    )
 
-    setLastParams(params);
+    setLastParams(params)
   }
 
   function resetState() {
-    setResult(null);
-    setPermalink(null);
-    setError(null);
-    setProgressPercent(0);
+    setResult(null)
+    setPermalink(null)
+    setError(null)
+    setProgressPercent(0)
   }
 
   return (
@@ -225,7 +219,12 @@ function ShExValidate(props) {
             {mkDataTabs(data, setData, "RDF input")}
             <Button
               variant="secondary"
-              onClick={() => setWithEndpoint(!withEndpoint)}
+              onClick={() => {
+                setWithEndpoint(!withEndpoint)
+                if (!withEndpoint === false) {
+                  setEndpoint("")
+                }
+              }}
             >
               {withEndpoint ? "Remove" : "Add"} endpoint
             </Button>
@@ -271,6 +270,18 @@ function ShExValidate(props) {
                   !params.shapeMapFile &&
                   permalink
                 }
+                disabled={
+                  getDataText(data).length +
+                    getShexText(shex).length +
+                    getShapeMapText(shapeMap).length >
+                  API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : data.activeTab === API.byFileTab ||
+                      shex.activeTab === API.byFileTab ||
+                      shapeMap.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>
@@ -281,7 +292,7 @@ function ShExValidate(props) {
         )}
       </Row>
     </Container>
-  );
+  )
 }
 
-export default ShExValidate;
+export default ShExValidate

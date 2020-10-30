@@ -11,18 +11,18 @@ import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import {
-    mkPermalink,
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -49,24 +49,14 @@ function DataMergeVisualize(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.compoundData) {
-        let dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat,
-        };
-
-        const newData1 = updateStateData(dataParams, data1) || data1;
-        const newData2 = updateStateData(dataParams, data2) || data2;
-        setData1(newData1);
-        setData2(newData2);
-
-        // Update code mirrors
         try {
-          const texts = JSON.parse(queryParams.compoundData);
-          const codemirrors = document.querySelectorAll(".react-codemirror2");
-          for (let i = 0; i < codemirrors.length; i++) {
-            const cm = codemirrors[i].firstChild.CodeMirror;
-            if (cm && texts[i] && texts[i].data) cm.setValue(texts[i].data);
-          }
+          const contents = JSON.parse(queryParams.compoundData);
+
+          const newData1 = updateStateData(contents[0], data1) || data1;
+          const newData2 = updateStateData(contents[1], data2) || data2;
+
+          setData1(newData1);
+          setData2(newData2);
 
           setParams(queryParams);
           setLastParams(queryParams);
@@ -82,7 +72,13 @@ function DataMergeVisualize(props) {
   useEffect(() => {
     if (params && params.compoundData) {
       const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.data || p.dataURL || p.dataFile)) {
+      if (parameters.some((p) => p.dataFile)) {
+        setError("Not implemented Merge from files.");
+      } else if (
+        parameters.some(
+          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+        )
+      ) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -205,7 +201,18 @@ function DataMergeVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  <Permalink url={permalink} />
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      getDataText(data1).length + getDataText(data2).length >
+                      API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : data1.activeTab === API.byFileTab ||
+                          data2.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
                   <Button
                     onClick={() => zoomSvg(false)}
                     className="btn-zoom"

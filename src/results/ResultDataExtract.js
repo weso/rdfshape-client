@@ -1,8 +1,8 @@
-import React, {Fragment} from 'react';
-import Code from '../components/Code'
+import React, { Fragment } from 'react';
 import Alert from "react-bootstrap/Alert";
+import Code from '../components/Code';
+import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import {Permalink} from "../Permalink";
 
 function ResultDataExtract(props) {
      const result = props.result
@@ -31,7 +31,7 @@ function ResultDataExtract(props) {
              )}
            { props.permalink &&
              <Fragment>
-               <Permalink url={props.permalink}/>
+               <Permalink url={props.permalink} disabled={props.disabled}/>
                <hr/>
              </Fragment>
            }

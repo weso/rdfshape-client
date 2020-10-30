@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import Button from "react-bootstrap/Button";
-import Alert from "react-bootstrap/Alert";
-import ShExForm from '../shex/ShExForm'
-import QueryForm from '../query/QueryForm'
-import Form from "react-bootstrap/Form";
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
 import qs from "query-string";
+import React, { useEffect, useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import QueryForm from '../query/QueryForm';
+import ShExForm from '../shex/ShExForm';
 // import {dataParamsFromQueryParams, shapeMapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
 // import {params2Form} from "../Permalink";
 
@@ -24,7 +24,6 @@ function TestYashe(props)  {
             if (props.location.search) {
                 console.log(`TestYashe with location.search `)
                 const queryParams = qs.parse(props.location.search);
-                console.log("Parameters: " + JSON.stringify(queryParams));
                 if (queryParams['shex']) {
                     setShEx(queryParams['shex']);
                     setFromParams(true);
@@ -46,7 +45,7 @@ function TestYashe(props)  {
        <h1>Yashe example</h1>
 {/*
        <QueryForm id="sparqlArea1"
-                      value={sparql} 
+                      value={sparql}
                       onChange={(value) => setSparql(value)}
                   />
 */}
@@ -59,8 +58,8 @@ function TestYashe(props)  {
                 <Tab eventKey="ShEx" title="ShEx">
                 <Form.Group>
                  <Form.Label>ShEx</Form.Label>
-                 <ShExForm // id="shExArea" 
-                      value={shEx} 
+                 <ShExForm // id="shExArea"
+                      value={shEx}
                       onChange={(value) => {
                           setShEx(value);
 //                          if (yashe) {
@@ -77,13 +76,13 @@ function TestYashe(props)  {
                 <Tab eventKey="Sparql" title="SPARQL">
                  <Form.Group>
                   <Form.Label>SPARQL</Form.Label>
-                  <QueryForm id="sparqlArea" 
-                      value={sparql} 
+                  <QueryForm id="sparqlArea"
+                      value={sparql}
                       onChange={(value) => setSparql(value)}
                   />
                 </Form.Group>
                 </Tab>
-            </Tabs>    
+            </Tabs>
             <br/>
             <p>ActiveTab: {activeTab}</p>
             <pre>ShEx: {shEx}</pre>

@@ -13,10 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import {
-    convertTabSchema,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams
+  convertTabSchema,
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 export default function ShEx2Shacl(props) {
@@ -42,27 +44,24 @@ export default function ShEx2Shacl(props) {
 
       if (
         queryParams.schema ||
-        queryParams.shExUrl ||
+        queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
+        const schemaParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
 
-        queryParams.shExUrl &&
-          setShEx({ ...shex, url: queryParams.shExUrl });
+        paramsShEx = finalSchema;
+        setShEx(finalSchema);
       }
 
+      if (queryParams.targetSchemaFormat)
+        setTargetFormat(queryParams.targetSchemaFormat);
+
       let params = {
-        ...paramsShEx,
-        ...mkServerParams(queryParams.targetFormat),
-        schema: queryParams.schema,
+        ...mkServerParams(
+          paramsShEx,
+          queryParams.targetSchemaFormat || "TURTLE"
+        ),
         schemaEngine: "ShEx",
         targetSchemaEngine: "SHACL",
       };
@@ -74,7 +73,7 @@ export default function ShEx2Shacl(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postRequest();
@@ -100,7 +99,7 @@ export default function ShEx2Shacl(props) {
     }
   }
 
-  function mkServerParams(format) {
+  function mkServerParams(shex, format) {
     let params = {};
     params["activeSchemaTab"] = convertTabSchema(shex.activeTab);
     params["schemaEmbedded"] = false;
@@ -148,7 +147,7 @@ export default function ShEx2Shacl(props) {
   function handleSubmit(event) {
     event.preventDefault();
     setParams({
-      ...mkServerParams(),
+      ...mkServerParams(shex),
       schemaEngine: "ShEx",
       targetSchemaEngine: "SHACL",
     });
@@ -166,10 +165,13 @@ export default function ShEx2Shacl(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          await mkPermalink(
-            API.shEx2ShaclRoute,
-            queryParamsFromServerParams(params)
-          )
+          await mkPermalink(API.shEx2ShaclRoute, {
+            schemaFormat: lastParams.schemaFormat,
+            targetSchemaFormat: lastParams.targetSchemaFormat,
+            schema: lastParams.schema || undefined,
+            schemaURL: lastParams.schemaURL || undefined,
+            schemaFile: lastParams.schemaFile || undefined,
+          })
         );
         setProgressPercent(90);
         if (cb) cb();
@@ -194,10 +196,13 @@ export default function ShEx2Shacl(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(
-          API.shEx2ShaclRoute,
-          queryParamsFromServerParams(lastParams)
-        )
+        mkPermalinkLong(API.shEx2ShaclRoute, {
+          schemaFormat: lastParams.schemaFormat,
+          targetSchemaFormat: lastParams.targetSchemaFormat,
+          schema: lastParams.schema || undefined,
+          schemaURL: lastParams.schemaURL || undefined,
+          schemaFile: lastParams.schemaFile || undefined,
+        })
       );
     }
     // Change current url for shareable links
@@ -205,7 +210,13 @@ export default function ShEx2Shacl(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shEx2ShaclRoute, queryParamsFromServerParams(params))
+      mkPermalinkLong(API.shEx2ShaclRoute, {
+        schemaFormat: params.schemaFormat,
+        targetSchemaFormat: params.targetSchemaFormat,
+        schema: params.schema || undefined,
+        schemaURL: params.schemaURL || undefined,
+        schemaFile: params.schemaFile || undefined,
+      })
     );
 
     setLastParams(params);
@@ -231,6 +242,7 @@ export default function ShEx2Shacl(props) {
             <SelectFormat
               name="SHACL format"
               defaultFormat="TURTLE"
+              selectedFormat={targetFormat}
               handleFormatChange={(value) => setTargetFormat(value)}
               urlFormats={API.shaclFormats}
             />
@@ -261,7 +273,14 @@ export default function ShEx2Shacl(props) {
               <ResultShEx2Shacl
                 result={result}
                 mode={targetFormatMode(targetFormat)}
-                permalink={!params.schemaFile && permalink}
+                permalink={permalink}
+                disabled={
+                  getShexText(shex).length > API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : shex.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
+                }
               />
             ) : null}
           </Col>
