@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
-import Container from 'react-bootstrap/Container';
-import DataTabs from "../data/DataTabs"
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import React, { useState } from 'react';
 import Alert from "react-bootstrap/Alert";
-import {InitialShacl, mkShaclTabs} from "./SHACL";
+import Button from "react-bootstrap/Button";
+import Container from 'react-bootstrap/Container';
+import Form from "react-bootstrap/Form";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import Row from "react-bootstrap/Row";
+import { InitialShacl, mkShaclTabs } from "./SHACL";
 
 
 function SHACLConvert() {
@@ -20,7 +19,6 @@ function SHACLConvert() {
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log("Not implemented")
         window.scrollTo(0, 0)
     }
 

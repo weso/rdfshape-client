@@ -141,3 +141,13 @@ export function shExParamsFromQueryParams(params) {
     return newParams;
 }
 
+export function getShexText (shex) {
+    if (shex.activeTab === API.byTextTab){
+        return shex.textArea
+    }
+    else if (shex.activeTab === API.byUrlTab){
+        return shex.url
+    }
+    return ""
+}
+

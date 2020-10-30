@@ -21,6 +21,7 @@ import {
 import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -54,15 +55,28 @@ function DataVisualize(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          targetDataFormat: "dot",
-        };
-
+        const dataParams = dataParamsFromQueryParams(queryParams);
         setData(updateStateData(dataParams, data) || data);
 
-        setParams(dataParams);
-        setLastParams(dataParams);
+        // const dataParams = {
+        //   ...dataParamsFromQueryParams(queryParams),
+        //   targetDataFormat: "dot",
+        // };
+        const paramsData = updateStateData(dataParams, data) || data;
+        setData(paramsData);
+
+        if (queryParams.targetDataFormat) {
+          setTargetGraphFormat(queryParams.targetDataFormat);
+        }
+
+        const params = {
+          ...paramsFromStateData(paramsData),
+          targetGraphFormat: queryParams.targetDataFormat || undefined,
+          targetDataFormat: queryParams.targetDataFormat || undefined,
+        };
+
+        setParams(params);
+        setLastParams(params);
       } else {
         setError("Could not parse URL data");
       }
@@ -71,7 +85,11 @@ function DataVisualize(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postVisualize();
@@ -198,10 +216,9 @@ function DataVisualize(props) {
                   <Permalink
                     url={permalink}
                     disabled={
-                      data.activeTab == API.byTextTab &&
-                      data.textArea.length > API.byTextCharacterLimit
+                      getDataText(data) > API.byTextCharacterLimit
                         ? API.byTextTab
-                        : data.activeTab == API.byFileTab
+                        : data.activeTab === API.byFileTab
                         ? API.byFileTab
                         : false
                     }

@@ -142,3 +142,13 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
 
 }
 
+export function getShapeMapText (shapeMap) {
+    if (shapeMap.activeTab === API.byTextTab){
+        return shapeMap.textArea
+    }
+    else if (shapeMap.activeTab === API.byUrlTab){
+        return shapeMap.url
+    }
+    return ""
+}
+

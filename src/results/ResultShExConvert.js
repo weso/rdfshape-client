@@ -24,7 +24,7 @@ function ResultShExConvert(props) {
     }
   else {
     msg = <div>
-      <p>{result.msg}</p>
+      <Alert variant="success">{result.msg}</Alert>
          {result.result && (
          <Code
            value={result.result}

@@ -13,6 +13,7 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -51,7 +52,7 @@ function DataInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
         resetState();
         setUpHistory();
         postDataInfo();
@@ -163,10 +164,9 @@ function DataInfo(props) {
                   }
                   permalink={permalink}
                   disabled={
-                    data.activeTab == API.byTextTab &&
-                    data.textArea.length > API.byTextCharacterLimit
+                    getDataText(data).length > API.byTextCharacterLimit
                       ? API.byTextTab
-                      : data.activeTab == API.byFileTab
+                      : data.activeTab === API.byFileTab
                       ? API.byFileTab
                       : false
                   }

@@ -9,20 +9,25 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
-    InitialShapeMap,
-    mkShapeMapTabs,
-    paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams
+  getShapeMapText,
+  InitialShapeMap,
+  mkShapeMapTabs,
+  paramsFromStateShapeMap,
+  shapeMapParamsFromQueryParams,
+  updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import {
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExValidateEndpoint(props) {
@@ -55,18 +60,10 @@ function ShExValidateEndpoint(props) {
         queryParams.schemaURL ||
         queryParams.schemaFile
       ) {
-        paramsShEx = shExParamsFromQueryParams(queryParams);
-        // Update codemirror 1
-        if (queryParams.schema) {
-          const codeMirrorElement = document.querySelector(
-            ".yashe .CodeMirror"
-          );
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.schema);
-        }
-
-        queryParams.schemaURL &&
-          setShEx({ ...shex, url: queryParams.schemaURL });
+        const shexParams = shExParamsFromQueryParams(queryParams);
+        const finalSchema = updateStateShEx(shexParams, shex) || shex;
+        paramsShEx = finalSchema;
+        setShEx(finalSchema);
       }
 
       if (
@@ -74,24 +71,26 @@ function ShExValidateEndpoint(props) {
         queryParams.shapeMapURL ||
         queryParams.shapeMapFile
       ) {
-        paramsShapeMap = shapeMapParamsFromQueryParams(queryParams);
-        // Update codemirror 2
-        if (queryParams.shapeMap) {
-          const codeMirrorElement = document.querySelector(".react-codemirror2")
-            .firstChild;
-          if (codeMirrorElement && codeMirrorElement.CodeMirror)
-            codeMirrorElement.CodeMirror.setValue(queryParams.shapeMap);
-        }
-
-        queryParams.shapeMapURL &&
-          setShapeMap({ ...shapeMap, url: queryParams.shapeMapURL });
+        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
+        const finalShapeMap =
+          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
+        paramsShapeMap = finalShapeMap;
+        setShapeMap(finalShapeMap);
       }
 
+      // Endpoint State
       if (queryParams.endpoint) {
-        paramsEndpoint["endpoint"] = queryParams.endpoint;
-        setEndpoint(queryParams.endpoint);
+        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
+        setEndpoint(paramsEndpoint.endpoint);
       }
-      let params = { ...paramsShEx, ...paramsShapeMap, ...paramsEndpoint };
+
+      const params = {
+        ...paramsFromStateShEx(paramsShEx),
+        ...paramsFromStateShapeMap(paramsShapeMap),
+        endpoint: paramsEndpoint.endpoint || endpoint,
+        schemaEngine: "ShEx",
+        triggerMode: "shapeMap",
+      };
 
       setParams(params);
       setLastParams(params);
@@ -101,9 +100,21 @@ function ShExValidateEndpoint(props) {
   useEffect(() => {
     if (params && !loading) {
       if (!endpoint) setError("Specify a valid endpoint URL");
-      else if (!(params.schema || params.schemaURL || params.schemaFile))
+      else if (
+        !(
+          params.schema ||
+          params.schemaURL ||
+          (params.schemaFile && params.schemaFile.name)
+        )
+      )
         setError("No ShEx schema provided");
-      else if (!(params.shapeMap || params.shapeMapURL || params.shapeMapFile))
+      else if (
+        !(
+          params.shapeMap ||
+          params.shapeMapURL ||
+          (params.shapeMapFile && params.shapeMapFile.name)
+        )
+      )
         setError("No ShapeMap provided");
       else {
         resetState();
@@ -231,6 +242,17 @@ function ShExValidateEndpoint(props) {
                 result={result}
                 permalink={
                   !params.schemaFile && !params.shapeMapFile && permalink
+                }
+                disabled={
+                  endpoint.length +
+                    getShexText(shex).length +
+                    getShapeMapText(shapeMap).length >
+                  API.byTextCharacterLimit
+                    ? API.byTextTab
+                    : shex.activeTab === API.byFileTab ||
+                      shapeMap.activeTab === API.byFileTab
+                    ? API.byFileTab
+                    : false
                 }
               />
             ) : null}

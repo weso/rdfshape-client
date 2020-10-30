@@ -17,7 +17,7 @@ import {
   Permalink
 } from "../Permalink";
 import {
-  convertTabQuery,
+  getQueryText,
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
@@ -27,6 +27,7 @@ import {
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -49,44 +50,60 @@ function DataQuery(props) {
   useEffect(() => {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
-      if (
-        (queryParams.data || queryParams.dataURL || queryParams.dataFile) &&
-        (queryParams.query || queryParams.queryURL || queryParams.queryFile)
-      ) {
+      let paramsData,
+        paramsQuery = {};
+      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
-        const queryDataParams = queryParamsFromQueryParams(queryParams);
-
-        setData(updateStateData(dataParams, data) || data);
-        setQuery(updateStateQuery(queryDataParams, query) || query);
-
-        const activeTab = queryDataParams.query
-          ? convertTabQuery(API.byTextTab)
-          : queryDataParams.queryURL
-          ? convertTabQuery(API.byUrlTab)
-          : queryDataParams.queryFile
-          ? convertTabQuery(API.byFileTab)
-          : "unknown";
-
-        setParams({ ...dataParams, ...queryDataParams, activeTab });
-        setLastParams({ ...dataParams, ...queryDataParams , activeTab});
-      } else {
-        setError("Could not parse URL data");
+        const finalData = updateStateData(dataParams, data) || data;
+        paramsData = finalData;
+        setData(finalData);
       }
+
+      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
+        const queryDataParams = queryParamsFromQueryParams(queryParams);
+        const finalQuery = updateStateQuery(queryDataParams, query) || query;
+        paramsQuery = finalQuery;
+        setQuery(finalQuery);
+      }
+
+      const params = {
+        ...paramsFromStateData(paramsData),
+        ...paramsFromStateQuery(paramsQuery),
+      };
+
+      setParams(params);
+      setLastParams(params);
     }
   }, [props.location.search]);
 
   useEffect(() => {
     if (params) {
       if (
-        (params.data || params.dataURL || params.dataFile) &&
-        (params.query || params.queryURL || params.queryFile)
+        (params.data ||
+          params.dataURL ||
+          (params.dataFile && params.dataFile.name)) &&
+        (params.query ||
+          params.queryURL ||
+          (params.queryFile && params.queryFile.name))
       ) {
         resetState();
         setUpHistory();
         postQuery();
-      } else if (!(params.data || params.dataURL || params.queryFile)) {
+      } else if (
+        !(
+          params.data ||
+          params.dataURL ||
+          (params.dataFile && params.dataFile.name)
+        )
+      ) {
         setError("No RDF data provided");
-      } else if (!(params.query || params.queryURL || params.queryFile)) {
+      } else if (
+        !(
+          params.query ||
+          params.queryURL ||
+          (params.queryFile && params.queryFile.name)
+        )
+      ) {
         setError("No query provided");
       }
       window.scrollTo(0, 0);
@@ -198,13 +215,11 @@ function DataQuery(props) {
                   <Permalink
                     url={permalink}
                     disabled={
-                      (data.activeTab == API.byTextTab ||
-                        query.activeTab == API.byTextTab) &&
-                      data.textArea.length + query.textArea.length >
-                        API.byTextCharacterLimit
+                      getDataText(data).length + getQueryText(query).length >
+                      API.byTextCharacterLimit
                         ? API.byTextTab
-                        : data.activeTab == API.byFileTab ||
-                          query.activeTab == API.byFileTab
+                        : data.activeTab === API.byFileTab ||
+                          query.activeTab === API.byFileTab
                         ? API.byFileTab
                         : false
                     }

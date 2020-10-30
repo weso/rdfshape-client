@@ -20,6 +20,7 @@ export const InitialShacl = {
   format: API.defaultSHACLFormat,
   fromParams: false,
   codeMirror: null,
+  inference: "none"
 };
 
 /*export function shaclReducer(status,action) {
@@ -192,4 +193,14 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
       />
     </React.Fragment>
   );
+}
+
+export function getShaclText (shacl) {
+  if (shacl.activeTab === API.byTextTab){
+      return shacl.textArea
+  }
+  else if (shacl.activeTab === API.byUrlTab){
+      return shacl.url
+  }
+  return ""
 }

@@ -12,6 +12,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -41,7 +42,6 @@ function CytoVisualize(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   useEffect(() => {
-    console.log("LOADED!")
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
@@ -61,7 +61,7 @@ function CytoVisualize(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
         resetState();
         setUpHistory();
         postConvert();
@@ -167,10 +167,9 @@ function CytoVisualize(props) {
                   <Permalink
                     url={permalink}
                     disabled={
-                      data.activeTab == API.byTextTab &&
-                      data.textArea.length > API.byTextCharacterLimit
+                      getDataText(data) > API.byTextCharacterLimit
                         ? API.byTextTab
-                        : data.activeTab == API.byFileTab
+                        : data.activeTab === API.byFileTab
                         ? API.byFileTab
                         : false
                     }

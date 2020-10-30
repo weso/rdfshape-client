@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
-import 'perfectkb-yate/dist/yate.css';
 import Yate from 'perfectkb-yate/dist/yate.bundled.js';
+import 'perfectkb-yate/dist/yate.css';
 import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from 'react';
 
 function TurtleForm(props) {
     const [yate,setYate] = useState(null);
@@ -10,11 +10,10 @@ function TurtleForm(props) {
     useEffect(() => {
         if (!yate) {
             const options = { ...props.options,
-                placeholder: props.placeholder 
+                placeholder: props.placeholder
             };
-            console.log(`Initializing YATE with options: ${JSON.stringify(options)}`)
             const y = Yate.fromTextArea(
-                textAreaRef.current, 
+                textAreaRef.current,
                 options)
             y.on('change', (cm,change) => {
                 // setQuery(cm.getValue())

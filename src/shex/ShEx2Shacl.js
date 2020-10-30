@@ -14,6 +14,7 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import {
   convertTabSchema,
+  getShexText,
   InitialShEx,
   mkShExTabs,
   shExParamsFromQueryParams,
@@ -72,7 +73,7 @@ export default function ShEx2Shacl(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postRequest();
@@ -274,10 +275,9 @@ export default function ShEx2Shacl(props) {
                 mode={targetFormatMode(targetFormat)}
                 permalink={permalink}
                 disabled={
-                  shex.activeTab == API.byTextTab &&
-                  shex.textArea.length > API.byTextCharacterLimit
+                  getShexText(shex).length > API.byTextCharacterLimit
                     ? API.byTextTab
-                    : shex.activeTab == API.byFileTab
+                    : shex.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

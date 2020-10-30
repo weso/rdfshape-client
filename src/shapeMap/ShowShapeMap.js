@@ -60,7 +60,6 @@ function ShowShapeMap(props) {
        return <Alert variant="info">{shapeMap}</Alert>
     } else {
         const table = shapeMap2Table(shapeMap, props.nodesPrefixMap, props.shapesPrefixMap)
-        // console.log("Table data: " + table)
         const columns = [
             {
                 dataField: 'id',

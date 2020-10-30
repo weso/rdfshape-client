@@ -1,16 +1,16 @@
-import React from 'react';
-
-import Container from 'react-bootstrap/Container';
-import ShExTabs from "./ShExTabs"
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import API from "../API";
 import axios from "axios";
-import CytoSchema from "../cytoscape/CytoSchema";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import Pace from "react-pace-progress";
 import qs from "query-string";
-import {paramsFromStateShEx, shExParamsFromQueryParams} from "./ShEx";
+import React from 'react';
+import Button from "react-bootstrap/Button";
+import Container from 'react-bootstrap/Container';
+import Form from "react-bootstrap/Form";
+import Pace from "react-pace-progress";
+import API from "../API";
+import CytoSchema from "../cytoscape/CytoSchema";
+import { mkPermalink, params2Form, Permalink } from "../Permalink";
+import { paramsFromStateShEx, shExParamsFromQueryParams } from "./ShEx";
+import ShExTabs from "./ShExTabs";
+
 
 const url = API.schemaVisualizeCytoscape ;
 
@@ -50,10 +50,8 @@ class ShExVisualizeCytoscape extends React.Component {
     handleShExFileUpload(value) { this.setState({shExFile: value}); }
 
     componentDidMount() {
-        console.log("Component Did mount - dataConvert");
         if (this.props.location.search) {
             const queryParams = qs.parse(this.props.location.search);
-            console.log("Parameters: " + JSON.stringify(queryParams));
             let params = shExParamsFromQueryParams(queryParams);
             const formData = params2Form(params);
             this.postVisualize(url, formData, () => this.updateStateVisualize(params))

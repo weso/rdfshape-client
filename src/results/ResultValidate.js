@@ -25,7 +25,7 @@ function ResultValidate(props) {
                         result.message && <Alert variant="success">{result.message} </Alert>
                     }
                     {result.shapeMap.length === 0 && <Alert variant="info">
-                        Validation was successful but no results were obtained, check the if the input data is coherent</Alert>}
+                        Validation was successful but no results were obtained, check if the input data is coherent</Alert>}
                     { props.permalink &&
                     <Fragment>
                         <Permalink url={props.permalink} disabled={props.disabled}/>

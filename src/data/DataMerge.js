@@ -13,6 +13,7 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -70,7 +71,14 @@ function DataMerge(props) {
   useEffect(() => {
     if (params && params.compoundData) {
       const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.data || p.dataURL || p.dataFile)) {
+      if (parameters.some((p) => p.dataFile)) {
+        setError("Not implemented Merge from files.");
+      }
+      else if (
+        parameters.some(
+          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+        )
+      ) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -210,13 +218,11 @@ function DataMerge(props) {
                 }
                 permalink={permalink}
                 disabled={
-                  (data1.activeTab == API.byTextTab ||
-                    data2.activeTab == API.byTextTab) &&
-                  data1.textArea.length + data2.textArea.length >
-                    API.byTextCharacterLimit
+                  getDataText(data1).length + getDataText(data2).length >
+                  API.byTextCharacterLimit
                     ? API.byTextTab
-                    : data1.activeTab == API.byFileTab ||
-                      data2.activeTab == API.byFileTab
+                    : data1.activeTab === API.byFileTab ||
+                      data2.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

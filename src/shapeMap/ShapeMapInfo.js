@@ -74,7 +74,6 @@ function ShapeMapInfo(props) {
   }
 
   function postShapeMapInfo(cb) {
-    console.log("SENT PARAMS: ", params)
     setLoading(true)
     setProgressPercent(20)
     const formData = params2Form(params)
@@ -172,10 +171,10 @@ function ShapeMapInfo(props) {
                 }
                 permalink={permalink}
                 disabled={
-                  shapeMap.activeTab == API.byTextTab &&
+                  shapeMap.activeTab === API.byTextTab &&
                   shapeMap.textArea.length > API.byTextCharacterLimit
                     ? API.byTextTab
-                    : shapeMap.activeTab == API.byFileTab
+                    : shapeMap.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

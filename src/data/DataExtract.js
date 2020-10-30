@@ -15,6 +15,7 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -174,10 +175,9 @@ function DataExtract(props) {
                   result={result}
                   permalink={permalink}
                   disabled={
-                    data.activeTab == API.byTextTab &&
-                    data.textArea.length > API.byTextCharacterLimit
+                    getDataText(data) > API.byTextCharacterLimit
                       ? API.byTextTab
-                      : data.activeTab == API.byFileTab
+                      : data.activeTab === API.byFileTab
                       ? API.byFileTab
                       : false
                   }

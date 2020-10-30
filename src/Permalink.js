@@ -106,7 +106,7 @@ export function Permalink(props) {
         </Button>
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
-            {props.disabled == API.byTextTab
+            {props.disabled === API.byTextTab
               ? "Can't generate permalinks for long manual inputs, try validating by URL"
               : "Can't generate permalinks for file-based validations, try validating by URL"}
           </ReactTooltip>

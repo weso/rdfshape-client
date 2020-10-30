@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -21,6 +22,7 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getShaclText,
   InitialShacl,
   mkShaclTabs,
   paramsFromStateShacl,
@@ -195,7 +197,7 @@ function SHACLValidate(props) {
               variant="secondary"
               onClick={() => {
                 setWithEndpoint(!withEndpoint);
-                if (!withEndpoint == false) {
+                if (!withEndpoint === false) {
                   setEndpoint("");
                 }
               }}
@@ -238,13 +240,11 @@ function SHACLValidate(props) {
                 result={result}
                 permalink={permalink}
                 disabled={
-                  (data.activeTab == API.byTextTab ||
-                    shacl.activeTab == API.byTextTab) &&
-                  data.textArea.length + shacl.textArea.length >
+                  getShaclText(shacl).length + getDataText(data).length >
                     API.byTextCharacterLimit
                     ? API.byTextTab
-                    : data.activeTab == API.byFileTab ||
-                      shacl.activeTab == API.byFileTab
+                    : data.activeTab === API.byFileTab ||
+                      shacl.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

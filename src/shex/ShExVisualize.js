@@ -12,6 +12,7 @@ import API from "../API";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
+  getShexText,
   InitialShEx,
   mkShExTabs,
   paramsFromStateShEx,
@@ -62,7 +63,6 @@ function ShExVisualize(props) {
   useEffect(() => {
     if (params && !loading) {
       if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
-        console.log("SENT PARAMS: ", params)
         resetState();
         setUpHistory();
         postVisualize();
@@ -171,10 +171,9 @@ function ShExVisualize(props) {
                 result={result}
                 permalink={permalink}
                 disabled={
-                  shex.activeTab == API.byTextTab &&
-                  shex.textArea.length > API.byTextCharacterLimit
+                  getShexText(shex).length > API.byTextCharacterLimit
                     ? API.byTextTab
-                    : shex.activeTab == API.byFileTab
+                    : shex.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

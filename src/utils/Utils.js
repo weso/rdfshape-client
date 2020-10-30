@@ -246,8 +246,6 @@ export function format2mode(format) {
                 return 'htmlmixed';
             case 'html-rdfa11':
                 return 'htmlmixed';
-            case 'html':
-                return 'htmlmixed';
             default:
                 return 'turtle'
         }

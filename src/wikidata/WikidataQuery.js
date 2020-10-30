@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
-import Container from 'react-bootstrap/Container';
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Alert from "react-bootstrap/Alert";
-import { mkPermalink, Permalink } from "../Permalink";
-import API from "../API";
-import Pace from "react-pace-progress";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import {InitialQuery, mkQueryTabs, queryParamsFromQueryParams} from "../query/Query";
 import axios from "axios";
+import React, { useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from 'react-bootstrap/Container';
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Pace from "react-pace-progress";
+import API from "../API";
+import { mkPermalink, Permalink } from "../Permalink";
+import { InitialQuery, mkQueryTabs, queryParamsFromQueryParams } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 
 function WikidataQuery(props) {
@@ -40,7 +40,6 @@ function WikidataQuery(props) {
             })
             .catch(function (error) {
                 const msg = `Error doing server request at ${serverUrl}: ${error}`;
-                console.log(msg);
                 setLoading(false);
                 setError(msg);
             })

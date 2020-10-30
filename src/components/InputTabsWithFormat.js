@@ -7,7 +7,6 @@ function InputTabsWithFormat(props) {
 
 
     function handleTextChange(value) {
-        // console.log(`HandleChange...`);
         props.handleByTextChange(value);
     }
 

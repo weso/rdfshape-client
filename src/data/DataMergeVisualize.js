@@ -18,6 +18,7 @@ import {
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -71,7 +72,13 @@ function DataMergeVisualize(props) {
   useEffect(() => {
     if (params && params.compoundData) {
       const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.data || p.dataURL || p.dataFile)) {
+      if (parameters.some((p) => p.dataFile)) {
+        setError("Not implemented Merge from files.");
+      } else if (
+        parameters.some(
+          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+        )
+      ) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -197,13 +204,11 @@ function DataMergeVisualize(props) {
                   <Permalink
                     url={permalink}
                     disabled={
-                      (data1.activeTab == API.byTextTab ||
-                        data2.activeTab == API.byTextTab) &&
-                      data1.textArea.length + data2.textArea.length >
-                        API.byTextCharacterLimit
+                      getDataText(data1).length + getDataText(data2).length >
+                      API.byTextCharacterLimit
                         ? API.byTextTab
-                        : data1.activeTab == API.byFileTab ||
-                          data2.activeTab == API.byFileTab
+                        : data1.activeTab === API.byFileTab ||
+                          data2.activeTab === API.byFileTab
                         ? API.byFileTab
                         : false
                     }

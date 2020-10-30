@@ -14,6 +14,7 @@ import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
+  getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
@@ -60,8 +61,7 @@ function DataConvert(props) {
 
   useEffect(() => {
     if (params) {
-      console.log("DATAA!: ", data);
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
         resetState();
         setUpHistory();
         postConvert();
@@ -173,10 +173,9 @@ function DataConvert(props) {
                 result={result}
                 permalink={permalink}
                 disabled={
-                  data.activeTab == API.byTextTab &&
-                  data.textArea.length > API.byTextCharacterLimit
+                  getDataText(data) > API.byTextCharacterLimit
                     ? API.byTextTab
-                    : data.activeTab == API.byFileTab
+                    : data.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

@@ -10,6 +10,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import {
+  getQueryText,
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
@@ -68,7 +69,7 @@ function EndpointQuery(props) {
   useEffect(() => {
     if (params && !loading) {
       if (!params.endpoint) setError("No endpoint provided");
-      else if (!(params.query || params.queryURL || params.queryFile))
+      else if (!(params.query || params.queryURL || (params.queryFile && params.queryFile.name)))
         setError("No query provided");
       else {
         resetState();
@@ -223,13 +224,12 @@ function EndpointQuery(props) {
               <ResultEndpointQuery
                 result={result}
                 error={error}
-                permalink={!params.queryFile && permalink}
+                permalink={permalink}
                 disabled={
-                  endpoint && query.activeTab == API.byTextTab &&
-                  query.textArea.length + endpoint.length >
+                  getQueryText(query).length + endpoint.length >
                     API.byTextCharacterLimit
                     ? API.byTextTab
-                    : query.activeTab == API.byFileTab
+                    : query.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }

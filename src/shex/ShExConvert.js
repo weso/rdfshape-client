@@ -13,6 +13,7 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExConvert from "../results/ResultShExConvert";
 import {
+  getShexText,
   InitialShEx,
   mkShExTabs,
   paramsFromStateShEx,
@@ -74,7 +75,7 @@ function ShExConvert(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || params.schemaFile) {
+      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
         resetState();
         setUpHistory();
         postConvert();
@@ -192,10 +193,9 @@ function ShExConvert(props) {
                 result={result}
                 permalink={permalink}
                 disabled={
-                  shex.activeTab == API.byTextTab &&
-                  shex.textArea.length > API.byTextCharacterLimit
+                  getShexText(shex).length > API.byTextCharacterLimit
                     ? API.byTextTab
-                    : shex.activeTab == API.byFileTab
+                    : shex.activeTab === API.byFileTab
                     ? API.byFileTab
                     : false
                 }
