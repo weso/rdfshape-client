@@ -60,12 +60,13 @@ function ShExConvert(props) {
       }
 
       if (queryParams.targetSchemaFormat)
-        setTargetSchemaFormat(queryParams.targetSchemaFormat)
+        setTargetSchemaFormat(queryParams.targetSchemaFormat);
 
       let params = {
         ...paramsFromStateShEx(paramsShEx),
         schemaEngine: "ShEx",
-        targetSchemaFormat: queryParams.targetSchemaFormat ? queryParams.targetSchemaFormat : ""
+        targetSchemaFormat:
+          queryParams.targetSchemaFormat || targetSchemaFormat,
       };
 
       setParams(params);
@@ -75,7 +76,11 @@ function ShExConvert(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
+      if (
+        params.schema ||
+        params.schemaURL ||
+        (params.schemaFile && params.schemaFile.name)
+      ) {
         resetState();
         setUpHistory();
         postConvert();
