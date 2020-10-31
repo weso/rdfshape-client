@@ -1,8 +1,8 @@
+import PropTypes from "prop-types";
 import React from 'react';
+import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
 import ShExForm from "./ShExForm";
-import API from "../API";
-import PropTypes from "prop-types";
 
 function ShExTabs(props) {
 
@@ -22,7 +22,7 @@ function ShExTabs(props) {
 
                 byTextName={props.subname || ""}
                 textAreaValue={props.textAreaValue}
-                byTextPlaceholder="RDF shEx..."
+                byTextPlaceholder="ShEx data..."
                 handleByTextChange={props.handleByTextChange}
                 setCodeMirror = {props.setCodeMirror}
                 inputForm={shExForm}

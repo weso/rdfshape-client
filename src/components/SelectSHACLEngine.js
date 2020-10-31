@@ -1,6 +1,6 @@
-import React from 'react';
-import API from "../API"
 import PropTypes from 'prop-types';
+import React from 'react';
+import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 
 function SelectSHACLEngine(props) {

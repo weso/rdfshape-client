@@ -127,23 +127,6 @@ export default function ShEx2Shacl(props) {
     return params;
   }
 
-  function queryParamsFromServerParams(params) {
-    let queryParams = {};
-    if (params["schema"]) {
-      queryParams["schema"] = params["schema"];
-    }
-    if (params["schemaURL"]) {
-      queryParams["shExUrl"] = params["schemaURL"];
-    }
-    if (params["schemaFormat"]) {
-      queryParams["shExFormat"] = params["schemaFormat"];
-    }
-    if (params["targetSchemaFormat"]) {
-      queryParams["targetFormat"] = params["targetSchemaFormat"];
-    }
-    return queryParams;
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
     setParams({
@@ -166,11 +149,11 @@ export default function ShEx2Shacl(props) {
         setResult(data);
         setPermalink(
           await mkPermalink(API.shEx2ShaclRoute, {
-            schemaFormat: lastParams.schemaFormat,
-            targetSchemaFormat: lastParams.targetSchemaFormat,
-            schema: lastParams.schema || undefined,
-            schemaURL: lastParams.schemaURL || undefined,
-            schemaFile: lastParams.schemaFile || undefined,
+            schemaFormat: params.schemaFormat,
+            targetSchemaFormat: params.targetSchemaFormat,
+            schema: params.schema || undefined,
+            schemaURL: params.schemaURL || undefined,
+            schemaFile: params.schemaFile || undefined,
           })
         );
         setProgressPercent(90);

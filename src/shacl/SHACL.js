@@ -66,6 +66,8 @@ export function updateStateShacl(params, shacl) {
       textArea: params["schema"],
       fromParams: true,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
+      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
     };
   }
   if (params["schemaURL"]) {
@@ -75,6 +77,8 @@ export function updateStateShacl(params, shacl) {
       url: params["schemaURL"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
+      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
     };
   }
   if (params["schemaFile"]) {
@@ -84,6 +88,8 @@ export function updateStateShacl(params, shacl) {
       file: params["schemaFile"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
+      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
+      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
     };
   }
   return shacl;
@@ -95,9 +101,13 @@ export function paramsFromStateShacl(state) {
   const format = state.format;
   const url = state.url;
   const file = state.file;
+  const engine = state.engine;
+  const inference = state.inference;
   let params = {};
   params["activeSchemaTab"] = convertTabSchema(activeTab);
   params["schemaFormat"] = format;
+  params["schemaEngine"] = engine;
+  params["schemaInference"] = inference;
   params["schemaEmbedded"] = false;
   switch (activeTab) {
     case API.byTextTab:
@@ -145,6 +155,9 @@ export function shaclParamsFromQueryParams(params) {
   if (params.schema) newParams["schema"] = params.schema;
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
   if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+  if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
+  if (params.schemaInference) newParams["schemaInference"] = params.schemaInference;
+  if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
   return newParams;
 }
 
@@ -193,7 +206,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
       />
       <SelectSHACLEngine
         handleSHACLEngineChange={handleSHACLEngineChange}
-        selectedSHACLEngine={shacl.inference}
+        selectedSHACLEngine={shacl.engine}
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />

@@ -6,7 +6,7 @@ import PrintJson from "../utils/PrintJson";
 import { mkMode } from "../utils/Utils";
 
 
-function ResultShExConvert(props) {
+function ResultSHACLConvert(props) {
   const result = props.result
   const mode = mkMode(result.targetSchemaFormat)
   let msg ;
@@ -16,7 +16,7 @@ function ResultShExConvert(props) {
   else if (result.error || result.msg.toLowerCase().startsWith("error")) {
     msg =
       <div>
-        <Alert variant="danger">Invalid ShEx schema</Alert>
+        <Alert variant="danger">Invalid SHACL schema</Alert>
         <ul>
           <li className="word-break">{result.error || result.msg}</li>
         </ul>
@@ -47,4 +47,4 @@ function ResultShExConvert(props) {
   )
 }
 
-export default ResultShExConvert;
+export default ResultSHACLConvert;
