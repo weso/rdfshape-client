@@ -39,7 +39,6 @@ function DataInfo(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
@@ -56,7 +55,11 @@ function DataInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postDataInfo();

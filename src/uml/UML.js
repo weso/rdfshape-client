@@ -1,6 +1,6 @@
+import React from "react";
 import API from "../API";
 import UMLTabs from "./UMLTabs";
-import React from "react";
 
 
 export const InitialUML = {
@@ -65,11 +65,11 @@ export function updateStateUML(params, xmi) {
             format: params['schemaFormat'] ? params['schemaFormat'] : xmi.format
         };
     }
-    if (params['schemaUrl']) {
+    if (params['schemaURL']) {
         return {
             ...xmi,
             activeTab: API.byUrlTab,
-            url: params['schemaUrl'],
+            url: params['schemaURL'],
             fromParams: false,
             format: params['schemaFormat'] ? params['schemaFormat'] : xmi.format
         }
@@ -136,7 +136,18 @@ export function UMLParamsFromQueryParams(params) {
     let newParams = {};
     if (params.schema) newParams["schema"] = params.schema;
     if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
+    if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+    if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
     return newParams;
+}
+
+export function getUmlText (xmi) {
+    if (xmi.activeTab === API.byTextTab){
+        return xmi.textArea
+    }
+    else if (xmi.activeTab === API.byUrlTab){
+        return xmi.url
+    }
+    return ""
 }
 

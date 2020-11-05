@@ -1,6 +1,6 @@
+import React from "react";
 import API from "../API";
 import ShEx2UMLTabs from "./ShEx2UMLTabs";
-import React from "react";
 
 
 export const InitialShEx = {
@@ -136,7 +136,8 @@ export function shExParamsFromQueryParams(params) {
     let newParams = {};
     if (params.schema) newParams["schema"] = params.schema;
     if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-    if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
+    if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+    if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
     return newParams;
 }
 

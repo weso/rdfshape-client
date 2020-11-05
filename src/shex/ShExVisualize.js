@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -8,8 +8,15 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
+import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import {
+  mkPermalink,
+  mkPermalinkLong,
+  params2Form,
+  Permalink
+} from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
   getShexText,
@@ -31,9 +38,14 @@ function ShExVisualize(props) {
   const [permalink, setPermalink] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
   const url = API.schemaVisualize;
+
+  const minSvgZoom = API.minSvgZoom;
+  const maxSvgZoom = API.maxSvgZoom;
+  const svgZoomStep = API.svgZoomStep;
 
   useEffect(() => {
     if (props.location.search) {
@@ -62,7 +74,11 @@ function ShExVisualize(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
+      if (
+        params.schema ||
+        params.schemaURL ||
+        (params.schemaFile && params.schemaFile.name)
+      ) {
         resetState();
         setUpHistory();
         postVisualize();
@@ -79,6 +95,16 @@ function ShExVisualize(props) {
       ...paramsFromStateShEx(shex),
       schemaEngine: "ShEx",
     });
+  }
+
+  function zoomSvg(zoomIn) {
+    if (zoomIn) {
+      const zoom = Math.min(maxSvgZoom, svgZoom + svgZoomStep);
+      setSvgZoom(zoom);
+    } else {
+      const zoom = Math.max(minSvgZoom, svgZoom - svgZoomStep);
+      setSvgZoom(zoom);
+    }
   }
 
   function postVisualize(cb) {
@@ -157,28 +183,63 @@ function ShExVisualize(props) {
         </Col>
         {loading || result || permalink || error ? (
           <Col className="half-col visual-column">
-            {loading ? (
-              <ProgressBar
-                striped
-                animated
-                variant="info"
-                now={progressPercent}
-              />
-            ) : error ? (
-              <Alert variant="danger">{error}</Alert>
-            ) : result ? (
-              <ResultShExVisualize
-                result={result}
-                permalink={permalink}
-                disabled={
-                  getShexText(shex).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shex.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
-              />
-            ) : null}
+            <Fragment>
+              {permalink && !error ? (
+                <div className={"d-flex"}>
+                  <Permalink
+                    url={permalink}
+                    disabled={
+                      getShexText(shex).length > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : shex.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
+                  />
+                  <Button
+                    onClick={() => zoomSvg(false)}
+                    className="btn-zoom"
+                    variant="secondary"
+                    disabled={svgZoom <= minSvgZoom}
+                  >
+                    <ZoomOutIcon className="white-icon" />
+                  </Button>
+                  <Button
+                    onClick={() => zoomSvg(true)}
+                    style={{ marginLeft: "1px" }}
+                    className="btn-zoom"
+                    variant="secondary"
+                    disabled={svgZoom >= maxSvgZoom}
+                  >
+                    <ZoomInIcon className="white-icon" />
+                  </Button>
+                </div>
+              ) : null}
+              {loading ? (
+                <ProgressBar
+                  striped
+                  animated
+                  variant="info"
+                  now={progressPercent}
+                />
+              ) : error ? (
+                <Alert variant="danger">{error}</Alert>
+              ) : result ? (
+                <div
+                  style={{ overflow: "auto" }}
+                  className={"width-100 height-100 border"}
+                >
+                  <ResultShExVisualize
+                    result={result}
+                    zoom={svgZoom}
+                    showDetails={false}
+                  />
+                </div>
+              ) : null}
+            </Fragment>
+            {result && (
+              <ResultShExVisualize result={result} showDetails={true} />
+            )}
           </Col>
         ) : (
           <Col className={"half-col"}>

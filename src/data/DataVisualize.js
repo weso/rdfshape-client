@@ -43,9 +43,9 @@ function DataVisualize(props) {
 
   const url = API.dataConvert;
 
-  const minSvgZoom = 0.2;
-  const maxSvgZoom = 1.9;
-  const svgZoomStep = 0.1;
+  const minSvgZoom = API.minSvgZoom;
+  const maxSvgZoom = API.maxSvgZoom;
+  const svgZoomStep = API.svgZoomStep;
 
   function handleTargetGraphFormatChange(value) {
     setTargetGraphFormat(value);
