@@ -87,6 +87,7 @@ class API {
     static defaultXMLFormat = "xml";
 
     static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
+    static fetchUrl = API.rootApi + 'fetch'
 
 
     static wikidataUrl =  "https://query.wikidata.org/sparql" ;
@@ -96,6 +97,11 @@ class API {
 
     // By text limitations
     static byTextCharacterLimit = 2200
+
+    // Zoom on visualizations
+    static minSvgZoom = 0.2;
+    static maxSvgZoom = 1.9;
+    static svgZoomStep = 0.1;
 
 }
 

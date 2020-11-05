@@ -1,3 +1,4 @@
+import axios from "axios";
 import $ from "jquery";
 //import SelectFormat from "../components/SelectFormat"
 import qs from "query-string";
@@ -11,16 +12,23 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import shumlex from "shumlex";
 import API from "../API";
-import { mkPermalinkLong } from "../Permalink";
+import { mkPermalink, mkPermalinkLong } from "../Permalink";
 import ResultShEx2XMI from "../results/ResultShEx2XMI";
 import ResultXMI2ShEx from "../results/ResultXMI2ShEx";
 import {
-    convertTabSchema,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams
+  convertTabSchema,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams
 } from "../uml/ShEx2UML";
-import { InitialUML, mkUMLTabs, UMLParamsFromQueryParams } from "../uml/UML";
+import {
+  getUmlText,
+  InitialUML,
+  mkUMLTabs,
+  UMLParamsFromQueryParams,
+  updateStateUML
+} from "../uml/UML";
+import { getShexText, updateStateShEx } from "./ShEx";
 const cyto = require("cytoscape");
 let dagre = require("cytoscape-dagre");
 const panzoom = require("cytoscape-panzoom");
@@ -40,7 +48,7 @@ export default function ShEx2XMI(props) {
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
-  const url = API.schemaConvert;
+  const fetchUrl = API.fetchUrl;
 
   const [isShEx2UML, setIsShEx2UML] = useState(true);
 
@@ -102,23 +110,38 @@ export default function ShEx2XMI(props) {
     if (props.location.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
+      let shex2Uml = isShEx2UML;
 
-      if (queryParams.schema) {
-        paramsShEx = isShEx2UML
-          ? shExParamsFromQueryParams(queryParams)
-          : UMLParamsFromQueryParams(queryParams);
-        // Update codemirror
-        const codeMirrorElement = document.querySelector(".yashe .CodeMirror");
-        if (codeMirrorElement && codeMirrorElement.CodeMirror)
-          codeMirrorElement.CodeMirror.setValue(queryParams.schema);
+      // Deduce conversion direction from URL
+      if (queryParams.targetSchemaEngine) {
+        if (queryParams.targetSchemaEngine === "xml") shex2Uml = true;
+        else shex2Uml = false;
+        setIsShEx2UML(shex2Uml);
       }
 
-      let params = {
-        ...paramsShEx,
-        ...mkServerParams(queryParams.targetFormat),
-        schema: queryParams.schema,
-        schemaEngine: isShEx2UML ? "ShEx" : "xml",
-        targetSchemaEngine: isShEx2UML ? "xml" : "ShEx",
+      if (
+        queryParams.schema ||
+        queryParams.schemaURL ||
+        queryParams.schemaFile
+      ) {
+        const schemaParams = shex2Uml
+          ? shExParamsFromQueryParams(queryParams)
+          : UMLParamsFromQueryParams(queryParams);
+
+        const finalSchema = shex2Uml
+          ? updateStateShEx(schemaParams, shex) || shex
+          : updateStateUML(schemaParams, xmi) || xmi;
+
+        paramsShEx = finalSchema;
+        shex2Uml ? setShEx(finalSchema) : setXmi(finalSchema);
+      }
+
+      const params = {
+        // ...paramsShEx,
+        ...mkServerParams(paramsShEx, queryParams.targetSchemaEngine),
+        schemaEngine: shex2Uml ? "ShEx" : "xml",
+        targetSchemaEngine: shex2Uml ? "xml" : "ShEx",
+        targetSchemaFormat: shex2Uml ? "xml" : "ShEx",
       };
 
       setParams(params);
@@ -128,7 +151,11 @@ export default function ShEx2XMI(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema) {
+      if (
+        params.schema ||
+        params.schemaURL ||
+        (params.schemaFile && params.schemaFile.name)
+      ) {
         resetState();
         setUpHistory();
         doRequest();
@@ -183,9 +210,8 @@ export default function ShEx2XMI(props) {
     }
   }
 
-  function mkServerParams(format) {
+  function mkServerParams(source, format) {
     let params = {};
-    let source = isShEx2UML ? shex : xmi;
     params["activeSchemaTab"] = convertTabSchema(source.activeTab);
     params["schemaEmbedded"] = false;
     params["schemaFormat"] = source.format;
@@ -212,72 +238,90 @@ export default function ShEx2XMI(props) {
     return params;
   }
 
-  function queryParamsFromServerParams(params) {
-    let queryParams = {};
-    if (params["schema"]) {
-      queryParams["schema"] = params["schema"];
-    }
-    if (params["schemaURL"]) {
-      queryParams["shExUrl"] = params["schemaURL"];
-    }
-    if (params["schemaFormat"]) {
-      queryParams["shExFormat"] = params["schemaFormat"];
-    }
-    if (params["targetSchemaFormat"]) {
-      queryParams["targetFormat"] = params["targetSchemaFormat"];
-    }
-    return queryParams;
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
+    let newParams = {};
     if (isShEx2UML) {
-      setParams({
-        ...mkServerParams(),
+      newParams = {
+        ...mkServerParams(shex, "xml"),
         schemaEngine: "ShEx",
         targetSchemaEngine: "xml",
-      });
+      };
     } else {
-      setParams({
-        ...mkServerParams("ShEx"),
+      newParams = {
+        ...mkServerParams(xmi, "ShEx"),
         schemaEngine: "xml",
         targetSchemaEngine: "ShEx",
-      });
+      };
+    }
+
+    setParams(newParams);
+  }
+
+  // This validation is done in the client, so the client must parse the input,
+  // wether it's plain text, a URL to be fetched or a file to be parsed.
+  async function getConverterInput() {
+    // Plain text, do nothing
+    if (params.schema) return params.schema;
+    else if (params.schemaURL) {
+      // URL, ask the RdfShape server to fetch the contents for us (prevent CORS)
+      return axios
+        .get(fetchUrl, {
+          params: { url: params.schemaURL },
+        })
+        .then((res) => res.data)
+        .catch((err) => {
+          console.error(err);
+          return `Error accessing URL. $err`;
+        });
+    } else if (params.schemaFile) {
+      // File upload, read the file and return the raw text
+      return new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result);
+        reader.readAsText(params.schemaFile);
+      }).then();
     }
   }
 
-  function doRequest(cb) {
-    resetState();
+  async function doRequest(cb) {
     setLoading(true);
     setProgressPercent(20);
     let res = "";
     let grf = "";
     try {
+      const input = await getConverterInput();
+
       if (isShEx2UML) {
-        res = shumlex.shExToXMI(params.schema);
+        res = shumlex.shExToXMI(input);
         grf = shumlex.crearDiagramaUML(res);
       } else {
-        res = shumlex.XMIToShEx(params.schema);
+        res = shumlex.XMIToShEx(input);
         grf = shumlex.crearGrafo(res);
       }
       setProgressPercent(90);
       let result = { result: res, grafico: grf, msg: "Succesful conversion" };
       setResult(result);
+      setPermalink(
+        await mkPermalink(API.shEx2XMIRoute, {
+          schema: params.schema || undefined,
+          schemaURL: params.schemaURL || undefined,
+          schemaFile: params.schemaFile || undefined,
+          targetSchemaEngine: params.targetSchemaEngine,
+        })
+      );
       setProgressPercent(100);
     } catch (error) {
-      console.log(error);
-      if (isShEx2UML) {
-        setError(
-          "An error has occurred while creating the UML equivalent. Check the input."
-        );
-      } else {
-        setError(
-          "An error has occurred while creating the ShEx equivalent. Check the input."
-        );
-      }
+      isShEx2UML
+        ? setError(
+            `An error has occurred while creating the UML equivalent. Check the input.\n${error}`
+          )
+        : setError(
+            `An error has occurred while creating the ShEx equivalent. Check the input.\n${error}`
+          );
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   function setUpHistory() {
@@ -291,10 +335,12 @@ export default function ShEx2XMI(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(
-          API.shEx2XMIRoute,
-          queryParamsFromServerParams(lastParams)
-        )
+        mkPermalinkLong(API.shEx2XMIRoute, {
+          schema: lastParams.schema || undefined,
+          schemaURL: lastParams.schemaURL || undefined,
+          schemaFile: lastParams.schemaFile || undefined,
+          targetSchemaEngine: lastParams.targetSchemaEngine,
+        })
       );
     }
     // Change current url for shareable links
@@ -302,7 +348,12 @@ export default function ShEx2XMI(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shEx2XMIRoute, queryParamsFromServerParams(params))
+      mkPermalinkLong(API.shEx2XMIRoute, {
+        schema: params.schema || undefined,
+        schemaURL: params.schemaURL || undefined,
+        schemaFile: params.schemaFile || undefined,
+        targetSchemaEngine: params.targetSchemaEngine || undefined,
+      })
     );
 
     setLastParams(params);
@@ -344,6 +395,14 @@ export default function ShEx2XMI(props) {
                   Convert to UML
                 </Button>
               </Form>
+              <Button
+                id="uml2shex"
+                variant="secondary"
+                className={"btn-with-icon " + (loading ? "disabled" : "")}
+                disabled={loading}
+              >
+                Load UML to ShEx converter
+              </Button>
             </Col>
             {loading || result || error || permalink ? (
               <Col className={"half-col"} style={{ marginTop: "1.95em" }}>
@@ -361,6 +420,13 @@ export default function ShEx2XMI(props) {
                     result={result}
                     mode={targetFormatMode("xml")}
                     permalink={permalink}
+                    disabled={
+                      getShexText(shex).length > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : shex.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
                   />
                 ) : (
                   ""
@@ -373,17 +439,6 @@ export default function ShEx2XMI(props) {
                 </Alert>
               </Col>
             )}
-          </Row>
-
-          <Row>
-            <Button
-              id="uml2shex"
-              variant="secondary"
-              className={"btn-with-icon " + (loading ? "disabled" : "")}
-              disabled={loading}
-            >
-              Load UML to ShEx converter
-            </Button>
           </Row>
         </>
       )}
@@ -406,6 +461,15 @@ export default function ShEx2XMI(props) {
                   Convert to ShEx
                 </Button>
               </Form>
+              <Button
+                id="shex2uml"
+                variant="secondary"
+                onClick={loadOppositeConversion}
+                className={"btn-with-icon " + (loading ? "disabled" : "")}
+                disabled={loading}
+              >
+                Load ShEx to UML converter
+              </Button>
             </Col>
             {loading || result || error || permalink ? (
               <Col className={"half-col"} style={{ marginTop: "1.95em" }}>
@@ -424,6 +488,13 @@ export default function ShEx2XMI(props) {
                     mode={targetFormatMode("TURTLE")}
                     permalink={permalink}
                     activeTab="XMI"
+                    disabled={
+                      getUmlText(xmi).length > API.byTextCharacterLimit
+                        ? API.byTextTab
+                        : xmi.activeTab === API.byFileTab
+                        ? API.byFileTab
+                        : false
+                    }
                   />
                 ) : (
                   ""
@@ -436,17 +507,6 @@ export default function ShEx2XMI(props) {
                 </Alert>
               </Col>
             )}
-          </Row>
-          <Row>
-            <Button
-              id="shex2uml"
-              variant="secondary"
-              onClick={loadOppositeConversion}
-              className={"btn-with-icon " + (loading ? "disabled" : "")}
-              disabled={loading}
-            >
-              Load ShEx to UML converter
-            </Button>
           </Row>
         </>
       )}

@@ -57,7 +57,7 @@ export default function ShEx2Shacl(props) {
       if (queryParams.targetSchemaFormat)
         setTargetFormat(queryParams.targetSchemaFormat);
 
-      let params = {
+      const params = {
         ...mkServerParams(
           paramsShEx,
           queryParams.targetSchemaFormat || "TURTLE"

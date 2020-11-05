@@ -37,6 +37,7 @@ function DataConvert(props) {
   const url = API.dataConvert;
 
   function handleTargetDataFormatChange(value) {
+    console.log("SETTING FORMAT TO: ", value);
     setTargetDataFormat(value);
   }
 
@@ -181,6 +182,8 @@ function DataConvert(props) {
               <ResultDataConvert
                 result={result}
                 permalink={permalink}
+                fromParams={data.fromParams}
+                resetFromParams={() => setData({ ...data, fromParams: false })}
                 disabled={
                   getDataText(data) > API.byTextCharacterLimit
                     ? API.byTextTab

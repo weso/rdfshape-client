@@ -1,21 +1,18 @@
-import React, { useState, useEffect} from 'react';
-import {Controlled as CodeMirror} from "react-codemirror2";
-import 'codemirror/theme/material.css';
-import 'codemirror/theme/midnight.css';
-
-import PropTypes from "prop-types";
 import 'codemirror/addon/display/placeholder';
 // import ShExForm from "../shex/ShExForm";
 // import TurtleForm from "../data/TurtleForm";
-
 import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/xml/xml.js';
 import 'codemirror/mode/htmlmixed/htmlmixed';
-import "codemirror/mode/turtle/turtle.js";
-import 'codemirror/mode/sparql/sparql.js';
 import 'codemirror/mode/javascript/javascript.js';
-import DropdownButton from "react-bootstrap/DropdownButton";
-import Dropdown from "react-bootstrap/Dropdown";
+import 'codemirror/mode/sparql/sparql.js';
+import "codemirror/mode/turtle/turtle.js";
+import 'codemirror/mode/xml/xml.js';
+import 'codemirror/theme/material.css';
+import 'codemirror/theme/midnight.css';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
+import { Controlled as CodeMirror } from "react-codemirror2";
+
 
 const ThemeList = [ "default", "material", "midnight" ];
 const DefaultTheme = "default"
