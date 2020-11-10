@@ -67,6 +67,11 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/ma
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
 
+# Contribution and issues
+
+Contributions are greatly appreciated. Please fork this repository and open a pull request to add more features or submit issues:
+
+* [Issues about RDFShape client](https://github.com/weso/rdfshape-client/issues)
 
 <a href="https://github.com/weso/rdfshape-client/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=weso/rdfshape-client" />
