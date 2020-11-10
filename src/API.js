@@ -4,7 +4,7 @@
 class API {
 
     // Routes in server
-    static rootApi = process.env.REACT_APP_RDFSHAPE_HOST + "/api/"; // "http://localhost:8080/api/";
+    static rootApi = process.env.REACT_APP_RDFSHAPE_HOST + "/api/"; // "http(s)://localhost:8080/api/";
 
     static healthServer = API.rootApi + "health";
     static dataInfo = API.rootApi + "data/info";

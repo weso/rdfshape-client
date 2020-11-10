@@ -37,7 +37,6 @@ function DataConvert(props) {
   const url = API.dataConvert;
 
   function handleTargetDataFormatChange(value) {
-    console.log("SETTING FORMAT TO: ", value);
     setTargetDataFormat(value);
   }
 
