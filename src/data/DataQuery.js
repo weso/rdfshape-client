@@ -11,27 +11,26 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import {
-  getQueryText,
-  InitialQuery,
-  mkQueryTabs,
-  paramsFromStateQuery,
-  queryParamsFromQueryParams,
-  updateStateQuery
+    getQueryText,
+    InitialQuery,
+    mkQueryTabs,
+    paramsFromStateQuery,
+    queryParamsFromQueryParams,
+    updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 
 function DataQuery(props) {
@@ -127,7 +126,7 @@ function DataQuery(props) {
         if (data.error) setError(data.error);
         setResult({ result: data });
         setProgressPercent(80);
-        setPermalink(await mkPermalink(API.dataQueryRoute, params));
+        setPermalink(mkPermalinkLong(API.dataQueryRoute, params));
         if (cb) cb();
         setProgressPercent(100);
       })

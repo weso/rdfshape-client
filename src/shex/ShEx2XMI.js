@@ -12,7 +12,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import shumlex from "shumlex";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultShEx2XMI from "../results/ResultShEx2XMI";
 import ResultXMI2ShEx from "../results/ResultXMI2ShEx";
 import {
@@ -303,7 +303,7 @@ export default function ShEx2XMI(props) {
       let result = { result: res, grafico: grf, msg: "Succesful conversion" };
       setResult(result);
       setPermalink(
-        await mkPermalink(API.shEx2XMIRoute, {
+        mkPermalinkLong(API.shEx2XMIRoute, {
           schema: params.schema || undefined,
           schemaURL: params.schemaURL || undefined,
           schemaFile: params.schemaFile || undefined,

@@ -287,3 +287,24 @@ export function mkMode(format) {
   return mode;
 }
 
+export function copyToClipboard(text) {
+    // Create a dummy input to copy the link from it
+    const dummy = document.createElement("input");
+
+    // Add to document
+    document.body.appendChild(dummy);
+    dummy.setAttribute("id", "dummy_id");
+
+    // Output the link into it
+    document.getElementById("dummy_id").value = text;
+
+    // Select it
+    dummy.select();
+
+    // Copy its contents
+    document.execCommand("copy");
+
+    // Remove it as its not needed anymore
+    document.body.removeChild(dummy);
+  }
+

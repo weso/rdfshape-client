@@ -18,10 +18,10 @@ export function paramsFromStateQuery(query) {
   params["activeQueryTab"] = convertTabQuery(activeTab);
   switch (activeTab) {
     case "byText":
-      params["query"] = query.textArea;
+      params["query"] = query.textArea.trim();
       break;
     case "byUrl":
-      params["queryURL"] = query.url;
+      params["queryURL"] = query.url.trim();
       break;
     case "byFile":
       params["queryFile"] = query.file;
@@ -129,9 +129,9 @@ export function queryParamsFromQueryParams(params) {
 
 export function getQueryText(query) {
   if (query.activeTab === API.byTextTab) {
-    return query.textArea;
+    return encodeURI(query.textArea.trim());
   } else if (query.activeTab === API.byUrlTab) {
-    return query.url;
+    return encodeURI(query.textArea.trim());
   }
   return "";
 }

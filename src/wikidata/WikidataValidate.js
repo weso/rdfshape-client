@@ -1,22 +1,22 @@
-import React, { useState, useReducer } from 'react';
-import Container from 'react-bootstrap/Container';
-import Alert from "react-bootstrap/Alert";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Pace from "react-pace-progress";
-import {mkPermalink, params2Form, Permalink} from "../Permalink";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import ShExTabs from "../shex/ShExTabs";
-import API from "../API";
 import axios from "axios";
+import React, { useReducer, useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from 'react-bootstrap/Container';
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
-import InputShapeLabel from "../components/InputShapeLabel";
 import Tabs from "react-bootstrap/Tabs";
+import Pace from "react-pace-progress";
+import API from "../API";
 import InputEntitiesByText from "../components/InputEntitiesByText";
-import ResultValidate from "../results/ResultValidate";
+import InputShapeLabel from "../components/InputShapeLabel";
 import InputWikidataSchema from "../components/InputWikidataSchema";
-import {convertTabSchema} from "../shex/ShEx";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import ResultValidate from "../results/ResultValidate";
+import { convertTabSchema } from "../shex/ShEx";
+import ShExTabs from "../shex/ShExTabs";
 
 function WikidataValidate(props) {
 
@@ -112,7 +112,7 @@ function WikidataValidate(props) {
         params['shapeMap'] = shapeMap;
         params['shapeMapFormat'] = 'Compact';
         const formData = params2Form(params);
-        setPermalink(await mkPermalink(API.wikidataValidateRoute, params));
+        setPermalink(mkPermalinkLong(API.wikidataValidateRoute, params));
         postValidate(urlServer, formData);
     }
 

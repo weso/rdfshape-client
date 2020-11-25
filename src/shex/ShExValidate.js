@@ -18,7 +18,7 @@ import {
 } from "../data/Data"
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint"
 import EndpointInput from "../endpoint/EndpointInput"
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink"
+import { mkPermalinkLong, params2Form } from "../Permalink"
 import ResultValidate from "../results/ResultValidate"
 import {
   getShapeMapText,
@@ -135,7 +135,7 @@ function ShExValidate(props) {
   }, [params])
 
   function handleEndpointChange(value) {
-    setEndpoint(value)
+    setEndpoint(value.trim())
   }
 
   function handleSubmit(event) {
@@ -163,7 +163,7 @@ function ShExValidate(props) {
       .then(async (data) => {
         setResult(data)
         setProgressPercent(70)
-        setPermalink(await mkPermalink(API.shExValidateRoute, params))
+        setPermalink(mkPermalinkLong(API.shExValidateRoute, params))
         setProgressPercent(80)
         if (cb) cb()
         setProgressPercent(100)

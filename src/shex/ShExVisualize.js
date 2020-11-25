@@ -12,19 +12,18 @@ import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
 import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
-  getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
+    getShexText,
+    InitialShEx,
+    mkShExTabs,
+    paramsFromStateShEx,
+    shExParamsFromQueryParams,
+    updateStateShEx
 } from "./ShEx";
 
 function ShExVisualize(props) {
@@ -118,7 +117,7 @@ function ShExVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.shExVisualizeRoute, params));
+        setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

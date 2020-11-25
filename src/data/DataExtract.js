@@ -10,7 +10,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
@@ -87,7 +87,7 @@ function DataExtract(props) {
           setError(data.msg);
           setResult({ error: data.msg });
         } else setResult(data);
-        setPermalink(await mkPermalink(API.dataExtractRoute, params));
+        setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

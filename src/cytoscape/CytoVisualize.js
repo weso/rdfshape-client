@@ -12,17 +12,16 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "../data/Data";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 
@@ -93,7 +92,7 @@ function CytoVisualize(props) {
         setProgressPercent(70);
         processData(data);
         setProgressPercent(80);
-        setPermalink(await mkPermalink(API.cytoVisualizeRoute, params));
+        setPermalink(mkPermalinkLong(API.cytoVisualizeRoute, params));
         if (cb) cb();
         setProgressPercent(100);
       })

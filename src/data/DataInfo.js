@@ -9,7 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
@@ -86,7 +86,7 @@ function DataInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.dataInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.dataInfoRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

@@ -21,6 +21,7 @@ import EndpointInfo from "./endpoint/EndpointInfo.js";
 import EndpointQuery from "./endpoint/EndpointQuery.js";
 import Home from "./Home.js";
 import NotFound from "./NotFound.js";
+import PermalinkReceiver from "./PermalinkReceiver.js";
 import SHACL2ShEx from "./shacl/SHACL2ShEx.js";
 import SHACLConvert from "./shacl/SHACLConvert.js";
 import SHACLInfo from "./shacl/SHACLInfo.js";
@@ -108,6 +109,7 @@ function Routes() {
           path="/test/inputTabsWithFormat"
           component={TestInputTabsWithFormat}
         />
+        <Route path={API.permalinkRoute} component={PermalinkReceiver} />
 
         <Route
           path="/links/i1"

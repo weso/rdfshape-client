@@ -11,18 +11,17 @@ import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -116,7 +115,7 @@ function DataMergeVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         processData(data);
-        setPermalink(await mkPermalink(API.dataMergeVisualize, params));
+        setPermalink(mkPermalinkLong(API.dataMergeVisualize, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);
