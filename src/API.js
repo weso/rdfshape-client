@@ -83,7 +83,7 @@ class API {
     static defaultInference = "None" ;
     static defaultShExFormat = "ShExC";
     static defaultSHACLFormat = "TURTLE";
-    static defaultSHACLEngine = "SHACLEX";
+    static defaultSHACLEngine = "JenaSHACL";
     static defaultShapeMapFormat = "Compact";
     static defaultQueryFormat = "SPARQL";
     static defaultXMLFormat = "xml";
