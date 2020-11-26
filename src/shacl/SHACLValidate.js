@@ -84,7 +84,7 @@ function SHACLValidate(props) {
         ...paramsFromStateData(paramsData),
         ...paramsFromStateShacl(paramsShacl),
         endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
-        schemaEngine: "Shaclex",
+        schemaEngine: queryParams.schemaEngine || shacl.engine,
         triggerMode: "targetDecls",
       };
 

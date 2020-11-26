@@ -16,6 +16,7 @@ function ResultValidateShacl(props) {
         msg =
             <div><Alert variant="danger">Error: {result.error}</Alert></div>
     } else {
+        console.log(result)
         msg = <div>
             {
                 !Array.isArray(result.shapeMap) ? <Alert variant="danger">{result.message}</Alert>
