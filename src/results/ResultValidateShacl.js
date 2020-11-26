@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import Alert from "react-bootstrap/Alert";
-import ShowShapeMap from "../shapeMap/ShowShapeMap";
-import {Permalink} from "../Permalink";
-import PrintJson from "../utils/PrintJson";
 import Code from "../components/Code";
+import { Permalink } from "../Permalink";
+import ShowShapeMap from "../shapeMap/ShowShapeMap";
+import PrintJson from "../utils/PrintJson";
 
 function ResultValidateShacl(props) {
 
@@ -32,7 +32,7 @@ function ResultValidateShacl(props) {
                     { props.permalink &&
                     <Fragment>
                         <Code mode='turtle' value={result.validationReport} readonly={true} />
-                        <Permalink url={props.permalink}/>
+                        <Permalink url={props.permalink} disabled={props.disabled}/>
                         <hr/>
                     </Fragment>
                     }

@@ -71,6 +71,8 @@ class API {
 
     static aboutRoute = "/about";
 
+    static permalinkRoute = "/link/:urlCode"
+
     static byTextTab = "byText";
     static byUrlTab = "byUrl";
     static byFileTab = "byFile";
@@ -87,6 +89,7 @@ class API {
     static defaultXMLFormat = "xml";
 
     static serverPermalinkEndpoint = API.rootApi + 'permalink/generate'
+    static serverOriginalLinkEndpoint = API.rootApi + 'permalink/get'
     static fetchUrl = API.rootApi + 'fetch'
 
 

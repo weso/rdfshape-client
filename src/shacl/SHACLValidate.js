@@ -18,7 +18,7 @@ import {
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
@@ -109,7 +109,7 @@ function SHACLValidate(props) {
   }, [params]);
 
   function handleEndpointChange(value) {
-    setEndpoint(value);
+    setEndpoint(value.trim());
   }
 
   async function handleSubmit(event) {
@@ -117,7 +117,7 @@ function SHACLValidate(props) {
 
     const paramsEndpoint = {};
     if (endpoint !== "") {
-      paramsEndpoint["endpoint"] = endpoint;
+      paramsEndpoint["endpoint"] = endpoint.trim();
     }
 
     setParams({
@@ -141,7 +141,7 @@ function SHACLValidate(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(await mkPermalink(API.shaclValidateRoute, params));
+        setPermalink(mkPermalinkLong(API.shaclValidateRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

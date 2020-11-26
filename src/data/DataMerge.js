@@ -10,14 +10,14 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 
 function DataMerge(props) {
@@ -117,7 +117,7 @@ function DataMerge(props) {
       .then(async (data) => {
         setProgressPercent(75);
         setResult(data);
-        setPermalink(await mkPermalink(API.dataMerge, params));
+        setPermalink(mkPermalinkLong(API.dataMerge, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

@@ -81,11 +81,11 @@ export function paramsFromStateData(data) {
   params["inference"] = data.inference;
   switch (data.activeTab) {
     case API.byTextTab:
-      params["data"] = data.textArea;
+      params["data"] = data.textArea.trim();
       params["dataFormatTextArea"] = data.format;
       break;
     case API.byUrlTab:
-      params["dataURL"] = data.url;
+      params["dataURL"] = data.url.trim();
       params["dataFormatUrl"] = data.format;
       break;
     case API.byFileTab:
@@ -148,9 +148,9 @@ export function mkDataTabs(data, setData, name, subname) {
 
 export function getDataText(data) {
   if (data.activeTab === API.byTextTab) {
-    return data.textArea;
+    return encodeURI(data.textArea.trim())
   } else if (data.activeTab === API.byUrlTab) {
-    return data.url;
+    return encodeURI(data.url.trim())
   }
   return "";
 }

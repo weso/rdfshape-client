@@ -104,6 +104,11 @@ a.dropdown-item {
   margin: auto 5px;
 }
 
+.white-filler {
+  fill: white;
+  margin: auto 5px;
+}
+
 .white-background {
   background-color: white !important; /* "!important" overrides bootstrap */
 }
@@ -113,7 +118,7 @@ table td {
   word-break: break-word;
 }
 
-.disabled {
+.disabled, .forbidden {
   cursor: not-allowed !important; /* "!important" overrides bootstrap */
 }
 
@@ -131,4 +136,8 @@ table td {
 
 .height-100 {
   height: 100%;
+}
+
+.bold {
+  font-weight: bold;
 }

@@ -10,7 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
 import { convertTabSchema } from "../shex/ShEx";
 import {
@@ -156,7 +156,7 @@ export default function SHACL2ShEx(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          await mkPermalink(API.shacl2ShExRoute, {
+          mkPermalinkLong(API.shacl2ShExRoute, {
             schemaFormat: params.schemaFormat,
             targetSchemaFormat: params.targetSchemaFormat,
             schemaEngine: params.schemaEngine,

@@ -10,15 +10,15 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExConvert from "../results/ResultShExConvert";
 import {
-  getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
+    getShexText,
+    InitialShEx,
+    mkShExTabs,
+    paramsFromStateShEx,
+    shExParamsFromQueryParams,
+    updateStateShEx
 } from "./ShEx";
 
 function ShExConvert(props) {
@@ -112,7 +112,7 @@ function ShExConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.shExConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.shExConvertRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

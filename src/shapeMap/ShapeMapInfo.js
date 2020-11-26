@@ -9,14 +9,14 @@ import Form from "react-bootstrap/Form"
 import ProgressBar from "react-bootstrap/ProgressBar"
 import Row from "react-bootstrap/Row"
 import API from "../API"
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink"
+import { mkPermalinkLong, params2Form } from "../Permalink"
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo"
 import {
-  InitialShapeMap,
-  mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
-  updateStateShapeMap
+    InitialShapeMap,
+    mkShapeMapTabs,
+    paramsFromStateShapeMap,
+    shapeMapParamsFromQueryParams,
+    updateStateShapeMap
 } from "./ShapeMap"
 
 function ShapeMapInfo(props) {
@@ -85,7 +85,7 @@ function ShapeMapInfo(props) {
         setError(null)
         setResult(data)
         setProgressPercent(70)
-        setPermalink(await mkPermalink(API.shapeMapInfoRoute, params))
+        setPermalink(mkPermalinkLong(API.shapeMapInfoRoute, params))
         setProgressPercent(80)
         if (cb) cb()
         setProgressPercent(100)

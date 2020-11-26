@@ -11,23 +11,23 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
-  getShapeMapText,
-  InitialShapeMap,
-  mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
-  updateStateShapeMap
+    getShapeMapText,
+    InitialShapeMap,
+    mkShapeMapTabs,
+    paramsFromStateShapeMap,
+    shapeMapParamsFromQueryParams,
+    updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import {
-  getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
+    getShexText,
+    InitialShEx,
+    mkShExTabs,
+    paramsFromStateShEx,
+    shExParamsFromQueryParams,
+    updateStateShEx
 } from "./ShEx";
 
 function ShExValidateEndpoint(props) {
@@ -153,7 +153,7 @@ function ShExValidateEndpoint(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(await mkPermalink(API.shExValidateEndpointRoute, params));
+        setPermalink(mkPermalinkLong(API.shExValidateEndpointRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

@@ -13,19 +13,18 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -114,7 +113,7 @@ function DataVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         processData(data);
-        setPermalink(await mkPermalink(API.dataVisualizeRoute, params));
+        setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);
