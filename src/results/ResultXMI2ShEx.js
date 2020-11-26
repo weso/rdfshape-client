@@ -30,7 +30,6 @@ function ResultXMI2ShEx(props) {
       </div>
     );
   } else {
-    console.log(result);
     msg = (
       <div>
         <Alert variant="success">Conversion successful</Alert>
