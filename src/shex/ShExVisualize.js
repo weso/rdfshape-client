@@ -12,18 +12,18 @@ import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
 import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import {
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExVisualize(props) {
@@ -183,7 +183,7 @@ function ShExVisualize(props) {
         {loading || result || permalink || error ? (
           <Col className="half-col visual-column">
             <Fragment>
-              {permalink && !error ? (
+              {permalink && !error && !result?.error ? (
                 <div className={"d-flex"}>
                   <Permalink
                     url={permalink}
@@ -223,7 +223,8 @@ function ShExVisualize(props) {
                 />
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
-              ) : result ? (
+              ) : result ? !result.error ?
+               (
                 <div
                   style={{ overflow: "auto" }}
                   className={"width-100 height-100 border"}
@@ -234,11 +235,15 @@ function ShExVisualize(props) {
                     showDetails={false}
                   />
                 </div>
-              ) : null}
+              ) : (
+                <div>
+                  <ResultShExVisualize
+                    result={result}
+                    showDetails={true}
+                  />
+                </div>
+              ) : null }
             </Fragment>
-            {result && (
-              <ResultShExVisualize result={result} showDetails={true} />
-            )}
           </Col>
         ) : (
           <Col className={"half-col"}>

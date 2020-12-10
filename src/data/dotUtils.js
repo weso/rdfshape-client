@@ -1,6 +1,7 @@
 import Viz from 'viz.js/viz.js';
 const {Module, render} = require('viz.js/full.render.js');
 
+// https://github.com/mdaines/viz.js/wiki/API
 export function convertDot(dot, engine, format, setLoading, setError, setSVG) {
     let viz = new Viz({Module, render});
     const opts = {engine: 'dot'};

@@ -12,19 +12,15 @@ import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import {
-    mkPermalinkLong,
-    params2Form,
-    Permalink
-} from "../Permalink";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -185,7 +181,7 @@ function DataVisualize(props) {
             {mkDataTabs(data, setData, "RDF input")}
             <hr />
             <SelectFormat
-              name="Target graph format"
+              name="Target visualization format"
               handleFormatChange={handleTargetGraphFormatChange}
               urlFormats={API.dataVisualFormats}
               selectedFormat={targetGraphFormat}
