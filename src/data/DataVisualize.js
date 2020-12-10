@@ -13,8 +13,8 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
-import ShowSVG from "../svg/ShowSVG";
 import { dataParamsFromQueryParams } from "../utils/Utils";
+import ShowVisualization from "../visualization/ShowVisualization";
 import {
   getDataText,
   InitialData,
@@ -32,7 +32,7 @@ function DataVisualize(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
-  const [svg, setSVG] = useState(null);
+  const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
@@ -108,7 +108,7 @@ function DataVisualize(props) {
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
-        processData(data);
+        processData(data, targetGraphFormat);
         setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
         setProgressPercent(80);
         if (cb) cb();
@@ -124,7 +124,7 @@ function DataVisualize(props) {
   }
 
   function processData(d, targetFormat) {
-    convertDot(d.result, "dot", "SVG", setLoading, setError, setSVG);
+    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
   }
 
   function zoomSvg(zoomIn) {
@@ -163,7 +163,7 @@ function DataVisualize(props) {
   }
 
   function resetState() {
-    setSVG(null);
+    setVisualization(null);
     setSvgZoom(1);
     setPermalink(null);
     setError(null);
@@ -197,7 +197,7 @@ function DataVisualize(props) {
             </Button>
           </Form>
         </Col>
-        {loading || error || svg ? (
+        {loading || error || visualization ? (
           <Col className="half-col visual-column">
             <Fragment>
               {permalink && !error ? (
@@ -212,23 +212,27 @@ function DataVisualize(props) {
                         : false
                     }
                   />
-                  <Button
-                    onClick={() => zoomSvg(false)}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={svgZoom <= minSvgZoom}
-                  >
-                    <ZoomOutIcon className="white-icon" />
-                  </Button>
-                  <Button
-                    onClick={() => zoomSvg(true)}
-                    style={{ marginLeft: "1px" }}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={svgZoom >= maxSvgZoom}
-                  >
-                    <ZoomInIcon className="white-icon" />
-                  </Button>
+                  {!visualization?.textual && (
+                    <>
+                      <Button
+                        onClick={() => zoomSvg(false)}
+                        className="btn-zoom"
+                        variant="secondary"
+                        disabled={svgZoom <= minSvgZoom}
+                      >
+                        <ZoomOutIcon className="white-icon" />
+                      </Button>
+                      <Button
+                        onClick={() => zoomSvg(true)}
+                        style={{ marginLeft: "1px" }}
+                        className="btn-zoom"
+                        variant="secondary"
+                        disabled={svgZoom >= maxSvgZoom}
+                      >
+                        <ZoomInIcon className="white-icon" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               ) : null}
               {loading ? (
@@ -240,12 +244,12 @@ function DataVisualize(props) {
                 />
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
-              ) : svg && svg.svg ? (
+              ) : visualization && visualization.data ? (
                 <div
                   style={{ overflow: "auto", zoom: svgZoom }}
                   className={"width-100 height-100 border"}
                 >
-                  <ShowSVG svg={svg.svg} />
+                  <ShowVisualization data={visualization.data} />
                 </div>
               ) : null}
             </Fragment>
