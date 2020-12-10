@@ -43,7 +43,7 @@ export function paramsFromStateShEx(state) {
             params['schemaFormatTextArea'] = format;
             break;
         case API.byUrlTab:
-            params['schemaURL'] = url.strim();
+            params['schemaURL'] = url.trim();
             params['schemaFormatUrl'] = format;
             break;
         case API.byFileTab:
