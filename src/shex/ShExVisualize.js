@@ -12,18 +12,18 @@ import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
 import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import {
-  mkPermalinkLong,
-  params2Form,
-  Permalink
+    mkPermalinkLong,
+    params2Form,
+    Permalink
 } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
-  getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
+    getShexText,
+    InitialShEx,
+    mkShExTabs,
+    paramsFromStateShEx,
+    shExParamsFromQueryParams,
+    updateStateShEx
 } from "./ShEx";
 
 function ShExVisualize(props) {
@@ -47,7 +47,7 @@ function ShExVisualize(props) {
   const svgZoomStep = API.svgZoomStep;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
@@ -69,7 +69,7 @@ function ShExVisualize(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {

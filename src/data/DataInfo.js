@@ -36,7 +36,8 @@ function DataInfo(props) {
   const url = API.dataInfo;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
+      console.log("SEARCH")
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
@@ -51,7 +52,7 @@ function DataInfo(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -72,6 +73,7 @@ function DataInfo(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
+    console.log("SUBMIT")
     setParams(paramsFromStateData(data));
   }
 

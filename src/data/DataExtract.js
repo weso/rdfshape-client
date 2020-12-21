@@ -15,11 +15,11 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -36,7 +36,7 @@ function DataExtract(props) {
   const url = API.dataExtract;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = {
@@ -52,7 +52,7 @@ function DataExtract(props) {
         setLastParams(queryParams);
       } else setError("Could not parse URL data");
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {

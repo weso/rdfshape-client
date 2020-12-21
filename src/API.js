@@ -38,6 +38,7 @@ class API {
     static dataInfoRoute = "/dataInfo";
     static dataConvertRoute = "/dataConvert";
     static dataVisualizeRoute = "/dataVisualize";
+    static dataVisualizeRouteRaw = "/dataVisualizeRaw";
     static cytoVisualizeRoute = "/cytoVisualize";
     static dataExtractRoute = "/dataExtract";
     static dataMerge = "/dataMerge";

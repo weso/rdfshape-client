@@ -12,16 +12,16 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "../data/Data";
 import {
-    mkPermalinkLong,
-    params2Form,
-    Permalink
+  mkPermalinkLong,
+  params2Form,
+  Permalink
 } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 
@@ -41,7 +41,7 @@ function CytoVisualize(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
 
@@ -60,7 +60,7 @@ function CytoVisualize(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {

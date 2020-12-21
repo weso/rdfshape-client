@@ -1,0 +1,114 @@
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import qs from "query-string";
+import React, { useEffect, useState } from "react";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import API from "../API";
+import { params2Form } from "../Permalink";
+import { dataParamsFromQueryParams } from "../utils/Utils";
+import ShowVisualization from "../visualization/ShowVisualization";
+import { InitialData, paramsFromStateData, updateStateData } from "./Data";
+import { convertDot } from "./dotUtils";
+
+// Requests to this endpoint will redirect to the raw visualization of the data requested
+
+function DataVisualizeRaw(props) {
+  const [data, setData] = useState(InitialData);
+  const [params, setParams] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
+  const [visualization, setVisualization] = useState(null);
+  const [message, setMessage] = useState("Processing...");
+
+  const url = API.dataConvert;
+
+  useEffect(() => {
+    if (props.location?.search) {
+      const queryParams = qs.parse(props.location.search);
+      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+        const dataParams = dataParamsFromQueryParams(queryParams);
+        const paramsData = updateStateData(dataParams, data) || data;
+        setData(paramsData);
+
+        if (queryParams.targetDataFormat) {
+          setTargetGraphFormat(queryParams.targetDataFormat);
+        }
+
+        const params = {
+          ...paramsFromStateData(paramsData),
+          targetGraphFormat: queryParams.targetDataFormat || undefined,
+          targetDataFormat: queryParams.targetDataFormat || undefined,
+        };
+
+        setParams(params);
+      } else {
+        setError("Could not parse URL data");
+      }
+    }
+  }, [props.location?.search]);
+
+  useEffect(() => {
+    if (params) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
+        postVisualize();
+      } else {
+        setError("No RDF data provided");
+      }
+      window.scrollTo(0, 0);
+    }
+  }, [params]);
+
+  function postVisualize(cb) {
+    setLoading(true);
+    const formData = params2Form(params);
+    formData.append("targetDataFormat", "dot"); // It converts to dot in the server
+    axios
+      .post(url, formData)
+      .then((response) => response.data)
+      .then(async (data) => {
+        processData(data, targetGraphFormat);
+        if (cb) cb();
+      })
+      .catch(function(error) {
+        setError(`Error response from ${url}: ${error.message.toString()}`);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function processData(d, targetFormat) {
+    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  }
+
+  return (
+    <Container fluid={true}>
+      <Row>
+        {loading || error || visualization ? (
+          <Col className="half-col visual-column">
+            <>
+              {loading ? (
+                <p>{message}</p>
+              ) : error ? (
+                <p>{error}</p>
+              ) : visualization && visualization.data ? (
+                <ShowVisualization data={visualization.data} />
+              ) : null}
+            </>
+          </Col>
+        ) : (
+          <p>{message}</p>
+        )}
+      </Row>
+    </Container>
+  );
+}
+
+export default DataVisualizeRaw;

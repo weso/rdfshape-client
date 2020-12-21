@@ -59,7 +59,7 @@ function ShExValidate(props) {
   const url = API.schemaValidate
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search)
       let paramsData,
         paramsShEx,
@@ -115,7 +115,7 @@ function ShExValidate(props) {
       setParams(params)
       setLastParams(params)
     }
-  }, [props.location.search])
+  }, [props.location?.search])
 
   useEffect(() => {
     if (params && !loading) {

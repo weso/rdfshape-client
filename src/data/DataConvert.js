@@ -14,11 +14,11 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataConvert(props) {
@@ -41,7 +41,7 @@ function DataConvert(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
@@ -62,7 +62,7 @@ function DataConvert(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {

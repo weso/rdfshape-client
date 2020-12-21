@@ -41,7 +41,7 @@ function DataMerge(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
 
       if (queryParams.targetDataFormat) {
@@ -66,7 +66,7 @@ function DataMerge(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && params.compoundData) {

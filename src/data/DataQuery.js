@@ -47,7 +47,7 @@ function DataQuery(props) {
   const url = API.dataQuery;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsQuery = {};
@@ -73,7 +73,7 @@ function DataQuery(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {

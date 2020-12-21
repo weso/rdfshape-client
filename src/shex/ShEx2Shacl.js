@@ -13,12 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import {
-  convertTabSchema,
-  getShexText,
-  InitialShEx,
-  mkShExTabs,
-  shExParamsFromQueryParams,
-  updateStateShEx
+    convertTabSchema,
+    getShexText,
+    InitialShEx,
+    mkShExTabs,
+    shExParamsFromQueryParams,
+    updateStateShEx
 } from "./ShEx";
 
 export default function ShEx2Shacl(props) {
@@ -38,7 +38,7 @@ export default function ShEx2Shacl(props) {
   const url = API.schemaConvert;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
@@ -69,7 +69,7 @@ export default function ShEx2Shacl(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {

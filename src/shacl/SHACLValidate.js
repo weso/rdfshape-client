@@ -10,11 +10,11 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
@@ -22,12 +22,12 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getShaclText,
-  InitialShacl,
-  mkShaclTabs,
-  paramsFromStateShacl,
-  shaclParamsFromQueryParams,
-  updateStateShacl
+    getShaclText,
+    InitialShacl,
+    mkShaclTabs,
+    paramsFromStateShacl,
+    shaclParamsFromQueryParams,
+    updateStateShacl
 } from "./SHACL";
 
 function SHACLValidate(props) {
@@ -50,7 +50,7 @@ function SHACLValidate(props) {
   const url = API.schemaValidate;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsShacl,
@@ -91,7 +91,7 @@ function SHACLValidate(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {

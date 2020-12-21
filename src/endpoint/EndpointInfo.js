@@ -25,7 +25,7 @@ function EndpointInfo(props) {
   const infoUrl = API.endpointInfo;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.endpoint) {
         // Update form input with queried endpoint
@@ -38,7 +38,7 @@ function EndpointInfo(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {

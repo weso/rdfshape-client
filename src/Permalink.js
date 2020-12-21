@@ -86,7 +86,7 @@ export async function getOriginalLinkFromUrl(url) {
 
 export function Permalink(props) {
   const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState(props.url || "#");
+  const [url] = useState(props.url || "#");
   const [permalink, setPermalink] = useState();
 
   async function handleClick(e) {

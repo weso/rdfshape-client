@@ -14,11 +14,11 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ShowVisualization from "../visualization/ShowVisualization";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -47,7 +47,7 @@ function DataMergeVisualize(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.compoundData) {
         try {
@@ -80,7 +80,7 @@ function DataMergeVisualize(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && params.compoundData) {

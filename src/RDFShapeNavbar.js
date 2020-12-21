@@ -19,9 +19,9 @@ class RDFShapeNavbar extends React.Component {
                             <NavDropdown.Item href={API.dataInfoRoute}>Info</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataConvertRoute}>Convert</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataVisualizeRoute}>Visualize (Graphviz)</NavDropdown.Item>
+                            <NavDropdown.Item href={API.cytoVisualizeRoute}>Visualize (Cytoscape)</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataMerge}>Merge & convert</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataMergeVisualize}>Merge & Visualize</NavDropdown.Item>
-                            <NavDropdown.Item href={API.cytoVisualizeRoute}>Visualize (Cytoscape)</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataQueryRoute}>Query</NavDropdown.Item>
                             <NavDropdown.Item href={API.dataExtractRoute}>Extract ShEx</NavDropdown.Item>
                         </NavDropdown>

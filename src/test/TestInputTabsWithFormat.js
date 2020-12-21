@@ -109,12 +109,12 @@ function TestInputTabsWithFormat(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let params = paramsFromQueryParams(queryParams);
       postInfo(params2Form(params), () => setData(updateState(params, data)));
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   async function handleSubmit(event) {
     event.preventDefault();
