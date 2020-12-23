@@ -14,11 +14,11 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
 import { convertTabSchema } from "../shex/ShEx";
 import {
-    getShaclText,
-    InitialShacl,
-    mkShaclTabs,
-    shaclParamsFromQueryParams,
-    updateStateShacl
+  getShaclText,
+  InitialShacl,
+  mkShaclTabs,
+  shaclParamsFromQueryParams,
+  updateStateShacl
 } from "./SHACL";
 
 export default function SHACL2ShEx(props) {
@@ -131,7 +131,6 @@ export default function SHACL2ShEx(props) {
       params["targetSchemaFormat"] = format;
     } else params["targetSchemaFormat"] = targetFormat;
 
-    console.log("SERVER PARAMS: ", params);
     return params;
   }
 

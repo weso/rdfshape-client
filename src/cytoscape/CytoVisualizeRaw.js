@@ -88,7 +88,6 @@ function CytoVisualizeRaw(props) {
     if (data.error) setError(data.error);
     else {
       const elements = JSON.parse(data.result);
-      console.log(layout);
       setElements(elements);
     }
   }

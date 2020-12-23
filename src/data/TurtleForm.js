@@ -9,26 +9,28 @@ function TurtleForm(props) {
 
   useEffect(() => {
     if (!yate) {
-      const options = { ...props.options, placeholder: props.placeholder };
+      const options = {
+        ...props.options,
+        placeholder: props.placeholder,
+        start: { line: 0 },
+      };
       const y = Yate.fromTextArea(textAreaRef.current, options);
       y.on("change", (cm, change) => {
         // setQuery(cm.getValue())
-        props.onChange(cm.getValue());
+        props.onChange(cm.getValue(), y);
       });
       y.setValue(props.value);
       y.refresh();
       setYate(y);
     } else {
       if (props.options) {
-        console.log(
-          `Changing props.options.readOnly to ${props.options.readOnly}`
-        );
         yate.setOption("readOnly", props.options.readOnly);
       }
       if (props.fromParams) {
         yate.setValue(props.value);
-        if (props.resetFromParams) props.resetFromParams();
-        else {
+        if (props.resetFromParams) {
+          props.resetFromParams();
+        } else {
           console.error(`resetFromParams is not a function...`);
         }
       }

@@ -143,8 +143,8 @@ export function Permalink(props) {
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
             {props.disabled === API.byTextTab
-              ? "Can't generate links for long manual inputs, try validating by URL"
-              : "Can't generate links for file-based validations, try validating by URL"}
+              ? "Can't generate links for long manual inputs, try inserting data by URL"
+              : "Can't generate links for file-based inputs, try inserting data by URL"}
           </ReactTooltip>
         )}
         <ToastContainer
