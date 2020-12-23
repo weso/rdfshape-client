@@ -37,7 +37,6 @@ function DataInfo(props) {
 
   useEffect(() => {
     if (props.location?.search) {
-      console.log("SEARCH")
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
@@ -73,7 +72,6 @@ function DataInfo(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("SUBMIT")
     setParams(paramsFromStateData(data));
   }
 

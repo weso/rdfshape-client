@@ -9,6 +9,7 @@ import About from "./About.js";
 import API from "./API.js";
 import "./App.css";
 import CytoVisualize from "./cytoscape/CytoVisualize.js";
+import CytoVisualizeRaw from "./cytoscape/CytoVisualizeRaw.js";
 import DataConvert from "./data/DataConvert.js";
 import DataExtract from "./data/DataExtract.js";
 import DataInfo from "./data/DataInfo.js";
@@ -37,6 +38,7 @@ import ShExValidate from "./shex/ShExValidate.js";
 import ShExValidateEndpoint from "./shex/ShExValidateEndpoint.js";
 import ShExVisualize from "./shex/ShExVisualize.js";
 import ShExVisualizeCytoscape from "./shex/ShExVisualizeCytoscape.js";
+import ShExVisualizeRaw from "./shex/ShExVisualizeRaw.js";
 import TestCode from "./test/TestCode.js";
 import TestCyto from "./test/TestCyto.js";
 import TestGithubSearch from "./test/TestGithubSearch.js";
@@ -92,9 +94,14 @@ function Routes() {
           path={API.cytoVisualizeRoute}
           render={() => renderWithNavbar(CytoVisualize)}
         />
+        {/* RAW visualization */}
+        <Route
+          path={API.cytoVisualizeRouteRaw}
+          render={() => renderWithoutNavbar(CytoVisualizeRaw)}
+        />
         <Route
           path={API.dataQueryRoute}
-          render={() => renderWithNavbar(DataQuery)}
+          reender={() => renderWithNavbar(DataQuery)}
         />
         <Route
           path={API.dataExtractRoute}
@@ -137,6 +144,11 @@ function Routes() {
         <Route
           path={API.shExVisualizeRoute}
           render={() => renderWithNavbar(ShExVisualize)}
+        />
+        {/* RAW visualization */}
+        <Route
+          path={API.shExVisualizeRouteRaw}
+          render={() => renderWithoutNavbar(ShExVisualizeRaw)}
         />
         <Route
           path={API.shExVisualizeCytoscapeRoute}

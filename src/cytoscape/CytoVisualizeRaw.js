@@ -3,24 +3,30 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import API from "../API";
+import Cyto from "../components/Cyto";
+import {
+  InitialData,
+  paramsFromStateData,
+  updateStateData
+} from "../data/Data";
 import { params2Form } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
-import ShowVisualization from "../visualization/ShowVisualization";
-import { InitialData, paramsFromStateData, updateStateData } from "./Data";
-import { convertDot } from "./dotUtils";
 
 // Requests to this endpoint will redirect to the raw visualization of the data requested
 
-function DataVisualizeRaw(props) {
+function CytoVisualizeRaw(props) {
+  const url = API.dataConvert;
+  const cose = "cose";
+  const circle = "circle";
+  const layouts = [cose, circle];
+
   const [data, setData] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
-  const [visualization, setVisualization] = useState(null);
+  const [elements, setElements] = useState(null);
+  const [layout, setLayout] = useState(cose);
   const [message] = useState("Processing...");
-
-  const url = API.dataConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -30,14 +36,14 @@ function DataVisualizeRaw(props) {
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
 
-        if (queryParams.targetDataFormat) {
-          setTargetGraphFormat(queryParams.targetDataFormat);
+        if (queryParams.layout && layouts.includes(queryParams.layout)) {
+          setLayout(queryParams.layout);
         }
 
         const params = {
           ...paramsFromStateData(paramsData),
-          targetGraphFormat: queryParams.targetDataFormat || undefined,
-          targetDataFormat: queryParams.targetDataFormat || undefined,
+          targetDataFormat: "JSON",
+          layout: queryParams.layout || layout,
         };
 
         setParams(params);
@@ -54,53 +60,58 @@ function DataVisualizeRaw(props) {
         params.dataURL ||
         (params.dataFile && params.dataFile.name)
       ) {
-        postVisualize();
+        postConvert();
       } else {
         setError("No RDF data provided");
       }
     }
   }, [params]);
 
-  function postVisualize(cb) {
+  function postConvert(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "dot"); // It converts to dot in the server
+    formData.append("targetDataFormat", "JSON"); // Converts to JSON elements which are visualized by Cytoscape
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        processData(data, targetGraphFormat);
+        processData(data);
         if (cb) cb();
       })
-      .catch(function(error) {
-        setError(`Error response from ${url}: ${error.message.toString()}`);
-      })
+      .catch((error) => setError(error.toString()))
       .finally(() => {
         setLoading(false);
       });
   }
 
-  function processData(d, targetFormat) {
-    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  function processData(data) {
+    if (data.error) setError(data.error);
+    else {
+      const elements = JSON.parse(data.result);
+      console.log(layout);
+      setElements(elements);
+    }
   }
 
   return (
     <>
-        {loading || error || visualization ? (
-            <>
-              {loading ? (
-                <p>{message}</p>
-              ) : error ? (
-                <p>{error}</p>
-              ) : visualization && visualization.data ? (
-                <ShowVisualization data={visualization.data} />
-              ) : null}
-            </>
-        ) : (
-          <p>{message}</p>
-        )}
+      {loading || error || elements ? (
+        <>
+          {loading ? (
+            <p>{message}</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : elements ? (
+            <div style={{width: "100vw", height: "100vh"}} >
+              <Cyto layout={layout} elements={elements} />
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <p>{message}</p>
+      )}
     </>
   );
 }
 
-export default DataVisualizeRaw;
+export default CytoVisualizeRaw;
