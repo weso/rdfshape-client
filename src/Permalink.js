@@ -86,7 +86,6 @@ export async function getOriginalLinkFromUrl(url) {
 
 export function Permalink(props) {
   const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState(props.url || "#");
   const [permalink, setPermalink] = useState();
 
   async function handleClick(e) {
@@ -103,7 +102,9 @@ export function Permalink(props) {
     setLoading(true);
 
     // Generate short URL / return the og link in case of error
-    const newPermalink = await mkPermalinkFromUrl(url);
+    const newPermalink = props.shorten
+      ? await mkPermalinkFromUrl(props.url)
+      : props.url;
 
     // Copy results and update state
     copyToClipboard(newPermalink);
@@ -126,9 +127,9 @@ export function Permalink(props) {
           className={"btn-with-icon " + (loading ? "disabled" : "")}
           onClick={handleClick}
           variant="secondary"
-          href={permalink || url}
+          href={permalink || props.url}
         >
-          Permalink
+          {props.text}
           {loading ? (
             <Spinner
               className="white-filler"
@@ -136,14 +137,14 @@ export function Permalink(props) {
               size="sm"
             ></Spinner>
           ) : (
-            <ClipboardIcon className="white-icon" />
+            props.icon
           )}
         </Button>
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
             {props.disabled === API.byTextTab
-              ? "Can't generate permalinks for long manual inputs, try validating by URL"
-              : "Can't generate permalinks for file-based validations, try validating by URL"}
+              ? "Can't generate links for long manual inputs, try inserting data by URL"
+              : "Can't generate links for file-based inputs, try inserting data by URL"}
           </ReactTooltip>
         )}
         <ToastContainer
@@ -165,4 +166,11 @@ export function Permalink(props) {
 Permalink.propTypes = {
   url: PropTypes.string.isRequired,
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  icon: PropTypes.node,
+};
+
+Permalink.defaultProps = {
+  text: "Permalink",
+  shorten: true,
+  icon: <ClipboardIcon className="white-icon" />,
 };

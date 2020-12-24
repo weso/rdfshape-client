@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import EndpointInput from "./EndpointInput";
-import Row from "react-bootstrap/Row";
 import ProgressBar from "react-bootstrap/ProgressBar";
-import Alert from "react-bootstrap/Alert";
+import Row from "react-bootstrap/Row";
+import EndpointInput from "./EndpointInput";
 
 function EndpointExtract() {
 
@@ -26,7 +26,6 @@ function EndpointExtract() {
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log("Not implemented")
         window.scrollTo(0, 0)
     }
 

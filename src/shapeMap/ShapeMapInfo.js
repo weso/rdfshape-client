@@ -32,7 +32,7 @@ function ShapeMapInfo(props) {
   const url = API.shapeMapInfo
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       let paramsShapeMap = {}
       const queryParams = qs.parse(props.location.search)
       if (
@@ -52,7 +52,7 @@ function ShapeMapInfo(props) {
         setLastParams(params)
       } else setError("Could not parse URL data")
     }
-  }, [props.location.search])
+  }, [props.location?.search])
 
   // Call API on params change
   useEffect(() => {

@@ -20,12 +20,7 @@ a.dropdown-item {
   font-size: 14px !important;
 }
 
-.yashe .yashe_buttons {
-  top: unset !important;
-  bottom: 5px !important;
-}
-
-.yasqe .yasqe_buttons {
+.yate .yate_buttons, .yashe .yashe_buttons, .yasqe .yasqe_buttons{
   top: unset !important;
   bottom: 5px !important;
 }
@@ -89,10 +84,11 @@ a.dropdown-item {
 }
 
 .btn-zoom {
-  margin: 5px 0 5px 5px;
+  margin: 5px 0 5px 0px;
   display: inline-flex !important;
   padding: 5px;
 }
+
 
 .btn-with-icon > svg {
   margin: auto 5px auto 10px;
@@ -140,4 +136,10 @@ table td {
 
 .bold {
   font-weight: bold;
+}
+
+.divider {
+  background: black;
+  width: 1px;
+  margin: 5px;
 }

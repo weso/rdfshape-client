@@ -38,7 +38,9 @@ class API {
     static dataInfoRoute = "/dataInfo";
     static dataConvertRoute = "/dataConvert";
     static dataVisualizeRoute = "/dataVisualize";
+    static dataVisualizeRouteRaw = "/dataVisualizeRaw";
     static cytoVisualizeRoute = "/cytoVisualize";
+    static cytoVisualizeRouteRaw = "/cytoVisualizeRaw";
     static dataExtractRoute = "/dataExtract";
     static dataMerge = "/dataMerge";
     static dataMergeVisualize = "/dataMergeVisualize";
@@ -51,6 +53,7 @@ class API {
     static shExInfoRoute = "/shExInfo";
     static shExConvertRoute = "/shExConvert";
     static shExVisualizeRoute = "/shExVisualize";
+    static shExVisualizeRouteRaw = "/shExVisualizeRaw";
     static shExVisualizeCytoscapeRoute = "/shExVisualizeCytoscape";
     static shEx2ShaclRoute = "/shEx2Shacl";
     static shExValidateRoute = "/shExValidate";
@@ -80,8 +83,10 @@ class API {
     static umlTab = "UML";
     static defaultTab = "byText";
     static defaultDataFormat = "TURTLE";
+    static turtleDataFormat = "TURTLE";
     static defaultInference = "None" ;
     static defaultShExFormat = "ShExC";
+    static shexcDataFormat = "SHEXC";
     static defaultSHACLFormat = "TURTLE";
     static defaultSHACLEngine = "JenaSHACL";
     static defaultShapeMapFormat = "Compact";

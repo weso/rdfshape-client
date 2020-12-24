@@ -18,13 +18,10 @@ function *intersperse(a, delim) {
 }*/
 
 export function dot2svg(dot,cb) {
-    // console.log("### Dot2SVG!!!" + dot);
     const digraph = 'digraph { a -> b; }';
     const viz = new Viz({ Module, render });
     const opts = {engine: 'dot'};
     viz.renderSVGElement(digraph, opts).then(function(svg) {
-      // console.log("SVG converted!!");
-      // console.log(svg);
       cb(svg);
     });
 }
@@ -61,7 +58,6 @@ export function dataParamsFromQueryParams(params) {
  }}
  */
 export function showQualify(node, prefixMap) {
-    // console.log(`node: ${JSON.stringify(node)}`)
     if (node) {
         const relativeBaseRegex = /^<internal:\/\/base\/(.*)>$/g;
         const matchBase = relativeBaseRegex.exec(node);
@@ -173,11 +169,9 @@ export function showQualify(node, prefixMap) {
 }
 
 export function showQualified(qualified, prefixes) {
-    // console.log(`showQualified ${JSON.stringify(qualified)}`)
     switch (qualified.type) {
         case 'RelativeIRI': return <span>{qualified.str}</span>
         case 'QualifiedName':
-            // console.log(`QualifiedName: ${qualified.prefix}`)
             if (prefixes.includes(qualified.prefix)) {
                 return <Fragment>
                     <a href={API.wikidataOutgoingRoute + "?node=" + encodeURIComponent(qualified.uri)}>{qualified.str}</a>

@@ -33,7 +33,7 @@ test("DataVisualize - shows data", async () => {
   expect(dataFormat).toBeInTheDocument();
   // Data graph format selector
   const targetDataFormat = await waitForElement(() =>
-    queryByText(/Target graph format/i)
+    queryByText(/Target visualization format/i)
   );
   expect(targetDataFormat).toBeInTheDocument();
   // Submit btn

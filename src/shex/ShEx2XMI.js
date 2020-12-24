@@ -16,17 +16,17 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultShEx2XMI from "../results/ResultShEx2XMI";
 import ResultXMI2ShEx from "../results/ResultXMI2ShEx";
 import {
-  convertTabSchema,
-  InitialShEx,
-  mkShExTabs,
-  shExParamsFromQueryParams
+    convertTabSchema,
+    InitialShEx,
+    mkShExTabs,
+    shExParamsFromQueryParams
 } from "../uml/ShEx2UML";
 import {
-  getUmlText,
-  InitialUML,
-  mkUMLTabs,
-  UMLParamsFromQueryParams,
-  updateStateUML
+    getUmlText,
+    InitialUML,
+    mkUMLTabs,
+    UMLParamsFromQueryParams,
+    updateStateUML
 } from "../uml/UML";
 import { getShexText, updateStateShEx } from "./ShEx";
 const cyto = require("cytoscape");
@@ -107,7 +107,7 @@ export default function ShEx2XMI(props) {
   };
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
       let shex2Uml = isShEx2UML;
@@ -147,7 +147,7 @@ export default function ShEx2XMI(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {

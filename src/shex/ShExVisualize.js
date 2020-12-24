@@ -8,22 +8,19 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
 import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
-import {
-    mkPermalinkLong,
-    params2Form,
-    Permalink
-} from "../Permalink";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
 import {
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExVisualize(props) {
@@ -39,6 +36,7 @@ function ShExVisualize(props) {
   const [error, setError] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [imageLink, setImageLink] = useState(null);
 
   const url = API.schemaVisualize;
 
@@ -47,7 +45,7 @@ function ShExVisualize(props) {
   const svgZoomStep = API.svgZoomStep;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
@@ -69,7 +67,7 @@ function ShExVisualize(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -118,6 +116,7 @@ function ShExVisualize(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
+        setImageLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);
@@ -156,6 +155,7 @@ function ShExVisualize(props) {
   function resetState() {
     setResult(null);
     setPermalink(null);
+    setImageLink(null);
     setError(null);
     setProgressPercent(0);
   }
@@ -183,8 +183,8 @@ function ShExVisualize(props) {
         {loading || result || permalink || error ? (
           <Col className="half-col visual-column">
             <Fragment>
-              {permalink && !error ? (
-                <div className={"d-flex"}>
+              {permalink && !error && !result?.error ? (
+                <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
                   <Permalink
                     url={permalink}
                     disabled={
@@ -195,6 +195,23 @@ function ShExVisualize(props) {
                         : false
                     }
                   />
+                  {imageLink && (
+                    <Permalink
+                      style={{ marginLeft: "5px" }}
+                      icon={<ImageIcon className="white-icon" />}
+                      shorten={false}
+                      text={"Embed"}
+                      url={imageLink}
+                      disabled={
+                        getShexText(shex).length > API.byTextCharacterLimit
+                          ? API.byTextTab
+                          : shex.activeTab === API.byFileTab
+                          ? API.byFileTab
+                          : false
+                      }
+                    />
+                  )}
+                  <div className="divider"></div>
                   <Button
                     onClick={() => zoomSvg(false)}
                     className="btn-zoom"
@@ -224,21 +241,24 @@ function ShExVisualize(props) {
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
               ) : result ? (
-                <div
-                  style={{ overflow: "auto" }}
-                  className={"width-100 height-100 border"}
-                >
-                  <ResultShExVisualize
-                    result={result}
-                    zoom={svgZoom}
-                    showDetails={false}
-                  />
-                </div>
+                !result.error ? (
+                  <div
+                    style={{ overflow: "auto" }}
+                    className={"width-100 height-100 border"}
+                  >
+                    <ResultShExVisualize
+                      result={result}
+                      zoom={svgZoom}
+                      showDetails={false}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <ResultShExVisualize result={result} showDetails={true} />
+                  </div>
+                )
               ) : null}
             </Fragment>
-            {result && (
-              <ResultShExVisualize result={result} showDetails={true} />
-            )}
           </Col>
         ) : (
           <Col className={"half-col"}>

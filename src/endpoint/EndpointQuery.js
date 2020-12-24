@@ -37,7 +37,7 @@ function EndpointQuery(props) {
   const resultsElementId = "results";
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsQuery,
         paramsEndpoint = {};
@@ -63,7 +63,7 @@ function EndpointQuery(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   // Perform query on params change (normally on submit)
   useEffect(() => {

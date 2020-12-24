@@ -38,7 +38,7 @@ export default function SHACL2ShEx(props) {
   const url = API.schemaConvert;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShacl = {};
 
@@ -69,7 +69,7 @@ export default function SHACL2ShEx(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -131,7 +131,6 @@ export default function SHACL2ShEx(props) {
       params["targetSchemaFormat"] = format;
     } else params["targetSchemaFormat"] = targetFormat;
 
-    console.log("SERVER PARAMS: ", params);
     return params;
   }
 

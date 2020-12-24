@@ -12,12 +12,12 @@ import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExInfo from "../results/ResultShExInfo";
 import {
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExInfo(props) {
@@ -36,7 +36,7 @@ function ShExInfo(props) {
   const url = API.schemaInfo;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
@@ -58,7 +58,7 @@ function ShExInfo(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
