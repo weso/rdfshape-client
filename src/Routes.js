@@ -229,7 +229,8 @@ function Routes() {
         />
         <Route
           path={API.permalinkRoute}
-          render={() => renderWithNavbar(PermalinkReceiver)}
+          component={PermalinkReceiver}
+          // render={() => renderWithNavbar(PermalinkReceiver)}
         />
 
         <Route
