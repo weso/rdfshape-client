@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
-import 'yashe/dist/yashe.min.css'
-import Yashe from 'yashe/dist/yashe.bundled.min';
+import '@weso/yashe/dist/yashe.min.css'
+import Yashe from '@weso/yashe';
 import PropTypes from "prop-types";
 
 function UMLForm(props) {
