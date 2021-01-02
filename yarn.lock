@@ -14285,10 +14285,10 @@ yasgui-yasqe@^2.11.22:
     prettier "^1.4.4"
     yasgui-utils "^1.6.7"
 
-yashe@^1.3.20:
-  version "1.3.20"
-  resolved "https://registry.yarnpkg.com/yashe/-/yashe-1.3.20.tgz#b03d88cfef1b97ff2b1fe648e1105b80cad4eecf"
-  integrity sha512-29xLMLI8hsmnvW4obvjioyXxCHjPvEz4fJ8F0411QL0bXAW2j2ouvF9ZtfKCJc7ElzVJ2UoLcAnEXlvnIjcssg==
+yashe@^1.3.21:
+  version "1.3.21"
+  resolved "https://registry.yarnpkg.com/yashe/-/yashe-1.3.21.tgz#b8a8170b23a08e1ab193b250a1f592e9d625ee4e"
+  integrity sha512-7DjFA2ihkDF8CHSSFBfwME5/GlfQzWMxKJ2veDcKKWtRJi5O2HoPw3OmZSquRGMq6LL4M2rltoibJ4VpSGthKA==
   dependencies:
     axios "^0.19.2"
     bloodhound-js "^1.2.3"
