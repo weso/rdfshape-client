@@ -1,4 +1,4 @@
-import Yate from "perfectkb-yate/dist/yate.bundled.js";
+import Yate from "perfectkb-yate";
 import "perfectkb-yate/dist/yate.css";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
