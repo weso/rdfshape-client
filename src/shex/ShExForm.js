@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import Yashe from "@weso/yashe";
-import "@weso/yashe/dist/yashe.min.css";
+import Yashe from "yashe/dist/yashe.bundled.min";
+import "yashe/dist/yashe.min.css";
 
 function ShExForm(props) {
   const [yashe, setYashe] = useState(null);
