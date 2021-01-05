@@ -9,7 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExInfo from "../results/ResultShExInfo";
 import {
   getShexText,
@@ -36,7 +36,7 @@ function ShExInfo(props) {
   const url = API.schemaInfo;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShEx = {};
 
@@ -58,7 +58,7 @@ function ShExInfo(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -92,7 +92,7 @@ function ShExInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.shExInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.shExInfoRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

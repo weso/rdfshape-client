@@ -10,24 +10,24 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getShaclText,
-  InitialShacl,
-  mkShaclTabs,
-  paramsFromStateShacl,
-  shaclParamsFromQueryParams,
-  updateStateShacl
+    getShaclText,
+    InitialShacl,
+    mkShaclTabs,
+    paramsFromStateShacl,
+    shaclParamsFromQueryParams,
+    updateStateShacl
 } from "./SHACL";
 
 function SHACLValidate(props) {
@@ -50,7 +50,7 @@ function SHACLValidate(props) {
   const url = API.schemaValidate;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsShacl,
@@ -84,14 +84,14 @@ function SHACLValidate(props) {
         ...paramsFromStateData(paramsData),
         ...paramsFromStateShacl(paramsShacl),
         endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
-        schemaEngine: "Shaclex",
+        schemaEngine: queryParams.schemaEngine || shacl.engine,
         triggerMode: "targetDecls",
       };
 
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -109,7 +109,7 @@ function SHACLValidate(props) {
   }, [params]);
 
   function handleEndpointChange(value) {
-    setEndpoint(value);
+    setEndpoint(value.trim());
   }
 
   async function handleSubmit(event) {
@@ -117,7 +117,7 @@ function SHACLValidate(props) {
 
     const paramsEndpoint = {};
     if (endpoint !== "") {
-      paramsEndpoint["endpoint"] = endpoint;
+      paramsEndpoint["endpoint"] = endpoint.trim();
     }
 
     setParams({
@@ -141,7 +141,7 @@ function SHACLValidate(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(await mkPermalink(API.shaclValidateRoute, params));
+        setPermalink(mkPermalinkLong(API.shaclValidateRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

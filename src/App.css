@@ -44,6 +44,10 @@ html {
   word-break: break-word;
 }
 
+.no-overflow {
+  overflow: unset !important;
+}
+
 .jumbotron {
   background-color: white !important;
 }

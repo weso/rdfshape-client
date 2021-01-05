@@ -37,11 +37,11 @@ export function paramsFromStateShapeMap(state) {
     params['shapeMapFormat'] = format;
     switch (activeTab) {
         case "byText":
-            params['shapeMap'] = textArea;
+            params['shapeMap'] = textArea.trim();
             params['shapeMapFormatTextArea'] = format;
             break;
         case "byUrl":
-            params['shapeMapURL'] = url;
+            params['shapeMapURL'] = url.trim();
             params['shapeMapFormatURL'] = format;
             break;
         case "byFile":
@@ -144,10 +144,10 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
 
 export function getShapeMapText (shapeMap) {
     if (shapeMap.activeTab === API.byTextTab){
-        return shapeMap.textArea
+        return encodeURI(shapeMap.textArea.trim())
     }
     else if (shapeMap.activeTab === API.byUrlTab){
-        return shapeMap.url
+        return encodeURI(shapeMap.url.trim())
     }
     return ""
 }

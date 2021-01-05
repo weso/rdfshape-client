@@ -1,14 +1,20 @@
-import React from 'react';
-import Jumbotron from 'react-bootstrap/Jumbotron';
-import Button from 'react-bootstrap/Button';
+import React from "react";
+import { Container, Row } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 function NotFound() {
- return (
-     <Jumbotron>
-         <h1>Not found</h1>
-             <Button variant="primary" href="/">Go Home</Button>
-     </Jumbotron>
- )
+  return (
+    <Container fluid={true}>
+      <Row>
+        <h1>Not found</h1>
+      </Row>
+      <Row>
+        <Button variant="primary" href="/">
+          Return home
+        </Button>
+      </Row>
+    </Container>
+  );
 }
 
 export default NotFound;

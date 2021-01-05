@@ -10,16 +10,16 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -36,7 +36,7 @@ function DataExtract(props) {
   const url = API.dataExtract;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = {
@@ -52,7 +52,7 @@ function DataExtract(props) {
         setLastParams(queryParams);
       } else setError("Could not parse URL data");
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
@@ -87,7 +87,7 @@ function DataExtract(props) {
           setError(data.msg);
           setResult({ error: data.msg });
         } else setResult(data);
-        setPermalink(await mkPermalink(API.dataExtractRoute, params));
+        setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

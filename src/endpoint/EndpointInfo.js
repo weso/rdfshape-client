@@ -8,7 +8,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultEndpointInfo from "../results/ResultEndpointInfo";
 import EndpointInput from "./EndpointInput";
 
@@ -25,7 +25,7 @@ function EndpointInfo(props) {
   const infoUrl = API.endpointInfo;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.endpoint) {
         // Update form input with queried endpoint
@@ -38,7 +38,7 @@ function EndpointInfo(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -76,7 +76,7 @@ function EndpointInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.endpointInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.endpointInfoRoute, params));
         setProgressPercent(100);
       })
       .catch(function(error) {

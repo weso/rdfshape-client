@@ -9,6 +9,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
@@ -18,18 +19,14 @@ import {
   paramsFromStateData,
   updateStateData
 } from "../data/Data";
-import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
-} from "../Permalink";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 
 function CytoVisualize(props) {
   const url = API.dataConvert;
   const cose = "cose";
   const circle = "circle";
+  const layouts = [cose, circle];
 
   const [data, setData] = useState(InitialData);
   const [params, setParams] = useState(null);
@@ -38,21 +35,26 @@ function CytoVisualize(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [elements, setElements] = useState(null);
-  const [layoutName, setLayoutName] = useState(cose);
+  const [layout, setLayout] = useState(cose);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [imageLink, setImageLink] = useState(null);
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
 
+        if (queryParams.layout && layouts.includes(queryParams.layout)) {
+          setLayout(queryParams.layout);
+        }
+
         const params = {
           ...paramsFromStateData(paramsData),
           targetDataFormat: "JSON",
+          layout: queryParams.layout || layout,
         };
 
         setParams(params);
@@ -61,11 +63,15 @@ function CytoVisualize(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || (params.dataFile && params.dataFile.name)) {
+      if (
+        params.data ||
+        params.dataURL ||
+        (params.dataFile && params.dataFile.name)
+      ) {
         resetState();
         setUpHistory();
         postConvert();
@@ -76,9 +82,18 @@ function CytoVisualize(props) {
     }
   }, [params]);
 
+  useEffect(() => {
+    setPermalink(
+      mkPermalinkLong(API.cytoVisualizeRoute, { ...params, layout })
+    );
+    setImageLink(
+      mkPermalinkLong(API.cytoVisualizeRouteRaw, { ...params, layout })
+    );
+  }, [layout]);
+
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams(paramsFromStateData(data));
+    setParams({ ...paramsFromStateData(data), layout });
   }
 
   function postConvert(cb) {
@@ -93,7 +108,8 @@ function CytoVisualize(props) {
         setProgressPercent(70);
         processData(data);
         setProgressPercent(80);
-        setPermalink(await mkPermalink(API.cytoVisualizeRoute, params));
+        setPermalink(mkPermalinkLong(API.cytoVisualizeRoute, params));
+        setImageLink(mkPermalinkLong(API.cytoVisualizeRouteRaw, params));
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -133,13 +149,13 @@ function CytoVisualize(props) {
       document.title,
       mkPermalinkLong(API.cytoVisualizeRoute, params)
     );
-
     setLastParams(params);
   }
 
   function resetState() {
     setElements(null);
     setPermalink(null);
+    setImageLink(null);
     setError(null);
     setProgressPercent(0);
   }
@@ -167,7 +183,7 @@ function CytoVisualize(props) {
           <Col className="half-col visual-column">
             <Fragment>
               {permalink && !error ? (
-                <div className={"d-flex"}>
+                <div className={"d-flex"} style={{flexWrap: "wrap"}}>
                   <Permalink
                     url={permalink}
                     disabled={
@@ -178,23 +194,39 @@ function CytoVisualize(props) {
                         : false
                     }
                   />
-
+                  {imageLink && (
+                    <Permalink
+                      style={{ marginLeft: "5px" }}
+                      icon={<ImageIcon className="white-icon" />}
+                      shorten={false}
+                      text={"Embed"}
+                      url={imageLink}
+                      disabled={
+                        getDataText(data).length > API.byTextCharacterLimit
+                          ? API.byTextTab
+                          : data.activeTab === API.byFileTab
+                          ? API.byFileTab
+                          : false
+                      }
+                    />
+                  )}
+                  <div className="divider"></div>
                   <Button
-                    onClick={() => setLayoutName(cose)}
+                    onClick={() => setLayout(cose)}
                     className="btn-zoom"
                     variant="secondary"
-                    disabled={layoutName === cose}
+                    disabled={layout === cose}
                   >
-                    COSE layout
+                    COSE
                   </Button>
                   <Button
-                    onClick={() => setLayoutName(circle)}
+                    onClick={() => setLayout(circle)}
                     style={{ marginLeft: "1px" }}
                     className="btn-zoom"
                     variant="secondary"
-                    disabled={layoutName === circle}
+                    disabled={layout === circle}
                   >
-                    Circle layout
+                    Circle
                   </Button>
                 </div>
               ) : null}
@@ -211,7 +243,7 @@ function CytoVisualize(props) {
               ) : elements ? (
                 <Cyto
                   className={"width-100 height-100 border"}
-                  layout={layoutName}
+                  layout={layout}
                   elements={elements}
                 />
               ) : null}

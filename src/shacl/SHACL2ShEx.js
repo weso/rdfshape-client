@@ -10,7 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
 import { convertTabSchema } from "../shex/ShEx";
 import {
@@ -38,7 +38,7 @@ export default function SHACL2ShEx(props) {
   const url = API.schemaConvert;
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShacl = {};
 
@@ -69,7 +69,7 @@ export default function SHACL2ShEx(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -131,7 +131,6 @@ export default function SHACL2ShEx(props) {
       params["targetSchemaFormat"] = format;
     } else params["targetSchemaFormat"] = targetFormat;
 
-    console.log("SERVER PARAMS: ", params);
     return params;
   }
 
@@ -156,7 +155,7 @@ export default function SHACL2ShEx(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          await mkPermalink(API.shacl2ShExRoute, {
+          mkPermalinkLong(API.shacl2ShExRoute, {
             schemaFormat: params.schemaFormat,
             targetSchemaFormat: params.targetSchemaFormat,
             schemaEngine: params.schemaEngine,

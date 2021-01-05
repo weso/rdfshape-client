@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import React from 'react';
 import Form from "react-bootstrap/Form";
-import PropTypes from "prop-types";
 
 class ByFile extends React.Component {
     constructor(props) {

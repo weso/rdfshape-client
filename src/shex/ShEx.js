@@ -39,11 +39,11 @@ export function paramsFromStateShEx(state) {
     params['schemaFormat'] = format;
     switch (activeTab) {
         case API.byTextTab:
-            params['schema'] = textArea;
+            params['schema'] = textArea.trim();
             params['schemaFormatTextArea'] = format;
             break;
         case API.byUrlTab:
-            params['schemaURL'] = url;
+            params['schemaURL'] = url.trim();
             params['schemaFormatUrl'] = format;
             break;
         case API.byFileTab:
@@ -143,10 +143,10 @@ export function shExParamsFromQueryParams(params) {
 
 export function getShexText (shex) {
     if (shex.activeTab === API.byTextTab){
-        return shex.textArea
+        return encodeURI(shex.textArea.trim())
     }
     else if (shex.activeTab === API.byUrlTab){
-        return shex.url
+        return encodeURI(shex.url.trim())
     }
     return ""
 }

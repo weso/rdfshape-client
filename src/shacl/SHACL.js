@@ -111,11 +111,11 @@ export function paramsFromStateShacl(state) {
   params["schemaEmbedded"] = false;
   switch (activeTab) {
     case API.byTextTab:
-      params["schema"] = textArea;
+      params["schema"] = textArea.trim();
       params["schemaFormatTextArea"] = format;
       break;
     case API.byUrlTab:
-      params["schemaURL"] = url;
+      params["schemaURL"] = url.trim();
       params["schemaFormatUrl"] = format;
       break;
     case API.byFileTab:
@@ -223,9 +223,9 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
 
 export function getShaclText(shacl) {
   if (shacl.activeTab === API.byTextTab) {
-    return shacl.textArea;
+    return encodeURI(shacl.textArea.trim());
   } else if (shacl.activeTab === API.byUrlTab) {
-    return shacl.url;
+    return encodeURI(shacl.url.trim());
   }
   return "";
 }

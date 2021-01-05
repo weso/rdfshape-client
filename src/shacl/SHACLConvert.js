@@ -10,7 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSHACLConvert from "../results/ResultSHACLConvert";
 import {
     getShaclText,
@@ -44,7 +44,7 @@ function SHACLConvert(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsShacl = {};
 
@@ -71,7 +71,7 @@ function SHACLConvert(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
@@ -110,7 +110,7 @@ function SHACLConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.shaclConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.shaclConvertRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

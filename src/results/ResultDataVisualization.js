@@ -74,14 +74,14 @@ start [shape=Mdiamond];
         if (targetGraphFormat) {
             targetGraphFormat = targetGraphFormat.toLowerCase()
             if (["svg", "png", "jpg", "dot"].includes(targetGraphFormat)) {
-                console.log("ComponentDidMount: From DOT " + targetGraphFormat);
-                console.log("###### Result")
-                console.log(result)
+                // console.log("ComponentDidMount: From DOT " + targetGraphFormat);
+                // console.log("###### Result")
+                // console.log(result)
                 let dotStr;
                 try {
                     dotStr = JSON.parse(result.result);
                 } catch(ex){
-                    console.log("Error parsing result: " + ex);
+                    console.error("Error parsing result: " + ex);
                     dotStr = null;
                 }
                 console.log("DotStr:" + dotStr)

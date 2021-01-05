@@ -10,19 +10,15 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
+import SelectFormat from "../components/SelectFormat";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import ShowVisualization from "../visualization/ShowVisualization";
 import {
-  mkPermalink,
-  mkPermalinkLong,
-  params2Form,
-  Permalink
-} from "../Permalink";
-import ShowSVG from "../svg/ShowSVG";
-import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
-  paramsFromStateData,
-  updateStateData
+    getDataText,
+    InitialData,
+    mkDataTabs,
+    paramsFromStateData,
+    updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -32,10 +28,11 @@ function DataMergeVisualize(props) {
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [targetDataFormat] = useState("dot");
+  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [svg, setSVG] = useState(null);
+  const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
@@ -45,8 +42,12 @@ function DataMergeVisualize(props) {
   const maxSvgZoom = 1.9;
   const svgZoomStep = 0.1;
 
+  function handleTargetGraphFormatChange(value) {
+    setTargetGraphFormat(value);
+  }
+
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.compoundData) {
         try {
@@ -55,11 +56,23 @@ function DataMergeVisualize(props) {
           const newData1 = updateStateData(contents[0], data1) || data1;
           const newData2 = updateStateData(contents[1], data2) || data2;
 
+          if (queryParams.targetGraphFormat) {
+            setTargetGraphFormat(queryParams.targetGraphFormat);
+          }
+
           setData1(newData1);
           setData2(newData2);
 
-          setParams(queryParams);
-          setLastParams(queryParams);
+          setParams({
+            ...queryParams,
+            targetGraphFormat:
+              queryParams.targetGraphFormat || targetGraphFormat,
+          });
+          setLastParams({
+            ...queryParams,
+            targetGraphFormat:
+              queryParams.targetGraphFormat || targetGraphFormat,
+          });
         } catch {
           setError("Could not parse URL data");
         }
@@ -67,7 +80,7 @@ function DataMergeVisualize(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params && params.compoundData) {
@@ -95,14 +108,18 @@ function DataMergeVisualize(props) {
   }
 
   function processData(d, targetFormat) {
-    convertDot(d.result, "dot", "SVG", setLoading, setError, setSVG);
+    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     let params1 = paramsFromStateData(data1);
     let params2 = paramsFromStateData(data2);
-    setParams({ ...mergeParams(params1, params2), targetDataFormat }); // It converts to dot in the server
+    setParams({
+      ...mergeParams(params1, params2),
+      targetDataFormat,
+      targetGraphFormat,
+    }); // It converts to dot in the server
   }
 
   function postVisualize(cb) {
@@ -115,8 +132,8 @@ function DataMergeVisualize(props) {
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
-        processData(data);
-        setPermalink(await mkPermalink(API.dataMergeVisualize, params));
+        processData(data, targetGraphFormat);
+        setPermalink(mkPermalinkLong(API.dataMergeVisualize, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);
@@ -166,7 +183,7 @@ function DataMergeVisualize(props) {
   }
 
   function resetState() {
-    setSVG(null);
+    setVisualization(null);
     setSvgZoom(1);
     setPermalink(null);
     setError(null);
@@ -185,6 +202,12 @@ function DataMergeVisualize(props) {
             <hr />
             {mkDataTabs(data2, setData2, "RDF Input 2")}
             <hr />
+            <SelectFormat
+              name="Target visualization format"
+              handleFormatChange={handleTargetGraphFormatChange}
+              urlFormats={API.dataVisualFormats}
+              selectedFormat={targetGraphFormat}
+            />
             <Button
               id="submit"
               variant="primary"
@@ -196,7 +219,7 @@ function DataMergeVisualize(props) {
             </Button>
           </Form>
         </Col>
-        {loading || error || svg ? (
+        {loading || error || visualization ? (
           <Col className="half-col visual-column">
             <Fragment>
               {permalink && !error ? (
@@ -213,23 +236,27 @@ function DataMergeVisualize(props) {
                         : false
                     }
                   />
-                  <Button
-                    onClick={() => zoomSvg(false)}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={svgZoom <= minSvgZoom}
-                  >
-                    <ZoomOutIcon className="white-icon" />
-                  </Button>
-                  <Button
-                    onClick={() => zoomSvg(true)}
-                    style={{ marginLeft: "1px" }}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={svgZoom >= maxSvgZoom}
-                  >
-                    <ZoomInIcon className="white-icon" />
-                  </Button>
+                  {!visualization?.textual && (
+                    <>
+                      <Button
+                        onClick={() => zoomSvg(false)}
+                        className="btn-zoom"
+                        variant="secondary"
+                        disabled={svgZoom <= minSvgZoom}
+                      >
+                        <ZoomOutIcon className="white-icon" />
+                      </Button>
+                      <Button
+                        onClick={() => zoomSvg(true)}
+                        style={{ marginLeft: "1px" }}
+                        className="btn-zoom"
+                        variant="secondary"
+                        disabled={svgZoom >= maxSvgZoom}
+                      >
+                        <ZoomInIcon className="white-icon" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               ) : null}
 
@@ -242,12 +269,12 @@ function DataMergeVisualize(props) {
                 />
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
-              ) : svg && svg.svg ? (
+              ) : visualization && visualization.data ? (
                 <div
                   style={{ overflow: "auto", zoom: svgZoom }}
                   className={"width-100 height-100 border"}
                 >
-                  <ShowSVG svg={svg.svg} />
+                  <ShowVisualization data={visualization.data} />
                 </div>
               ) : null}
             </Fragment>

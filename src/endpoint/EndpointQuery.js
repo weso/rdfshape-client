@@ -8,14 +8,14 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
-  getQueryText,
-  InitialQuery,
-  mkQueryTabs,
-  paramsFromStateQuery,
-  queryParamsFromQueryParams,
-  updateStateQuery
+    getQueryText,
+    InitialQuery,
+    mkQueryTabs,
+    paramsFromStateQuery,
+    queryParamsFromQueryParams,
+    updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { endpointParamsFromQueryParams } from "./Endpoint";
@@ -37,7 +37,7 @@ function EndpointQuery(props) {
   const resultsElementId = "results";
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsQuery,
         paramsEndpoint = {};
@@ -63,7 +63,7 @@ function EndpointQuery(props) {
       setParams(params);
       setLastParams(params);
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   // Perform query on params change (normally on submit)
   useEffect(() => {
@@ -125,7 +125,7 @@ function EndpointQuery(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult({ result: data });
-        setPermalink(await mkPermalink(API.endpointQueryRoute, params));
+        setPermalink(mkPermalinkLong(API.endpointQueryRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);

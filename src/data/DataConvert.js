@@ -10,7 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
-import { mkPermalink, mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
@@ -41,7 +41,7 @@ function DataConvert(props) {
   }
 
   useEffect(() => {
-    if (props.location.search) {
+    if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
@@ -62,7 +62,7 @@ function DataConvert(props) {
         setError("Could not parse URL data");
       }
     }
-  }, [props.location.search]);
+  }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
@@ -97,7 +97,7 @@ function DataConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(await mkPermalink(API.dataConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.dataConvertRoute, params));
         setProgressPercent(80);
         if (cb) cb();
         setProgressPercent(100);

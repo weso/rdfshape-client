@@ -2,15 +2,60 @@
 <html lang="en">
   <head>
     <!-- CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src *; script-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src *; child-src 'none'; object-src 'none';">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src *; script-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; child-src 'none'; object-src 'none';"
+    />
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="RDFShape client" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-<!--    <script src="%PUBLIC_URL%/codemirror/mode/shex/shex.js"></script> -->
-    <title>RDFShape</title>
+    <!--    <script src="%PUBLIC_URL%/codemirror/mode/shex/shex.js"></script> -->
+
+    <!-- Meta Tags -->
+    <title>RDFShape — Playground for RDF, ShEx, SHACL and more</title>
+    <meta
+      name="title"
+      content="RDFShape — Playground for RDF, ShEx, SHACL and more"
+    />
+    <meta
+      name="description"
+      content="RDFShape is an RDF service where you can play with semantic web formats and validation mechanisms."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rdfshape.weso.es/" />
+    <meta
+      property="og:title"
+      content="RDFShape — Playground for RDF, ShEx, SHACL and more"
+    />
+    <meta
+      property="og:description"
+      content="RDFShape is an RDF service where you can play with semantic web formats and validation mechanisms."
+    />
+    <meta
+      property="og:image"
+      content="%PUBLIC_URL%/img/meta.png"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://rdfshape.weso.es/" />
+    <meta
+      property="twitter:title"
+      content="RDFShape — Playground for RDF, ShEx, SHACL and more"
+    />
+    <meta
+      property="twitter:description"
+      content="RDFShape is an RDF service where you can play with semantic web formats and validation mechanisms."
+    />
+    <meta
+      property="twitter:image"
+      content="%PUBLIC_URL%/img/meta.png"
+    />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
