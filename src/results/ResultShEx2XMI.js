@@ -1,12 +1,15 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Alert from "react-bootstrap/Alert";
 import Tab from "react-bootstrap/Tab";
+import Button from "react-bootstrap/Button";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import shumlex from "shumlex";
+import $ from "jquery";
 
 function ResultShEx2XMI(props) {
   const result = props.result;
@@ -17,6 +20,13 @@ function ResultShEx2XMI(props) {
   function handleTabChange(e) {
     setActiveTab(e);
   }
+  
+    useEffect(() => { 
+		shumlex.crearDiagramaUML("umlcd", result.result);
+		let svg64 = shumlex.base64SVG("umlcd");
+		$("#descargarumlsvg").attr("href", svg64);
+		$("#descargarumlsvg").attr("download", `shumlex-class-diagram.svg`);
+	});
 
   if (result === "") {
     msg = null;
@@ -54,20 +64,14 @@ function ResultShEx2XMI(props) {
             </details>
           </Tab>
           <Tab eventKey={API.umlTab} title="UML Diagram">
-            <a href={result.grafico}>
-              <img
-                src={result.grafico}
-                alt="UML Class Diagram"
-                width="100%"
-                style={{ cursor: "zoom-in" }}
-              />{" "}
-            </a>
+           <div id="umlcd" style={{overflowX: 'auto'}}></div>
           </Tab>
         </Tabs>
         {props.permalink && (
           <Fragment>
             <hr />
             <Permalink url={props.permalink} disabled={props.disabled} />
+			<a id="descargarumlsvg" class="btn btn-secondary">Descargar SVG</a>
           </Fragment>
         )}
       </div>

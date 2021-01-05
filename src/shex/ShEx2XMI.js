@@ -289,18 +289,18 @@ export default function ShEx2XMI(props) {
     setProgressPercent(20);
     let res = "";
     let grf = "";
+	let uml = null;
     try {
       const input = await getConverterInput();
 
       if (isShEx2UML) {
         res = shumlex.shExToXMI(input);
-        grf = shumlex.crearDiagramaUML(res);
       } else {
         res = shumlex.XMIToShEx(input);
         grf = shumlex.crearGrafo(res);
       }
       setProgressPercent(90);
-      let result = { result: res, grafico: grf, msg: "Succesful conversion" };
+      let result = { result: res, grafico: grf, msg: "Succesful conversion"};
       setResult(result);
       setPermalink(
         mkPermalinkLong(API.shEx2XMIRoute, {
