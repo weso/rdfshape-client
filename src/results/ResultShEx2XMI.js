@@ -71,7 +71,7 @@ function ResultShEx2XMI(props) {
           <Fragment>
             <hr />
             <Permalink url={props.permalink} disabled={props.disabled} />
-			<a id="descargarumlsvg" class="btn btn-secondary">Descargar SVG</a>
+			<a id="descargarumlsvg" className="btn btn-secondary">Download UML as SVG</a>
           </Fragment>
         )}
       </div>

@@ -10,6 +10,7 @@
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-node-html-label": "^1.2.1",
     "cytoscape-panzoom": "^2.5.3",
+    "cytoscape-svg": "^0.3.1",
     "eslint": "^6.5.1",
     "form-data": "^2.5.1",
     "gh-pages": "^2.2.0",
