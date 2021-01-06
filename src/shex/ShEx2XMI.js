@@ -17,10 +17,12 @@ import ResultShEx2XMI from "../results/ResultShEx2XMI";
 import ResultXMI2ShEx from "../results/ResultXMI2ShEx";
 import {
     convertTabSchema,
+    getShexText,
     InitialShEx,
     mkShExTabs,
-    shExParamsFromQueryParams
-} from "../uml/ShEx2UML";
+    shExParamsFromQueryParams,
+    updateStateShEx
+} from "./ShEx";
 import {
     getUmlText,
     InitialUML,
@@ -28,7 +30,6 @@ import {
     UMLParamsFromQueryParams,
     updateStateUML
 } from "../uml/UML";
-import { getShexText, updateStateShEx } from "./ShEx";
 
 export default function ShEx2XMI(props) {
   const [shex, setShEx] = useState(InitialShEx);
