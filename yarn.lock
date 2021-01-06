@@ -4213,6 +4213,11 @@ cytoscape-panzoom@^2.5.3:
   dependencies:
     jquery "^1.4 || ^2.0 || ^3.0"
 
+cytoscape-svg@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/cytoscape-svg/-/cytoscape-svg-0.3.1.tgz#5f49b7438e8cf9c779c1a999802f4a52384e4533"
+  integrity sha512-CaU6sUWIcCJcOWw+G1ZWHqC7ssHwXabWVo6okyIPUy3veEKoodZ3Ud2AG3Zbd8vFl8Z1W10hzyXnyy25aBXFXA==
+
 cytoscape@^3.17.1:
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.17.1.tgz#da2dd84035db1bcfcff84989ff87f3f841ea01cc"
@@ -12195,11 +12200,12 @@ shex@^0.9.2:
     shex-test "^2.0.0"
     underscore "~1.8.3"
 
-shumlex@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/shumlex/-/shumlex-0.2.2.tgz#0428f84cc217a8df003f0f7aed905a6a424f0a72"
-  integrity sha512-7P4oQ6k/L1h+0Jy2c43wj+Smt1gunBUAMH+pXyy3w6nGd1+jbtqH6VzYi1Un6rtmsqy9eFUPFPBbZrsRhEoCbA==
+shumlex@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/shumlex/-/shumlex-0.3.5.tgz#58b670f1f02ff2a660c6c8b9f57e846039d1286b"
+  integrity sha512-Vi1lUwuhPSF8/zr38UIaLYYUQ0JCh85dUvseW1i+rvMbIEHzz8/DNddkNhJwHdHVb7BarykwYNJJ/UBk28S4FA==
   dependencies:
+    jquery "^3.5.1"
     shex "^0.9.2"
     uniqid "^5.2.0"
     xml2js "^0.4.23"
