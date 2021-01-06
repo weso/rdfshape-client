@@ -80,7 +80,7 @@ function ResultShEx2XMI(props) {
           </Tab>
           <Tab eventKey={API.umlTab} title="UML Diagram">
 		    <div id="umlcontainer">
-           <div id="umlcd" style={{overflowX: 'auto'}}></div>
+           <div id="umlcd" style={{overflowX: 'auto', border: "double black",}}></div>
 		   <Button id="fullscreen" variant="secondary"  style={{margin: "0.5em"}}>Show at Fullscreen</Button>
 		   <a id="descargarumlsvg" className="btn btn-secondary">Download UML as SVG</a>
 		   </div>
