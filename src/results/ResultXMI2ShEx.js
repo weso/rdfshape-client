@@ -3,6 +3,7 @@ import React, { Fragment, useState, useEffect} from "react";
 import Alert from "react-bootstrap/Alert";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import Button from "react-bootstrap/Button";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
@@ -15,8 +16,8 @@ let panzoom = require("cytoscape-panzoom");
 
 let cy = null;
 
-
 function ResultXMI2ShEx(props) {
+  let isFullscreen = false;
   const result = props.result;
   let msg;
 
@@ -25,6 +26,20 @@ function ResultXMI2ShEx(props) {
   function handleTabChange(e) {
     setActiveTab(e);
   }
+  
+  function fullscreen() {
+		if(!isFullscreen) {
+			$("#grafocontainer").attr("class", "fullscreen");
+			$("#fullscreen").text("✖ Leave fullscreen");
+			$("#grafoshex").css("max-height", "85%");
+			isFullscreen = true;
+		} else {
+			$("#grafocontainer").removeAttr("class");
+			$("#fullscreen").text("Show at fullscreen");
+			$("#grafoshex").css("max-height", "500px");
+			isFullscreen = false;
+		}
+	}
   
   useEffect(() => {
     let els = result.grafico;
@@ -57,6 +72,7 @@ function ResultXMI2ShEx(props) {
 	cy.panzoom( defaults ); //No funciona, por algún motivo extraño
 	$("#descargargrafosvg").attr("download", `shumlex-graph.svg`);
 	$("#descargargrafosvg").click(grafoASVG);
+	$("#fullscreen").click(fullscreen);
     }
   });
   
@@ -82,8 +98,6 @@ function ResultXMI2ShEx(props) {
   } else {
     msg = (
       <div>
-        <Alert variant="success">Conversion successful</Alert>
-
         <Tabs
           activeKey={activeTab}
           transition={false}
@@ -105,6 +119,7 @@ function ResultXMI2ShEx(props) {
             </details>
           </Tab>
           <Tab eventKey={API.umlTab} title="ShEx Graph">
+		  <div id="grafocontainer">
             <div
               id="grafoshex"
               style={{
@@ -114,6 +129,9 @@ function ResultXMI2ShEx(props) {
                 marginTop: "1em",
               }}
             ></div>
+			<Button id="fullscreen" variant="secondary"  style={{margin: "0.5em"}}>Show at Fullscreen</Button>
+			<a id="descargargrafosvg" className="btn btn-secondary">Download graph as SVG</a>
+		   </div>
             <details id="jsongrafo">
               <PrintJson json={result.grafico} />
             </details>
@@ -123,9 +141,9 @@ function ResultXMI2ShEx(props) {
           <Fragment>
             <hr />
             <Permalink url={props.permalink} disabled={props.disabled} />
-			<a id="descargargrafosvg" className="btn btn-secondary">Download graph as SVG</a>
           </Fragment>
         )}
+		<Alert variant="success" style={{marginTop: "0.5em"}}>Conversion successful</Alert>
       </div>
     );
   }

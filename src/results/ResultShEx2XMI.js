@@ -12,6 +12,7 @@ import shumlex from "shumlex";
 import $ from "jquery";
 
 function ResultShEx2XMI(props) {
+  let isFullscreen = false;
   const result = props.result;
   let msg;
 
@@ -26,7 +27,22 @@ function ResultShEx2XMI(props) {
 		let svg64 = shumlex.base64SVG("umlcd");
 		$("#descargarumlsvg").attr("href", svg64);
 		$("#descargarumlsvg").attr("download", `shumlex-class-diagram.svg`);
+		$("#fullscreen").click(fullscreen);
 	});
+	
+	function fullscreen() {
+		if(!isFullscreen) {
+			$("#umlcontainer").attr("class", "fullscreen");
+			$("#fullscreen").text("✖ Leave fullscreen");
+			$("#umlcd").css("max-height", "91%");
+			isFullscreen = true;
+		} else {
+			$("#umlcontainer").removeAttr("class");
+			$("#fullscreen").text("Show at fullscreen");
+			$("#umlcd").css("max-height", "500px");
+			isFullscreen = false;
+		}
+	}
 
   if (result === "") {
     msg = null;
@@ -42,7 +58,6 @@ function ResultShEx2XMI(props) {
   } else {
     msg = (
       <div>
-        <Alert variant="success">Conversion successful</Alert>
         <Tabs
           activeKey={activeTab}
           transition={false}
@@ -64,16 +79,20 @@ function ResultShEx2XMI(props) {
             </details>
           </Tab>
           <Tab eventKey={API.umlTab} title="UML Diagram">
+		    <div id="umlcontainer">
            <div id="umlcd" style={{overflowX: 'auto'}}></div>
+		   <Button id="fullscreen" variant="secondary"  style={{margin: "0.5em"}}>Show at Fullscreen</Button>
+		   <a id="descargarumlsvg" className="btn btn-secondary">Download UML as SVG</a>
+		   </div>
           </Tab>
         </Tabs>
         {props.permalink && (
           <Fragment>
             <hr />
             <Permalink url={props.permalink} disabled={props.disabled} />
-			<a id="descargarumlsvg" className="btn btn-secondary">Download UML as SVG</a>
           </Fragment>
         )}
+		<Alert variant="success" style={{marginTop: "0.5em"}}>Conversion successful</Alert>
       </div>
     );
   }
