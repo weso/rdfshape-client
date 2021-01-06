@@ -1,14 +1,18 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Alert from "react-bootstrap/Alert";
 import Tab from "react-bootstrap/Tab";
+import Button from "react-bootstrap/Button";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import shumlex from "shumlex";
+import $ from "jquery";
 
 function ResultShEx2XMI(props) {
+  let isFullscreen = false;
   const result = props.result;
   let msg;
 
@@ -17,6 +21,28 @@ function ResultShEx2XMI(props) {
   function handleTabChange(e) {
     setActiveTab(e);
   }
+  
+    useEffect(() => { 
+		shumlex.crearDiagramaUML("umlcd", result.result);
+		let svg64 = shumlex.base64SVG("umlcd");
+		$("#descargarumlsvg").attr("href", svg64);
+		$("#descargarumlsvg").attr("download", `shumlex-class-diagram.svg`);
+		$("#fullscreen").click(fullscreen);
+	});
+	
+	function fullscreen() {
+		if(!isFullscreen) {
+			$("#umlcontainer").attr("class", "fullscreen");
+			$("#fullscreen").text("✖ Leave fullscreen");
+			$("#umlcd").css("max-height", "91%");
+			isFullscreen = true;
+		} else {
+			$("#umlcontainer").removeAttr("class");
+			$("#fullscreen").text("Show at fullscreen");
+			$("#umlcd").css("max-height", "500px");
+			isFullscreen = false;
+		}
+	}
 
   if (result === "") {
     msg = null;
@@ -32,7 +58,6 @@ function ResultShEx2XMI(props) {
   } else {
     msg = (
       <div>
-        <Alert variant="success">Conversion successful</Alert>
         <Tabs
           activeKey={activeTab}
           transition={false}
@@ -54,14 +79,11 @@ function ResultShEx2XMI(props) {
             </details>
           </Tab>
           <Tab eventKey={API.umlTab} title="UML Diagram">
-            <a href={result.grafico}>
-              <img
-                src={result.grafico}
-                alt="UML Class Diagram"
-                width="100%"
-                style={{ cursor: "zoom-in" }}
-              />{" "}
-            </a>
+		    <div id="umlcontainer">
+           <div id="umlcd" style={{overflowX: 'auto', border: "double black",}}></div>
+		   <Button id="fullscreen" variant="secondary"  style={{margin: "0.5em"}}>Show at Fullscreen</Button>
+		   <a id="descargarumlsvg" className="btn btn-secondary">Download UML as SVG</a>
+		   </div>
           </Tab>
         </Tabs>
         {props.permalink && (
@@ -70,6 +92,7 @@ function ResultShEx2XMI(props) {
             <Permalink url={props.permalink} disabled={props.disabled} />
           </Fragment>
         )}
+		<Alert variant="success" style={{marginTop: "0.5em"}}>Conversion successful</Alert>
       </div>
     );
   }
