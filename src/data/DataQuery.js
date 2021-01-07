@@ -10,27 +10,23 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import {
-    mkPermalinkLong,
-    params2Form,
-    Permalink
-} from "../Permalink";
-import {
-    getQueryText,
-    InitialQuery,
-    mkQueryTabs,
-    paramsFromStateQuery,
-    queryParamsFromQueryParams,
-    updateStateQuery
+  getQueryText,
+  InitialQuery,
+  mkQueryTabs,
+  paramsFromStateQuery,
+  queryParamsFromQueryParams,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataQuery(props) {
