@@ -101,7 +101,7 @@ function Routes() {
         />
         <Route
           path={API.dataQueryRoute}
-          reender={() => renderWithNavbar(DataQuery)}
+          render={() => renderWithNavbar(DataQuery)}
         />
         <Route
           path={API.dataExtractRoute}
