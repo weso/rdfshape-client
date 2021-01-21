@@ -12200,10 +12200,10 @@ shex@^0.9.2:
     shex-test "^2.0.0"
     underscore "~1.8.3"
 
-shumlex@^0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/shumlex/-/shumlex-0.3.5.tgz#58b670f1f02ff2a660c6c8b9f57e846039d1286b"
-  integrity sha512-Vi1lUwuhPSF8/zr38UIaLYYUQ0JCh85dUvseW1i+rvMbIEHzz8/DNddkNhJwHdHVb7BarykwYNJJ/UBk28S4FA==
+shumlex@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/shumlex/-/shumlex-0.4.2.tgz#4da1afba0c8bcdafd31c34477b8e639563e90b57"
+  integrity sha512-zRLrK3mkzhZ0DjHi4Q0lxSsZETePXfcteT4MS7vsOy60Xnz+tPVFHc2rYqOnDRb+TxsamuoGRnBwazQBuiNKsw==
   dependencies:
     jquery "^3.5.1"
     shex "^0.9.2"
