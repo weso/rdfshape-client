@@ -32,6 +32,7 @@ import SHACLValidate from "./shacl/SHACLValidate.js";
 import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
 import ShEx2Shacl from "./shex/ShEx2Shacl.js";
 import ShEx2XMI from "./shex/ShEx2XMI.js";
+import ShapeForm from "./shex/ShapeForm.js";
 import ShExConvert from "./shex/ShExConvert.js";
 import ShExInfo from "./shex/ShExInfo.js";
 import ShExValidate from "./shex/ShExValidate.js";
@@ -165,6 +166,11 @@ function Routes() {
         <Route
           path={API.shEx2XMIRoute}
           render={() => renderWithNavbar(ShEx2XMI)}
+        />
+		
+		<Route
+          path={API.shapeFormRoute}
+          render={() => renderWithNavbar(ShapeForm)}
         />
 
         <Route

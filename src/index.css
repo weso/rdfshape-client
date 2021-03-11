@@ -153,3 +153,120 @@ table td {
 	z-index: 1100;
 	background-color: white;
 }
+
+#resultform input, #resultform select {
+	width: 90%;
+	max-width: 50em;
+	border: 0.071em solid #a2a9b1;
+	border-radius: 0.143em;
+	padding: 0.357em 0.571em;
+	margin-bottom: 0.857em;
+}
+
+#resultform input {
+	max-width: 50em;
+}
+
+#resultform select {
+	max-width: 51.5em;
+}
+
+#resultform input:focus {
+    border-color: blue;
+}
+
+#resultform input[type="submit"], #resultform button {
+	color: #fff;
+	background-color: #36c;
+	border-color: #36c;
+	padding-top: 0.357em;
+	padding-bottom: 0.357em;
+	width: max-content;
+	line-height: 1;
+	border-style: solid;
+	border-width: 0.071em;
+	border-radius: 0.143em;
+	padding-left: 0.857em;
+	padding-right: 0.857em;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: inherit;
+}
+
+#resultform input[type="submit"]:hover, #resultform button:hover {
+	background-color: #38c;
+}
+
+#resultform input[type="submit"]:active, #resultform button:active {
+	background-color: #34a;
+}
+
+#resultform input[readonly] {
+  background-color: #eee;
+} 
+
+#resultform label {
+	padding-bottom: 0.286em;
+}
+
+.wikidata {
+	display: grid;
+	border: 0.071em solid #a2a9b1;
+	border-radius: 0.143em;
+	padding: 0.857em 1.143em 1.143em;
+	font-family: sans-serif;
+	font-size: 0.875em;
+}
+
+.wikidata h3 {
+	font-size: 1.15em;
+	font-weight: bold;
+}
+
+.innerform {
+	display: grid;
+	border-top: 0.071em solid #a2a9b1;
+	border-bottom: 0.071em solid #a2a9b1;
+	margin-bottom: 2em;
+	padding-top: 1em;
+}
+
+.innerform h3 {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+.orform {
+	display: grid;
+	border-left: 0.071em solid #a2a9b1;
+	margin-bottom: 0.857em;
+	padding-left: 1em;
+}
+
+.orform h3 {
+	font-size: 0.875em;
+	font-weight: bold;
+}
+
+.orform input {
+	max-width: 49em;
+}
+
+#resultform .button {
+  background-color: #e7e7e7;
+  border: none;
+  color: black;
+  padding: 0.3em 0.571em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 1em;
+}
+
+#resultform .button:hover {
+  background-color: darkgray;
+}
