@@ -178,7 +178,8 @@ export default function ShEx2XMI(props) {
     try {
       const input = await getConverterInput();
 
-      res = ShexParser.parseShExToForm(input);
+	  let sp = new ShexParser();
+      res = sp.parseShExToForm(input);
 	  
       setProgressPercent(90);
       let result = { result: res, msg: "Succesful generation"};

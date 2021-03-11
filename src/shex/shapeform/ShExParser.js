@@ -60,4 +60,4 @@ class ShExParser {
   }
 }
 
-module.exports = new ShExParser();
+export default ShExParser;
