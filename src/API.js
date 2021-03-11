@@ -59,6 +59,7 @@ class API {
     static shExValidateRoute = "/shExValidate";
     static shExValidateEndpointRoute = "/shExValidateEndpoint";
 	static shEx2XMIRoute = "/shEx2XMI";
+	static shapeFormRoute = "/shapeForm";
 
     static shaclInfoRoute = "/shaclInfo";
     static shaclConvertRoute = "/shaclConvert";
