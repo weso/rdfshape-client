@@ -269,4 +269,4 @@ class FormGenerator {
     }
 
 }
-module.exports = FormGenerator;
+export default FormGenerator;
