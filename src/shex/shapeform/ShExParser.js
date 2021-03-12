@@ -1,5 +1,5 @@
+import FormGenerator from "./html-gen/FormGenerator.js";
 const shexp = require('shex').Parser;
-const FormGenerator = require ("./html-gen/FormGenerator.js");
 
 class ShExParser {
 
