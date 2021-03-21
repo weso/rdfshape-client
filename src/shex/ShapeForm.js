@@ -295,6 +295,9 @@ export default function ShEx2XMI(props) {
               </Col>
             ) : (
               <Col className={"half-col"}>
+                <Alert variant="warning">
+                  Be advised: Shape Start is required in input
+                </Alert>
                 <Alert variant="info">
                   Conversion results will appear here
                 </Alert>

@@ -23,12 +23,18 @@ function ResultShapeForm(props)  {
     useEffect(() => { 
 	    $("#resultform").html(result.result);
 		
-		$( ".newButton" ).each(function(index) {
-		$(this).on("click", function(){
-			let id = $(this).prev().attr("id").replace(":", "\\:");
-			$(this).prev().clone().insertAfter("#container-" + id);
-		});
-		});
+      $( ".newButton" ).each(function(index) {
+        $(this).on("click", function(){
+          let id = $(this).prev().attr("id").replace(":", "\\:");
+          $(this).prev().clone().insertAfter("#container-" + id);
+        });
+		  });
+
+      $("#checkbtn").click(function() {
+        if(! $("#shexgform")[0].checkValidity()) {
+          $("#shexgform").find(':submit').click();
+        }
+      });
 	});
 
   if (result === "") {

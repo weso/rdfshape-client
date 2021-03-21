@@ -155,7 +155,6 @@ table td {
 }
 
 #resultform input, #resultform select {
-	width: 90%;
 	max-width: 50em;
 	border: 0.071em solid #a2a9b1;
 	border-radius: 0.143em;
@@ -167,8 +166,13 @@ table td {
 	max-width: 50em;
 }
 
+#resultform input:not([size]) {
+	width: 20em;
+}
+
 #resultform select {
 	max-width: 51.5em;
+  width: 20em;
 }
 
 #resultform input:focus {
@@ -209,9 +213,10 @@ table td {
 
 #resultform label {
 	padding-bottom: 0.286em;
+  margin-bottom: 0;
 }
 
-.wikidata {
+#resultform .wikidata {
 	display: grid;
 	border: 0.071em solid #a2a9b1;
 	border-radius: 0.143em;
@@ -220,38 +225,38 @@ table td {
 	font-size: 0.875em;
 }
 
-.wikidata h3 {
+#resultform .wikidata h3 {
 	font-size: 1.15em;
 	font-weight: bold;
 }
 
-.innerform {
+#resultform .innerform {
 	display: grid;
-	border-top: 0.071em solid #a2a9b1;
-	border-bottom: 0.071em solid #a2a9b1;
-	margin-bottom: 2em;
-	padding-top: 1em;
+	border: 0.071em solid #555;
+	margin-bottom: 1em;
+	padding-left: 1em;
+  padding-top: 0.8em;
 }
 
-.innerform h3 {
+#resultform .innerform h3 {
 	font-size: 1em;
 	font-weight: bold;
 }
 
-.orform {
+#resultform .orform {
 	display: grid;
-	border-left: 0.071em solid #a2a9b1;
+	border-left: 0.071em solid #555;
 	margin-bottom: 0.857em;
 	padding-left: 1em;
 }
 
-.orform h3 {
+#resultform .orform h3 {
 	font-size: 0.875em;
 	font-weight: bold;
 }
 
-.orform input {
-	max-width: 49em;
+#resultform .orform input:not([size]) {
+	width: 19em;
 }
 
 #resultform .button {
@@ -269,4 +274,16 @@ table td {
 
 #resultform .button:hover {
   background-color: darkgray;
+}
+
+#resultform .langstring-st:not([size]) {
+	width: 60%;
+}
+
+#resultform .langstring-lg:not([size]) {
+	width: 20%;
+}
+
+#resultform .langstring-div div:first-of-type {
+	display: contents;
 }

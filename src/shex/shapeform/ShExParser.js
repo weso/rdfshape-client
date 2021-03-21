@@ -38,7 +38,8 @@ class ShExParser {
 		form += this.fg.createForm(source.shapes[source.start.reference], source.start.reference);
 	}
     
-	form += '<input type="submit" value="Create"/>';
+	form += '<button type="button" id="checkbtn" class="btn1">Check</button>';
+  form += '<input type="submit" style="display: none;"/>';
     form += '</form>';
 
     return form;
