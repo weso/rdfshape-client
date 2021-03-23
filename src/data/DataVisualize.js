@@ -14,7 +14,7 @@ import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+import { dataParamsFromQueryParams, maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import {
   getDataText,
@@ -40,9 +40,9 @@ function DataVisualize(props) {
 
   const url = API.dataConvert;
 
-  const minSvgZoom = API.minSvgZoom;
-  const maxSvgZoom = API.maxSvgZoom;
-  const svgZoomStep = API.svgZoomStep;
+  const minSvgZoom = minZoom;
+  const maxSvgZoom = maxZoom;
+  const svgZoomStep = stepZoom;
 
   function handleTargetGraphFormatChange(value) {
     setTargetGraphFormat(value);
@@ -73,8 +73,8 @@ function DataVisualize(props) {
       }
     }
   }, [props.location?.search]);
-  //localhost:3000/dataVisualizeRaw?activeTab=%23dataTextArea&data=%40prefix%20%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2F%3E%20.%0A%40prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20.%0A%40prefix%20item%3A%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F04802%2F%3E%20.%0A%40prefix%20dbr%3A%20%20%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%20.%0A%40prefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20.%0A%40prefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20.%0A%40prefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.example.org%2Fitem%2F%3E%20.%0A%40prefix%20wd%3A%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%20.%0A%40prefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20.%0A%0A%3Aalice%20%20a%20%20%20%20%20%20%20foaf%3APerson%20.%0A%0A%3Abob%20%20%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%221990-07-04%22%5E%5Exsd%3Adate%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2Falice%23me%3E%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Atopic_interest%20%20wd%3AQ12418%20.%0A%0A%3Acarol%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%22unknown%22%20.%0A%0Awd%3AQ12418%20%20dcterms%3Acreator%20%20dbr%3ALeonardo_da_Vinci%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22Mona%20Lisa%22%20.%0A%0Ait%3A243FA%20%20dcterms%3Asubject%20%20wd%3AQ12418%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22La%20Joconde%20%C3%A0%20Washington%22%40fr%20.&dataFormat=TURTLE&dataFormatTextArea=TURTLE&inference=None&targetDataFormat=PNG&targetGraphFormat=PNG
-  http: useEffect(() => {
+
+  useEffect(() => {
     if (params) {
       if (
         params.data ||
@@ -267,10 +267,13 @@ function DataVisualize(props) {
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
                 <div
-                  style={{ overflow: "auto", zoom: svgZoom }}
+                  style={{ overflow: "auto" }}
                   className={"width-100 height-100 border"}
                 >
-                  <ShowVisualization data={visualization.data} />
+                  <ShowVisualization
+                    data={visualization.data}
+                    zoom={svgZoom}
+                  />
                 </div>
               ) : null}
             </Fragment>

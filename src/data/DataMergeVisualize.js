@@ -12,13 +12,14 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -38,9 +39,9 @@ function DataMergeVisualize(props) {
 
   const url = API.dataConvert;
 
-  const minSvgZoom = 0.2;
-  const maxSvgZoom = 1.9;
-  const svgZoomStep = 0.1;
+  const minSvgZoom = minZoom;
+  const maxSvgZoom = maxZoom;
+  const svgZoomStep = stepZoom;
 
   function handleTargetGraphFormatChange(value) {
     setTargetGraphFormat(value);
@@ -271,10 +272,10 @@ function DataMergeVisualize(props) {
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
                 <div
-                  style={{ overflow: "auto", zoom: svgZoom }}
+                  style={{ overflow: "auto" }}
                   className={"width-100 height-100 border"}
                 >
-                  <ShowVisualization data={visualization.data} />
+                  <ShowVisualization data={visualization.data} zoom={svgZoom} />
                 </div>
               ) : null}
             </Fragment>

@@ -5,29 +5,36 @@ import PrintXml from "../utils/PrintXml";
 
 class ShowVisualization extends React.Component {
   render() {
-    const visualizationType = Object.getPrototypeOf(this.props.data).toString();
+    const { data, zoom } = this.props;
+    const visualizationType = Object.getPrototypeOf(data).toString();
     let ret = null;
     switch (visualizationType) {
       case "[object SVGSVGElement]":
         ret = (
           <div
-            dangerouslySetInnerHTML={{ __html: this.props.data.outerHTML }}
+            style={{ transform: `scale(${zoom})`, transformOrigin: "0 0" }}
+            dangerouslySetInnerHTML={{ __html: data.outerHTML }}
           />
         );
         break;
       case "[object HTMLImageElement]":
-        ret = <img src={this.props.data.src}></img>;
+        ret = (
+          <img
+            style={{ transform: `scale(${zoom})`, transformOrigin: "0 0" }}
+            src={data.src}
+          ></img>
+        );
         break;
 
       // JSON
       case "[object Object]":
-        ret = <PrintJson json={this.props.data} overflow={false}></PrintJson>;
+        ret = <PrintJson json={data} overflow={false}></PrintJson>;
         break;
 
       // DOT, PS (String)
       default:
-        console.log(this.props.data);
-        ret = <PrintXml xml={this.props.data} overflow={false}></PrintXml>;
+        console.log(data);
+        ret = <PrintXml xml={data} overflow={false}></PrintXml>;
         break;
     }
 
@@ -37,6 +44,7 @@ class ShowVisualization extends React.Component {
 
 ShowVisualization.propTypes = {
   data: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  zoom: PropTypes.number,
 };
 
 export default ShowVisualization;

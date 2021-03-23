@@ -14,6 +14,7 @@ import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
+import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import {
   getShexText,
   InitialShEx,
@@ -40,9 +41,9 @@ function ShExVisualize(props) {
 
   const url = API.schemaVisualize;
 
-  const minSvgZoom = API.minSvgZoom;
-  const maxSvgZoom = API.maxSvgZoom;
-  const svgZoomStep = API.svgZoomStep;
+  const minSvgZoom = minZoom;
+  const maxSvgZoom = maxZoom;
+  const svgZoomStep = stepZoom;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -248,8 +249,8 @@ function ShExVisualize(props) {
                   >
                     <ResultShExVisualize
                       result={result}
-                      zoom={svgZoom}
                       showDetails={false}
+                      zoom={svgZoom}
                     />
                   </div>
                 ) : (
