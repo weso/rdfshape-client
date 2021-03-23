@@ -86,19 +86,19 @@ function DataVisualizeRaw(props) {
 
   return (
     <>
-        {loading || error || visualization ? (
-            <>
-              {loading ? (
-                <p>{message}</p>
-              ) : error ? (
-                <p>{error}</p>
-              ) : visualization && visualization.data ? (
-                <ShowVisualization data={visualization.data} />
-              ) : null}
-            </>
-        ) : (
-          <p>{message}</p>
-        )}
+      {loading || error || visualization ? (
+        <>
+          {loading ? (
+            <p>{message}</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : visualization && visualization.data ? (
+            <ShowVisualization data={visualization.data} />
+          ) : null}
+        </>
+      ) : (
+        <p>{message}</p>
+      )}
     </>
   );
 }

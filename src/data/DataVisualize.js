@@ -14,7 +14,12 @@ import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
-import { dataParamsFromQueryParams, maxZoom, minZoom, stepZoom } from "../utils/Utils";
+import {
+  dataParamsFromQueryParams,
+  maxZoom,
+  minZoom,
+  stepZoom
+} from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import {
   getDataText,
@@ -270,10 +275,7 @@ function DataVisualize(props) {
                   style={{ overflow: "auto" }}
                   className={"width-100 height-100 border"}
                 >
-                  <ShowVisualization
-                    data={visualization.data}
-                    zoom={svgZoom}
-                  />
+                  <ShowVisualization data={visualization.data} zoom={svgZoom} />
                 </div>
               ) : null}
             </Fragment>

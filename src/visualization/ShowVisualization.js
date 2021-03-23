@@ -44,7 +44,10 @@ class ShowVisualization extends React.Component {
 
 ShowVisualization.propTypes = {
   data: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-  zoom: PropTypes.number,
+  zoom: PropTypes.number.isRequired,
 };
 
+ShowVisualization.defaultProps = {
+  zoom: 1,
+};
 export default ShowVisualization;
