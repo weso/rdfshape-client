@@ -1,4 +1,5 @@
 
+
 class FormGenerator {
 
     constructor () {
@@ -163,7 +164,8 @@ class FormGenerator {
 			if(res.label !== "") { label = res.label; }
 			if(refShape.type === "NodeConstraint") {
 				let id = this.getPrefixedTerm(exp.predicate);
-				label = id;
+				if(label === "") label = id;
+				let nodekind = refShape.nodeKind;
 				let size = res.size;
 				let required = "required";
 				if(exp.min === 0) {
@@ -171,15 +173,24 @@ class FormGenerator {
 				}
 				let button = this.getAddButton(exp.max);
 				let idDiv = "container-" + id;
-				div = `<label for="${id}">${label}:</label><div id="${idDiv}"><select id="${id}" name="${id}" ${required} ${size}>`;
-				div += `<option></option>`;
-				for(let i = 0; i < refShape.values.length; i++) {
-					let valor = refShape.values[i].value ? refShape.values[i].value : this.getPrefixedTerm(refShape.values[i]);
-					div += `<option value="${valor}">${valor}</option>`;
+				if(nodekind) { 		//:Work IRI
+					let type = this.determineType(refShape);
+					div += `<label for="${id}">${label}:</label>` +
+						`<div id="${idDiv}"><input type="${type}" id="${id}" name="${id}" ${required} ${size}>${button}</div>`;
 				}
-				div += `</select>${button}</div>`;
+				else { // <#vcard_country-name> ["Afghanistan", ...]	  
+					let idDiv = "container-" + id;
+					div = `<label for="${id}">${label}:</label><div id="${idDiv}"><select id="${id}" name="${id}" ${required} ${size}>`;
+					div += `<option></option>`;
+					for(let i = 0; i < refShape.values.length; i++) {
+						let valor = refShape.values[i].value ? refShape.values[i].value : this.getPrefixedTerm(refShape.values[i]);
+						div += `<option value="${valor}">${valor}</option>`;
+					}
+					div += `</select>${button}</div>`;
+				}
+				
 			}
-			else {  //SHAPEREF
+			else {  //SHAPEREF "compleja"
 				if(this.current === exp.valueExpr.reference) return "";
 				//Guardamos la shape actual
 				let prev = this.current;

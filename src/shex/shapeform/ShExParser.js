@@ -31,10 +31,15 @@ class ShExParser {
 		this.prefixes.set(source.prefixes[prefix], prefix);
     }
 
+  if(!source.start || !source.start.reference) {
+    throw new Error("No Shape Start has been defined.")
+  }
+
 	//El formulario será el de la shape start
 	if(source.start) {
 		this.fg.prefixes = this.prefixes;
 		this.fg.shapes = source.shapes;
+    
 		form += this.fg.createForm(source.shapes[source.start.reference], source.start.reference);
 	}
     
