@@ -313,7 +313,6 @@ export function mkMode(format) {
   let mode = format
     ? formatModes[format.toLowerCase()] || defaultMode
     : defaultMode;
-  // console.log(`mkMode(${format}) = ${mode}`);
   return mode;
 }
 

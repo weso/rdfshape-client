@@ -42,6 +42,7 @@ function DataVisualize(props) {
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
   const [imageLink, setImageLink] = useState(null);
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.dataConvert;
 
@@ -119,6 +120,7 @@ function DataVisualize(props) {
         setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
         setImageLink(mkPermalinkLong(API.dataVisualizeRouteRaw, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -133,6 +135,18 @@ function DataVisualize(props) {
 
   function processData(d, targetFormat) {
     convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function zoomSvg(zoomIn) {
@@ -211,16 +225,7 @@ function DataVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getDataText(data).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : data.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   {!visualization?.textual && (
                     <>
                       {imageLink && (
@@ -230,13 +235,7 @@ function DataVisualize(props) {
                           shorten={false}
                           text={"Embed"}
                           url={imageLink}
-                          disabled={
-                            getDataText(data).length > API.byTextCharacterLimit
-                              ? API.byTextTab
-                              : data.activeTab === API.byFileTab
-                              ? API.byFileTab
-                              : false
-                          }
+                          disabled={disabledLinks}
                         />
                       )}
                       <div className="divider"></div>

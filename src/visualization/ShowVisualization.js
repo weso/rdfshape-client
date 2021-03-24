@@ -33,7 +33,6 @@ class ShowVisualization extends React.Component {
 
       // DOT, PS (String)
       default:
-        console.log(data);
         ret = <PrintXml xml={data} overflow={false}></PrintXml>;
         break;
     }

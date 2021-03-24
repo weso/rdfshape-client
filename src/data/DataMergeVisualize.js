@@ -39,6 +39,8 @@ function DataMergeVisualize(props) {
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.dataConvert;
 
   const minSvgZoom = minZoom;
@@ -139,6 +141,7 @@ function DataMergeVisualize(props) {
         setPermalink(mkPermalinkLong(API.dataMergeVisualizeRoute, params));
         setImageLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -149,6 +152,19 @@ function DataMergeVisualize(props) {
         setLoading(false);
         window.scrollTo(0, 0);
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data1).length + getDataText(data2).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data1.activeTab === API.byFileTab || data2.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function zoomSvg(zoomIn) {
@@ -228,18 +244,7 @@ function DataMergeVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getDataText(data1).length + getDataText(data2).length >
-                      API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : data1.activeTab === API.byFileTab ||
-                          data2.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   {!visualization?.textual && (
                     <>
                       {imageLink && (
@@ -249,16 +254,7 @@ function DataMergeVisualize(props) {
                           shorten={false}
                           text={"Embed"}
                           url={imageLink}
-                          disabled={
-                            getDataText(data1).length +
-                              getDataText(data2).length >
-                            API.byTextCharacterLimit
-                              ? API.byTextTab
-                              : data1.activeTab === API.byFileTab ||
-                                data2.activeTab === API.byFileTab
-                              ? API.byFileTab
-                              : false
-                          }
+                          disabled={disabledLinks}
                         />
                       )}
                       <div className="divider"></div>

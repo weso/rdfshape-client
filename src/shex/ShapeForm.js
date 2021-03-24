@@ -1,5 +1,4 @@
 import axios from "axios";
-import $ from "jquery";
 //import SelectFormat from "../components/SelectFormat"
 import qs from "query-string";
 import React, { useEffect, useState } from "react";
@@ -15,12 +14,12 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ShexParser from "./shapeform/ShExParser.js";
 import {
-    convertTabSchema,
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  convertTabSchema,
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 export default function ShEx2XMI(props) {
@@ -36,6 +35,8 @@ export default function ShEx2XMI(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const fetchUrl = API.fetchUrl;
 
@@ -136,11 +137,11 @@ export default function ShEx2XMI(props) {
   function handleSubmit(event) {
     event.preventDefault();
     let newParams = {};
-      newParams = {
-        ...mkServerParams(shex, "xml"),
-        schemaEngine: "ShEx",
-        targetSchemaEngine: "xml",
-      };
+    newParams = {
+      ...mkServerParams(shex, "xml"),
+      schemaEngine: "ShEx",
+      targetSchemaEngine: "xml",
+    };
 
     setParams(newParams);
   }
@@ -178,11 +179,12 @@ export default function ShEx2XMI(props) {
     try {
       const input = await getConverterInput();
 
-	  let sp = new ShexParser();
+      let sp = new ShexParser();
       res = sp.parseShExToForm(input);
-	  
+
       setProgressPercent(90);
-      let result = { result: res, msg: "Succesful generation"};
+      checkLinks();
+      let result = { result: res, msg: "Succesful generation" };
       setResult(result);
       setPermalink(
         mkPermalinkLong(API.shapeFormRoute, {
@@ -194,12 +196,24 @@ export default function ShEx2XMI(props) {
       );
       setProgressPercent(100);
     } catch (error) {
-		setError(
-            `An error has occurred while creating the Form equivalent. Check the input.\n${error}`
-          )
+      setError(
+        `An error has occurred while creating the Form equivalent. Check the input.\n${error}`
+      );
     } finally {
       setLoading(false);
     }
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -246,65 +260,57 @@ export default function ShEx2XMI(props) {
 
   return (
     <Container fluid={true}>
-        <>
-          <Row>
-            <h1>Create Form from ShEx</h1>
-          </Row>
-          <Row>
-            <Col className={"half-col border-right"}>
-              <Form onSubmit={handleSubmit}>
-                {mkShExTabs(shex, setShEx, "ShEx Input")}
-                <hr />
-                <Button
-                  variant="primary"
-                  type="submit"
-                  className={"btn-with-icon " + (loading ? "disabled" : "")}
-                  disabled={loading}
-                >
-                  Create Form
-                </Button>
-              </Form>
+      <>
+        <Row>
+          <h1>Create Form from ShEx</h1>
+        </Row>
+        <Row>
+          <Col className={"half-col border-right"}>
+            <Form onSubmit={handleSubmit}>
+              {mkShExTabs(shex, setShEx, "ShEx Input")}
+              <hr />
+              <Button
+                variant="primary"
+                type="submit"
+                className={"btn-with-icon " + (loading ? "disabled" : "")}
+                disabled={loading}
+              >
+                Create Form
+              </Button>
+            </Form>
+          </Col>
+          {loading || result || error || permalink ? (
+            <Col className={"half-col"} style={{ marginTop: "1.95em" }}>
+              {loading ? (
+                <ProgressBar
+                  striped
+                  animated
+                  variant="info"
+                  now={progressPercent}
+                />
+              ) : error ? (
+                <Alert variant="danger">{error}</Alert>
+              ) : result ? (
+                <ResultShapeForm
+                  result={result}
+                  mode={targetFormatMode("xml")}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              ) : (
+                ""
+              )}
             </Col>
-            {loading || result || error || permalink ? (
-              <Col className={"half-col"} style={{ marginTop: "1.95em" }}>
-                {loading ? (
-                  <ProgressBar
-                    striped
-                    animated
-                    variant="info"
-                    now={progressPercent}
-                  />
-                ) : error ? (
-                  <Alert variant="danger">{error}</Alert>
-                ) : result ? (
-                  <ResultShapeForm
-                    result={result}
-                    mode={targetFormatMode("xml")}
-                    permalink={permalink}
-                    disabled={
-                      getShexText(shex).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : shex.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
-                ) : (
-                  ""
-                )}
-              </Col>
-            ) : (
-              <Col className={"half-col"}>
-                <Alert variant="warning">
-                  Be advised: Shape Start is required in input
-                </Alert>
-                <Alert variant="info">
-                  Conversion results will appear here
-                </Alert>
-              </Col>
-            )}
-          </Row>
-        </>
+          ) : (
+            <Col className={"half-col"}>
+              <Alert variant="warning">
+                Be advised: Shape Start is required in input
+              </Alert>
+              <Alert variant="info">Conversion results will appear here</Alert>
+            </Col>
+          )}
+        </Row>
+      </>
     </Container>
   );
 }

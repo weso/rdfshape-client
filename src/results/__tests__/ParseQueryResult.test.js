@@ -1,26 +1,57 @@
-import React from "react";
-import {parseData } from "../ParseQueryResult";
-
+import { parseData } from "../ParseQueryResult";
 
 test("parseData example", async () => {
+  const result = {
+    head: { vars: ["x", "y"] },
+    results: {
+      bindings: [
+        {
+          x: { type: "uri", value: "http://wikiba.se/ontology#Dump" },
+          y: { type: "uri", value: "http://schema.org/Dataset" },
+        },
+      ],
+    },
+  };
 
-    const result  = {
-        "head": {"vars":["x","y"]},
-        "results":{"bindings":[
-            {"x":{"type":"uri","value":"http://wikiba.se/ontology#Dump"},
-             "y":{"type":"uri","value":"http://schema.org/Dataset"}},
-        ]
-      }
-    };
+  const parsed = parseData(result);
+  const parsedString = JSON.stringify(parsed);
 
-    const parsed = parseData(result);
-    console.log(`Parsed:\n${JSON.stringify(parsed)}`);
-    const parsedString = JSON.stringify(parsed);
+  const expected = {
+    columns: [
+      { dataField: "x", text: "x", sort: true },
+      { dataField: "y", text: "y", sort: true },
+    ],
+    rows: [
+      {
+        _id: 0,
+        x: {
+          type: "a",
+          key: null,
+          ref: null,
+          props: {
+            href: "http://wikiba.se/ontology#Dump",
+            children: "<http://wikiba.se/ontology#Dump>",
+          },
+          _owner: null,
+          _store: {},
+        },
+        y: {
+          type: "a",
+          key: null,
+          ref: null,
+          props: {
+            href: "http://schema.org/Dataset",
+            children: "<http://schema.org/Dataset>",
+          },
+          _owner: null,
+          _store: {},
+        },
+      },
+    ],
+  };
+  const expectedString = JSON.stringify(expected);
 
-    const expected = {"columns":[{"dataField":"x","text":"x","sort":true},{"dataField":"y","text":"y","sort":true}],"rows":[{"_id":0,"x":{"type":"a","key":null,"ref":null,"props":{"href":"http://wikiba.se/ontology#Dump","children":"<http://wikiba.se/ontology#Dump>"},"_owner":null,"_store":{}},"y":{"type":"a","key":null,"ref":null,"props":{"href":"http://schema.org/Dataset","children":"<http://schema.org/Dataset>"},"_owner":null,"_store":{}}}]};
-    const expectedString = JSON.stringify(expected);
-
-    /*    const expected = {
+  /*    const expected = {
         "rows": [
             { "dataField": "x", "sort": true, "text": "x" },
             { "dataField": "y", "sort": true, "text": "y" },
@@ -32,6 +63,6 @@ test("parseData example", async () => {
             },
         ]
     }; */
-    // expect(parsed).toBe(expected);
-    expect(parsedString).toBe(expectedString);
+  // expect(parsed).toBe(expected);
+  expect(parsedString).toBe(expectedString);
 });

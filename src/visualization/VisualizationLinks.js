@@ -77,7 +77,7 @@ function VisualizationLinks({ embedLink, disabled, generateDownloadLink }) {
 }
 
 VisualizationLinks.propTypes = {
-  downloadLink: PropTypes.string,
+  generateDownloadLink: PropTypes.func,
   embedLink: PropTypes.string,
   disabled: PropTypes.bool,
 };

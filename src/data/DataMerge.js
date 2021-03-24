@@ -17,7 +17,7 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
+  updateStateData
 } from "./Data";
 
 function DataMerge(props) {
@@ -33,6 +33,8 @@ function DataMerge(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.dataConvert;
 
@@ -118,6 +120,7 @@ function DataMerge(props) {
         setResult(data);
         setPermalink(mkPermalinkLong(API.dataMergeRoute, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -128,6 +131,19 @@ function DataMerge(props) {
         setLoading(false);
         window.scrollTo(0, 0); // Scroll top to results
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data1).length + getDataText(data2).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data1.activeTab === API.byFileTab || data2.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -216,15 +232,7 @@ function DataMerge(props) {
                   setData1({ ...data1, fromParams: false })
                 }
                 permalink={permalink}
-                disabled={
-                  getDataText(data1).length + getDataText(data2).length >
-                  API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : data1.activeTab === API.byFileTab ||
-                      data2.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

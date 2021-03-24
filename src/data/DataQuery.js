@@ -40,6 +40,8 @@ function DataQuery(props) {
   const [permalink, setPermalink] = useState("");
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.dataQuery;
 
   useEffect(() => {
@@ -123,6 +125,7 @@ function DataQuery(props) {
         setResult({ result: data });
         setProgressPercent(80);
         setPermalink(mkPermalinkLong(API.dataQueryRoute, params));
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -135,6 +138,19 @@ function DataQuery(props) {
         setLoading(false);
         window.scrollTo(0, 0);
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length + getQueryText(query).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab || query.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -207,18 +223,7 @@ function DataQuery(props) {
                   <ResultEndpointQuery result={result} error={error} />
                 ) : null}
                 {permalink && !error && (
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getDataText(data).length + getQueryText(query).length >
-                      API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : data.activeTab === API.byFileTab ||
-                          query.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
+                  <Permalink url={permalink} disabled={disabledLinks} />
                 )}
               </Col>
             </Fragment>

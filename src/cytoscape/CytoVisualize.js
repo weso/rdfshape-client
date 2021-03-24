@@ -237,7 +237,6 @@ function CytoVisualize(props) {
                   className="cyto-container border"
                 >
                   <VisualizationLinks
-                    // downloadLink={downloadLink}
                     generateDownloadLink={generateDownloadLink(refCyto)}
                     embedLink={embedLink}
                     disabled={disabledLinks}

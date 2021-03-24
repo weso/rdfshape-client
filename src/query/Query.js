@@ -40,7 +40,7 @@ export function convertTabQuery(key) {
     case API.byUrlTab:
       return "#queryUrl";
     default:
-      console.log("Unknown queryTab: " + key);
+      console.info("Unknown queryTab: " + key);
       return key;
   }
 }

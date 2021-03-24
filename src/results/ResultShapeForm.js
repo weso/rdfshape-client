@@ -1,17 +1,8 @@
-import PropTypes from "prop-types";
-import React, { Fragment, useState, useEffect } from "react";
-import Alert from "react-bootstrap/Alert";
-import Tab from "react-bootstrap/Tab";
-import Button from "react-bootstrap/Button";
-import Tabs from "react-bootstrap/Tabs";
-import API from "../API";
-import Code from "../components/Code";
-import { Permalink } from "../Permalink";
-import PrintJson from "../utils/PrintJson";
 import $ from "jquery";
+import React, { useEffect, useState } from "react";
+import Alert from "react-bootstrap/Alert";
 
-function ResultShapeForm(props)  {
-  const result = props.result;
+function ResultShapeForm({result, ...props})  {
   let msg;
 
   const [activeTab, setActiveTab] = useState(props.activeTab);
@@ -19,10 +10,10 @@ function ResultShapeForm(props)  {
   function handleTabChange(e) {
     setActiveTab(e);
   }
-  
-    useEffect(() => { 
+
+    useEffect(() => {
 	    $("#resultform").html(result.result);
-		
+
       $( ".newButton" ).each(function(index) {
         $(this).on("click", function(){
           let id = $(this).prev().attr("id").replace(":", "\\:");
@@ -51,17 +42,12 @@ function ResultShapeForm(props)  {
   } else {
     msg = (
       <div id="resultform">
-        
+
       </div>
     );
   }
 
   return <div>{msg}</div>;
 }
-
-ResultShapeForm.propTypes = {
-  result: PropTypes.object,
-  mode: PropTypes.string,
-};
 
 export default ResultShapeForm;

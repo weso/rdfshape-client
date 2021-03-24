@@ -69,7 +69,7 @@ export function convertTabData(key) {
     case API.byUrlTab:
       return "#dataUrl";
     default:
-      console.log("Unknown schemaTab: " + key);
+      console.info("Unknown schemaTab: " + key);
       return key;
   }
 }
@@ -148,9 +148,9 @@ export function mkDataTabs(data, setData, name, subname) {
 
 export function getDataText(data) {
   if (data.activeTab === API.byTextTab) {
-    return encodeURI(data.textArea.trim())
+    return encodeURI(data.textArea.trim());
   } else if (data.activeTab === API.byUrlTab) {
-    return encodeURI(data.url.trim())
+    return encodeURI(data.url.trim());
   }
   return "";
 }

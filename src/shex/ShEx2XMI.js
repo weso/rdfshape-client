@@ -16,20 +16,20 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultShEx2XMI from "../results/ResultShEx2XMI";
 import ResultXMI2ShEx from "../results/ResultXMI2ShEx";
 import {
-    convertTabSchema,
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams,
-    updateStateShEx
-} from "./ShEx";
-import {
-    getUmlText,
-    InitialUML,
-    mkUMLTabs,
-    UMLParamsFromQueryParams,
-    updateStateUML
+  getUmlText,
+  InitialUML,
+  mkUMLTabs,
+  UMLParamsFromQueryParams,
+  updateStateUML
 } from "../uml/UML";
+import {
+  convertTabSchema,
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams,
+  updateStateShEx
+} from "./ShEx";
 
 export default function ShEx2XMI(props) {
   const [shex, setShEx] = useState(InitialShEx);
@@ -46,10 +46,11 @@ export default function ShEx2XMI(props) {
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const fetchUrl = API.fetchUrl;
 
   const [isShEx2UML, setIsShEx2UML] = useState(true);
-
 
   useEffect(() => {
     if (props.location?.search) {
@@ -205,7 +206,7 @@ export default function ShEx2XMI(props) {
     setProgressPercent(20);
     let res = "";
     let grf = "";
-	let uml = null;
+    let uml = null;
     try {
       const input = await getConverterInput();
 
@@ -215,8 +216,9 @@ export default function ShEx2XMI(props) {
         res = shumlex.XMIToShEx(input);
         grf = shumlex.crearGrafo(res);
       }
+      checkLinks();
       setProgressPercent(90);
-      let result = { result: res, grafico: grf, msg: "Succesful conversion"};
+      let result = { result: res, grafico: grf, msg: "Succesful conversion" };
       setResult(result);
       setPermalink(
         mkPermalinkLong(API.shEx2XMIRoute, {
@@ -238,6 +240,18 @@ export default function ShEx2XMI(props) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -336,13 +350,7 @@ export default function ShEx2XMI(props) {
                     result={result}
                     mode={targetFormatMode("xml")}
                     permalink={permalink}
-                    disabled={
-                      getShexText(shex).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : shex.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
+                    disabled={disabledLinks}
                   />
                 ) : (
                   ""

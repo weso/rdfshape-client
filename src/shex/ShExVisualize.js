@@ -39,6 +39,8 @@ function ShExVisualize(props) {
   const [progressPercent, setProgressPercent] = useState(0);
   const [imageLink, setImageLink] = useState(null);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.schemaVisualize;
 
   const minSvgZoom = minZoom;
@@ -119,6 +121,7 @@ function ShExVisualize(props) {
         setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
         setImageLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -126,6 +129,18 @@ function ShExVisualize(props) {
         setError(`Error doing request to ${url}: ${error}`);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -186,16 +201,7 @@ function ShExVisualize(props) {
             <Fragment>
               {permalink && !error && !result?.error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getShexText(shex).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : shex.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   {imageLink && (
                     <Permalink
                       style={{ marginLeft: "5px" }}
@@ -203,13 +209,7 @@ function ShExVisualize(props) {
                       shorten={false}
                       text={"Embed"}
                       url={imageLink}
-                      disabled={
-                        getShexText(shex).length > API.byTextCharacterLimit
-                          ? API.byTextTab
-                          : shex.activeTab === API.byFileTab
-                          ? API.byFileTab
-                          : false
-                      }
+                      disabled={disabledLinks}
                     />
                   )}
                   <div className="divider"></div>

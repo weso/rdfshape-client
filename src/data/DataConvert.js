@@ -34,6 +34,8 @@ function DataConvert(props) {
   );
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.dataConvert;
 
   function handleTargetDataFormatChange(value) {
@@ -99,6 +101,7 @@ function DataConvert(props) {
         setResult(data);
         setPermalink(mkPermalinkLong(API.dataConvertRoute, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -106,6 +109,18 @@ function DataConvert(props) {
         setError("Error response from " + url + ": " + error.toString());
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -183,13 +198,7 @@ function DataConvert(props) {
                 permalink={permalink}
                 fromParams={data.fromParams}
                 resetFromParams={() => setData({ ...data, fromParams: false })}
-                disabled={
-                  getDataText(data) > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : data.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

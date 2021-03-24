@@ -70,16 +70,6 @@ function CytoVisualizeRaw(props) {
     }
   }, [params]);
 
-  // const generateDownloadLink = () => {
-  //   if (!refCyto.current) return;
-
-  //   const link = refCyto.current.png({
-  //     output: "base64uri",
-  //     full: true,
-  //   });
-  //   return link;
-  // };
-
   function postConvert(cb) {
     setLoading(true);
     const formData = params2Form(params);
@@ -120,13 +110,11 @@ function CytoVisualizeRaw(props) {
                 className="cyto-container border"
               >
                 <VisualizationLinks
-                  // downloadLink={downloadLink}
                   generateDownloadLink={generateDownloadLink(refCyto)}
                 />
 
                 <Cyto layout={layout} elements={elements} refCyto={refCyto} />
               </div>
-              {/* <Cyto layout={layout} elements={elements} refCyto={refCyto} /> */}
             </div>
           ) : null}
         </>
