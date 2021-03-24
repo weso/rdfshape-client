@@ -22,6 +22,7 @@ class ShExParser {
     let form = '<form id="shexgform" class="wikidata">';
 
     let source = this.parseShEx(shex);
+    console.log(source);
 
     //Guardar prefijos
     this.prefixes.set(source.base, "base");
@@ -29,10 +30,15 @@ class ShExParser {
       this.prefixes.set(source.prefixes[prefix], prefix);
     }
 
+    if (!source.start || !source.start.reference) {
+      throw new Error("No Shape Start has been defined.");
+    }
+
     //El formulario será el de la shape start
     if (source.start) {
       this.fg.prefixes = this.prefixes;
       this.fg.shapes = source.shapes;
+
       form += this.fg.createForm(
         source.shapes[source.start.reference],
         source.start.reference
@@ -55,7 +61,7 @@ class ShExParser {
     try {
       this.source = this.shexparser.parse(shex);
     } catch (ex) {
-      console.error(ex);
+      console.log(ex);
       return null;
     }
     return this.source;
