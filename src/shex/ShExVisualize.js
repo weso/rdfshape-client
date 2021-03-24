@@ -118,7 +118,6 @@ function ShExVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        console.log(data);
         setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
         setEmbedLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
         setProgressPercent(90);
