@@ -90,9 +90,11 @@ function ShExVisualizeRaw(props) {
             <div style={{ width: "100vw", height: "100vh" }}>
               <div
                 style={{ position: "relative" }}
-                className="width-100 height-100 border"
+                className="width-100 height-100"
               >
                 <VisualizationLinks
+                  tooltips={false}
+                  styles={{ position: "fixed" }}
                   generateDownloadLink={generateDownloadLink(result)}
                 />
 

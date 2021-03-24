@@ -263,12 +263,17 @@ export const generateDownloadLink = (refCyto) => {
   return () => {
     if (!refCyto.current) return;
 
+    const svg = refCyto.current.svg({
+      full: true,
+    });
+
     return {
-      link: refCyto.current.png({
-        output: "base64uri",
-        full: true,
-      }),
-      type: "png",
+      link: URL.createObjectURL(
+        new Blob([svg], {
+          type: "image/svg+xml;charset=utf-8",
+        })
+      ),
+      type: "svg",
     };
   };
 };

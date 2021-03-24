@@ -105,11 +105,10 @@ function CytoVisualizeRaw(props) {
             <p>{error}</p>
           ) : elements ? (
             <div style={{ width: "100vw", height: "100vh" }}>
-              <div
-                style={{ position: "relative" }}
-                className="cyto-container border"
-              >
+              <div style={{ position: "relative" }} className="cyto-container">
                 <VisualizationLinks
+                  tooltips={false}
+                  styles={{ position: "fixed" }}
                   generateDownloadLink={generateDownloadLink(refCyto)}
                 />
 
