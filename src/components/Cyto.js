@@ -1,7 +1,11 @@
+import cytoscape from "cytoscape";
+import svg from "cytoscape-svg";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import CytoscapeComponent from "react-cytoscapejs";
+
+cytoscape.use(svg);
 
 function CytoSchema({ elements, layout }) {
   const cose = "cose";
