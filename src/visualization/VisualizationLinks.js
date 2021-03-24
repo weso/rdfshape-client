@@ -8,8 +8,8 @@ function VisualizationLinks({ embedLink, disabled, generateDownloadLink }) {
   const iconScaling = 2;
   const tooltopScaling = 1 / iconScaling;
 
-  const [downloadLink, setDownloadLink] = useState("#!");
-  const [downloadType, setDownloadType] = useState();
+  const [downloadLink, setDownloadLink] = useState("#");
+  const [downloadType, setDownloadType] = useState("");
 
   useEffect(() => {
     udpateLink();
@@ -17,8 +17,8 @@ function VisualizationLinks({ embedLink, disabled, generateDownloadLink }) {
 
   const udpateLink = () => {
     const { link, type } = generateDownloadLink();
-    setDownloadLink(link);
-    setDownloadType(type);
+    link && setDownloadLink(link);
+    type && setDownloadType(type);
   };
 
   return (

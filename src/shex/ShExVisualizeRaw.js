@@ -4,12 +4,14 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   InitialShEx,
   paramsFromStateShEx,
   shExParamsFromQueryParams,
   updateStateShEx
 } from "./ShEx";
+import { generateDownloadLink } from "./ShExVisualize";
 
 function ShExVisualizeRaw(props) {
   const [shex, setShex] = useState(InitialShEx);
@@ -85,7 +87,18 @@ function ShExVisualizeRaw(props) {
           ) : error || result?.error ? (
             <p>{error || result?.error}</p>
           ) : result && !result.error ? (
-            <ResultShExVisualize result={result} showDetails={false} />
+            <div style={{ width: "100vw", height: "100vh" }}>
+              <div
+                style={{ position: "relative" }}
+                className="width-100 height-100 border"
+              >
+                <VisualizationLinks
+                  generateDownloadLink={generateDownloadLink(result)}
+                />
+
+                <ResultShExVisualize result={result} showDetails={false} />
+              </div>
+            </div>
           ) : null}
         </>
       ) : (

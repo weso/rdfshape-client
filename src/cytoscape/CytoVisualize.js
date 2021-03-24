@@ -259,18 +259,18 @@ function CytoVisualize(props) {
 
 export const generateDownloadLink = (refCyto) => {
   if (!refCyto) return;
-  else
-    return () => {
-      if (!refCyto.current) return;
 
-      return {
-        link: refCyto.current.png({
-          output: "base64uri",
-          full: true,
-        }),
-        type: "png",
-      };
+  return () => {
+    if (!refCyto.current) return;
+
+    return {
+      link: refCyto.current.png({
+        output: "base64uri",
+        full: true,
+      }),
+      type: "png",
     };
+  };
 };
 
 export default CytoVisualize;

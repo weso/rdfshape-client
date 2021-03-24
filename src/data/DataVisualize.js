@@ -295,52 +295,51 @@ function DataVisualize(props) {
 }
 
 // Receives a visualization
-// Return a function that return the dowload link to the visualization
+// Returns a function that returns the dowload link to the visualization
 // Depends on the visualization type (SVG, PNG, textual...)
 export const generateDownloadLink = ({ data }) => {
   if (!data) return;
-  else {
-    const visualizationType = Object.getPrototypeOf(data).toString();
-    switch (visualizationType) {
-      // SVG: data contains the SVG outer HTML
-      case "[object SVGSVGElement]":
-        return () => ({
-          link: URL.createObjectURL(
-            new Blob([data.outerHTML], {
-              type: "image/svg+xml;charset=utf-8",
-            })
-          ),
-          type: "svg",
-        });
 
-      // Image: data contains the image location
-      case "[object HTMLImageElement]":
-        return () => ({
-          link: data.src,
-          type: "png",
-        });
+  const visualizationType = Object.getPrototypeOf(data).toString();
+  switch (visualizationType) {
+    // SVG: data contains the SVG outer HTML
+    case "[object SVGSVGElement]":
+      return () => ({
+        link: URL.createObjectURL(
+          new Blob([data.outerHTML], {
+            type: "image/svg+xml;charset=utf-8",
+          })
+        ),
+        type: "svg",
+      });
 
-      // JSON:
-      case "[object Object]":
-        return () => ({
-          link: URL.createObjectURL(
-            new Blob([JSON.stringify(data, null, 2)], {
-              type: "application/json;charset=utf-8",
-            })
-          ),
-          type: "json",
-        });
-      // DOT, PS (String)
-      default:
-        return () => ({
-          link: URL.createObjectURL(
-            new Blob([format(data)], {
-              type: "application/xml;charset=utf-8",
-            })
-          ),
-          type: "xml",
-        });
-    }
+    // Image: data contains the image location
+    case "[object HTMLImageElement]":
+      return () => ({
+        link: data.src,
+        type: "png",
+      });
+
+    // JSON:
+    case "[object Object]":
+      return () => ({
+        link: URL.createObjectURL(
+          new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json;charset=utf-8",
+          })
+        ),
+        type: "json",
+      });
+    // DOT, PS (String)
+    default:
+      return () => ({
+        link: URL.createObjectURL(
+          new Blob([format(data)], {
+            type: "application/xml;charset=utf-8",
+          })
+        ),
+        type: "xml",
+      });
   }
 };
 
