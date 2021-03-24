@@ -5,7 +5,9 @@ import API from "../API";
 import { params2Form } from "../Permalink";
 import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import { InitialData, paramsFromStateData, updateStateData } from "./Data";
+import { generateDownloadLink } from "./DataVisualize";
 import { convertDot } from "./dotUtils";
 
 function DataMergeVisualizeRaw(props) {
@@ -124,7 +126,18 @@ function DataMergeVisualizeRaw(props) {
           ) : error ? (
             <p>{error}</p>
           ) : visualization && visualization.data ? (
-            <ShowVisualization data={visualization.data} />
+            <div style={{ width: "100vw", height: "100vh" }}>
+              <div
+                style={{ position: "relative" }}
+                className="width-100 height-100 border"
+              >
+                <VisualizationLinks
+                  generateDownloadLink={generateDownloadLink(visualization)}
+                />
+
+                <ShowVisualization data={visualization.data} />
+              </div>
+            </div>
           ) : null}
         </>
       ) : (

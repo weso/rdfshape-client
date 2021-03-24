@@ -9,12 +9,12 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
-import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   getDataText,
   InitialData,
@@ -22,6 +22,7 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
+import { generateDownloadLink } from "./DataVisualize";
 import { convertDot } from "./dotUtils";
 
 function DataMergeVisualize(props) {
@@ -34,7 +35,7 @@ function DataMergeVisualize(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [imageLink, setImageLink] = useState(null);
+  const [embedLink, setEmbedLink] = useState(null);
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -139,7 +140,7 @@ function DataMergeVisualize(props) {
         setProgressPercent(70);
         processData(data, targetGraphFormat);
         setPermalink(mkPermalinkLong(API.dataMergeVisualizeRoute, params));
-        setImageLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
+        setEmbedLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -247,16 +248,6 @@ function DataMergeVisualize(props) {
                   <Permalink url={permalink} disabled={disabledLinks} />
                   {!visualization?.textual && (
                     <>
-                      {imageLink && (
-                        <Permalink
-                          style={{ marginLeft: "5px" }}
-                          icon={<ImageIcon className="white-icon" />}
-                          shorten={false}
-                          text={"Embed"}
-                          url={imageLink}
-                          disabled={disabledLinks}
-                        />
-                      )}
                       <div className="divider"></div>
                       <Button
                         onClick={() => zoomSvg(false)}
@@ -291,10 +282,24 @@ function DataMergeVisualize(props) {
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
                 <div
-                  style={{ overflow: "auto" }}
-                  className={"width-100 height-100 border"}
+                  style={{ position: "relative" }}
+                  className="width-100 height-100 border"
                 >
-                  <ShowVisualization data={visualization.data} zoom={svgZoom} />
+                  <VisualizationLinks
+                    generateDownloadLink={generateDownloadLink(visualization)}
+                    embedLink={embedLink}
+                    disabled={disabledLinks}
+                  />
+
+                  <div
+                    style={{ overflow: "auto" }}
+                    className={"width-100 height-100"}
+                  >
+                    <ShowVisualization
+                      data={visualization.data}
+                      zoom={svgZoom}
+                    />
+                  </div>
                 </div>
               ) : null}
             </Fragment>

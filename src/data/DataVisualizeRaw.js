@@ -6,7 +6,9 @@ import API from "../API";
 import { params2Form } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import { InitialData, paramsFromStateData, updateStateData } from "./Data";
+import { generateDownloadLink } from "./DataVisualize";
 import { convertDot } from "./dotUtils";
 
 // Requests to this endpoint will redirect to the raw visualization of the data requested
@@ -93,7 +95,18 @@ function DataVisualizeRaw(props) {
           ) : error ? (
             <p>{error}</p>
           ) : visualization && visualization.data ? (
-            <ShowVisualization data={visualization.data} />
+            <div style={{ width: "100vw", height: "100vh" }}>
+              <div
+                style={{ position: "relative" }}
+                className="width-100 height-100 border"
+              >
+                <VisualizationLinks
+                  generateDownloadLink={generateDownloadLink(visualization)}
+                />
+
+                <ShowVisualization data={visualization.data} />
+              </div>
+            </div>
           ) : null}
         </>
       ) : (

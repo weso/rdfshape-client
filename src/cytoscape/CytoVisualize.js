@@ -263,11 +263,13 @@ export const generateDownloadLink = (refCyto) => {
     return () => {
       if (!refCyto.current) return;
 
-      const link = refCyto.current.png({
-        output: "base64uri",
-        full: true,
-      });
-      return link;
+      return {
+        link: refCyto.current.png({
+          output: "base64uri",
+          full: true,
+        }),
+        type: "png",
+      };
     };
 };
 

@@ -10,7 +10,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
-import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
+import format from "xml-formatter";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
@@ -21,6 +21,7 @@ import {
   stepZoom
 } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   getDataText,
   InitialData,
@@ -41,7 +42,7 @@ function DataVisualize(props) {
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
-  const [imageLink, setImageLink] = useState(null);
+  const [embedLink, setEmbedLink] = useState(null);
   const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.dataConvert;
@@ -118,7 +119,7 @@ function DataVisualize(props) {
         setProgressPercent(70);
         processData(data, targetGraphFormat);
         setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
-        setImageLink(mkPermalinkLong(API.dataVisualizeRouteRaw, params));
+        setEmbedLink(mkPermalinkLong(API.dataVisualizeRouteRaw, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -188,7 +189,7 @@ function DataVisualize(props) {
     setVisualization(null);
     setSvgZoom(1);
     setPermalink(null);
-    setImageLink(null);
+    setEmbedLink(null);
     setError(null);
     setProgressPercent(0);
   }
@@ -228,16 +229,6 @@ function DataVisualize(props) {
                   <Permalink url={permalink} disabled={disabledLinks} />
                   {!visualization?.textual && (
                     <>
-                      {imageLink && (
-                        <Permalink
-                          style={{ marginLeft: "5px" }}
-                          icon={<ImageIcon className="white-icon" />}
-                          shorten={false}
-                          text={"Embed"}
-                          url={imageLink}
-                          disabled={disabledLinks}
-                        />
-                      )}
                       <div className="divider"></div>
                       <Button
                         onClick={() => zoomSvg(false)}
@@ -271,10 +262,24 @@ function DataVisualize(props) {
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
                 <div
-                  style={{ overflow: "auto" }}
-                  className={"width-100 height-100 border"}
+                  style={{ position: "relative" }}
+                  className="width-100 height-100 border"
                 >
-                  <ShowVisualization data={visualization.data} zoom={svgZoom} />
+                  <VisualizationLinks
+                    generateDownloadLink={generateDownloadLink(visualization)}
+                    embedLink={embedLink}
+                    disabled={disabledLinks}
+                  />
+
+                  <div
+                    style={{ overflow: "auto" }}
+                    className={"width-100 height-100"}
+                  >
+                    <ShowVisualization
+                      data={visualization.data}
+                      zoom={svgZoom}
+                    />
+                  </div>
                 </div>
               ) : null}
             </Fragment>
@@ -288,5 +293,55 @@ function DataVisualize(props) {
     </Container>
   );
 }
+
+// Receives a visualization
+// Return a function that return the dowload link to the visualization
+// Depends on the visualization type (SVG, PNG, textual...)
+export const generateDownloadLink = ({ data }) => {
+  if (!data) return;
+  else {
+    const visualizationType = Object.getPrototypeOf(data).toString();
+    switch (visualizationType) {
+      // SVG: data contains the SVG outer HTML
+      case "[object SVGSVGElement]":
+        return () => ({
+          link: URL.createObjectURL(
+            new Blob([data.outerHTML], {
+              type: "image/svg+xml;charset=utf-8",
+            })
+          ),
+          type: "svg",
+        });
+
+      // Image: data contains the image location
+      case "[object HTMLImageElement]":
+        return () => ({
+          link: data.src,
+          type: "png",
+        });
+
+      // JSON:
+      case "[object Object]":
+        return () => ({
+          link: URL.createObjectURL(
+            new Blob([JSON.stringify(data, null, 2)], {
+              type: "application/json;charset=utf-8",
+            })
+          ),
+          type: "json",
+        });
+      // DOT, PS (String)
+      default:
+        return () => ({
+          link: URL.createObjectURL(
+            new Blob([format(data)], {
+              type: "application/xml;charset=utf-8",
+            })
+          ),
+          type: "xml",
+        });
+    }
+  }
+};
 
 export default DataVisualize;

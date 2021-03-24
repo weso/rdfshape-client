@@ -81,7 +81,6 @@ start [shape=Mdiamond];
           console.error("Error parsing result: " + ex);
           dotStr = null;
         }
-        console.log("DotStr:" + dotStr);
         if (dotStr) this.visualizeDot(dotStr, "dot", targetGraphFormat);
         else {
           this.setState({ innerHtml: "<p>Error obtaining result value</p>" });

@@ -9,16 +9,23 @@ function VisualizationLinks({ embedLink, disabled, generateDownloadLink }) {
   const tooltopScaling = 1 / iconScaling;
 
   const [downloadLink, setDownloadLink] = useState("#!");
+  const [downloadType, setDownloadType] = useState();
 
   useEffect(() => {
-    setDownloadLink(generateDownloadLink());
+    udpateLink();
   }, []);
+
+  const udpateLink = () => {
+    const { link, type } = generateDownloadLink();
+    setDownloadLink(link);
+    setDownloadType(type);
+  };
 
   return (
     <div
       style={{
         position: "absolute",
-        right: "5px",
+        right: "8px",
         top: "0",
         display: "flex",
         zIndex: "10",
@@ -34,8 +41,8 @@ function VisualizationLinks({ embedLink, disabled, generateDownloadLink }) {
           <a
             id="downloadLink"
             href={downloadLink}
-            download="visualization"
-            onClick={() => setDownloadLink(generateDownloadLink())}
+            download={"visualization" + (downloadType && `.${downloadType}`)}
+            onClick={udpateLink}
           >
             <DataTransferDownloadIcon style={{ fill: "black" }} />
           </a>
