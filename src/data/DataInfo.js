@@ -33,6 +33,8 @@ function DataInfo(props) {
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.dataInfo;
 
   useEffect(() => {
@@ -88,6 +90,7 @@ function DataInfo(props) {
         setResult(data);
         setPermalink(mkPermalinkLong(API.dataInfoRoute, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -95,6 +98,18 @@ function DataInfo(props) {
         setError("Error response from " + url + ": " + error.toString());
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -170,13 +185,7 @@ function DataInfo(props) {
                     setData({ ...data, fromParams: false })
                   }
                   permalink={permalink}
-                  disabled={
-                    getDataText(data).length > API.byTextCharacterLimit
-                      ? API.byTextTab
-                      : data.activeTab === API.byFileTab
-                      ? API.byFileTab
-                      : false
-                  }
+                  disabled={disabledLinks}
                 />
               ) : null}
             </Col>

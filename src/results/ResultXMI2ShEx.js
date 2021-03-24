@@ -1,14 +1,15 @@
+import $ from "jquery";
 import PropTypes from "prop-types";
-import React, { Fragment, useState, useEffect} from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Button from "react-bootstrap/Button";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import $ from "jquery";
+import { maxZoom, minZoom } from "../utils/Utils";
 const cyto = require("cytoscape");
 let dagre = require("cytoscape-dagre");
 let svg = require('cytoscape-svg');
@@ -26,7 +27,7 @@ function ResultXMI2ShEx(props) {
   function handleTabChange(e) {
     setActiveTab(e);
   }
-  
+
   function fullscreen() {
 		if(!isFullscreen) {
 			$("#grafocontainer").attr("class", "fullscreen");
@@ -40,11 +41,11 @@ function ResultXMI2ShEx(props) {
 			isFullscreen = false;
 		}
 	}
-  
+
   useEffect(() => {
     let els = result.grafico;
 
-	
+
     cyto.use(dagre);
 	if (!cyto('core', 'svg')) {
 		cyto.use(svg);
@@ -75,14 +76,14 @@ function ResultXMI2ShEx(props) {
 	$("#fullscreen").click(fullscreen);
     }
   });
-  
+
   function grafoASVG() {
 	var svgContent = cy.svg({scale: 1, full: true});
 	let bs = btoa(svgContent);
 	$("#descargargrafosvg").attr("href", `data:image/svg+xml;base64,${bs}`);
 }
-  
-  
+
+
 
   if (result === "") {
     msg = null;
@@ -177,12 +178,12 @@ const style = [
       },
     },
   ];
-  
+
  var defaults = {
   zoomFactor: 0.05, // zoom factor per zoom tick
   zoomDelay: 45, // how many ms between zoom ticks
-  minZoom: 0.1, // min zoom level
-  maxZoom: 10, // max zoom level
+  minZoom: 0.1 || minZoom, // min zoom level
+  maxZoom: 10 || maxZoom, // max zoom level
   fitPadding: 50, // padding when fitting
   panSpeed: 10, // how many ms in between pan ticks
   panDistance: 10, // max pan distance per tick

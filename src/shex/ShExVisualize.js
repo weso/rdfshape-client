@@ -8,12 +8,13 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
-import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
 import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
+import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   getShexText,
   InitialShEx,
@@ -36,13 +37,15 @@ function ShExVisualize(props) {
   const [error, setError] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
-  const [imageLink, setImageLink] = useState(null);
+  const [embedLink, setEmbedLink] = useState(null);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaVisualize;
 
-  const minSvgZoom = API.minSvgZoom;
-  const maxSvgZoom = API.maxSvgZoom;
-  const svgZoomStep = API.svgZoomStep;
+  const minSvgZoom = minZoom;
+  const maxSvgZoom = maxZoom;
+  const svgZoomStep = stepZoom;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -116,8 +119,9 @@ function ShExVisualize(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
-        setImageLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
+        setEmbedLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -125,6 +129,18 @@ function ShExVisualize(props) {
         setError(`Error doing request to ${url}: ${error}`);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -155,7 +171,7 @@ function ShExVisualize(props) {
   function resetState() {
     setResult(null);
     setPermalink(null);
-    setImageLink(null);
+    setEmbedLink(null);
     setError(null);
     setProgressPercent(0);
   }
@@ -185,32 +201,7 @@ function ShExVisualize(props) {
             <Fragment>
               {permalink && !error && !result?.error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getShexText(shex).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : shex.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
-                  {imageLink && (
-                    <Permalink
-                      style={{ marginLeft: "5px" }}
-                      icon={<ImageIcon className="white-icon" />}
-                      shorten={false}
-                      text={"Embed"}
-                      url={imageLink}
-                      disabled={
-                        getShexText(shex).length > API.byTextCharacterLimit
-                          ? API.byTextTab
-                          : shex.activeTab === API.byFileTab
-                          ? API.byFileTab
-                          : false
-                      }
-                    />
-                  )}
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   <div className="divider"></div>
                   <Button
                     onClick={() => zoomSvg(false)}
@@ -243,14 +234,25 @@ function ShExVisualize(props) {
               ) : result ? (
                 !result.error ? (
                   <div
-                    style={{ overflow: "auto" }}
-                    className={"width-100 height-100 border"}
+                    style={{ position: "relative" }}
+                    className="width-100 height-100 border"
                   >
-                    <ResultShExVisualize
-                      result={result}
-                      zoom={svgZoom}
-                      showDetails={false}
+                    <VisualizationLinks
+                      generateDownloadLink={generateDownloadLink(result)}
+                      embedLink={embedLink}
+                      disabled={disabledLinks}
                     />
+
+                    <div
+                      style={{ overflow: "auto" }}
+                      className={"width-100 height-100"}
+                    >
+                      <ResultShExVisualize
+                        result={result}
+                        showDetails={false}
+                        zoom={svgZoom}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div>
@@ -269,5 +271,20 @@ function ShExVisualize(props) {
     </Container>
   );
 }
+
+// Receives the validation result
+// Returns a function that returns the dowload link to the visualization
+export const generateDownloadLink = ({ svg }) => {
+  if (!svg) return;
+
+  return () => ({
+    link: URL.createObjectURL(
+      new Blob([svg], {
+        type: "image/svg+xml;charset=utf-8",
+      })
+    ),
+    type: "svg",
+  });
+};
 
 export default ShExVisualize;

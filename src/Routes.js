@@ -15,6 +15,7 @@ import DataExtract from "./data/DataExtract.js";
 import DataInfo from "./data/DataInfo.js";
 import DataMerge from "./data/DataMerge";
 import DataMergeVisualize from "./data/DataMergeVisualize";
+import DataMergeVisualizeRaw from "./data/DataMergeVisualizeRaw.js";
 import DataQuery from "./data/DataQuery.js";
 import DataVisualize from "./data/DataVisualize.js";
 import DataVisualizeRaw from "./data/DataVisualizeRaw.js";
@@ -30,9 +31,9 @@ import SHACLConvert from "./shacl/SHACLConvert.js";
 import SHACLInfo from "./shacl/SHACLInfo.js";
 import SHACLValidate from "./shacl/SHACLValidate.js";
 import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
+import ShapeForm from "./shex/ShapeForm.js";
 import ShEx2Shacl from "./shex/ShEx2Shacl.js";
 import ShEx2XMI from "./shex/ShEx2XMI.js";
-import ShapeForm from "./shex/ShapeForm.js";
 import ShExConvert from "./shex/ShExConvert.js";
 import ShExInfo from "./shex/ShExInfo.js";
 import ShExValidate from "./shex/ShExValidate.js";
@@ -109,12 +110,17 @@ function Routes() {
           render={() => renderWithNavbar(DataExtract)}
         />
         <Route
-          path={API.dataMerge}
+          path={API.dataMergeRoute}
           render={() => renderWithNavbar(DataMerge)}
         />
         <Route
-          path={API.dataMergeVisualize}
+          path={API.dataMergeVisualizeRoute}
           render={() => renderWithNavbar(DataMergeVisualize)}
+        />
+        {/* RAW visualization */}
+        <Route
+          path={API.dataMergeVisualizeRouteRaw}
+          render={() => renderWithoutNavbar(DataMergeVisualizeRaw)}
         />
 
         <Route
@@ -167,8 +173,8 @@ function Routes() {
           path={API.shEx2XMIRoute}
           render={() => renderWithNavbar(ShEx2XMI)}
         />
-		
-		<Route
+
+        <Route
           path={API.shapeFormRoute}
           render={() => renderWithNavbar(ShapeForm)}
         />

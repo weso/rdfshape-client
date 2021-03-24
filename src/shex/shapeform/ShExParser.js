@@ -1,9 +1,8 @@
 import FormGenerator from "./html-gen/FormGenerator.js";
-const shexp = require('shex').Parser;
+const shexp = require("shex").Parser;
 
 class ShExParser {
-
-  constructor () {
+  constructor() {
     this.source = "";
 
     this.shexparser = shexp.construct();
@@ -11,41 +10,44 @@ class ShExParser {
     this.shexparser._setFileName("Shapes.shex");
 
     this.fg = new FormGenerator();
-	
-	this.prefixes = new Map();
+
+    this.prefixes = new Map();
   }
-  
+
   resetParser() {
-	  this.shexparser.reset();
+    this.shexparser.reset();
   }
 
   parseShExToForm(shex) {
     let form = '<form id="shexgform" class="wikidata">';
 
     let source = this.parseShEx(shex);
-	console.log(source);
-	
-	//Guardar prefijos
-	this.prefixes.set(source.base, "base");
-	for(let prefix in source.prefixes) {
-		this.prefixes.set(source.prefixes[prefix], prefix);
+    console.log(source);
+
+    //Guardar prefijos
+    this.prefixes.set(source.base, "base");
+    for (let prefix in source.prefixes) {
+      this.prefixes.set(source.prefixes[prefix], prefix);
     }
 
-  if(!source.start || !source.start.reference) {
-    throw new Error("No Shape Start has been defined.")
-  }
+    if (!source.start || !source.start.reference) {
+      throw new Error("No Shape Start has been defined.");
+    }
 
-	//El formulario será el de la shape start
-	if(source.start) {
-		this.fg.prefixes = this.prefixes;
-		this.fg.shapes = source.shapes;
-    
-		form += this.fg.createForm(source.shapes[source.start.reference], source.start.reference);
-	}
-    
-	form += '<button type="button" id="checkbtn" class="btn1">Check</button>';
-  form += '<input type="submit" style="display: none;"/>';
-    form += '</form>';
+    //El formulario será el de la shape start
+    if (source.start) {
+      this.fg.prefixes = this.prefixes;
+      this.fg.shapes = source.shapes;
+
+      form += this.fg.createForm(
+        source.shapes[source.start.reference],
+        source.start.reference
+      );
+    }
+
+    form += '<button type="button" id="checkbtn" class="btn1">Check</button>';
+    form += '<input type="submit" style="display: none;"/>';
+    form += "</form>";
 
     return form;
   }

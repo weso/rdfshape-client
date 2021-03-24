@@ -13,12 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExConvert from "../results/ResultShExConvert";
 import {
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExConvert(props) {
@@ -36,6 +36,8 @@ function ShExConvert(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaConvert;
 
@@ -114,6 +116,7 @@ function ShExConvert(props) {
         setResult(data);
         setPermalink(mkPermalinkLong(API.shExConvertRoute, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -121,6 +124,18 @@ function ShExConvert(props) {
         setError("Error calling server at " + url + ": " + error);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -197,13 +212,7 @@ function ShExConvert(props) {
               <ResultShExConvert
                 result={result}
                 permalink={permalink}
-                disabled={
-                  getShexText(shex).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shex.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

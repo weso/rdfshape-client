@@ -13,12 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
 import {
-    convertTabSchema,
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  convertTabSchema,
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 export default function ShEx2Shacl(props) {
@@ -34,6 +34,8 @@ export default function ShEx2Shacl(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaConvert;
 
@@ -73,7 +75,11 @@ export default function ShEx2Shacl(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
+      if (
+        params.schema ||
+        params.schemaURL ||
+        (params.schemaFile && params.schemaFile.name)
+      ) {
         resetState();
         setUpHistory();
         postRequest();
@@ -157,6 +163,7 @@ export default function ShEx2Shacl(props) {
           })
         );
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -166,6 +173,18 @@ export default function ShEx2Shacl(props) {
         );
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -257,13 +276,7 @@ export default function ShEx2Shacl(props) {
                 result={result}
                 mode={targetFormatMode(targetFormat)}
                 permalink={permalink}
-                disabled={
-                  getShexText(shex).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shex.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

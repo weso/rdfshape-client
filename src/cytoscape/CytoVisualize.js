@@ -1,7 +1,7 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -9,7 +9,6 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
-import ImageIcon from "react-open-iconic-svg/dist/ImageIcon";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
@@ -21,6 +20,7 @@ import {
 } from "../data/Data";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 
 function CytoVisualize(props) {
   const url = API.dataConvert;
@@ -28,16 +28,19 @@ function CytoVisualize(props) {
   const circle = "circle";
   const layouts = [cose, circle];
 
+  const refCyto = useRef(null);
   const [data, setData] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
+  const [embedLink, setEmbedLink] = useState(null);
   const [elements, setElements] = useState(null);
   const [layout, setLayout] = useState(cose);
   const [progressPercent, setProgressPercent] = useState(0);
-  const [imageLink, setImageLink] = useState(null);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   useEffect(() => {
     if (props.location?.search) {
@@ -86,7 +89,7 @@ function CytoVisualize(props) {
     setPermalink(
       mkPermalinkLong(API.cytoVisualizeRoute, { ...params, layout })
     );
-    setImageLink(
+    setEmbedLink(
       mkPermalinkLong(API.cytoVisualizeRouteRaw, { ...params, layout })
     );
   }, [layout]);
@@ -109,7 +112,8 @@ function CytoVisualize(props) {
         processData(data);
         setProgressPercent(80);
         setPermalink(mkPermalinkLong(API.cytoVisualizeRoute, params));
-        setImageLink(mkPermalinkLong(API.cytoVisualizeRouteRaw, params));
+        setEmbedLink(mkPermalinkLong(API.cytoVisualizeRouteRaw, params));
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -126,6 +130,18 @@ function CytoVisualize(props) {
       const elements = JSON.parse(data.result);
       setElements(elements);
     }
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -155,7 +171,7 @@ function CytoVisualize(props) {
   function resetState() {
     setElements(null);
     setPermalink(null);
-    setImageLink(null);
+    setEmbedLink(null);
     setError(null);
     setProgressPercent(0);
   }
@@ -183,33 +199,8 @@ function CytoVisualize(props) {
           <Col className="half-col visual-column">
             <Fragment>
               {permalink && !error ? (
-                <div className={"d-flex"} style={{flexWrap: "wrap"}}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getDataText(data) > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : data.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
-                  {imageLink && (
-                    <Permalink
-                      style={{ marginLeft: "5px" }}
-                      icon={<ImageIcon className="white-icon" />}
-                      shorten={false}
-                      text={"Embed"}
-                      url={imageLink}
-                      disabled={
-                        getDataText(data).length > API.byTextCharacterLimit
-                          ? API.byTextTab
-                          : data.activeTab === API.byFileTab
-                          ? API.byFileTab
-                          : false
-                      }
-                    />
-                  )}
+                <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   <div className="divider"></div>
                   <Button
                     onClick={() => setLayout(cose)}
@@ -241,11 +232,18 @@ function CytoVisualize(props) {
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
               ) : elements ? (
-                <Cyto
-                  className={"width-100 height-100 border"}
-                  layout={layout}
-                  elements={elements}
-                />
+                <div
+                  style={{ position: "relative" }}
+                  className="cyto-container border"
+                >
+                  <VisualizationLinks
+                    generateDownloadLink={generateDownloadLink(refCyto)}
+                    embedLink={embedLink}
+                    disabled={disabledLinks}
+                  />
+
+                  <Cyto layout={layout} elements={elements} refCyto={refCyto} />
+                </div>
               ) : null}
             </Fragment>
           </Col>
@@ -258,5 +256,21 @@ function CytoVisualize(props) {
     </Container>
   );
 }
+
+export const generateDownloadLink = (refCyto) => {
+  if (!refCyto) return;
+
+  return () => {
+    if (!refCyto.current) return;
+
+    return {
+      link: refCyto.current.png({
+        output: "base64uri",
+        full: true,
+      }),
+      type: "png",
+    };
+  };
+};
 
 export default CytoVisualize;

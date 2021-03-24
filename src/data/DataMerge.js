@@ -13,11 +13,11 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataMerge(props) {
@@ -33,6 +33,8 @@ function DataMerge(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.dataConvert;
 
@@ -73,8 +75,7 @@ function DataMerge(props) {
       const parameters = JSON.parse(params.compoundData);
       if (parameters.some((p) => p.dataFile)) {
         setError("Not implemented Merge from files.");
-      }
-      else if (
+      } else if (
         parameters.some(
           (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
         )
@@ -117,8 +118,9 @@ function DataMerge(props) {
       .then(async (data) => {
         setProgressPercent(75);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataMerge, params));
+        setPermalink(mkPermalinkLong(API.dataMergeRoute, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -129,6 +131,19 @@ function DataMerge(props) {
         setLoading(false);
         window.scrollTo(0, 0); // Scroll top to results
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data1).length + getDataText(data2).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data1.activeTab === API.byFileTab || data2.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -142,7 +157,7 @@ function DataMerge(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataMerge, {
+        mkPermalinkLong(API.dataMergeRoute, {
           compoundData: lastParams.compoundData,
           targetDataFormat,
         })
@@ -153,7 +168,7 @@ function DataMerge(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataMerge, {
+      mkPermalinkLong(API.dataMergeRoute, {
         compoundData: params.compoundData,
         targetDataFormat,
       })
@@ -217,15 +232,7 @@ function DataMerge(props) {
                   setData1({ ...data1, fromParams: false })
                 }
                 permalink={permalink}
-                disabled={
-                  getDataText(data1).length + getDataText(data2).length >
-                  API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : data1.activeTab === API.byFileTab ||
-                      data2.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

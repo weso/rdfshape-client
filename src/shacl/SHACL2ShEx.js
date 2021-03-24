@@ -35,6 +35,8 @@ export default function SHACL2ShEx(props) {
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.schemaConvert;
 
   useEffect(() => {
@@ -165,6 +167,7 @@ export default function SHACL2ShEx(props) {
             schemaFile: params.schemaFile || undefined,
           })
         );
+        checkLinks();
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);
@@ -175,6 +178,18 @@ export default function SHACL2ShEx(props) {
         );
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShaclText(shacl).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shacl.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -270,13 +285,7 @@ export default function SHACL2ShEx(props) {
                 result={result}
                 mode={targetFormatMode(targetFormat)}
                 permalink={permalink}
-                disabled={
-                  getShaclText(shacl).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shacl.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

@@ -33,6 +33,8 @@ function ShExInfo(props) {
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.schemaInfo;
 
   useEffect(() => {
@@ -62,7 +64,11 @@ function ShExInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.schema || params.schemaURL || (params.schemaFile && params.schemaFile.name)) {
+      if (
+        params.schema ||
+        params.schemaURL ||
+        (params.schemaFile && params.schemaFile.name)
+      ) {
         resetState();
         setUpHistory();
         postRequest();
@@ -94,6 +100,7 @@ function ShExInfo(props) {
         setResult(data);
         setPermalink(mkPermalinkLong(API.shExInfoRoute, params));
         setProgressPercent(90);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -101,6 +108,18 @@ function ShExInfo(props) {
         setError("Error calling server at " + url + ": " + error);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShexText(shex).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -170,13 +189,7 @@ function ShExInfo(props) {
               <ResultShExInfo
                 result={result}
                 permalink={permalink}
-                disabled={
-                  getShexText(shex).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shex.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

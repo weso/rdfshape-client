@@ -12,14 +12,17 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
+import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
+import { generateDownloadLink } from "./DataVisualize";
 import { convertDot } from "./dotUtils";
 
 function DataMergeVisualize(props) {
@@ -32,15 +35,18 @@ function DataMergeVisualize(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
+  const [embedLink, setEmbedLink] = useState(null);
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const [disabledLinks, setDisabledLinks] = useState(false);
+
   const url = API.dataConvert;
 
-  const minSvgZoom = 0.2;
-  const maxSvgZoom = 1.9;
-  const svgZoomStep = 0.1;
+  const minSvgZoom = minZoom;
+  const maxSvgZoom = maxZoom;
+  const svgZoomStep = stepZoom;
 
   function handleTargetGraphFormatChange(value) {
     setTargetGraphFormat(value);
@@ -133,8 +139,10 @@ function DataMergeVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         processData(data, targetGraphFormat);
-        setPermalink(mkPermalinkLong(API.dataMergeVisualize, params));
+        setPermalink(mkPermalinkLong(API.dataMergeVisualizeRoute, params));
+        setEmbedLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -145,6 +153,19 @@ function DataMergeVisualize(props) {
         setLoading(false);
         window.scrollTo(0, 0);
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data1).length + getDataText(data2).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data1.activeTab === API.byFileTab || data2.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function zoomSvg(zoomIn) {
@@ -168,7 +189,7 @@ function DataMergeVisualize(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataMergeVisualize, lastParams)
+        mkPermalinkLong(API.dataMergeVisualizeRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -176,7 +197,7 @@ function DataMergeVisualize(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataMergeVisualize, params)
+      mkPermalinkLong(API.dataMergeVisualizeRoute, params)
     );
 
     setLastParams(params);
@@ -224,20 +245,10 @@ function DataMergeVisualize(props) {
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"}>
-                  <Permalink
-                    url={permalink}
-                    disabled={
-                      getDataText(data1).length + getDataText(data2).length >
-                      API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : data1.activeTab === API.byFileTab ||
-                          data2.activeTab === API.byFileTab
-                        ? API.byFileTab
-                        : false
-                    }
-                  />
+                  <Permalink url={permalink} disabled={disabledLinks} />
                   {!visualization?.textual && (
                     <>
+                      <div className="divider"></div>
                       <Button
                         onClick={() => zoomSvg(false)}
                         className="btn-zoom"
@@ -271,10 +282,24 @@ function DataMergeVisualize(props) {
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
                 <div
-                  style={{ overflow: "auto", zoom: svgZoom }}
-                  className={"width-100 height-100 border"}
+                  style={{ position: "relative" }}
+                  className="width-100 height-100 border"
                 >
-                  <ShowVisualization data={visualization.data} />
+                  <VisualizationLinks
+                    generateDownloadLink={generateDownloadLink(visualization)}
+                    embedLink={embedLink}
+                    disabled={disabledLinks}
+                  />
+
+                  <div
+                    style={{ overflow: "auto" }}
+                    className={"width-100 height-100"}
+                  >
+                    <ShowVisualization
+                      data={visualization.data}
+                      zoom={svgZoom}
+                    />
+                  </div>
                 </div>
               ) : null}
             </Fragment>

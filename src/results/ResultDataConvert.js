@@ -5,8 +5,13 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 
-function ResultDataConvert(props) {
-  const result = props.result;
+function ResultDataConvert({
+  result,
+  permalink,
+  fromParams,
+  resetFromParams,
+  disabled,
+}) {
   let msg;
   if (result === "") {
     msg = null;
@@ -21,18 +26,18 @@ function ResultDataConvert(props) {
             value={result.result}
             readOnly={true}
             mode={format2mode(result.targetDataFormat)}
-            fromParams={props.fromParams}
-            resetFromParams={props.resetFromParams}
+            fromParams={fromParams}
+            resetFromParams={resetFromParams}
           />
         )}
 
         <details>
           <PrintJson json={result} />
         </details>
-        {props.permalink && (
+        {permalink && (
           <Fragment>
             <hr />
-            <Permalink url={props.permalink} disabled={props.disabled} />
+            <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
       </div>

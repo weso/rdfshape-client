@@ -4,9 +4,7 @@ import Alert from "react-bootstrap/Alert";
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
 
-function ResultShExVisualize(props) {
-  const result = props.result;
-
+function ResultShExVisualize({ result, zoom, showDetails }) {
   let msg;
   if (result === "") {
     msg = null;
@@ -20,23 +18,23 @@ function ResultShExVisualize(props) {
       </div>
     );
   } else {
-    if (props.showDetails === true) {
+    if (showDetails === true) {
       msg = (
         <details>
           <PrintJson json={result} />
         </details>
       );
-    } else if (props.showDetails === false) {
+    } else if (showDetails === false) {
       msg = (
-        <div style={{ zoom: props.zoom }}>
-          <PrintSVG svg={props.result.svg} />
+        <div style={{ transform: `scale(${zoom})`, transformOrigin: "0 0" }}>
+          <PrintSVG svg={result.svg} />
         </div>
       );
     } else {
       msg = (
         <>
-          <div style={{ zoom: props.zoom }}>
-            <PrintSVG svg={props.result.svg} />
+          <div style={{ transform: `scale(${zoom})`, transformOrigin: "0 0" }}>
+            <PrintSVG svg={result.svg} />
           </div>
           <details>
             <PrintJson json={result} />

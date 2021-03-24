@@ -15,11 +15,11 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -32,6 +32,8 @@ function DataExtract(props) {
   const [permalink, setPermalink] = useState(null);
   const [nodeSelector, setNodeSelector] = useState("");
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.dataExtract;
 
@@ -89,6 +91,7 @@ function DataExtract(props) {
         } else setResult(data);
         setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -99,6 +102,18 @@ function DataExtract(props) {
         setLoading(false);
         window.scrollTo(0, 0);
       });
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getDataText(data).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -174,13 +189,7 @@ function DataExtract(props) {
                 <ResultDataExtract
                   result={result}
                   permalink={permalink}
-                  disabled={
-                    getDataText(data) > API.byTextCharacterLimit
-                      ? API.byTextTab
-                      : data.activeTab === API.byFileTab
-                      ? API.byFileTab
-                      : false
-                  }
+                  disabled={disabledLinks}
                 />
               ) : null}
             </Fragment>

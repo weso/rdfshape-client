@@ -10,11 +10,11 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import {
-    getDataText,
-    InitialData,
-    mkDataTabs,
-    paramsFromStateData,
-    updateStateData
+  getDataText,
+  InitialData,
+  mkDataTabs,
+  paramsFromStateData,
+  updateStateData
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
@@ -22,12 +22,12 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
-    getShaclText,
-    InitialShacl,
-    mkShaclTabs,
-    paramsFromStateShacl,
-    shaclParamsFromQueryParams,
-    updateStateShacl
+  getShaclText,
+  InitialShacl,
+  mkShaclTabs,
+  paramsFromStateShacl,
+  shaclParamsFromQueryParams,
+  updateStateShacl
 } from "./SHACL";
 
 function SHACLValidate(props) {
@@ -46,6 +46,8 @@ function SHACLValidate(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaValidate;
 
@@ -143,6 +145,7 @@ function SHACLValidate(props) {
         setProgressPercent(70);
         setPermalink(mkPermalinkLong(API.shaclValidateRoute, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -150,6 +153,19 @@ function SHACLValidate(props) {
         setError(error.message);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShaclText(shacl).length + getDataText(data).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : data.activeTab === API.byFileTab || shacl.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -239,15 +255,7 @@ function SHACLValidate(props) {
               <ResultValidateShacl
                 result={result}
                 permalink={permalink}
-                disabled={
-                  getShaclText(shacl).length + getDataText(data).length >
-                    API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : data.activeTab === API.byFileTab ||
-                      shacl.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

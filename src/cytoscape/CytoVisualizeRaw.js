@@ -1,7 +1,7 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import API from "../API";
 import Cyto from "../components/Cyto";
 import {
@@ -11,6 +11,8 @@ import {
 } from "../data/Data";
 import { params2Form } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
+import VisualizationLinks from "../visualization/VisualizationLinks";
+import { generateDownloadLink } from "./CytoVisualize";
 
 // Requests to this endpoint will redirect to the raw visualization of the data requested
 
@@ -20,6 +22,7 @@ function CytoVisualizeRaw(props) {
   const circle = "circle";
   const layouts = [cose, circle];
 
+  const refCyto = useRef(null);
   const [data, setData] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [error, setError] = useState(null);
@@ -101,8 +104,17 @@ function CytoVisualizeRaw(props) {
           ) : error ? (
             <p>{error}</p>
           ) : elements ? (
-            <div style={{width: "100vw", height: "100vh"}} >
-              <Cyto layout={layout} elements={elements} />
+            <div style={{ width: "100vw", height: "100vh" }}>
+              <div
+                style={{ position: "relative" }}
+                className="cyto-container border"
+              >
+                <VisualizationLinks
+                  generateDownloadLink={generateDownloadLink(refCyto)}
+                />
+
+                <Cyto layout={layout} elements={elements} refCyto={refCyto} />
+              </div>
             </div>
           ) : null}
         </>

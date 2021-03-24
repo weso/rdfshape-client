@@ -13,12 +13,12 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSHACLConvert from "../results/ResultSHACLConvert";
 import {
-    getShaclText,
-    InitialShacl,
-    mkShaclTabs,
-    paramsFromStateShacl,
-    shaclParamsFromQueryParams,
-    updateStateShacl
+  getShaclText,
+  InitialShacl,
+  mkShaclTabs,
+  paramsFromStateShacl,
+  shaclParamsFromQueryParams,
+  updateStateShacl
 } from "./SHACL";
 
 function SHACLConvert(props) {
@@ -36,6 +36,8 @@ function SHACLConvert(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaConvert;
 
@@ -111,6 +113,7 @@ function SHACLConvert(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(mkPermalinkLong(API.shaclConvertRoute, params));
+        checkLinks();
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);
@@ -119,6 +122,18 @@ function SHACLConvert(props) {
         setError("Error calling server at " + url + ": " + error);
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      getShaclText(shacl).length > API.byTextCharacterLimit
+        ? API.byTextTab
+        : shacl.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -195,13 +210,7 @@ function SHACLConvert(props) {
               <ResultSHACLConvert
                 result={result}
                 permalink={permalink}
-                disabled={
-                  getShaclText(shacl).length > API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shacl.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

@@ -14,20 +14,20 @@ import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
-    getShapeMapText,
-    InitialShapeMap,
-    mkShapeMapTabs,
-    paramsFromStateShapeMap,
-    shapeMapParamsFromQueryParams,
-    updateStateShapeMap
+  getShapeMapText,
+  InitialShapeMap,
+  mkShapeMapTabs,
+  paramsFromStateShapeMap,
+  shapeMapParamsFromQueryParams,
+  updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import {
-    getShexText,
-    InitialShEx,
-    mkShExTabs,
-    paramsFromStateShEx,
-    shExParamsFromQueryParams,
-    updateStateShEx
+  getShexText,
+  InitialShEx,
+  mkShExTabs,
+  paramsFromStateShEx,
+  shExParamsFromQueryParams,
+  updateStateShEx
 } from "./ShEx";
 
 function ShExValidateEndpoint(props) {
@@ -45,6 +45,8 @@ function ShExValidateEndpoint(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
+
+  const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.schemaValidate;
 
@@ -155,6 +157,7 @@ function ShExValidateEndpoint(props) {
         setProgressPercent(70);
         setPermalink(mkPermalinkLong(API.shExValidateEndpointRoute, params));
         setProgressPercent(80);
+        checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
@@ -164,6 +167,22 @@ function ShExValidateEndpoint(props) {
         );
       })
       .finally(() => setLoading(false));
+  }
+
+  // Disabled permalinks, etc. if the user input is too long or a file
+  function checkLinks() {
+    const disabled =
+      endpoint.length +
+        getShexText(shex).length +
+        getShapeMapText(shapeMap).length >
+      API.byTextCharacterLimit
+        ? API.byTextTab
+        : shex.activeTab === API.byFileTab ||
+          shapeMap.activeTab === API.byFileTab
+        ? API.byFileTab
+        : false;
+
+    setDisabledLinks(disabled);
   }
 
   function setUpHistory() {
@@ -243,17 +262,7 @@ function ShExValidateEndpoint(props) {
                 permalink={
                   !params.schemaFile && !params.shapeMapFile && permalink
                 }
-                disabled={
-                  endpoint.length +
-                    getShexText(shex).length +
-                    getShapeMapText(shapeMap).length >
-                  API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : shex.activeTab === API.byFileTab ||
-                      shapeMap.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
+                disabled={disabledLinks}
               />
             ) : null}
           </Col>

@@ -30,7 +30,7 @@ function WikidataExtract(props) {
     if (entities.length > 0 && entities[0].uri) {
       const nodeSelector = entities[0].uri;
       params["nodeSelector"] = "<" + nodeSelector + ">";
-      console.log(`Node selector: ${nodeSelector}`);
+      console.info(`Node selector: ${nodeSelector}`);
       setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
       let formData = params2Form(params);
       postConvert(url, formData);
@@ -50,7 +50,7 @@ function WikidataExtract(props) {
         if (cb) cb();
       })
       .catch(function(error) {
-        console.log(`Error doing server request: ${error}`);
+        console.error(`Error doing server request: ${error}`);
         setLoading(false);
         setError(error);
       });

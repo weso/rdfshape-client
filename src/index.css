@@ -1,15 +1,15 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-  sans-serif;
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-  monospace;
+    monospace;
 }
 
 a.dropdown-item {
@@ -20,7 +20,9 @@ a.dropdown-item {
   font-size: 14px !important;
 }
 
-.yate .yate_buttons, .yashe .yashe_buttons, .yasqe .yasqe_buttons{
+.yate .yate_buttons,
+.yashe .yashe_buttons,
+.yasqe .yasqe_buttons {
   top: unset !important;
   bottom: 5px !important;
 }
@@ -57,17 +59,20 @@ a.dropdown-item {
   padding: 0 !important;
 }
 
-.container-fluid > .container-fluid, .container-fluid > .container {
+.container-fluid > .container-fluid,
+.container-fluid > .container {
   margin: 2% auto;
 }
 
 @media only screen and (min-width: 600px) {
-  .container-fluid > .container-fluid, .container-fluid > .container{
+  .container-fluid > .container-fluid,
+  .container-fluid > .container {
     max-width: 80%;
   }
 }
 
-.container-fluid .container-fluid > h4, .container-fluid .container > h4 {
+.container-fluid .container-fluid > h4,
+.container-fluid .container > h4 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -89,7 +94,6 @@ a.dropdown-item {
   padding: 5px;
 }
 
-
 .btn-with-icon > svg {
   margin: auto 5px auto 10px;
 }
@@ -98,6 +102,11 @@ a.dropdown-item {
   fill: white;
   transform: scale(1.5);
   margin: auto 5px;
+}
+
+.embedded-icon {
+  fill: black;
+  margin: auto 8px;
 }
 
 .white-filler {
@@ -109,12 +118,19 @@ a.dropdown-item {
   background-color: white !important; /* "!important" overrides bootstrap */
 }
 
+.cyto-container {
+  background-color: rgb(250, 250, 250);
+  width: 100%;
+  height: 100%;
+}
+
 table td {
   overflow-x: auto;
   word-break: break-word;
 }
 
-.disabled, .forbidden {
+.disabled,
+.forbidden {
   cursor: not-allowed !important; /* "!important" overrides bootstrap */
 }
 
@@ -145,118 +161,122 @@ table td {
 }
 
 .fullscreen {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 1100;
-	background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  background-color: white;
 }
 
-#resultform input, #resultform select {
-	max-width: 50em;
-	border: 0.071em solid #a2a9b1;
-	border-radius: 0.143em;
-	padding: 0.357em 0.571em;
-	margin-bottom: 0.857em;
+#resultform input,
+#resultform select {
+  max-width: 50em;
+  border: 0.071em solid #a2a9b1;
+  border-radius: 0.143em;
+  padding: 0.357em 0.571em;
+  margin-bottom: 0.857em;
 }
 
 #resultform input {
-	max-width: 50em;
+  max-width: 50em;
 }
 
 #resultform input:not([size]) {
-	width: 20em;
+  width: 20em;
 }
 
 #resultform select {
-	max-width: 51.5em;
+  max-width: 51.5em;
   width: 20em;
 }
 
 #resultform input:focus {
-    border-color: blue;
+  border-color: blue;
 }
 
-#resultform input[type="submit"], #resultform button {
-	color: #fff;
-	background-color: #36c;
-	border-color: #36c;
-	padding-top: 0.357em;
-	padding-bottom: 0.357em;
-	width: max-content;
-	line-height: 1;
-	border-style: solid;
-	border-width: 0.071em;
-	border-radius: 0.143em;
-	padding-left: 0.857em;
-	padding-right: 0.857em;
-	font-weight: bold;
-	text-decoration: none;
-	cursor: pointer;
-	font-family: inherit;
-	font-size: inherit;
+#resultform input[type="submit"],
+#resultform button {
+  color: #fff;
+  background-color: #36c;
+  border-color: #36c;
+  padding-top: 0.357em;
+  padding-bottom: 0.357em;
+  width: max-content;
+  line-height: 1;
+  border-style: solid;
+  border-width: 0.071em;
+  border-radius: 0.143em;
+  padding-left: 0.857em;
+  padding-right: 0.857em;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
 }
 
-#resultform input[type="submit"]:hover, #resultform button:hover {
-	background-color: #38c;
+#resultform input[type="submit"]:hover,
+#resultform button:hover {
+  background-color: #38c;
 }
 
-#resultform input[type="submit"]:active, #resultform button:active {
-	background-color: #34a;
+#resultform input[type="submit"]:active,
+#resultform button:active {
+  background-color: #34a;
 }
 
 #resultform input[readonly] {
   background-color: #eee;
-} 
+}
 
 #resultform label {
-	padding-bottom: 0.286em;
+  padding-bottom: 0.286em;
   margin-bottom: 0;
 }
 
 #resultform .wikidata {
-	display: grid;
-	border: 0.071em solid #a2a9b1;
-	border-radius: 0.143em;
-	padding: 0.857em 1.143em 1.143em;
-	font-family: sans-serif;
-	font-size: 0.875em;
+  display: grid;
+  border: 0.071em solid #a2a9b1;
+  border-radius: 0.143em;
+  padding: 0.857em 1.143em 1.143em;
+  font-family: sans-serif;
+  font-size: 0.875em;
 }
 
 #resultform .wikidata h3 {
-	font-size: 1.15em;
-	font-weight: bold;
+  font-size: 1.15em;
+  font-weight: bold;
 }
 
 #resultform .innerform {
-	display: grid;
-	border: 0.071em solid #555;
-	margin-bottom: 1em;
-	padding-left: 1em;
+  display: grid;
+  border: 0.071em solid #555;
+  margin-bottom: 1em;
+  padding-left: 1em;
   padding-top: 0.8em;
 }
 
 #resultform .innerform h3 {
-	font-size: 1em;
-	font-weight: bold;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 #resultform .orform {
-	display: grid;
-	border-left: 0.071em solid #555;
-	margin-bottom: 0.857em;
-	padding-left: 1em;
+  display: grid;
+  border-left: 0.071em solid #555;
+  margin-bottom: 0.857em;
+  padding-left: 1em;
 }
 
 #resultform .orform h3 {
-	font-size: 0.875em;
-	font-weight: bold;
+  font-size: 0.875em;
+  font-weight: bold;
 }
 
 #resultform .orform input:not([size]) {
-	width: 19em;
+  width: 19em;
 }
 
 #resultform .button {
@@ -277,13 +297,13 @@ table td {
 }
 
 #resultform .langstring-st:not([size]) {
-	width: 60%;
+  width: 60%;
 }
 
 #resultform .langstring-lg:not([size]) {
-	width: 20%;
+  width: 20%;
 }
 
 #resultform .langstring-div div:first-of-type {
-	display: contents;
+  display: contents;
 }
