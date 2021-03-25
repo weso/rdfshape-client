@@ -1,5 +1,8 @@
 name: Build and test
 on:
+  # Manual trigger
+  workflow_dispatch:
+
   # Trigger on push to main
   push:
     branches:
