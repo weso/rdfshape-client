@@ -12,7 +12,7 @@ function VisualizationLinks({
   tooltips,
 }) {
   const iconScaling = 2;
-  const tooltopScaling = 1 / iconScaling;
+  const tooltipScaling = 1 / iconScaling;
 
   const [downloadLink, setDownloadLink] = useState("#");
   const [downloadType, setDownloadType] = useState("");
@@ -54,7 +54,7 @@ function VisualizationLinks({
             <DataTransferDownloadIcon style={{ fill: "black" }} />
           </a>
           {tooltips ?? (
-            <div style={{ transform: `scale(${tooltopScaling})` }}>
+            <div style={{ transform: `scale(${tooltipScaling})` }}>
               <ReactTooltip id="downloadLinkTip" place="top" effect="solid">
                 {"Download"}
               </ReactTooltip>
@@ -78,7 +78,7 @@ function VisualizationLinks({
             <ExternalLinkIcon style={{ fill: "black" }} />
           </a>
           {tooltips ?? (
-            <div style={{ transform: `scale(${tooltopScaling})` }}>
+            <div style={{ transform: `scale(${tooltipScaling})` }}>
               <ReactTooltip id="embedLinkTip" place="top" effect="solid">
                 {disabled == "byText"
                   ? "Can't generate links for long manual inputs, try inserting data by URL"
