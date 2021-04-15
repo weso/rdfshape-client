@@ -48,7 +48,10 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 ## Docker
 This React application can be launched as a Docker container.
 
-When creating the Docker image, you may override the location where the client will look for the rdfshape backend with `--build-arg RDFSHAPE_HOST=[LOCATION]`. Default backend location is currently https://rdfshape.weso.es:8080, where rdfshape is deployed by WESO.
+* Use the provided Dockerfile to build rdfshape image.
+* When building the Docker image, you may provide the following arguments
+  via `--build-arg`:
+    * [RDFSHAPE_HOST]: Location where this client will look for the rdfshape backend. Defaults to our current deployment at https://rdfshape.weso.es:8080.
 
 ## Learn More
 
