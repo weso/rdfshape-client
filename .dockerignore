@@ -1,9 +1,16 @@
 Dockerfile
+.dockerignore
+
 node_modules
 build
-.dockerignore
+
+.git
 .gitignore
 .github
+
 .metals
 .vscode
+.idea
+
 .directory
+.DS_Store
