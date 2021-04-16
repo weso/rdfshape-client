@@ -24,7 +24,8 @@ export async function mkPermalinkFromUrl(url) {
     const res = await axios.get(API.serverPermalinkEndpoint, {
       params: { url },
     });
-    return res.data;
+    // The server only returns the permalink code. The full link is: current host + code
+    return `${getHost()}/link/${res.data}`;
   } catch (err) {
     console.error(
       `Error processing shortened permalink request for ${url}: ${err.message}`
@@ -61,13 +62,13 @@ function getHost() {
   );
 }
 
-// Returns a tuple [status, message], the message being the original link or an error in case of failure
+// Returns a tuple [status, message], the message being the target link or an error in case of failure
 export async function getOriginalLink(code) {
   try {
     const res = await axios.get(API.serverOriginalLinkEndpoint, {
       params: { urlCode: code },
     });
-    return [true, res.data];
+    return [true, `${getHost()}${res.data}`];
   } catch (error) {
     const errorMsg = error.response
       ? `${error.response.data} (error ${error.response.status})`
