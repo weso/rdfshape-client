@@ -5,7 +5,8 @@ This is the front-end part of the [rdfshape.weso.es](http://rdfshape.weso.es) to
 This project is a pure client library implemented with [React](http://reactjs.org/).
 It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-[![Build Status](https://travis-ci.org/weso/rdfshape-client.svg?branch=master)](https://travis-ci.org/weso/rdfshape-client)
+[![Continuous Integration](https://github.com/weso/rdfshape-client/actions/workflows/build_test.yml/badge.svg)](https://github.com/weso/rdfshape-client/actions/workflows/build_test.yml)
+
 
 
 ## Available Scripts
