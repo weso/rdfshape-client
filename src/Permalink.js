@@ -20,13 +20,12 @@ export async function mkPermalink(route, params) {
 }
 
 export async function mkPermalinkFromUrl(url) {
-  const hostname = getHost();
   try {
     const res = await axios.get(API.serverPermalinkEndpoint, {
-      params: { url, hostname },
+      params: { url },
     });
     // The server only returns the permalink code. The full link is: current host + code
-    return `${hostname}/link/${res.data}`;
+    return `${getHost()}/link/${res.data}`;
   } catch (err) {
     console.error(
       `Error processing shortened permalink request for ${url}: ${err.message}`
