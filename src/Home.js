@@ -35,7 +35,7 @@ function Home() {
       <ul>
         <li>
           Data <a href="/dataInfo">validation</a> and{" "}
-          <a href="/dataConvert">conversion</a> between semantic formats.
+          <a href="/dataConvert">conversion</a> between semantic formats
         </li>
         <li>
           Data <a href="/dataVisualize">visualization</a>
@@ -51,14 +51,14 @@ function Home() {
       <ul>
         <li>
           <a href="/shexValidate">ShEx validation</a> and{" "}
-          <a href="/shaclValidate">SHACL validation</a>.
+          <a href="/shaclValidate">SHACL validation</a>
         </li>
         <li>
-          ShEx schema <a href="/shExVisualize">visualization</a>.
+          ShEx schema <a href="/shExVisualize">visualization</a>
         </li>
         <li>
           <a href="/shEx2Shacl">ShEx to SHACL</a> and{" "}
-          <a href="/shacl2ShEx">SHACL to ShEx</a>.
+          <a href="/shacl2ShEx">SHACL to ShEx</a>
         </li>
       </ul>
       <p>
@@ -66,10 +66,10 @@ function Home() {
       </p>
       <ul>
         <li>
-          Endpoint <a href="/endpointInfo">information</a>.
+          Endpoint <a href="/endpointInfo">information</a>
         </li>
         <li>
-          Endpoint <a href="/endpointQuery">query</a>.
+          Endpoint <a href="/endpointQuery">query</a>
         </li>
       </ul>
     </Container>
