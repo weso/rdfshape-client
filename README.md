@@ -25,7 +25,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance (see [deployment](https://facebook.github.io/create-react-app/docs/deployment)).
 
-## Docker
+## Deploy with Docker
 This React application can be launched as a Docker container.
 
 * Use the provided Dockerfile to build rdfshape or pull from [Docker Hub](https://hub.docker.com/r/wesogroup/rdfshape-client).
