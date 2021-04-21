@@ -28,7 +28,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 ## Docker
 This React application can be launched as a Docker container.
 
-* Use the provided Dockerfile to build rdfshape or pull from [Docker Hub](https://hub.docker.com/r/wesogroup/rdfshape-api).
+* Use the provided Dockerfile to build rdfshape or pull from [Docker Hub](https://hub.docker.com/r/wesogroup/rdfshape-client).
 * When launching containers from the image, you may provide the following environment variables via `--env`:
     * **RDFSHAPE_HOST**: Location where this client will look for the RDFShape backend. Defaults to our current deployment at https://rdfshape.weso.es:8080.
 
