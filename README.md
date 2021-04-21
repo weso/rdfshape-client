@@ -31,7 +31,7 @@ This React application can be launched as a Docker container.
 * Use the provided Dockerfile to build rdfshape image.
 * When building the Docker image, you may provide the following arguments
   via `--build-arg`:
-    * [RDFSHAPE_HOST]: Location where this client will look for the rdfshape backend. Defaults to our current deployment at https://rdfshape.weso.es:8080.
+    * **RDFSHAPE_HOST**: Location where this client will look for the rdfshape backend. Defaults to our current deployment at https://rdfshape.weso.es:8080.
 
 
 # Contribution and issues
