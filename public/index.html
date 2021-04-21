@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- ENV -->
+    <script src="%PUBLIC_URL%/env-config.js"></script>
     <!-- CSP -->
     <meta
       http-equiv="Content-Security-Policy"
@@ -12,7 +14,6 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="RDFShape client" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--    <script src="%PUBLIC_URL%/codemirror/mode/shex/shex.js"></script> -->
 
     <!-- Meta Tags -->
     <title>RDFShape — Playground for RDF, ShEx, SHACL and more</title>
@@ -36,10 +37,7 @@
       property="og:description"
       content="RDFShape is an RDF service where you can play with semantic web formats and validation mechanisms."
     />
-    <meta
-      property="og:image"
-      content="%PUBLIC_URL%/img/meta.png"
-    />
+    <meta property="og:image" content="%PUBLIC_URL%/img/meta.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -52,10 +50,7 @@
       property="twitter:description"
       content="RDFShape is an RDF service where you can play with semantic web formats and validation mechanisms."
     />
-    <meta
-      property="twitter:image"
-      content="%PUBLIC_URL%/img/meta.png"
-    />
+    <meta property="twitter:image" content="%PUBLIC_URL%/img/meta.png" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

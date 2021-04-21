@@ -33,6 +33,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# ENV tweaks
+.env-config.js
+/public/env-config.js
+
 .idea
 *.iml
 .netlify
