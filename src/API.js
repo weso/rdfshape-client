@@ -1,8 +1,12 @@
 /** This class contains global definitions */
-// TODO: Global definitions in React could better be deined using Contexts?
+
+import environmentConfiguration from "./EnvironmentConfig";
+
+
+console.log("HOST: " + environmentConfiguration.apiHost);
 class API {
   // Routes in server
-  static rootApi = process.env.REACT_APP_RDFSHAPE_HOST + "/api/"; // "http(s)://localhost:8080/api/";
+  static rootApi = environmentConfiguration.apiHost + "/api/"; // "http(s)://localhost:8080/api/";
 
   static healthServer = API.rootApi + "health";
   static dataInfo = API.rootApi + "data/info";

@@ -1,32 +1,37 @@
-## Build environment.
-
-# Build application inside /app
-# Resulting build in /app/build
-FROM node:14.16.1-alpine as build
+## Build environment. Resulting build in /app/build
+FROM node:alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 # Avoid JS heap out of memory when building
 ARG NODE_OPTIONS=--max-old-space-size=3000
 
-# Backend location. Override with: --build-arg RDFSHAPE_HOST=[LOCATION]
-ARG RDFSHAPE_HOST=https://rdfshape.weso.es:8080
-ENV REACT_APP_RDFSHAPE_HOST ${RDFSHAPE_HOST}
-
-# Copy dependency list
-COPY package.json ./
-COPY package-lock.json ./
+# Backend location defaults to what is in .env file when the image was built.
 
 # Install dependencies
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm ci --silent
 
-# Copy all application files and trigger react build
+# Copy application files and build
 COPY . ./
 RUN npm run build
 
 ## Prod environment.
 FROM nginx:stable-alpine as prod
-COPY --from=build /app/build /usr/share/nginx/html
-# Custom nginx config for react routing
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /usr/share/nginx/html
+
+# Add bash
+RUN apk add --no-cache bash
+# Copy custom nginx config (react routing, compression...)
+COPY nginx/*.conf /etc/nginx/conf.d/
+
+# Copy react app build and files needed to set environment
+COPY --from=build /app/build .
+# Script to make ENV vars available to the app
+COPY env.sh .
+COPY .env .
+RUN chmod +x env.sh
+
+# Run
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
