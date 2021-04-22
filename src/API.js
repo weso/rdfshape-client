@@ -3,7 +3,6 @@
 import environmentConfiguration from "./EnvironmentConfig";
 
 
-console.log("HOST: " + environmentConfiguration.apiHost);
 class API {
   // Routes in server
   static rootApi = environmentConfiguration.apiHost + "/api/"; // "http(s)://localhost:8080/api/";
