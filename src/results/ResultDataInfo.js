@@ -5,7 +5,13 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { mkMode } from "../utils/Utils";
 
-function ResultDataInfo({ result }) {
+function ResultDataInfo({
+  result,
+  permalink,
+  disabled,
+  fromParams,
+  resetFromParams,
+}) {
   let msg = null;
   if (result) {
     const mode = mkMode(result.dataFormat);
@@ -23,8 +29,8 @@ function ResultDataInfo({ result }) {
               mode={mode}
               readOnly={true}
               onChange={() => {}}
-              fromParams={props.fromParams}
-              resetFromParams={props.resetFromParams}
+              fromParams={fromParams}
+              resetFromParams={resetFromParams}
             />
           )}
           <br />
@@ -37,10 +43,10 @@ function ResultDataInfo({ result }) {
           <details>
             <PrintJson json={result} />
           </details>
-          {props.permalink && (
+          {permalink && (
             <Fragment>
               <hr />
-              <Permalink url={props.permalink} disabled={props.disabled} />
+              <Permalink url={permalink} disabled={disabled} />
             </Fragment>
           )}
         </div>
@@ -49,5 +55,9 @@ function ResultDataInfo({ result }) {
     return <div>{msg}</div>;
   }
 }
+
+ResultDataInfo.defaultProps = {
+  disabled: false,
+};
 
 export default ResultDataInfo;
