@@ -38,7 +38,7 @@ This client is already deployed [here](http://rdfshape.weso.es).
 ### Running containers
 * When running a container, you may provide the following environment variables
   via `--env`:
-    * **RDFSHAPE_HOST** [optional]: Location where this client will look for the RDFShape API. Defaults to our current deployment at https://rdfshape.weso.es:8080.
+    * **RDFSHAPE_HOST** [optional]: Location where this client will look for the RDFShape API. Defaults to our current deployment at https://api.rdfshape.weso.es.
 
 ### Supported tags
 - _:stable_: Stable build updated manually.
