@@ -18,9 +18,9 @@ function ResultDataExtract(props) {
      } else {
          msg = <div>
              <p>{result.msg}</p>
-             {result.inferedShape && (
+             {result.inferredShape && (
                  <Code
-                     value={result.inferedShape}
+                     value={result.inferredShape}
                      mode="ShExC"
                      readOnly={true}
                      fromParams={props.fromParams}
