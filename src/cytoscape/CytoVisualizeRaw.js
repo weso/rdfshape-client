@@ -81,7 +81,10 @@ function CytoVisualizeRaw(props) {
         processData(data);
         if (cb) cb();
       })
-      .catch((error) => setError(error.toString()))
+      .catch((error) => {
+        const errorCause = error.response?.data?.error || error;
+        setError(`Error response from ${url}: ${errorCause}`);
+      })
       .finally(() => {
         setLoading(false);
       });

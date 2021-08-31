@@ -307,3 +307,11 @@ table td {
 #resultform .langstring-div div:first-of-type {
   display: contents;
 }
+
+/* Make navigation text clearer */
+#navigation :where(.dropdown > a, .nav-link) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+#navigation :where(.dropdown > a, .nav-link):where(:hover, :focus) {
+  color: rgba(255, 255, 255, 1) !important;
+}

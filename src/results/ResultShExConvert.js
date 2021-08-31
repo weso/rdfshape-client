@@ -13,18 +13,18 @@ function ResultShExConvert(props) {
   if (result === "") {
         msg = null
   }
-  else if (result.error || result.msg.toLowerCase().startsWith("error")) {
+  else if (result.error || result.message.toLowerCase().startsWith("error")) {
     msg =
       <div>
         <Alert variant="danger">Invalid ShEx schema</Alert>
         <ul>
-          <li className="word-break">{result.error || result.msg}</li>
+          <li className="word-break">{result.error || result.message}</li>
         </ul>
       </div>
     }
   else {
     msg = <div>
-      <Alert variant="success">{result.msg}</Alert>
+      <Alert variant="success">{result.message}</Alert>
          {result.result && (
          <Code
            value={result.result}

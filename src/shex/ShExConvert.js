@@ -106,7 +106,6 @@ function ShExConvert(props) {
     setLoading(true);
     setProgressPercent(20);
     const formData = params2Form(params);
-    formData.append("targetSchemaFormat", targetSchemaFormat);
 
     axios
       .post(url, formData)
@@ -121,7 +120,8 @@ function ShExConvert(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError("Error calling server at " + url + ": " + error);
+        const errorCause = error.response?.data?.error || error
+        setError(errorCause);
       })
       .finally(() => setLoading(false));
   }

@@ -34,20 +34,16 @@ export function paramsFromStateShEx(state) {
   const file = state.file;
   let params = {};
   params["activeSchemaTab"] = convertTabSchema(activeTab);
-  params["schemaEmbedded"] = false;
   params["schemaFormat"] = format;
   switch (activeTab) {
     case API.byTextTab:
       params["schema"] = textArea.trim();
-      params["schemaFormatTextArea"] = format;
       break;
     case API.byUrlTab:
       params["schemaURL"] = url.trim();
-      params["schemaFormatUrl"] = format;
       break;
     case API.byFileTab:
       params["schemaFile"] = file;
-      params["schemaFormatFile"] = format;
       break;
     default:
   }

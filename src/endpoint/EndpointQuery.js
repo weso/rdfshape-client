@@ -10,12 +10,12 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
-    getQueryText,
-    InitialQuery,
-    mkQueryTabs,
-    paramsFromStateQuery,
-    queryParamsFromQueryParams,
-    updateStateQuery
+  getQueryText,
+  InitialQuery,
+  mkQueryTabs,
+  paramsFromStateQuery,
+  queryParamsFromQueryParams,
+  updateStateQuery,
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { endpointParamsFromQueryParams } from "./Endpoint";
@@ -69,7 +69,13 @@ function EndpointQuery(props) {
   useEffect(() => {
     if (params && !loading) {
       if (!params.endpoint) setError("No endpoint provided");
-      else if (!(params.query || params.queryURL || (params.queryFile && params.queryFile.name)))
+      else if (
+        !(
+          params.query ||
+          params.queryURL ||
+          (params.queryFile && params.queryFile.name)
+        )
+      )
         setError("No query provided");
       else {
         resetState();
@@ -131,9 +137,8 @@ function EndpointQuery(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error}.\n Did you input a valid SPARQL endpoint and query?`
-        );
+        const errorCause = error.response?.data?.error || error;
+        setError(`${errorCause}`);
       })
       .finally(() => {
         setLoading(false);
@@ -227,7 +232,7 @@ function EndpointQuery(props) {
                 permalink={permalink}
                 disabled={
                   getQueryText(query).length + endpoint.length >
-                    API.byTextCharacterLimit
+                  API.byTextCharacterLimit
                     ? API.byTextTab
                     : query.activeTab === API.byFileTab
                     ? API.byFileTab

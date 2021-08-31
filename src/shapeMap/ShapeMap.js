@@ -33,7 +33,7 @@ export function paramsFromStateShapeMap(state) {
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["shapeMapActiveTab"] = convertTabShapeMap(activeTab);
+  params["activeShapeMapTab"] = convertTabShapeMap(activeTab);
   params["shapeMapFormat"] = format;
   switch (activeTab) {
     case "byText":

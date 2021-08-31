@@ -17,7 +17,7 @@ function ResultDataExtract(props) {
              </div>
      } else {
          msg = <div>
-             <p>{result.msg}</p>
+             <p>{result.message}</p>
              {result.inferredShape && (
                  <Code
                      value={result.inferredShape}

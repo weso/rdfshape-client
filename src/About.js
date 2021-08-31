@@ -47,7 +47,7 @@ function About() {
       </p>
       <ul>
         <li>
-          RDFShape Version {environmentConfiguration.appVersion} [
+          RDFShape Client {environmentConfiguration.appVersion} [
           {process.env.NODE_ENV}]
         </li>
         <li>Server host: {environmentConfiguration.apiHost}</li>
@@ -56,27 +56,27 @@ function About() {
           Source code:
           <ul>
             <li>
-              <a href="https://github.com/labra/rdfshape-client">Client</a>
+              <a href="https://github.com/weso/rdfshape-client">Client</a>
             </li>
             <li>
-              <a href="https://github.com/labra/rdfshape">Server</a>
+              <a href="https://github.com/weso/rdfshape">Server</a>
             </li>
             <li>
-              <a href="https://github.com/labra/shaclex">
-                validation libraries
-              </a>
+              <a href="https://github.com/weso/shaclex">Validation libraries</a>
             </li>
           </ul>
         </li>
         <li>
-          <a href="https://github.com/labra/shaclex/issues/4">SHEX Features</a>
+          RDFShape Project{" "}
+          <a href="https://www.weso.es/rdfshape-api/">webpage</a>
         </li>
         <li>
-          <a href="https://github.com/labra/shaclex/issues/2">SHACL Features</a>
+          RDFShape Project{" "}
+          <a href="https://github.com/weso/rdfshape/">repository</a>
         </li>
         <li>
           Info about the languages:{" "}
-          <a href="http://book.validatingrdf.com">Validating RDF data book</a>
+          <a href="http://book.validatingrdf.com">"Validating RDF Data" book</a>
         </li>
       </ul>
       <details>

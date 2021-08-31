@@ -16,13 +16,13 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "../data/Data";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 
-function CytoVisualize(props) {
+function DataVisualizeCyto(props) {
   const url = API.dataConvert;
   const cose = "cose";
   const circle = "circle";
@@ -117,7 +117,10 @@ function CytoVisualize(props) {
         if (cb) cb();
         setProgressPercent(100);
       })
-      .catch((error) => setError(error.toString()))
+      .catch((error) => {
+        const errorCause = error.response?.data?.error || error;
+        setError(`Error response from ${url}: ${errorCause}`);
+      })
       .finally(() => {
         setLoading(false);
         window.scrollTo(0, 0);
@@ -278,4 +281,4 @@ export const generateDownloadLink = (refCyto) => {
   };
 };
 
-export default CytoVisualize;
+export default DataVisualizeCyto;

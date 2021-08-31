@@ -73,7 +73,8 @@ function ShExVisualizeRaw(props) {
         if (cb) cb();
       })
       .catch(function(error) {
-        setError(`Error doing request to ${url}: ${error}`);
+        const errorCause = error.response?.data?.error || error
+        setError(`Error doing request to ${url}: ${errorCause}`);
       })
       .finally(() => setLoading(false));
   }

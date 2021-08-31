@@ -22,7 +22,7 @@ function EndpointInfo(props) {
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
-  const infoUrl = API.endpointInfo;
+  const url = API.endpointInfo;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -71,7 +71,7 @@ function EndpointInfo(props) {
     const formData = params2Form(params);
 
     axios
-      .post(infoUrl, formData)
+      .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
@@ -80,8 +80,9 @@ function EndpointInfo(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
+        const errorCause = error.response?.data?.error || error;
         setError(
-          `Error calling server at ${infoUrl}: ${error}. Did you input a valid SPARQL endpoint?`
+          `${errorCause}. Did you input a valid SPARQL endpoint?`
         );
       })
       .finally(() => setLoading(false));

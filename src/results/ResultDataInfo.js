@@ -17,12 +17,12 @@ function ResultDataInfo({
     const mode = mkMode(result.dataFormat);
     if (result.error) {
       msg = <Alert variant="danger">{result.error}</Alert>;
-    } else if (result.msg && result.msg.toLowerCase().startsWith("error")) {
-      msg = <Alert variant="danger">{result.msg}</Alert>;
+    } else if (result.message && result.message.toLowerCase().startsWith("error")) {
+      msg = <Alert variant="danger">{result.message}</Alert>;
     } else {
       msg = (
         <div>
-          <Alert variant="success">{result.msg}</Alert>
+          <Alert variant="success">{result.message}</Alert>
           {result.data && result.dataFormat && (
             <Code
               value={result.data}
@@ -35,7 +35,7 @@ function ResultDataInfo({
           )}
           <br />
           <ul>
-            <li>Number of statements: {result.numberStatements}</li>
+            <li>Number of statements: {result.numberOfStatements}</li>
             <li>
               DataFormat: <span>{result.dataFormat}</span>
             </li>

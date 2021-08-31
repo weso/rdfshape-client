@@ -93,8 +93,9 @@ function ShapeMapInfo(props) {
         if (cb) cb();
         setProgressPercent(100);
       })
-      .catch(function(error) {
-        setError(`Error calling server at ${url}: ${error}.\n Try again later`);
+      .catch( error => {
+        const errorCause = error.response?.data?.error || error
+        setError(`Error response from ${url}: ${errorCause}`);
       })
       .finally(() => {
         setLoading(false);

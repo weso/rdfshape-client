@@ -76,21 +76,18 @@ export function convertTabData(key) {
 
 export function paramsFromStateData(data) {
   let params = {};
-  params["activeTab"] = convertTabData(data.activeTab);
+  params["activeDataTab"] = convertTabData(data.activeTab);
   params["dataFormat"] = data.format;
   params["inference"] = data.inference;
   switch (data.activeTab) {
     case API.byTextTab:
       params["data"] = data.textArea.trim();
-      params["dataFormatTextArea"] = data.format;
       break;
     case API.byUrlTab:
       params["dataURL"] = data.url.trim();
-      params["dataFormatUrl"] = data.format;
       break;
     case API.byFileTab:
       params["dataFile"] = data.file;
-      params["dataFormatFile"] = data.format;
       break;
     default:
   }

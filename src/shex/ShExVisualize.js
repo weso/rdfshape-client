@@ -126,7 +126,8 @@ function ShExVisualize(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(`Error doing request to ${url}: ${error}`);
+        const errorCause = error.response?.data?.error || error
+        setError(errorCause);
       })
       .finally(() => setLoading(false));
   }

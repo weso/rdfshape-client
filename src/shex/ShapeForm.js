@@ -109,20 +109,16 @@ export default function ShEx2XMI(props) {
   function mkServerParams(source, format) {
     let params = {};
     params["activeSchemaTab"] = convertTabSchema(source.activeTab);
-    params["schemaEmbedded"] = false;
     params["schemaFormat"] = source.format;
     switch (source.activeTab) {
       case API.byTextTab:
         params["schema"] = source.textArea;
-        params["schemaFormatTextArea"] = source.format;
         break;
       case API.byUrlTab:
         params["schemaURL"] = source.url;
-        params["schemaFormatUrl"] = source.format;
         break;
       case API.byFileTab:
         params["schemaFile"] = source.file;
-        params["schemaFormatFile"] = source.format;
         break;
       default:
     }

@@ -190,8 +190,9 @@ function ShExValidate(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
+        const errorCause = error.response?.data?.error || error
         setError(
-          `Error calling server at ${url}: ${error.message}.\n Try again later.`
+          `Error calling server at ${url}: ${errorCause}.\n Try again later.`
         );
       })
       .finally(() => setLoading(false));

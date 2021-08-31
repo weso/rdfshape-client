@@ -108,20 +108,16 @@ export default function ShEx2Shacl(props) {
   function mkServerParams(shex, format) {
     let params = {};
     params["activeSchemaTab"] = convertTabSchema(shex.activeTab);
-    params["schemaEmbedded"] = false;
     params["schemaFormat"] = shex.format;
     switch (shex.activeTab) {
       case API.byTextTab:
         params["schema"] = shex.textArea;
-        params["schemaFormatTextArea"] = shex.format;
         break;
       case API.byUrlTab:
         params["schemaURL"] = shex.url;
-        params["schemaFormatUrl"] = shex.format;
         break;
       case API.byFileTab:
         params["schemaFile"] = shex.file;
-        params["schemaFormatFile"] = shex.format;
         break;
       default:
     }

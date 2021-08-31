@@ -106,7 +106,8 @@ function DataConvert(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError("Error response from " + url + ": " + error.toString());
+        const errorCause = error.response?.data?.error || error
+        setError(`Error response from ${url}: ${errorCause}`);
       })
       .finally(() => setLoading(false));
   }

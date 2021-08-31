@@ -108,47 +108,20 @@ export function paramsFromStateShacl(state) {
   params["schemaFormat"] = format;
   params["schemaEngine"] = engine;
   params["schemaInference"] = inference;
-  params["schemaEmbedded"] = false;
   switch (activeTab) {
     case API.byTextTab:
       params["schema"] = textArea.trim();
-      params["schemaFormatTextArea"] = format;
       break;
     case API.byUrlTab:
       params["schemaURL"] = url.trim();
-      params["schemaFormatUrl"] = format;
       break;
     case API.byFileTab:
       params["schemaFile"] = file;
-      params["schemaFormatFile"] = format;
       break;
     default:
   }
   return params;
 }
-
-/*export function paramsFromShacl(status) {
-    let params = {};
-    params['activeSchemaTab'] = convertTabSchema(status.shaclActiveTab);
-    params['schemaEmbedded'] = false;
-    params['schemaFormat'] = status.shaclFormat;
-    switch (status.shaclActiveTab) {
-        case API.byTextTab:
-            params['schema'] = status.shaclTextArea;
-            params['schemaFormatTextArea'] = status.shaclFormat;
-            break;
-        case API.byUrlTab:
-            params['schemaURL'] = status.shaclUrl;
-            params['schemaFormatUrl'] = status.shaclFormat;
-            break;
-        case API.byFileTab:
-            params['schemaFile'] = status.shaclFile;
-            params['schemaFormatFile'] = status.shaclFormat;
-            break;
-        default:
-    }
-    return params;
-}*/
 
 export function shaclParamsFromQueryParams(params) {
   let newParams = {};

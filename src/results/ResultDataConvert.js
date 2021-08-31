@@ -20,7 +20,7 @@ function ResultDataConvert({
   } else {
     msg = (
       <div>
-        <Alert variant="success">{result.msg}</Alert>
+        <Alert variant="success">{result.message}</Alert>
         {result.result && result.dataFormat && (
           <Code
             value={result.result}

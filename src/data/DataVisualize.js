@@ -126,7 +126,8 @@ function DataVisualize(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(`Error response from ${url}: ${error.message.toString()}`);
+        const errorCause = error.response?.data?.error || error.message
+        setError(`Error response from ${url}: ${errorCause}`);
       })
       .finally(() => {
         setLoading(false);

@@ -54,20 +54,16 @@ function WikidataValidate(props) {
   function paramsFromShEx(shExStatus) {
     let params = {};
     params["activeSchemaTab"] = convertTabSchema(shExStatus.shExActiveTab);
-    params["schemaEmbedded"] = false;
     params["schemaFormat"] = shExStatus.shExFormat;
     switch (shExStatus.shExActiveTab) {
       case API.byTextTab:
         params["schema"] = shExStatus.shExTextArea;
-        params["schemaFormatTextArea"] = shExStatus.shExFormat;
         break;
       case API.byUrlTab:
         params["schemaURL"] = shExStatus.shExUrl;
-        params["schemaFormatUrl"] = shExStatus.shExFormat;
         break;
       case API.byFileTab:
         params["schemaFile"] = shExStatus.shExFile;
-        params["schemaFormatFile"] = shExStatus.shExFormat;
         break;
       default:
     }

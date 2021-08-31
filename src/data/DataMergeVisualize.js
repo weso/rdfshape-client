@@ -147,7 +147,8 @@ function DataMergeVisualize(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(`Error doing request to ${url}: ${error.message}`);
+        const errorCause = error.response?.data?.error || error.message
+        setError(`Error doing request to ${url}: ${errorCause}`);
       })
       .finally(() => {
         setLoading(false);
