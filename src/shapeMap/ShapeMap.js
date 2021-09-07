@@ -38,15 +38,12 @@ export function paramsFromStateShapeMap(state) {
   switch (activeTab) {
     case "byText":
       params["shapeMap"] = textArea.trim();
-      params["shapeMapFormatTextArea"] = format;
       break;
     case "byUrl":
       params["shapeMapURL"] = url.trim();
-      params["shapeMapFormatURL"] = format;
       break;
     case "byFile":
       params["shapeMapFile"] = file;
-      params["shapeMapFormatFile"] = format;
       break;
     default:
   }

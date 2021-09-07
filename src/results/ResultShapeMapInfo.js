@@ -14,7 +14,7 @@ function ResultShapeMapInfo(props) {
     } else {
       msg = (
         <div>
-          <Alert variant="success">{result.msg}</Alert>
+          <Alert variant="success">{result.message}</Alert>
           {result.shapeMap && result.shapeMapFormat && (
             <Code
               value={result.shapeMap}
