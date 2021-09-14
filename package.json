@@ -36,7 +36,7 @@
     "react-scripts": "^3.4.4",
     "react-toastify": "^7.0.3",
     "react-tooltip": "^4.2.11",
-    "shumlex": "^0.4.2",
+    "shumlex": "^0.5.2",
     "viz.js": "^2.1.2",
     "xml-formatter": "^2.4.0",
     "yasgui-yasqe": "^2.11.22",
