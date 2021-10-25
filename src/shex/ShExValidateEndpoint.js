@@ -21,6 +21,7 @@ import {
   shapeMapParamsFromQueryParams,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
+import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
   InitialShEx,
@@ -59,7 +60,7 @@ function ShExValidateEndpoint(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const shexParams = shExParamsFromQueryParams(queryParams);
@@ -70,7 +71,7 @@ function ShExValidateEndpoint(props) {
 
       if (
         queryParams.shapeMap ||
-        queryParams.shapeMapURL ||
+        queryParams.shapeMapUrl ||
         queryParams.shapeMapFile
       ) {
         const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
@@ -105,7 +106,7 @@ function ShExValidateEndpoint(props) {
       else if (
         !(
           params.schema ||
-          params.schemaURL ||
+          params.schemaUrl ||
           (params.schemaFile && params.schemaFile.name)
         )
       )
@@ -113,7 +114,7 @@ function ShExValidateEndpoint(props) {
       else if (
         !(
           params.shapeMap ||
-          params.shapeMapURL ||
+          params.shapeMapUrl ||
           (params.shapeMapFile && params.shapeMapFile.name)
         )
       )
@@ -162,9 +163,7 @@ function ShExValidateEndpoint(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error.message}.\n Did you input a valid endpoint?`
-        );
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

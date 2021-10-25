@@ -19,6 +19,7 @@ import {
   updateStateData,
 } from "../data/Data";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 
@@ -45,7 +46,7 @@ function DataVisualizeCyto(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
@@ -56,7 +57,6 @@ function DataVisualizeCyto(props) {
 
         const params = {
           ...paramsFromStateData(paramsData),
-          targetDataFormat: "JSON",
           layout: queryParams.layout || layout,
         };
 
@@ -72,7 +72,7 @@ function DataVisualizeCyto(props) {
     if (params) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         resetState();
@@ -102,14 +102,15 @@ function DataVisualizeCyto(props) {
   function postConvert(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "JSON"); // Converts to JSON elements which are visualized by Cytoscape
+    formData.append("targetDataFormat", "JSON"); // The server converts the data to JSON. The client later visualizes with Cytoscape
     setProgressPercent(20);
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
-        processData(data);
+        const rdfAsJson = data.result.data; // Raw data converted to JSON, as received from server
+        processData(rdfAsJson);
         setProgressPercent(80);
         setPermalink(mkPermalinkLong(API.cytoVisualizeRoute, params));
         setEmbedLink(mkPermalinkLong(API.cytoVisualizeRouteRaw, params));
@@ -118,8 +119,7 @@ function DataVisualizeCyto(props) {
         setProgressPercent(100);
       })
       .catch((error) => {
-        const errorCause = error.response?.data?.error || error;
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);
@@ -127,12 +127,12 @@ function DataVisualizeCyto(props) {
       });
   }
 
+  /* Given the JSON data that the server created from the RDF, create the elements
+  for the Cyto visualization
+  */
   function processData(data) {
-    if (data.error) setError(data.error);
-    else {
-      const elements = JSON.parse(data.result);
-      setElements(elements);
-    }
+    const elements = JSON.parse(data);
+    setElements(elements);
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file

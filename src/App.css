@@ -51,3 +51,7 @@ html {
 .jumbotron {
   background-color: white !important;
 }
+
+.code {
+  font-family: monospace !important;
+}

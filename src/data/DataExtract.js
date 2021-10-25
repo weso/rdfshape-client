@@ -13,6 +13,7 @@ import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
+import { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
@@ -40,7 +41,7 @@ function DataExtract(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = {
           ...dataParamsFromQueryParams(queryParams),
           nodeSelector: queryParams.nodeSelector || nodeSelector,
@@ -58,7 +59,7 @@ function DataExtract(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      if (params.data || params.dataUrl || params.dataFile) {
         resetState();
         setUpHistory();
         postExtract();
@@ -96,8 +97,7 @@ function DataExtract(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

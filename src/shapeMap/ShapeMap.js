@@ -33,14 +33,14 @@ export function paramsFromStateShapeMap(state) {
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["activeShapeMapTab"] = convertTabShapeMap(activeTab);
+  params["activeShapeMapSource"] = convertTabShapeMap(activeTab);
   params["shapeMapFormat"] = format;
   switch (activeTab) {
     case "byText":
       params["shapeMap"] = textArea.trim();
       break;
     case "byUrl":
-      params["shapeMapURL"] = url.trim();
+      params["shapeMapUrl"] = url.trim();
       break;
     case "byFile":
       params["shapeMapFile"] = file;
@@ -62,11 +62,11 @@ export function updateStateShapeMap(params, shapeMap) {
         : API.defaultShapeMapFormat,
     };
   }
-  if (params["shapeMapURL"]) {
+  if (params["shapeMapUrl"]) {
     return {
       ...shapeMap,
       activeTab: API.byUrlTab,
-      url: params["shapeMapURL"],
+      url: params["shapeMapUrl"],
       fromParams: false,
       format: params["shapeMapFormat"]
         ? params["shapeMapFormat"]
@@ -92,7 +92,7 @@ export function shapeMapParamsFromQueryParams(params) {
   if (params.shapeMap) newParams["shapeMap"] = params.shapeMap;
   if (params.shapeMapFormat)
     newParams["shapeMapFormat"] = params.shapeMapFormat;
-  if (params.shapeMapURL) newParams["shapeMapURL"] = params.shapeMapURL;
+  if (params.shapeMapUrl) newParams["shapeMapUrl"] = params.shapeMapUrl;
   if (params.shapeMapFile) newParams["shapeMapFile"] = params.shapeMapFile;
   return newParams;
 }

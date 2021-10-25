@@ -11,13 +11,14 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
+import ResponseError, { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "./Data";
 
 function DataInfo(props) {
@@ -40,7 +41,7 @@ function DataInfo(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
@@ -59,7 +60,7 @@ function DataInfo(props) {
     if (params && !loading) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         resetState();
@@ -95,8 +96,7 @@ function DataInfo(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError("Error response from " + url + ": " + errorCause);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

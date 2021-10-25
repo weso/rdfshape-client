@@ -12,6 +12,7 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShEx2Shacl from "../results/ResultShEx2Shacl";
+import { mkError } from "../utils/ResponseError";
 import {
   convertTabSchema,
   getShexText,
@@ -46,7 +47,7 @@ export default function ShEx2Shacl(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
@@ -77,7 +78,7 @@ export default function ShEx2Shacl(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -107,14 +108,14 @@ export default function ShEx2Shacl(props) {
 
   function mkServerParams(shex, format) {
     let params = {};
-    params["activeSchemaTab"] = convertTabSchema(shex.activeTab);
+    params["activeSchemaSource"] = convertTabSchema(shex.activeTab);
     params["schemaFormat"] = shex.format;
     switch (shex.activeTab) {
       case API.byTextTab:
         params["schema"] = shex.textArea;
         break;
       case API.byUrlTab:
-        params["schemaURL"] = shex.url;
+        params["schemaUrl"] = shex.url;
         break;
       case API.byFileTab:
         params["schemaFile"] = shex.file;
@@ -154,7 +155,7 @@ export default function ShEx2Shacl(props) {
             schemaFormat: params.schemaFormat,
             targetSchemaFormat: params.targetSchemaFormat,
             schema: params.schema || undefined,
-            schemaURL: params.schemaURL || undefined,
+            schemaUrl: params.schemaUrl || undefined,
             schemaFile: params.schemaFile || undefined,
           })
         );
@@ -164,9 +165,7 @@ export default function ShEx2Shacl(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error}\n. Try again later.`
-        );
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }
@@ -198,7 +197,7 @@ export default function ShEx2Shacl(props) {
           schemaFormat: lastParams.schemaFormat,
           targetSchemaFormat: lastParams.targetSchemaFormat,
           schema: lastParams.schema || undefined,
-          schemaURL: lastParams.schemaURL || undefined,
+          schemaUrl: lastParams.schemaUrl || undefined,
           schemaFile: lastParams.schemaFile || undefined,
         })
       );
@@ -212,7 +211,7 @@ export default function ShEx2Shacl(props) {
         schemaFormat: params.schemaFormat,
         targetSchemaFormat: params.targetSchemaFormat,
         schema: params.schema || undefined,
-        schemaURL: params.schemaURL || undefined,
+        schemaUrl: params.schemaUrl || undefined,
         schemaFile: params.schemaFile || undefined,
       })
     );

@@ -1,10 +1,12 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
+import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import { mkMode } from "../utils/Utils";
 
 function ResultShapeMapInfo(props) {
+  const successMessage = "Well formed ShapeMap";
   const result = props.result;
   let msg = null;
   if (result) {
@@ -14,7 +16,7 @@ function ResultShapeMapInfo(props) {
     } else {
       msg = (
         <div>
-          <Alert variant="success">{result.message}</Alert>
+          <Alert variant="success">{successMessage}</Alert>
           {result.shapeMap && result.shapeMapFormat && (
             <Code
               value={result.shapeMap}
@@ -32,6 +34,7 @@ function ResultShapeMapInfo(props) {
             </Fragment>
           )}
           <details>
+            <summary>{API.responseSummaryText}</summary>
             <pre>{JSON.stringify(result)}</pre>
           </details>
         </div>

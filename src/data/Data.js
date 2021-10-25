@@ -29,11 +29,11 @@ export function updateStateData(params, data) {
         : API.defaultInference,
     };
   }
-  if (params["dataURL"]) {
+  if (params["dataUrl"]) {
     return {
       ...data,
       activeTab: API.byUrlTab,
-      url: params["dataURL"],
+      url: params["dataUrl"],
       fromParams: false,
       format: params["dataFormat"]
         ? params["dataFormat"]
@@ -76,7 +76,7 @@ export function convertTabData(key) {
 
 export function paramsFromStateData(data) {
   let params = {};
-  params["activeDataTab"] = convertTabData(data.activeTab);
+  params["activeDataSource"] = convertTabData(data.activeTab);
   params["dataFormat"] = data.format;
   params["inference"] = data.inference;
   switch (data.activeTab) {
@@ -84,7 +84,7 @@ export function paramsFromStateData(data) {
       params["data"] = data.textArea.trim();
       break;
     case API.byUrlTab:
-      params["dataURL"] = data.url.trim();
+      params["dataUrl"] = data.url.trim();
       break;
     case API.byFileTab:
       params["dataFile"] = data.file;
@@ -98,9 +98,6 @@ export function mkDataTabs(data, setData, name, subname) {
   function handleDataTabChange(value) {
     setData({ ...data, activeTab: value });
   }
-  function handleDataFormatChange(value) {
-    setData({ ...data, format: value });
-  }
   function handleDataByTextChange(value) {
     setData({ ...data, textArea: value });
   }
@@ -109,6 +106,9 @@ export function mkDataTabs(data, setData, name, subname) {
   }
   function handleDataFileUpload(value) {
     setData({ ...data, file: value });
+  }
+  function handleDataFormatChange(value) {
+    setData({ ...data, format: value });
   }
   function handleInferenceChange(value) {
     setData({ ...data, inference: value });

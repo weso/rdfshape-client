@@ -29,7 +29,7 @@ function ShowVisualization({ data, zoom }) {
       ret = <PrintJson json={data} overflow={false}></PrintJson>;
       break;
 
-    // DOT, PS (String)
+    // DOT, PS, (String)
     default:
       ret = <PrintXml xml={data} overflow={false}></PrintXml>;
       break;

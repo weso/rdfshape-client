@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import Alert from "react-bootstrap/Alert";
+import API from "../API";
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
 
@@ -37,6 +38,7 @@ function ResultShExVisualize({ result, zoom, showDetails }) {
             <PrintSVG svg={result.svg} />
           </div>
           <details>
+            <summary>{API.responseSummaryText}</summary>
             <PrintJson json={result} />
           </details>
         </>

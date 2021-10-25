@@ -33,14 +33,14 @@ export function paramsFromStateShEx(state) {
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["activeSchemaTab"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertTabSchema(activeTab);
   params["schemaFormat"] = format;
   switch (activeTab) {
     case API.byTextTab:
       params["schema"] = textArea.trim();
       break;
     case API.byUrlTab:
-      params["schemaURL"] = url.trim();
+      params["schemaUrl"] = url.trim();
       break;
     case API.byFileTab:
       params["schemaFile"] = file;
@@ -60,11 +60,11 @@ export function updateStateShEx(params, shex) {
       format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
     };
   }
-  if (params["schemaURL"]) {
+  if (params["schemaUrl"]) {
     return {
       ...shex,
       activeTab: API.byUrlTab,
-      url: params["schemaURL"],
+      url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
     };
@@ -126,7 +126,7 @@ export function shExParamsFromQueryParams(params) {
   let newParams = {};
   if (params.schema) newParams["schema"] = params.schema;
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
   if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
   return newParams;
 }

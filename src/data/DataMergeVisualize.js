@@ -12,6 +12,7 @@ import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { mkError } from "../utils/ResponseError";
 import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
@@ -31,7 +32,7 @@ function DataMergeVisualize(props) {
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [targetDataFormat] = useState("dot");
-  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
+  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
@@ -48,9 +49,6 @@ function DataMergeVisualize(props) {
   const maxSvgZoom = maxZoom;
   const svgZoomStep = stepZoom;
 
-  function handleTargetGraphFormatChange(value) {
-    setTargetGraphFormat(value);
-  }
 
   useEffect(() => {
     if (props.location?.search) {
@@ -62,22 +60,17 @@ function DataMergeVisualize(props) {
           const newData1 = updateStateData(contents[0], data1) || data1;
           const newData2 = updateStateData(contents[1], data2) || data2;
 
-          if (queryParams.targetGraphFormat) {
-            setTargetGraphFormat(queryParams.targetGraphFormat);
-          }
-
           setData1(newData1);
           setData2(newData2);
 
           setParams({
             ...queryParams,
-            targetGraphFormat:
-              queryParams.targetGraphFormat || targetGraphFormat,
+            targetGraphicalFormat
           });
           setLastParams({
             ...queryParams,
             targetGraphFormat:
-              queryParams.targetGraphFormat || targetGraphFormat,
+              queryParams.targetGraphFormat || targetGraphicalFormat,
           });
         } catch {
           setError("Could not parse URL data");
@@ -95,7 +88,7 @@ function DataMergeVisualize(props) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
         )
       ) {
         // Check if some data was uploaded
@@ -113,8 +106,8 @@ function DataMergeVisualize(props) {
     return { compoundData: JSON.stringify([params1, params2]) };
   }
 
-  function processData(d, targetFormat) {
-    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  function processData(dot, targetFormat) {
+    convertDot(dot, "dot", targetFormat, setError, setVisualization);
   }
 
   async function handleSubmit(event) {
@@ -123,22 +116,24 @@ function DataMergeVisualize(props) {
     let params2 = paramsFromStateData(data2);
     setParams({
       ...mergeParams(params1, params2),
-      targetDataFormat,
-      targetGraphFormat,
-    }); // It converts to dot in the server
+      targetGraphicalFormat,
+    });
   }
 
   function postVisualize(cb) {
     setLoading(true);
     setProgressPercent(15);
     const formData = params2Form(params);
+    formData.append("targetDataFormat", "DOT"); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
+
     setProgressPercent(35);
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
-        processData(data, targetGraphFormat);
+        const dot = data.result.data; // Get the DOT string from the axios data object
+        processData(dot, targetGraphicalFormat);
         setPermalink(mkPermalinkLong(API.dataMergeVisualizeRoute, params));
         setEmbedLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
         setProgressPercent(80);
@@ -147,8 +142,7 @@ function DataMergeVisualize(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error.message
-        setError(`Error doing request to ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);
@@ -224,12 +218,6 @@ function DataMergeVisualize(props) {
             <hr />
             {mkDataTabs(data2, setData2, "RDF Input 2")}
             <hr />
-            <SelectFormat
-              name="Target visualization format"
-              handleFormatChange={handleTargetGraphFormatChange}
-              urlFormats={API.dataVisualFormats}
-              selectedFormat={targetGraphFormat}
-            />
             <Button
               id="submit"
               variant="primary"

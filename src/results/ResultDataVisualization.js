@@ -3,9 +3,6 @@ import Viz from "viz.js/viz.js";
 import Cyto from "../components/Cyto";
 const { Module, render } = require("viz.js/full.render.js");
 
-// const Viz = require('viz.js/viz.es.js');
-// const { Module, render } = require('viz.js/full.render.js');
-
 function mkInner(inner) {
   return { __html: inner };
 }

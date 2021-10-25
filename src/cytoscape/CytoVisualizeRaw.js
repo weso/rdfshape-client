@@ -7,7 +7,7 @@ import Cyto from "../components/Cyto";
 import {
   InitialData,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "../data/Data";
 import { params2Form } from "../Permalink";
 import { dataParamsFromQueryParams } from "../utils/Utils";
@@ -34,7 +34,7 @@ function CytoVisualizeRaw(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
@@ -60,7 +60,7 @@ function CytoVisualizeRaw(props) {
     if (params) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         postConvert();
@@ -78,7 +78,8 @@ function CytoVisualizeRaw(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        processData(data);
+        const rdfAsJson = data.result.data; // Raw data converted to JSON, as received from server
+        processData(rdfAsJson);
         if (cb) cb();
       })
       .catch((error) => {
@@ -91,11 +92,8 @@ function CytoVisualizeRaw(props) {
   }
 
   function processData(data) {
-    if (data.error) setError(data.error);
-    else {
-      const elements = JSON.parse(data.result);
-      setElements(elements);
-    }
+    const elements = JSON.parse(data);
+    setElements(elements);
   }
 
   return (

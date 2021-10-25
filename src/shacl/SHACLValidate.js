@@ -14,12 +14,13 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
+import { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getShaclText,
@@ -27,7 +28,7 @@ import {
   mkShaclTabs,
   paramsFromStateShacl,
   shaclParamsFromQueryParams,
-  updateStateShacl
+  updateStateShacl,
 } from "./SHACL";
 
 function SHACLValidate(props) {
@@ -58,7 +59,7 @@ function SHACLValidate(props) {
         paramsShacl,
         paramsEndpoint = {};
 
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         paramsData = finalData;
@@ -66,7 +67,7 @@ function SHACLValidate(props) {
       }
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const shaclParams = shaclParamsFromQueryParams(queryParams);
@@ -97,9 +98,9 @@ function SHACLValidate(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (!(params.data || params.dataURL || params.dataFile))
+      if (!(params.data || params.dataUrl || params.dataFile))
         setError("No RDF data provided");
-      else if (!(params.schema || params.schemaURL || params.schemaFile))
+      else if (!(params.schema || params.schemaUrl || params.schemaFile))
         setError("No SHACL schema provided");
       else {
         resetState();
@@ -150,7 +151,7 @@ function SHACLValidate(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(error.message);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

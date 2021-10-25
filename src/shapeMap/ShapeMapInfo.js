@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
+import { mkError } from "../utils/ResponseError";
 import {
   InitialShapeMap,
   mkShapeMapTabs,
@@ -39,7 +40,7 @@ function ShapeMapInfo(props) {
       const queryParams = qs.parse(props.location.search);
       if (
         queryParams.shapeMap ||
-        queryParams.shapeMapURL ||
+        queryParams.shapeMapUrl ||
         queryParams.shapeMapFile
       ) {
         const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
@@ -59,7 +60,7 @@ function ShapeMapInfo(props) {
   // Call API on params change
   useEffect(() => {
     if (params) {
-      if (params.shapeMap || params.shapeMapURL || params.shapeMapFile) {
+      if (params.shapeMap || params.shapeMapUrl || params.shapeMapFile) {
         resetState();
         setUpHistory();
         postShapeMapInfo();
@@ -94,8 +95,7 @@ function ShapeMapInfo(props) {
         setProgressPercent(100);
       })
       .catch( error => {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

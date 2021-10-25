@@ -15,13 +15,13 @@ export const InitialQuery = {
 export function paramsFromStateQuery(query) {
   let params = {};
   let activeTab = query.activeTab;
-  params["activeQueryTab"] = convertTabQuery(activeTab);
+  params["activeQuerySource"] = convertTabQuery(activeTab);
   switch (activeTab) {
     case "byText":
       params["query"] = query.textArea.trim();
       break;
     case "byUrl":
-      params["queryURL"] = query.url.trim();
+      params["queryUrl"] = query.url.trim();
       break;
     case "byFile":
       params["queryFile"] = query.file;
@@ -56,11 +56,11 @@ export function updateStateQuery(params, query) {
         ? params["queryFormat"]
         : API.defaultQueryFormat,
     };
-  } else if (params["queryURL"]) {
+  } else if (params["queryUrl"]) {
     return {
       ...query,
       activeTab: API.byUrlTab,
-      url: params["queryURL"],
+      url: params["queryUrl"],
       fromParams: false,
       format: params["queryFormat"]
         ? params["queryFormat"]
@@ -114,14 +114,14 @@ export function mkQueryTabs(query, setQuery, name, subname) {
 }
 
 export function queryParamsFromQueryParams(params) {
-  // if (params["queryURL"]) params["url"] = params["queryURL"];
+  // if (params["queryUrl"]) params["url"] = params["queryUrl"];
   // return params;
 
   let newParams = {};
   if (params.query) newParams["query"] = params.query;
-  if (params.queryURL) {
-    newParams["queryURL"] = params.queryURL;
-    // newParams["url"] = params.queryURL;
+  if (params.queryUrl) {
+    newParams["queryUrl"] = params.queryUrl;
+    // newParams["url"] = params.queryUrl;
   }
   if (params.queryFile) newParams["queryFile"] = params.queryFile;
   return newParams;

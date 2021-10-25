@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExInfo from "../results/ResultShExInfo";
+import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
   InitialShEx,
@@ -44,7 +45,7 @@ function ShExInfo(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
@@ -66,7 +67,7 @@ function ShExInfo(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -105,8 +106,7 @@ function ShExInfo(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError("Error calling server at " + url + ": " + errorCause);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

@@ -12,6 +12,7 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShExConvert from "../results/ResultShExConvert";
+import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
   InitialShEx,
@@ -52,7 +53,7 @@ function ShExConvert(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
@@ -80,7 +81,7 @@ function ShExConvert(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -120,8 +121,7 @@ function ShExConvert(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(errorCause);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

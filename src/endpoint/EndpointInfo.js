@@ -10,6 +10,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultEndpointInfo from "../results/ResultEndpointInfo";
+import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
 function EndpointInfo(props) {
@@ -80,10 +81,7 @@ function EndpointInfo(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error;
-        setError(
-          `${errorCause}. Did you input a valid SPARQL endpoint?`
-        );
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

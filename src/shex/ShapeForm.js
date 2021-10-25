@@ -47,7 +47,7 @@ export default function ShEx2XMI(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
@@ -78,7 +78,7 @@ export default function ShEx2XMI(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -108,14 +108,14 @@ export default function ShEx2XMI(props) {
 
   function mkServerParams(source, format) {
     let params = {};
-    params["activeSchemaTab"] = convertTabSchema(source.activeTab);
+    params["activeSchemaSource"] = convertTabSchema(source.activeTab);
     params["schemaFormat"] = source.format;
     switch (source.activeTab) {
       case API.byTextTab:
         params["schema"] = source.textArea;
         break;
       case API.byUrlTab:
-        params["schemaURL"] = source.url;
+        params["schemaUrl"] = source.url;
         break;
       case API.byFileTab:
         params["schemaFile"] = source.file;
@@ -147,11 +147,11 @@ export default function ShEx2XMI(props) {
   async function getConverterInput() {
     // Plain text, do nothing
     if (params.schema) return params.schema;
-    else if (params.schemaURL) {
+    else if (params.schemaUrl) {
       // URL, ask the RdfShape server to fetch the contents for us (prevent CORS)
       return axios
         .get(fetchUrl, {
-          params: { url: params.schemaURL },
+          params: { url: params.schemaUrl },
         })
         .then((res) => res.data)
         .catch((err) => {
@@ -185,7 +185,7 @@ export default function ShEx2XMI(props) {
       setPermalink(
         mkPermalinkLong(API.shapeFormRoute, {
           schema: params.schema || undefined,
-          schemaURL: params.schemaURL || undefined,
+          schemaUrl: params.schemaUrl || undefined,
           schemaFile: params.schemaFile || undefined,
           targetSchemaEngine: params.targetSchemaEngine,
         })
@@ -225,7 +225,7 @@ export default function ShEx2XMI(props) {
         document.title,
         mkPermalinkLong(API.shapeFormRoute, {
           schema: lastParams.schema || undefined,
-          schemaURL: lastParams.schemaURL || undefined,
+          schemaUrl: lastParams.schemaUrl || undefined,
           schemaFile: lastParams.schemaFile || undefined,
           targetSchemaEngine: lastParams.targetSchemaEngine,
         })
@@ -238,7 +238,7 @@ export default function ShEx2XMI(props) {
       document.title,
       mkPermalinkLong(API.shapeFormRoute, {
         schema: params.schema || undefined,
-        schemaURL: params.schemaURL || undefined,
+        schemaUrl: params.schemaUrl || undefined,
         schemaFile: params.schemaFile || undefined,
         targetSchemaEngine: params.targetSchemaEngine || undefined,
       })

@@ -2,7 +2,6 @@
 
 import environmentConfiguration from "./EnvironmentConfig";
 
-
 class API {
   // Routes in server
   static rootApi = environmentConfiguration.apiHost + "/api/"; // "http(s)://localhost:8080/api/";
@@ -16,7 +15,7 @@ class API {
   static inferenceEngines = API.rootApi + "data/inferenceEngines";
   static dataQuery = API.rootApi + "data/query";
   static dataExtract = API.rootApi + "data/extract";
-  static dataVisualFormats = API.rootApi + "data/visualize/formats";
+  static dataVisualFormats = API.rootApi + "data/formats/visual";
   static endpointInfo = API.rootApi + "endpoint/info";
   static endpointQuery = API.rootApi + "endpoint/query";
   static shExFormats = API.rootApi + "schema/formats?schemaEngine=shex";
@@ -41,7 +40,7 @@ class API {
   static dataVisualizeRoute = "/dataVisualize";
   static dataVisualizeRouteRaw = "/dataVisualizeRaw";
   static cytoVisualizeRoute = "/dataVisualizeCyto";
-  static cytoVisualizeRouteRaw = "/dataVisualizeRaw";
+  static cytoVisualizeRouteRaw = "/dataVisualizeCytoRaw";
   static dataExtractRoute = "/dataExtract";
   static dataMergeRoute = "/dataMerge";
   static dataMergeVisualizeRoute = "/dataMergeVisualize";
@@ -85,16 +84,17 @@ class API {
   static xmiTab = "XMI";
   static umlTab = "UML";
   static defaultTab = "byText";
-  static defaultDataFormat = "TURTLE";
-  static turtleDataFormat = "TURTLE";
+  static defaultDataFormat = "turtle";
+  static turtleDataFormat = "turtle";
   static defaultInference = "None";
-  static defaultShExFormat = "ShExC";
-  static shexcDataFormat = "SHEXC";
-  static defaultSHACLFormat = "TURTLE";
+  static defaultShExFormat = "shexc";
+  static shexcDataFormat = "shexc";
+  static defaultSHACLFormat = "turtle";
   static defaultSHACLEngine = "JenaSHACL";
   static defaultShapeMapFormat = "Compact";
   static defaultQueryFormat = "SPARQL";
   static defaultXMLFormat = "xml";
+  static defaultGraphicalFormat = "SVG";
 
   static serverPermalinkEndpoint = API.rootApi + "permalink/generate";
   static serverOriginalLinkEndpoint = API.rootApi + "permalink/get";
@@ -107,6 +107,10 @@ class API {
 
   // By text limitations
   static byTextCharacterLimit = 2200;
+
+  // Text constants
+  static errorResponsePrefix = "Error response";
+  static responseSummaryText = "Full response";
 }
 
 export default API;

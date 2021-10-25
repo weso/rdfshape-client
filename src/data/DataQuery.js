@@ -20,6 +20,7 @@ import {
   updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
+import { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
@@ -49,14 +50,14 @@ function DataQuery(props) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsQuery = {};
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         paramsData = finalData;
         setData(finalData);
       }
 
-      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
+      if (queryParams.query || queryParams.queryUrl || queryParams.queryFile) {
         const queryDataParams = queryParamsFromQueryParams(queryParams);
         const finalQuery = updateStateQuery(queryDataParams, query) || query;
         paramsQuery = finalQuery;
@@ -77,10 +78,10 @@ function DataQuery(props) {
     if (params) {
       if (
         (params.data ||
-          params.dataURL ||
+          params.dataUrl ||
           (params.dataFile && params.dataFile.name)) &&
         (params.query ||
-          params.queryURL ||
+          params.queryUrl ||
           (params.queryFile && params.queryFile.name))
       ) {
         resetState();
@@ -89,7 +90,7 @@ function DataQuery(props) {
       } else if (
         !(
           params.data ||
-          params.dataURL ||
+          params.dataUrl ||
           (params.dataFile && params.dataFile.name)
         )
       ) {
@@ -97,7 +98,7 @@ function DataQuery(props) {
       } else if (
         !(
           params.query ||
-          params.queryURL ||
+          params.queryUrl ||
           (params.queryFile && params.queryFile.name)
         )
       ) {
@@ -130,8 +131,7 @@ function DataQuery(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

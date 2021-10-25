@@ -28,6 +28,7 @@ import {
   shapeMapParamsFromQueryParams,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
+import { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getShexText,
@@ -68,7 +69,7 @@ function ShExValidate(props) {
         paramsShapeMap,
         paramsEndpoint = {};
 
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         paramsData = finalData;
@@ -77,7 +78,7 @@ function ShExValidate(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const shexParams = shExParamsFromQueryParams(queryParams);
@@ -88,7 +89,7 @@ function ShExValidate(props) {
 
       if (
         queryParams.shapeMap ||
-        queryParams.shapeMapURL ||
+        queryParams.shapeMapUrl ||
         queryParams.shapeMapFile
       ) {
         const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
@@ -124,7 +125,7 @@ function ShExValidate(props) {
       if (
         !(
           params.data ||
-          params.dataURL ||
+          params.dataUrl ||
           (params.dataFile && params.dataFile.name)
         )
       )
@@ -132,7 +133,7 @@ function ShExValidate(props) {
       else if (
         !(
           params.schema ||
-          params.schemaURL ||
+          params.schemaUrl ||
           (params.schemaFile && params.schemaFile.name)
         )
       )
@@ -140,7 +141,7 @@ function ShExValidate(props) {
       else if (
         !(
           params.shapeMap ||
-          params.shapeMapURL ||
+          params.shapeMapUrl ||
           (params.shapeMapFile && params.shapeMapFile.name)
         )
       )
@@ -190,10 +191,7 @@ function ShExValidate(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(
-          `Error calling server at ${url}: ${errorCause}.\n Try again later.`
-        );
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

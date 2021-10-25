@@ -12,6 +12,7 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSHACLConvert from "../results/ResultSHACLConvert";
+import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
@@ -52,7 +53,7 @@ function SHACLConvert(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shaclParamsFromQueryParams(queryParams);
@@ -79,7 +80,7 @@ function SHACLConvert(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -119,7 +120,7 @@ function SHACLConvert(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError("Error calling server at " + url + ": " + error);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

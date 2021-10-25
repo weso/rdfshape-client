@@ -4,6 +4,7 @@ import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
+import ResponseError, { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
@@ -18,7 +19,9 @@ function DataVisualizeRaw(props) {
   const [params, setParams] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
+  const [targetGraphicalFormat] = useState(
+    API.defaultGraphicalFormat
+  );
   const [visualization, setVisualization] = useState(null);
   const [message] = useState("Processing...");
 
@@ -27,19 +30,14 @@ function DataVisualizeRaw(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
 
-        if (queryParams.targetDataFormat) {
-          setTargetGraphFormat(queryParams.targetDataFormat);
-        }
-
         const params = {
           ...paramsFromStateData(paramsData),
-          targetGraphFormat: queryParams.targetDataFormat || undefined,
-          targetDataFormat: queryParams.targetDataFormat || undefined,
+          targetGraphicalFormat,
         };
 
         setParams(params);
@@ -53,7 +51,7 @@ function DataVisualizeRaw(props) {
     if (params) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         postVisualize();
@@ -66,25 +64,25 @@ function DataVisualizeRaw(props) {
   function postVisualize(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "dot"); // It converts to dot in the server
+    formData.append("targetDataFormat", "dot");
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        processData(data, targetGraphFormat);
+        const dot = data.result.data; // Get the DOT string from the axios data object
+        processData(dot, targetGraphicalFormat);
         if (cb) cb();
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error.message
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);
       });
   }
 
-  function processData(d, targetFormat) {
-    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  function processData(dot, targetFormat) {
+    convertDot(dot, "dot", targetFormat, setError, setVisualization);
   }
 
   return (

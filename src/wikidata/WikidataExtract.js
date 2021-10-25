@@ -10,6 +10,7 @@ import API from "../API";
 import InputEntitiesByText from "../components/InputEntitiesByText";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
+import { mkError } from "../utils/ResponseError";
 
 function WikidataExtract(props) {
   const [entities, setEntities] = useState([]);
@@ -45,15 +46,13 @@ function WikidataExtract(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then((data) => {
-        setLoading(false);
         setResult(data);
         if (cb) cb();
       })
       .catch(function(error) {
-        console.error(`Error doing server request: ${error}`);
-        setLoading(false);
-        setError(error);
-      });
+        setError(mkError(error, url));
+      })
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -75,7 +74,7 @@ function WikidataExtract(props) {
         </Button>
       </Form>
       {loading ? <Pace color="#27ae60" /> : null}
-      {error ? <Alert variant="danger">${error}</Alert> : null}
+      {error ? <Alert variant="danger">{error}</Alert> : null}
       <ResultDataExtract result={result} />
       {permalink ? <Permalink url={permalink} /> : null}
     </Container>

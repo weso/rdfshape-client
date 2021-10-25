@@ -1,6 +1,7 @@
 import PropTypes from "prop-types"
 import React, { Fragment } from 'react'
 import Alert from 'react-bootstrap/Alert'
+import API from "../API"
 import { Permalink } from "../Permalink"
 import PrintJson from "../utils/PrintJson"
 
@@ -32,6 +33,7 @@ function ResultShExInfo(props) {
             </Fragment>
           }
           <details>
+          <summary>{API.responseSummaryText}</summary>
             <PrintJson json={result} />
           </details>
         </div>

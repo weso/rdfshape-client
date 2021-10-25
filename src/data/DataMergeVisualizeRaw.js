@@ -3,6 +3,7 @@ import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
+import { mkError } from "../utils/ResponseError";
 import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
@@ -15,7 +16,7 @@ function DataMergeVisualizeRaw(props) {
   const [data2, setData2] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [targetDataFormat] = useState("dot");
-  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
+  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [visualization, setVisualization] = useState(null);
@@ -27,10 +28,6 @@ function DataMergeVisualizeRaw(props) {
   const maxSvgZoom = maxZoom;
   const svgZoomStep = stepZoom;
 
-  function handleTargetGraphFormatChange(value) {
-    setTargetGraphFormat(value);
-  }
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
@@ -41,17 +38,12 @@ function DataMergeVisualizeRaw(props) {
           const newData1 = updateStateData(contents[0], data1) || data1;
           const newData2 = updateStateData(contents[1], data2) || data2;
 
-          if (queryParams.targetGraphFormat) {
-            setTargetGraphFormat(queryParams.targetGraphFormat);
-          }
-
           setData1(newData1);
           setData2(newData2);
 
           setParams({
             ...queryParams,
-            targetGraphFormat:
-              queryParams.targetGraphFormat || targetGraphFormat,
+            targetGraphicalFormat,
           });
         } catch {
           setError("Could not parse URL data");
@@ -69,7 +61,7 @@ function DataMergeVisualizeRaw(props) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
         )
       ) {
         postVisualize();
@@ -80,38 +72,24 @@ function DataMergeVisualizeRaw(props) {
     }
   }, [params]);
 
-  function mergeParams(params1, params2) {
-    return { compoundData: JSON.stringify([params1, params2]) };
-  }
-
-  function processData(d, targetFormat) {
-    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    let params1 = paramsFromStateData(data1);
-    let params2 = paramsFromStateData(data2);
-    setParams({
-      ...mergeParams(params1, params2),
-      targetDataFormat,
-      targetGraphFormat,
-    }); // It converts to dot in the server
+  function processData(dot, targetFormat) {
+    convertDot(dot, "dot", targetFormat, setError, setVisualization);
   }
 
   function postVisualize(cb) {
     setLoading(true);
     const formData = params2Form(params);
+    formData.append("targetDataFormat", "dot");
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        processData(data, targetGraphFormat);
+        const dot = data.result.data; // Get the DOT string from the axios data object
+        processData(dot, targetGraphicalFormat);
         if (cb) cb();
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error.message
-        setError(`Error doing request to ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

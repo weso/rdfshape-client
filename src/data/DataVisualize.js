@@ -14,11 +14,12 @@ import format from "xml-formatter";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import ResponseError, { mkError } from "../utils/ResponseError";
 import {
   dataParamsFromQueryParams,
   maxZoom,
   minZoom,
-  stepZoom
+  stepZoom,
 } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
@@ -27,7 +28,7 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -38,7 +39,9 @@ function DataVisualize(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [targetGraphFormat, setTargetGraphFormat] = useState("SVG");
+  const [targetGraphicalFormat] = useState(
+    API.defaultGraphicalFormat
+  );
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -51,26 +54,17 @@ function DataVisualize(props) {
   const maxSvgZoom = maxZoom;
   const svgZoomStep = stepZoom;
 
-  function handleTargetGraphFormatChange(value) {
-    setTargetGraphFormat(value);
-  }
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
-        const paramsData = updateStateData(dataParams, data) || data;
-        setData(paramsData);
-
-        if (queryParams.targetDataFormat) {
-          setTargetGraphFormat(queryParams.targetDataFormat);
-        }
+        const finalData = updateStateData(dataParams, data) || data;
+        setData(finalData);
 
         const params = {
-          ...paramsFromStateData(paramsData),
-          targetGraphFormat: queryParams.targetDataFormat || undefined,
-          targetDataFormat: queryParams.targetDataFormat || undefined,
+          ...paramsFromStateData(finalData),
+          targetGraphicalFormat
         };
 
         setParams(params);
@@ -85,7 +79,7 @@ function DataVisualize(props) {
     if (params) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         resetState();
@@ -102,22 +96,22 @@ function DataVisualize(props) {
     event.preventDefault();
     setParams({
       ...paramsFromStateData(data),
-      targetGraphFormat,
-      targetDataFormat: targetGraphFormat,
+      targetGraphicalFormat
     });
   }
 
   function postVisualize(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "dot"); // It converts to dot in the server
+    formData.append("targetDataFormat", "DOT"); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
     setProgressPercent(20);
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
+        const dot = data.result.data; // Get the DOT string from the axios data object
         setProgressPercent(70);
-        processData(data, targetGraphFormat);
+        processData(dot, targetGraphicalFormat);
         setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
         setEmbedLink(mkPermalinkLong(API.dataVisualizeRouteRaw, params));
         setProgressPercent(80);
@@ -126,8 +120,7 @@ function DataVisualize(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error.message
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);
@@ -135,8 +128,8 @@ function DataVisualize(props) {
       });
   }
 
-  function processData(d, targetFormat) {
-    convertDot(d.result, "dot", targetFormat, setError, setVisualization);
+  function processData(dot, targetFormat) {
+    convertDot(dot, "dot", targetFormat, setError, setVisualization);
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -205,13 +198,6 @@ function DataVisualize(props) {
           <Form className={"width-100"} onSubmit={handleSubmit}>
             {mkDataTabs(data, setData, "RDF input")}
             <hr />
-            <SelectFormat
-              name="Target visualization format"
-              handleFormatChange={handleTargetGraphFormatChange}
-              urlFormats={API.dataVisualFormats}
-              selectedFormat={targetGraphFormat}
-            />
-
             <Button
               variant="primary"
               type="submit"

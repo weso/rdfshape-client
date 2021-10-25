@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "query-string";
 import React from "react";
+import { Alert } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -8,6 +9,7 @@ import Pace from "react-pace-progress";
 import API from "../API";
 import CytoSchema from "../cytoscape/CytoSchema";
 import { mkPermalink, params2Form, Permalink } from "../Permalink";
+import { mkError } from "../utils/ResponseError";
 import { paramsFromStateShEx, shExParamsFromQueryParams } from "./ShEx";
 import ShExTabs from "./ShExTabs";
 
@@ -21,6 +23,7 @@ class ShExVisualizeCytoscape extends React.Component {
       result: "",
       elements: null,
       permalink: null,
+      error: null,
       loading: false,
       shExTextArea: "",
       shExFormat: API.defaultShExFormat,
@@ -112,17 +115,18 @@ class ShExVisualizeCytoscape extends React.Component {
     return result;
   }
   postVisualize(url, formData, cb) {
+    this.setState({ error: null });
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then((data) => {
-        this.setState({ loading: false });
         this.processResult(data);
         if (cb) cb();
       })
       .catch(function(error) {
-        console.error(`Error doing server request: ${error}`);
-      });
+        this.setState({ error: mkError(error, url) });
+      })
+      .finally(() => this.setState({ loading: false }));
   }
 
   render() {
@@ -132,6 +136,8 @@ class ShExVisualizeCytoscape extends React.Component {
         <Form onSubmit={this.handleSubmit}>
           {this.state.isLoading ? (
             <Pace color="#27ae60" />
+          ) : this.state.error ? (
+            <Alert variant="danger">{this.state.error}</Alert>
           ) : this.state.result ? (
             <CytoSchema elements={this.state.elements} />
           ) : null}

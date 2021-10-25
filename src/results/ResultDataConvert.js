@@ -1,38 +1,44 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
+import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 
 function ResultDataConvert({
-  result,
+  result: dataConvertResponse, // Request successful response
   permalink,
   fromParams,
   resetFromParams,
   disabled,
 }) {
-  let msg;
-  if (result === "") {
-    msg = null;
-  } else if (result.error) {
-    msg = <Alert variant="danger">{result.error}</Alert>;
-  } else {
-    msg = (
+  // Destructure request response items for later usage
+  const {
+    message,
+    result: { data: dataRaw, source, inference },
+    targetDataFormat: { name: outputFormatName },
+  } = dataConvertResponse;
+
+  if (dataConvertResponse) {
+    return (
       <div>
-        <Alert variant="success">{result.message}</Alert>
-        {result.result && result.dataFormat && (
+        {/* Alert */}
+        <Alert variant="success">{message}</Alert>
+        {/* Output data */}
+        {dataRaw && outputFormatName && (
           <Code
-            value={result.result}
+            value={dataRaw}
             readOnly={true}
-            mode={format2mode(result.targetDataFormat)}
+            mode={format2mode(outputFormatName)}
             fromParams={fromParams}
             resetFromParams={resetFromParams}
           />
         )}
-
+        <br />
         <details>
-          <PrintJson json={result} />
+          <summary>{API.responseSummaryText}</summary>
+          <PrintJson json={dataConvertResponse} />
         </details>
         {permalink && (
           <Fragment>
@@ -43,8 +49,6 @@ function ResultDataConvert({
       </div>
     );
   }
-
-  return <div>{msg}</div>;
 }
 
 export default ResultDataConvert;

@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
+import API from "../API";
 import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
@@ -70,6 +71,7 @@ function ResultValidate(props) {
           </Fragment>
         )}
         <details>
+          <summary>{API.responseSummaryText}</summary>
           <PrintJson json={result} />
         </details>
       </div>

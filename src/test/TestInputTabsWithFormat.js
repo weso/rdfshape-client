@@ -54,15 +54,12 @@ function TestInputTabsWithFormat(props) {
     switch (data.activeTab) {
       case API.byTextTab:
         params["data"] = data.textArea;
-        params["dataFormatTextArea"] = data.format;
         break;
       case API.byUrlTab:
-        params["dataURL"] = data.url;
-        params["dataFormatUrl"] = data.format;
+        params["dataUrl"] = data.url;
         break;
       case API.byFileTab:
         params["dataFile"] = data.file;
-        params["dataFormatFile"] = data.format;
         break;
       default:
     }

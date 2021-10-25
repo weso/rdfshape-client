@@ -17,6 +17,7 @@ import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import { convertTabSchema } from "../shex/ShEx";
 import ShExTabs from "../shex/ShExTabs";
+import { mkError } from "../utils/ResponseError";
 
 function WikidataValidate(props) {
   const initialStatus = {
@@ -39,7 +40,7 @@ function WikidataValidate(props) {
   const [schemaActiveTab, setSchemaActiveTab] = useState("BySchema");
   const [shEx, dispatchShEx] = useReducer(shExReducer, initialShExStatus);
   const [shapeLabel, setShapeLabel] = useState("");
-  const urlServer = API.schemaValidate;
+  const url = API.schemaValidate;
   const [permalink, setPermalink] = useState(null);
 
   function handleChange(es) {
@@ -53,14 +54,14 @@ function WikidataValidate(props) {
 
   function paramsFromShEx(shExStatus) {
     let params = {};
-    params["activeSchemaTab"] = convertTabSchema(shExStatus.shExActiveTab);
+    params["activeSchemaSource"] = convertTabSchema(shExStatus.shExActiveTab);
     params["schemaFormat"] = shExStatus.shExFormat;
     switch (shExStatus.shExActiveTab) {
       case API.byTextTab:
         params["schema"] = shExStatus.shExTextArea;
         break;
       case API.byUrlTab:
-        params["schemaURL"] = shExStatus.shExUrl;
+        params["schemaUrl"] = shExStatus.shExUrl;
         break;
       case API.byFileTab:
         params["schemaFile"] = shExStatus.shExFile;
@@ -134,7 +135,7 @@ function WikidataValidate(props) {
     params["shapeMapFormat"] = "Compact";
     const formData = params2Form(params);
     setPermalink(mkPermalinkLong(API.wikidataValidateRoute, params));
-    postValidate(urlServer, formData);
+    postValidate(url, formData);
   }
 
   function postValidate(url, formData, cb) {
@@ -147,7 +148,7 @@ function WikidataValidate(props) {
         if (cb) cb();
       })
       .catch(function(error) {
-        dispatch({ type: "set-error", value: `Error: ${error}` });
+        dispatch({ type: "set-error", value: error });
       });
   }
 
@@ -179,7 +180,7 @@ function WikidataValidate(props) {
           {status.loading ? (
             <Pace color="#27ae60" />
           ) : status.error ? (
-            <Alert variant="danger">{status.error}</Alert>
+            <Alert variant="danger">{mkError(status.error, url)}</Alert>
           ) : status.result ? (
             <ResultValidate result={status.result} />
           ) : null}

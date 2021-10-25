@@ -33,14 +33,14 @@ export function paramsFromStateUML(state) {
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["activeSchemaTab"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertTabSchema(activeTab);
   params["schemaFormat"] = format;
   switch (activeTab) {
     case API.byTextTab:
       params["schema"] = textArea;
       break;
     case API.byUrlTab:
-      params["schemaURL"] = url;
+      params["schemaUrl"] = url;
       break;
     case API.byFileTab:
       params["schemaFile"] = file;
@@ -60,11 +60,11 @@ export function updateStateUML(params, xmi) {
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
     };
   }
-  if (params["schemaURL"]) {
+  if (params["schemaUrl"]) {
     return {
       ...xmi,
       activeTab: API.byUrlTab,
-      url: params["schemaURL"],
+      url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
     };
@@ -126,7 +126,7 @@ export function UMLParamsFromQueryParams(params) {
   let newParams = {};
   if (params.schema) newParams["schema"] = params.schema;
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
   if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
   return newParams;
 }

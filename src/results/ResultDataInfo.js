@@ -1,47 +1,38 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
-import Code from "../components/Code";
+import API from "../API";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { mkMode } from "../utils/Utils";
 
 function ResultDataInfo({
-  result,
+  result: dataInfoResponse, // Request successful response
   permalink,
   disabled,
-  fromParams,
-  resetFromParams,
 }) {
-  let msg = null;
-  if (result) {
-    const mode = mkMode(result.dataFormat);
-    if (result.error) {
-      msg = <Alert variant="danger">{result.error}</Alert>;
-    } else if (result.message && result.message.toLowerCase().startsWith("error")) {
-      msg = <Alert variant="danger">{result.message}</Alert>;
-    } else {
-      msg = (
+  // Destructure request response items for later usage
+  const {
+    message,
+    result: {
+      numberOfStatements,
+      format: { name: formatName },
+    },
+  } = dataInfoResponse;
+  if (dataInfoResponse) {
+    return (
+      <div>
         <div>
-          <Alert variant="success">{result.message}</Alert>
-          {result.data && result.dataFormat && (
-            <Code
-              value={result.data}
-              mode={mode}
-              readOnly={true}
-              onChange={() => {}}
-              fromParams={fromParams}
-              resetFromParams={resetFromParams}
-            />
-          )}
+          <Alert variant="success">{message}</Alert>
           <br />
           <ul>
-            <li>Number of statements: {result.numberOfStatements}</li>
+            <li>Number of statements: {numberOfStatements}</li>
             <li>
-              DataFormat: <span>{result.dataFormat}</span>
+              DataFormat: <span>{formatName}</span>
             </li>
           </ul>
           <details>
-            <PrintJson json={result} />
+            <summary>{API.responseSummaryText}</summary>
+            <PrintJson json={dataInfoResponse} />
           </details>
           {permalink && (
             <Fragment>
@@ -50,9 +41,8 @@ function ResultDataInfo({
             </Fragment>
           )}
         </div>
-      );
-    }
-    return <div>{msg}</div>;
+      </div>
+    );
   }
 }
 

@@ -12,13 +12,14 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
+import ResponseError, { mkError } from "../utils/ResponseError";
 import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
 } from "./Data";
 
 function DataConvert(props) {
@@ -39,13 +40,13 @@ function DataConvert(props) {
   const url = API.dataConvert;
 
   function handleTargetDataFormatChange(value) {
-    setTargetDataFormat(value);
+    value && setTargetDataFormat(value);
   }
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
+      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
@@ -55,7 +56,7 @@ function DataConvert(props) {
         }
         const params = {
           ...paramsFromStateData(finalData),
-          targetDataFormat: queryParams.targetDataFormat || undefined,
+          targetDataFormat: queryParams.targetDataFormat || targetDataFormat,
         };
 
         setParams(params);
@@ -70,7 +71,7 @@ function DataConvert(props) {
     if (params) {
       if (
         params.data ||
-        params.dataURL ||
+        params.dataUrl ||
         (params.dataFile && params.dataFile.name)
       ) {
         resetState();
@@ -106,8 +107,7 @@ function DataConvert(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

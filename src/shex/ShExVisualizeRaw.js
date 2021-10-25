@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import ResultShExVisualize from "../results/ResultShExVisualize";
+import { mkError } from "../utils/ResponseError";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   InitialShEx,
@@ -30,7 +31,7 @@ function ShExVisualizeRaw(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
@@ -51,7 +52,7 @@ function ShExVisualizeRaw(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         postVisualize();
@@ -73,8 +74,7 @@ function ShExVisualizeRaw(props) {
         if (cb) cb();
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error doing request to ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }

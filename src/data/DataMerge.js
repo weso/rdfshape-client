@@ -12,6 +12,7 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
@@ -77,7 +78,7 @@ function DataMerge(props) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataURL || (p.dataFile && p.dataFile.name)
+          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
         )
       ) {
         // Check if some data was uploaded
@@ -125,8 +126,7 @@ function DataMerge(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error
-        setError(`Error response from ${url}: ${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

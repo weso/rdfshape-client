@@ -18,6 +18,7 @@ import {
   updateStateQuery,
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
+import { mkError } from "../utils/ResponseError";
 import { endpointParamsFromQueryParams } from "./Endpoint";
 import EndpointInput from "./EndpointInput";
 
@@ -43,7 +44,7 @@ function EndpointQuery(props) {
         paramsEndpoint = {};
 
       // Query State
-      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
+      if (queryParams.query || queryParams.queryUrl || queryParams.queryFile) {
         paramsQuery = queryParamsFromQueryParams(queryParams);
         setQuery(updateStateQuery(paramsQuery, query) || query);
       }
@@ -72,7 +73,7 @@ function EndpointQuery(props) {
       else if (
         !(
           params.query ||
-          params.queryURL ||
+          params.queryUrl ||
           (params.queryFile && params.queryFile.name)
         )
       )
@@ -137,8 +138,7 @@ function EndpointQuery(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        const errorCause = error.response?.data?.error || error;
-        setError(`${errorCause}`);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);

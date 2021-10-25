@@ -15,13 +15,19 @@ function SelectFormat(props) {
       .then((response) => response.data)
       .then((data) => {
         setFormats(data);
-      });
+      })
+      .catch(() => console.error("Could not load formats from server"));
   }, [props.urlFormats]);
 
   useEffect(() => {
-    setFormat(props.selectedFormat);
-    props.handleFormatChange(props.selectedFormat);
-  }, [props.selectedFormat]);
+    if (!props.selectedFormat || formats.length == 0) return;
+    // Make the UI format selector ignore the case of the incoming format argument
+    const newFormat = formats.find(
+      (format) => format.toLowerCase() === props.selectedFormat.toLowerCase()
+    );
+    setFormat(newFormat);
+    props.handleFormatChange(newFormat);
+  }, [props.selectedFormat, formats]);
 
   function handleFormatChange(e) {
     setFormat(e.target.value);
@@ -32,9 +38,9 @@ function SelectFormat(props) {
     <Form.Group>
       <Form.Label>{props.name}</Form.Label>
       <Form.Control as="select" onChange={handleFormatChange} value={format}>
-        {formats.map((f, key) => (
-          <option key={key} defaultValue={f === format}>
-            {f}
+        {formats.map((format, key) => (
+          <option key={key} defaultValue={format === format}>
+            {format}
           </option>
         ))}
       </Form.Control>

@@ -13,6 +13,7 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
 import { convertTabSchema } from "../shex/ShEx";
+import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
@@ -46,7 +47,7 @@ export default function SHACL2ShEx(props) {
 
       if (
         queryParams.schema ||
-        queryParams.schemaURL ||
+        queryParams.schemaUrl ||
         queryParams.schemaFile
       ) {
         const schemaParams = shaclParamsFromQueryParams(queryParams);
@@ -77,7 +78,7 @@ export default function SHACL2ShEx(props) {
     if (params && !loading) {
       if (
         params.schema ||
-        params.schemaURL ||
+        params.schemaUrl ||
         (params.schemaFile && params.schemaFile.name)
       ) {
         resetState();
@@ -107,7 +108,7 @@ export default function SHACL2ShEx(props) {
 
   function mkServerParams(shacl, format) {
     let params = {};
-    params["activeSchemaTab"] = convertTabSchema(shacl.activeTab);
+    params["activeSchemaSource"] = convertTabSchema(shacl.activeTab);
     params["schemaFormat"] = shacl.format;
     params["schemaEngine"] = shacl.engine;
     params["schemaInference"] = shacl.inference;
@@ -116,7 +117,7 @@ export default function SHACL2ShEx(props) {
         params["schema"] = shacl.textArea;
         break;
       case API.byUrlTab:
-        params["schemaURL"] = shacl.url;
+        params["schemaUrl"] = shacl.url;
         break;
       case API.byFileTab:
         params["schemaFile"] = shacl.file;
@@ -159,7 +160,7 @@ export default function SHACL2ShEx(props) {
             schemaEngine: params.schemaEngine,
             schemaInference: params.schemaInference,
             schema: params.schema || undefined,
-            schemaURL: params.schemaURL || undefined,
+            schemaUrl: params.schemaUrl || undefined,
             schemaFile: params.schemaFile || undefined,
           })
         );
@@ -169,9 +170,7 @@ export default function SHACL2ShEx(props) {
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error}\n. Try again later.`
-        );
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }
@@ -205,7 +204,7 @@ export default function SHACL2ShEx(props) {
           schemaEngine: lastParams.schemaEngine,
           schemaInference: lastParams.schemaInference,
           schema: lastParams.schema || undefined,
-          schemaURL: lastParams.schemaURL || undefined,
+          schemaUrl: lastParams.schemaUrl || undefined,
           schemaFile: lastParams.schemaFile || undefined,
         })
       );
@@ -221,7 +220,7 @@ export default function SHACL2ShEx(props) {
         schemaEngine: params.schemaEngine,
         schemaInference: params.schemaInference,
         schema: params.schema || undefined,
-        schemaURL: params.schemaURL || undefined,
+        schemaUrl: params.schemaUrl || undefined,
         schemaFile: params.schemaFile || undefined,
       })
     );

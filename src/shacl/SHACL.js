@@ -70,11 +70,11 @@ export function updateStateShacl(params, shacl) {
       inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
     };
   }
-  if (params["schemaURL"]) {
+  if (params["schemaUrl"]) {
     return {
       ...shacl,
       activeTab: API.byUrlTab,
-      url: params["schemaURL"],
+      url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
       engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
@@ -104,7 +104,7 @@ export function paramsFromStateShacl(state) {
   const engine = state.engine;
   const inference = state.inference;
   let params = {};
-  params["activeSchemaTab"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertTabSchema(activeTab);
   params["schemaFormat"] = format;
   params["schemaEngine"] = engine;
   params["schemaInference"] = inference;
@@ -113,7 +113,7 @@ export function paramsFromStateShacl(state) {
       params["schema"] = textArea.trim();
       break;
     case API.byUrlTab:
-      params["schemaURL"] = url.trim();
+      params["schemaUrl"] = url.trim();
       break;
     case API.byFileTab:
       params["schemaFile"] = file;
@@ -127,7 +127,7 @@ export function shaclParamsFromQueryParams(params) {
   let newParams = {};
   if (params.schema) newParams["schema"] = params.schema;
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaURL) newParams["schemaURL"] = params.schemaURL;
+  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
   if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
   if (params.schemaInference) newParams["schemaInference"] = params.schemaInference;
   if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
