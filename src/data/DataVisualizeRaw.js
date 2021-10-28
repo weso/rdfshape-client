@@ -5,10 +5,14 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import ResponseError, { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
-import { InitialData, paramsFromStateData, updateStateData } from "./Data";
+import {
+  InitialData,
+  paramsFromStateData,
+  updateStateData,
+  dataParamsFromQueryParams,
+} from "./Data";
 import { generateDownloadLink } from "./DataVisualize";
 import { convertDot } from "./dotUtils";
 
@@ -19,9 +23,7 @@ function DataVisualizeRaw(props) {
   const [params, setParams] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [targetGraphicalFormat] = useState(
-    API.defaultGraphicalFormat
-  );
+  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
   const [visualization, setVisualization] = useState(null);
   const [message] = useState("Processing...");
 
@@ -30,7 +32,7 @@ function DataVisualizeRaw(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
@@ -50,9 +52,8 @@ function DataVisualizeRaw(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         postVisualize();
       } else {

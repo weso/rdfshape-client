@@ -4,7 +4,7 @@ import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultSource,
   textArea: "",
   url: "",
   file: null,
@@ -15,79 +15,55 @@ export const InitialData = {
 };
 
 export function updateStateData(params, data) {
+  // Only update state if there is data
   if (params["data"]) {
+    // Get the raw data string introduced by the user
+    const userData = params["data"];
+    // Get the data source to be used: take it from params or resort to default
+    const dataSource = params["dataSource"] || API.defaultSource;
+
+    // Compose new Data State building from the old one
     return {
       ...data,
-      activeTab: API.byTextTab,
-      textArea: params["data"],
+      activeSource: dataSource, // New data source (activates the corresponsing edit tab)
+      textArea: dataSource == API.byTextSource ? userData : data.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      url: dataSource == API.byUrlSource ? userData : data.url,
+      file: dataSource == API.byFileSource ? userData : data.file,
       fromParams: true,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
-    };
-  }
-  if (params["dataUrl"]) {
-    return {
-      ...data,
-      activeTab: API.byUrlTab,
-      url: params["dataUrl"],
-      fromParams: false,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
-    };
-  }
-  if (params["dataFile"]) {
-    return {
-      ...data,
-      activeTab: API.byFileTab,
-      file: params["dataFile"],
-      fromParams: false,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
+      format: params["dataFormat"] || API.defaultDataFormat,
+      inference: params["inference"] || API.defaultInference,
     };
   }
   return data;
 }
 
-export function convertTabData(key) {
-  switch (key) {
-    case API.byTextTab:
-      return "#dataTextArea";
-    case API.byFileTab:
-      return "#dataFile";
-    case API.byUrlTab:
-      return "#dataUrl";
-    default:
-      console.info("Unknown schemaTab: " + key);
-      return key;
-  }
+export function dataParamsFromQueryParams(params) {
+  // This code is redundant, it could be just return params
+  // We keep it because we could do some error checking
+  let newParams = {};
+  if (params.data) newParams["data"] = params.data;
+  if (params.dataSource) newParams["dataSource"] = params.dataSource;
+  if (params.dataFormat) newParams["dataFormat"] = params.dataFormat;
+  if (params.inference) newParams["inference"] = params.inference;
+  return newParams;
 }
 
 export function paramsFromStateData(data) {
   let params = {};
-  params["activeDataSource"] = convertTabData(data.activeTab);
+  params["dataSource"] = data.activeSource;
   params["dataFormat"] = data.format;
   params["inference"] = data.inference;
-  switch (data.activeTab) {
-    case API.byTextTab:
+
+  // Send the "data" param to the server, that will use the "dataSource" to know hot to treat the data (raw, URL, file...)
+  switch (data.activeSource) {
+    case API.byTextSource:
       params["data"] = data.textArea.trim();
       break;
-    case API.byUrlTab:
-      params["dataUrl"] = data.url.trim();
+    case API.byUrlSource:
+      params["data"] = data.url.trim();
       break;
-    case API.byFileTab:
-      params["dataFile"] = data.file;
+    case API.byFileSource:
+      params["data"] = data.file;
       break;
     default:
   }
@@ -96,7 +72,7 @@ export function paramsFromStateData(data) {
 
 export function mkDataTabs(data, setData, name, subname) {
   function handleDataTabChange(value) {
-    setData({ ...data, activeTab: value });
+    setData({ ...data, activeSource: value });
   }
   function handleDataByTextChange(value) {
     setData({ ...data, textArea: value });
@@ -120,7 +96,7 @@ export function mkDataTabs(data, setData, name, subname) {
       <DataTabs
         name={name}
         subname={subname}
-        activeTab={data.activeTab}
+        activeSource={data.activeSource}
         handleTabChange={handleDataTabChange}
         textAreaValue={data.textArea}
         handleByTextChange={handleDataByTextChange}
@@ -144,9 +120,9 @@ export function mkDataTabs(data, setData, name, subname) {
 }
 
 export function getDataText(data) {
-  if (data.activeTab === API.byTextTab) {
+  if (data.activeSource === API.byTextSource) {
     return encodeURI(data.textArea.trim());
-  } else if (data.activeTab === API.byUrlTab) {
+  } else if (data.activeSource === API.byUrlSource) {
     return encodeURI(data.url.trim());
   }
   return "";

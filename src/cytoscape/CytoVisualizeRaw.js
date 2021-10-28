@@ -8,9 +8,9 @@ import {
   InitialData,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams
 } from "../data/Data";
 import { params2Form } from "../Permalink";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import { generateDownloadLink } from "./CytoVisualize";
 
@@ -34,7 +34,7 @@ function CytoVisualizeRaw(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
@@ -59,9 +59,8 @@ function CytoVisualizeRaw(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         postConvert();
       } else {

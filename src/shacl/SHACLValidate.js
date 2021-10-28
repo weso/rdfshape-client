@@ -15,13 +15,13 @@ import {
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
 import { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getShaclText,
   InitialShacl,
@@ -161,9 +161,10 @@ function SHACLValidate(props) {
     const disabled =
       getShaclText(shacl).length + getDataText(data).length >
       API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab || shacl.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource ||
+          shacl.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

@@ -9,18 +9,19 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { node } from "yashe/dist/yashe.bundled.min";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
+  dataParamsFromQueryParams,
 } from "./Data";
 
 function DataExtract(props) {
@@ -41,15 +42,12 @@ function DataExtract(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          nodeSelector: queryParams.nodeSelector || nodeSelector,
-        };
+      if (queryParams.data) {
+        const dataParams = dataParamsFromQueryParams(queryParams);
 
         setData(updateStateData(dataParams, data));
-        if (dataParams["nodeSelector"])
-          setNodeSelector(dataParams.nodeSelector);
+
+        if (queryParams.nodeSelector) setNodeSelector(queryParams.nodeSelector);
 
         setParams(queryParams);
         setLastParams(queryParams);
@@ -59,12 +57,21 @@ function DataExtract(props) {
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataUrl || params.dataFile) {
+      const dataPresent =
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true);
+
+      const nodeSelectorPresent =
+        nodeSelector && nodeSelector.trim().length > 0;
+
+      if (dataPresent && nodeSelectorPresent) {
         resetState();
         setUpHistory();
         postExtract();
-      } else {
+      } else if (!dataPresent) {
         setError("No RDF data provided");
+      } else if (!nodeSelectorPresent) {
+        setError("No node selector provided");
       }
       window.scrollTo(0, 0);
     }
@@ -72,7 +79,10 @@ function DataExtract(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateData(data), nodeSelector });
+    setParams({
+      ...paramsFromStateData(data),
+      nodeSelector,
+    });
   }
 
   function postExtract(cb) {
@@ -83,13 +93,8 @@ function DataExtract(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        setProgressPercent(70);
-
-        // TODO better error checking in server
-        if (data.msg && data.msg.toLowerCase().startsWith("error")) {
-          setError(data.msg);
-          setResult({ error: data.msg });
-        } else setResult(data);
+        setProgressPercent(60);
+        setResult(data);
         setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
         setProgressPercent(80);
         checkLinks();
@@ -109,9 +114,9 @@ function DataExtract(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);
@@ -152,7 +157,7 @@ function DataExtract(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Extract schema from data</h1>
+        <h1>Extract ShEx from data</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
@@ -160,7 +165,7 @@ function DataExtract(props) {
             {mkDataTabs(data, setData, "RDF input")}
             <NodeSelector
               value={nodeSelector}
-              handleChange={(value) => setNodeSelector(value)}
+              handleChange={(value) => setNodeSelector(value.trim())}
             />
             <hr />
             <Button

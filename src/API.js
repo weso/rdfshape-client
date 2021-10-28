@@ -19,8 +19,8 @@ class API {
   static endpointInfo = API.rootApi + "endpoint/info";
   static endpointQuery = API.rootApi + "endpoint/query";
   static shExFormats = API.rootApi + "schema/formats?schemaEngine=shex";
-  static shapeMapInfo = API.rootApi + "shapeMap/info";
-  static shapeMapFormats = API.rootApi + "shapeMap/formats";
+  static shapemapInfo = API.rootApi + "shapemap/info";
+  static shapemapFormats = API.rootApi + "shapemap/formats";
   static shaclFormats = API.rootApi + "schema/formats?schemaEngine=shaclex";
   static schemaValidate = API.rootApi + "schema/validate";
   static schemaInfo = API.rootApi + "schema/info";
@@ -68,7 +68,7 @@ class API {
   static shaclValidateRoute = "/shaclValidate";
   static jenaShaclValidateRoute = "/jenaShaclValidate";
 
-  static shapeMapInfoRoute = "/shapeMapInfo";
+  static shapemapInfoRoute = "/shapemapInfo";
 
   static wikidataQueryRoute = "/wikidataQuery";
   static wikidataValidateRoute = "/wikidataValidate";
@@ -78,12 +78,13 @@ class API {
 
   static permalinkRoute = "/link/:urlCode";
 
-  static byTextTab = "byText";
-  static byUrlTab = "byUrl";
-  static byFileTab = "byFile";
+  static byTextSource = "byText";
+  static byUrlSource = "byUrl";
+  static byFileSource = "byFile";
+  static bySchemaSource = "bySchema";
   static xmiTab = "XMI";
   static umlTab = "UML";
-  static defaultTab = "byText";
+  static defaultSource = this.byTextSource; // Data source: either text, URL or file
   static defaultDataFormat = "turtle";
   static turtleDataFormat = "turtle";
   static defaultInference = "None";

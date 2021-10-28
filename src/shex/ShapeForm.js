@@ -14,7 +14,7 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ShexParser from "./shapeform/ShExParser.js";
 import {
-  convertTabSchema,
+  convertSourceSchema,
   getShexText,
   InitialShEx,
   mkShExTabs,
@@ -108,16 +108,16 @@ export default function ShEx2XMI(props) {
 
   function mkServerParams(source, format) {
     let params = {};
-    params["activeSchemaSource"] = convertTabSchema(source.activeTab);
+    params["activeSchemaSource"] = convertSourceSchema(source.activeSource);
     params["schemaFormat"] = source.format;
-    switch (source.activeTab) {
-      case API.byTextTab:
+    switch (source.activeSource) {
+      case API.byTextSource:
         params["schema"] = source.textArea;
         break;
-      case API.byUrlTab:
+      case API.byUrlSource:
         params["schemaUrl"] = source.url;
         break;
-      case API.byFileTab:
+      case API.byFileSource:
         params["schemaFile"] = source.file;
         break;
       default:
@@ -204,9 +204,9 @@ export default function ShEx2XMI(props) {
   function checkLinks() {
     const disabled =
       getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shex.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shex.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

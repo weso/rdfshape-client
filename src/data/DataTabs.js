@@ -9,7 +9,7 @@ function DataTabs(props) {
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname || ""}
         textAreaValue={props.textAreaValue}
@@ -34,7 +34,7 @@ function DataTabs(props) {
 }
 
 DataTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -51,8 +51,7 @@ DataTabs.propTypes = {
 
 DataTabs.defaultProps = {
   name: "",
-  activeTab: "ByText",
-  // dataFormat: 'TURTLE'
+  activeSource: API.defaultSource,
 };
 
 export default DataTabs;

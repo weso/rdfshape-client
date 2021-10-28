@@ -143,7 +143,7 @@ export function Permalink(props) {
         </Button>
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
-            {props.disabled === API.byTextTab
+            {props.disabled === API.byTextSource
               ? "Can't generate links for long manual inputs, try inserting data by URL"
               : "Can't generate links for file-based inputs, try inserting data by URL"}
           </ReactTooltip>

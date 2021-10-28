@@ -21,26 +21,24 @@ function ResultDataInfo({
   if (dataInfoResponse) {
     return (
       <div>
-        <div>
-          <Alert variant="success">{message}</Alert>
-          <br />
-          <ul>
-            <li>Number of statements: {numberOfStatements}</li>
-            <li>
-              DataFormat: <span>{formatName}</span>
-            </li>
-          </ul>
-          <details>
-            <summary>{API.responseSummaryText}</summary>
-            <PrintJson json={dataInfoResponse} />
-          </details>
-          {permalink && (
-            <Fragment>
-              <hr />
-              <Permalink url={permalink} disabled={disabled} />
-            </Fragment>
-          )}
-        </div>
+        <Alert variant="success">{message}</Alert>
+        <br />
+        <ul>
+          <li>Number of statements: {numberOfStatements}</li>
+          <li>
+            DataFormat: <span>{formatName}</span>
+          </li>
+        </ul>
+        <details>
+          <summary>{API.responseSummaryText}</summary>
+          <PrintJson json={dataInfoResponse} />
+        </details>
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
       </div>
     );
   }

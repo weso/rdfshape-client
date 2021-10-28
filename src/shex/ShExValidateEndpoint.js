@@ -15,10 +15,10 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
   getShapeMapText,
-  InitialShapeMap,
+  InitialShapemap,
   mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
+  paramsFromStateShapemap,
+  shapemapParamsFromQueryParams,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import { mkError } from "../utils/ResponseError";
@@ -35,7 +35,7 @@ function ShExValidateEndpoint(props) {
   const [endpoint, setEndpoint] = useState("");
 
   const [shex, setShEx] = useState(InitialShEx);
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  const [shapeMap, setShapeMap] = useState(InitialShapemap);
 
   const [result, setResult] = useState("");
 
@@ -74,7 +74,7 @@ function ShExValidateEndpoint(props) {
         queryParams.shapeMapUrl ||
         queryParams.shapeMapFile
       ) {
-        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
+        const shapeMapParams = shapemapParamsFromQueryParams(queryParams);
         const finalShapeMap =
           updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
         paramsShapeMap = finalShapeMap;
@@ -89,7 +89,7 @@ function ShExValidateEndpoint(props) {
 
       const params = {
         ...paramsFromStateShEx(paramsShEx),
-        ...paramsFromStateShapeMap(paramsShapeMap),
+        ...paramsFromStateShapemap(paramsShapeMap),
         endpoint: paramsEndpoint.endpoint || endpoint,
         schemaEngine: "ShEx",
         triggerMode: "shapeMap",
@@ -137,7 +137,7 @@ function ShExValidateEndpoint(props) {
 
     setParams({
       ...paramsFromStateShEx(shex),
-      ...paramsFromStateShapeMap(shapeMap),
+      ...paramsFromStateShapemap(shapeMap),
       endpoint,
       schemaEngine: "ShEx",
       triggerMode: "shapeMap",
@@ -175,10 +175,10 @@ function ShExValidateEndpoint(props) {
         getShexText(shex).length +
         getShapeMapText(shapeMap).length >
       API.byTextCharacterLimit
-        ? API.byTextTab
-        : shex.activeTab === API.byFileTab ||
-          shapeMap.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shex.activeSource === API.byFileSource ||
+          shapeMap.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

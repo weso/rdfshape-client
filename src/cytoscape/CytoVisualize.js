@@ -17,10 +17,10 @@ import {
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams
 } from "../data/Data";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 
 function DataVisualizeCyto(props) {
@@ -46,7 +46,7 @@ function DataVisualizeCyto(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const paramsData = updateStateData(dataParams, data) || data;
         setData(paramsData);
@@ -71,9 +71,8 @@ function DataVisualizeCyto(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -139,9 +138,9 @@ function DataVisualizeCyto(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

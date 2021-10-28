@@ -115,9 +115,9 @@ function ShExInfo(props) {
   function checkLinks() {
     const disabled =
       getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shex.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shex.activeSource === API.byFileSource
+        ? API.byTextSource
         : false;
 
     setDisabledLinks(disabled);

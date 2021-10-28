@@ -3,7 +3,7 @@ import API from "../API";
 import ShExTabs from "./ShExTabs";
 
 export const InitialShEx = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultSource,
   textArea: "",
   url: "",
   file: null,
@@ -12,37 +12,37 @@ export const InitialShEx = {
   codeMirror: null,
 };
 
-export function convertTabSchema(key) {
+export function convertSourceSchema(key) {
   switch (key) {
-    case API.byTextTab:
+    case API.byTextSource:
       return "#schemaTextArea";
-    case API.byFileTab:
+    case API.byFileSource:
       return "#schemaFile";
-    case API.byUrlTab:
+    case API.byUrlSource:
       return "#schemaUrl";
     default:
-      console.info("Unknown schemaTab: " + key);
+      console.info(`Unknown schemaTab: ${key}`);
       return key;
   }
 }
 
 export function paramsFromStateShEx(state) {
-  const activeTab = state.activeTab;
+  const activeSource = state.activeSource;
   const textArea = state.textArea;
   const format = state.format;
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["activeSchemaSource"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertSourceSchema(activeSource);
   params["schemaFormat"] = format;
-  switch (activeTab) {
-    case API.byTextTab:
+  switch (activeSource) {
+    case API.byTextSource:
       params["schema"] = textArea.trim();
       break;
-    case API.byUrlTab:
+    case API.byUrlSource:
       params["schemaUrl"] = url.trim();
       break;
-    case API.byFileTab:
+    case API.byFileSource:
       params["schemaFile"] = file;
       break;
     default:
@@ -54,7 +54,7 @@ export function updateStateShEx(params, shex) {
   if (params["schema"]) {
     return {
       ...shex,
-      activeTab: API.byTextTab,
+      activeSource: API.byTextSource,
       textArea: params["schema"],
       fromParams: true,
       format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
@@ -63,7 +63,7 @@ export function updateStateShEx(params, shex) {
   if (params["schemaUrl"]) {
     return {
       ...shex,
-      activeTab: API.byUrlTab,
+      activeSource: API.byUrlSource,
       url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
@@ -72,7 +72,7 @@ export function updateStateShEx(params, shex) {
   if (params["schemaFile"]) {
     return {
       ...shex,
-      activeTab: API.byFileTab,
+      activeSource: API.byFileSource,
       file: params["schemaFile"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
@@ -83,7 +83,7 @@ export function updateStateShEx(params, shex) {
 
 export function mkShExTabs(shex, setShEx, name, subname) {
   function handleShExTabChange(value) {
-    setShEx({ ...shex, activeTab: value });
+    setShEx({ ...shex, activeSource: value });
   }
 
   function handleShExFormatChange(value) {
@@ -106,7 +106,7 @@ export function mkShExTabs(shex, setShEx, name, subname) {
     <ShExTabs
       name={name}
       subname={subname}
-      activeTab={shex.activeTab}
+      activeSource={shex.activeSource}
       handleTabChange={handleShExTabChange}
       textAreaValue={shex.textArea}
       handleByTextChange={handleShExByTextChange}
@@ -132,9 +132,9 @@ export function shExParamsFromQueryParams(params) {
 }
 
 export function getShexText(shex) {
-  if (shex.activeTab === API.byTextTab) {
+  if (shex.activeSource === API.byTextSource) {
     return encodeURI(shex.textArea.trim());
-  } else if (shex.activeTab === API.byUrlTab) {
+  } else if (shex.activeSource === API.byUrlSource) {
     return encodeURI(shex.url.trim());
   }
   return "";

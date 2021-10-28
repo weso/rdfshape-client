@@ -13,15 +13,15 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import { mkError } from "../utils/ResponseError";
 import {
-  InitialShapeMap,
+  InitialShapemap,
   mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
-  updateStateShapeMap
+  paramsFromStateShapemap,
+  shapemapParamsFromQueryParams,
+  updateStateShapeMap,
 } from "./ShapeMap";
 
 function ShapeMapInfo(props) {
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  const [shapemap, setShapemap] = useState(InitialShapemap);
   const [result, setResult] = useState(null);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -32,24 +32,18 @@ function ShapeMapInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.shapeMapInfo;
+  const url = API.shapemapInfo;
 
   useEffect(() => {
     if (props.location?.search) {
-      let paramsShapeMap = {};
       const queryParams = qs.parse(props.location.search);
-      if (
-        queryParams.shapeMap ||
-        queryParams.shapeMapUrl ||
-        queryParams.shapeMapFile
-      ) {
-        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
-        const finalShapeMap =
-          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
-        paramsShapeMap = finalShapeMap;
-        setShapeMap(finalShapeMap);
+      if (queryParams.shapemap) {
+        const shapemapParams = shapemapParamsFromQueryParams(queryParams);
+        const finalShapemap =
+          updateStateShapeMap(shapemapParams, shapemap) || shapemap;
+        setShapemap(finalShapemap);
 
-        const params = paramsFromStateShapeMap(paramsShapeMap);
+        const params = paramsFromStateShapemap(finalShapemap);
 
         setParams(params);
         setLastParams(params);
@@ -60,7 +54,12 @@ function ShapeMapInfo(props) {
   // Call API on params change
   useEffect(() => {
     if (params) {
-      if (params.shapeMap || params.shapeMapUrl || params.shapeMapFile) {
+      if (
+        params.shapemap &&
+        (params.shapemapSource == API.byFileSource
+          ? params.shapemap.name
+          : true) // Extra check for files
+      ) {
         resetState();
         setUpHistory();
         postShapeMapInfo();
@@ -73,7 +72,7 @@ function ShapeMapInfo(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams(paramsFromStateShapeMap(shapeMap));
+    setParams(paramsFromStateShapemap(shapemap));
   }
 
   function postShapeMapInfo(cb) {
@@ -88,13 +87,13 @@ function ShapeMapInfo(props) {
         setError(null);
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.shapeMapInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.shapemapInfoRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
-      .catch( error => {
+      .catch((error) => {
         setError(mkError(error, url));
       })
       .finally(() => {
@@ -106,11 +105,11 @@ function ShapeMapInfo(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      shapeMap.activeTab === API.byTextTab &&
-      shapeMap.textArea.length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shapeMap.activeTab === API.byFileTab
-        ? API.byFileTab
+      shapemap.activeSource === API.byTextSource &&
+      shapemap.textArea.length > API.byTextCharacterLimit
+        ? API.byTextSource
+        : shapemap.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);
@@ -127,7 +126,7 @@ function ShapeMapInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shapeMapInfoRoute, lastParams)
+        mkPermalinkLong(API.shapemapInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -135,7 +134,7 @@ function ShapeMapInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shapeMapInfoRoute, params)
+      mkPermalinkLong(API.shapemapInfoRoute, params)
     );
 
     setLastParams(params);
@@ -156,7 +155,7 @@ function ShapeMapInfo(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkShapeMapTabs(shapeMap, setShapeMap, "Input ShapeMap")}
+            {mkShapeMapTabs(shapemap, setShapemap, "Input ShapeMap")}
             <hr />
             <Button
               variant="primary"
@@ -182,9 +181,9 @@ function ShapeMapInfo(props) {
             ) : result ? (
               <ResultShapeMapInfo
                 result={result}
-                fromParams={shapeMap.fromParamsShapeMap}
+                fromParams={shapemap.fromParamsShapeMap}
                 resetFromParams={() =>
-                  setShapeMap({ ...shapeMap, fromParamsShapeMap: false })
+                  setShapemap({ ...shapemap, fromParamsShapeMap: false })
                 }
                 permalink={permalink}
                 disabled={disabledLinks}

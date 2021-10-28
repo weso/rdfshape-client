@@ -9,7 +9,7 @@ function ShExTabs(props) {
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name || ""}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname || ""}
         textAreaValue={props.textAreaValue}
@@ -34,7 +34,7 @@ function ShExTabs(props) {
 }
 
 ShExTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -55,7 +55,7 @@ ShExTabs.propTypes = {
 };
 
 ShExTabs.defaultProps = {
-  activeTab: "ByText",
+  activeSource: API.defaultSource,
   shExFormat: "ShExC",
 };
 

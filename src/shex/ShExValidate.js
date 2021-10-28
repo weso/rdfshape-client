@@ -14,7 +14,8 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
+  dataParamsFromQueryParams
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
@@ -22,14 +23,13 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
 import {
   getShapeMapText,
-  InitialShapeMap,
+  InitialShapemap,
   mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
+  paramsFromStateShapemap,
+  shapemapParamsFromQueryParams,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getShexText,
   InitialShEx,
@@ -42,7 +42,7 @@ import {
 function ShExValidate(props) {
   const [shex, setShEx] = useState(InitialShEx);
   const [data, setData] = useState(InitialData);
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  const [shapeMap, setShapeMap] = useState(InitialShapemap);
 
   const [endpoint, setEndpoint] = useState("");
   const [withEndpoint, setWithEndpoint] = useState(false);
@@ -92,7 +92,7 @@ function ShExValidate(props) {
         queryParams.shapeMapUrl ||
         queryParams.shapeMapFile
       ) {
-        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
+        const shapeMapParams = shapemapParamsFromQueryParams(queryParams);
         const finalShapeMap =
           updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
         paramsShapeMap = finalShapeMap;
@@ -109,7 +109,7 @@ function ShExValidate(props) {
       let params = {
         ...paramsFromStateData(paramsData),
         ...paramsFromStateShEx(paramsShEx),
-        ...paramsFromStateShapeMap(paramsShapeMap),
+        ...paramsFromStateShapemap(paramsShapeMap),
         endpoint: paramsEndpoint.endpoint || endpoint,
         schemaEngine: "ShEx",
         triggerMode: "shapeMap",
@@ -165,7 +165,7 @@ function ShExValidate(props) {
     setParams({
       ...paramsFromStateData(data),
       ...paramsFromStateShEx(shex),
-      ...paramsFromStateShapeMap(shapeMap),
+      ...paramsFromStateShapemap(shapeMap),
       endpoint,
       schemaEngine: "ShEx",
       triggerMode: "shapeMap",
@@ -203,11 +203,11 @@ function ShExValidate(props) {
         getShexText(shex).length +
         getShapeMapText(shapeMap).length >
       API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab ||
-          shex.activeTab === API.byFileTab ||
-          shapeMap.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource ||
+          shex.activeSource === API.byFileSource ||
+          shapeMap.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

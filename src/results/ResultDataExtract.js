@@ -5,55 +5,55 @@ import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 
-function ResultDataExtract(props) {
-  const result = props.result;
+function ResultDataExtract({
+  result: extractResponse,
+  fromParams,
+  resetFromParams,
+  permalink,
+  disabled,
+}) {
+  // De-structure the API response for later usage
+  const {
+    message,
+    data: inputData,
+    schemaFormat: resultSchemaFormat,
+    schemaEngine: resultSchemaEngine,
+    result: { schema: resultSchema, shapeMap: resultShapeMap },
+  } = extractResponse;
   let msg;
-  if (result === "") {
-    msg = null;
-  } else if (result.error) {
-    msg = (
+  if (extractResponse) {
+    return (
       <div>
-        <Alert variant="danger">Error: {result.error}</Alert>
-      </div>
-    );
-  } else {
-    msg = (
-      <div>
-        <p>{result.message}</p>
-        {result.inferredShape && (
+        {/* Alert */}
+        <Alert variant="success">{message}</Alert>
+        {/* Output schema */}
+        {resultSchema && (
           <Code
-            value={result.inferredShape}
-            mode="ShExC"
+            value={resultSchema}
+            mode={resultSchemaFormat.name} // Presumably "ShExC"
             readOnly={true}
-            fromParams={props.fromParams}
-            resetFromParams={props.resetFromParams}
+            fromParams={fromParams}
+            resetFromParams={resetFromParams}
             linenumbers={true}
-            theme="material"
+            // theme="material"
           />
         )}
-        {props.permalink && (
+        <br />
+        {/* Full response */}
+        <details>
+          <summary>{API.responseSummaryText}</summary>
+          <PrintJson json={extractResponse} />
+        </details>
+        {/* Permalink */}
+        {permalink && (
           <Fragment>
-            <Permalink url={props.permalink} disabled={props.disabled} />
+            <Permalink url={permalink} disabled={disabled} />
             <hr />
           </Fragment>
         )}
       </div>
     );
   }
-
-  return (
-    <div>
-      {msg}
-      {!result.error
-        ? result && (
-            <details>
-              <summary>{API.responseSummaryText}</summary>
-              <PrintJson json={result} />
-            </details>
-          )
-        : null}
-    </div>
-  );
 }
 
 export default ResultDataExtract;

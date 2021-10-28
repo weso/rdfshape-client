@@ -139,9 +139,9 @@ function DataMerge(props) {
     const disabled =
       getDataText(data1).length + getDataText(data2).length >
       API.byTextCharacterLimit
-        ? API.byTextTab
-        : data1.activeTab === API.byFileTab || data2.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data1.activeSource === API.byFileSource || data2.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

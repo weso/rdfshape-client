@@ -9,7 +9,7 @@ function SHACLTabs(props) {
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name || ""}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname || ""}
         textAreaValue={props.textAreaValue}
@@ -34,7 +34,7 @@ function SHACLTabs(props) {
 }
 
 SHACLTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -54,7 +54,7 @@ SHACLTabs.propTypes = {
 
 SHACLTabs.defaultProps = {
   name: "SHACL Shapes",
-  activeTab: "ByText",
+  actiactiveSourceveTab: API.defaultSource,
   // dataFormat: 'TURTLE'
 };
 

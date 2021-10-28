@@ -12,14 +12,14 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
-import { convertTabSchema } from "../shex/ShEx";
+import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
   mkShaclTabs,
   shaclParamsFromQueryParams,
-  updateStateShacl
+  updateStateShacl,
 } from "./SHACL";
 
 export default function SHACL2ShEx(props) {
@@ -108,18 +108,18 @@ export default function SHACL2ShEx(props) {
 
   function mkServerParams(shacl, format) {
     let params = {};
-    params["activeSchemaSource"] = convertTabSchema(shacl.activeTab);
+    params["activeSchemaSource"] = convertSourceSchema(shacl.activeSource);
     params["schemaFormat"] = shacl.format;
     params["schemaEngine"] = shacl.engine;
     params["schemaInference"] = shacl.inference;
-    switch (shacl.activeTab) {
-      case API.byTextTab:
+    switch (shacl.activeSource) {
+      case API.byTextSource:
         params["schema"] = shacl.textArea;
         break;
-      case API.byUrlTab:
+      case API.byUrlSource:
         params["schemaUrl"] = shacl.url;
         break;
-      case API.byFileTab:
+      case API.byFileSource:
         params["schemaFile"] = shacl.file;
         break;
       default:
@@ -179,9 +179,9 @@ export default function SHACL2ShEx(props) {
   function checkLinks() {
     const disabled =
       getShaclText(shacl).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shacl.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shacl.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

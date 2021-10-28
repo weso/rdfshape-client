@@ -12,13 +12,13 @@ import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import ResponseError, { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams,
 } from "./Data";
 
 function DataInfo(props) {
@@ -41,7 +41,7 @@ function DataInfo(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
@@ -59,9 +59,8 @@ function DataInfo(props) {
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -105,9 +104,9 @@ function DataInfo(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

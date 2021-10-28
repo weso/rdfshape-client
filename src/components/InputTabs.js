@@ -9,14 +9,14 @@ import ByText from "./ByText";
 import ByURL from "./ByURL";
 
 function InputTabs(props) {
-  const [activeTab, setActiveTab] = useState(props.activeTab);
+  const [activeSource, setActiveSource] = useState(props.activeSource);
 
   useEffect(() => {
-    handleTabChange(props.activeTab);
-  }, [props.activeTab]);
+    handleTabChange(props.activeSource);
+  }, [props.activeSource]);
 
   function handleTabChange(e) {
-    setActiveTab(e);
+    setActiveSource(e);
     props.handleTabChange(e);
   }
 
@@ -24,12 +24,12 @@ function InputTabs(props) {
     <Form.Group>
       <Form.Label style={{ fontWeight: "bold" }}>{props.name}</Form.Label>
       <Tabs
-        activeKey={activeTab}
+        activeKey={activeSource}
         transition={false}
         id="dataTabs"
         onSelect={handleTabChange}
       >
-        <Tab eventKey={API.byTextTab} title="by Input">
+        <Tab eventKey={API.byTextSource} title="Text">
           <ByText
             name={props.byTextName}
             textAreaValue={props.textAreaValue}
@@ -41,7 +41,7 @@ function InputTabs(props) {
             resetFromParams={props.resetFromParams}
           />
         </Tab>
-        <Tab eventKey={API.byUrlTab} title="By URL">
+        <Tab eventKey={API.byUrlSource} title="URL">
           <ByURL
             name={props.byURLName}
             urlValue={props.urlValue}
@@ -49,7 +49,7 @@ function InputTabs(props) {
             placeholder={props.byURLPlaceholder}
           />
         </Tab>
-        <Tab eventKey={API.byFileTab} title="By File">
+        <Tab eventKey={API.byFileSource} title="File">
           <ByFile
             name={props.byFileName}
             handleFileUpload={props.handleFileUpload}
@@ -69,7 +69,7 @@ InputTabs.propTypes = {
   /** Callback to get a handler of the codeMirror instance */
   setCodeMirror: PropTypes.func,
 
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   byTextName: PropTypes.string,
   textFormat: PropTypes.string,
@@ -88,7 +88,7 @@ InputTabs.propTypes = {
 };
 
 InputTabs.defaultProps = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultSource,
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",

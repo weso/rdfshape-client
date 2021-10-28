@@ -3,7 +3,7 @@ import API from "../API";
 import UMLTabs from "./UMLTabs";
 
 export const InitialUML = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultTab,
   textArea: "",
   url: "",
   file: null,
@@ -14,11 +14,11 @@ export const InitialUML = {
 
 export function convertTabSchema(key) {
   switch (key) {
-    case API.byTextTab:
+    case API.byTextSource:
       return "#schemaTextArea";
-    case API.byFileTab:
+    case API.byFileSource:
       return "#schemaFile";
-    case API.byUrlTab:
+    case API.byUrlSource:
       return "#schemaUrl";
     default:
       console.info("Unknown schemaTab: " + key);
@@ -27,22 +27,22 @@ export function convertTabSchema(key) {
 }
 
 export function paramsFromStateUML(state) {
-  const activeTab = state.activeTab;
+  const activeSource = state.activeSource;
   const textArea = state.textArea;
   const format = state.format;
   const url = state.url;
   const file = state.file;
   let params = {};
-  params["activeSchemaSource"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertTabSchema(activeSource);
   params["schemaFormat"] = format;
-  switch (activeTab) {
-    case API.byTextTab:
+  switch (activeSource) {
+    case API.byTextSource:
       params["schema"] = textArea;
       break;
-    case API.byUrlTab:
+    case API.byUrlSource:
       params["schemaUrl"] = url;
       break;
-    case API.byFileTab:
+    case API.byFileSource:
       params["schemaFile"] = file;
       break;
     default:
@@ -54,7 +54,7 @@ export function updateStateUML(params, xmi) {
   if (params["schema"]) {
     return {
       ...xmi,
-      activeTab: API.byTextTab,
+      activeSource: API.byTextSource,
       textArea: params["schema"],
       fromParams: true,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -63,7 +63,7 @@ export function updateStateUML(params, xmi) {
   if (params["schemaUrl"]) {
     return {
       ...xmi,
-      activeTab: API.byUrlTab,
+      activeSource: API.byUrlSource,
       url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -72,7 +72,7 @@ export function updateStateUML(params, xmi) {
   if (params["schemaFile"]) {
     return {
       ...xmi,
-      activeTab: API.byFileTab,
+      activeSource: API.byFileSource,
       file: params["schemaFile"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -83,7 +83,7 @@ export function updateStateUML(params, xmi) {
 
 export function mkUMLTabs(xmi, setXmi, name, subname) {
   function handleXmiTabChange(value) {
-    setXmi({ ...xmi, activeTab: value });
+    setXmi({ ...xmi, activeSource: value });
   }
 
   function handleXmiFormatChange(value) {
@@ -106,7 +106,7 @@ export function mkUMLTabs(xmi, setXmi, name, subname) {
     <UMLTabs
       name={name}
       subname={subname}
-      activeTab={xmi.activeTab}
+      activeSource={xmi.activeSource}
       handleTabChange={handleXmiTabChange}
       textAreaValue={xmi.textArea}
       handleByTextChange={handleXmiByTextChange}
@@ -132,9 +132,9 @@ export function UMLParamsFromQueryParams(params) {
 }
 
 export function getUmlText(xmi) {
-  if (xmi.activeTab === API.byTextTab) {
+  if (xmi.activeSource === API.byTextSource) {
     return xmi.textArea;
-  } else if (xmi.activeTab === API.byUrlTab) {
+  } else if (xmi.activeSource === API.byUrlSource) {
     return xmi.url;
   }
   return "";

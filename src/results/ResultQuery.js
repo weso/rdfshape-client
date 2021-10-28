@@ -6,27 +6,17 @@ import Alert from "react-bootstrap/Alert";
 import PrintJson from "../utils/PrintJson";
 import API from "../API";
 
-function ResultQuery(props) {
-  const result = props.result;
-  let msg;
-  if (!result || result === "") {
-    msg = null;
-  } else if (result.result.error) {
-    msg = (
-      <div>
-        <Alert variant="danger">Error: {result.result.error}</Alert>
-        {!result.result.error ? (
-          <details>
-            <PrintJson json={result} />
-          </details>
-        ) : null}
-      </div>
-    );
-  } else {
+function ResultQuery({ result: dataQueryResponse }) {
+  // De-structure the server response for convenience
+  const { message, result } = dataQueryResponse;
+
+  if (dataQueryResponse) {
     const prefixes = [];
-    const table = parseData(result.result, prefixes);
-    msg = (
+    const table = parseData(result, prefixes);
+
+    return (
       <div>
+        <Alert variant="success">{message}</Alert>
         <BootstrapTable
           keyField="_id"
           data={table.rows}
@@ -36,16 +26,13 @@ function ResultQuery(props) {
           hover
           condensed
         />
-        <p>{result.msg}</p>
         <details>
           <summary>{API.responseSummaryText}</summary>
-          <PrintJson json={result} />
+          <PrintJson json={dataQueryResponse} />
         </details>
       </div>
     );
   }
-
-  return <div>{msg}</div>;
 }
 
 ResultQuery.propTypes = {

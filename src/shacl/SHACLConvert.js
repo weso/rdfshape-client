@@ -129,9 +129,9 @@ function SHACLConvert(props) {
   function checkLinks() {
     const disabled =
       getShaclText(shacl).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shacl.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shacl.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

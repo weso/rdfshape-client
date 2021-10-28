@@ -15,7 +15,7 @@ import InputShapeLabel from "../components/InputShapeLabel";
 import InputWikidataSchema from "../components/InputWikidataSchema";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
-import { convertTabSchema } from "../shex/ShEx";
+import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
 import ShExTabs from "../shex/ShExTabs";
 import { mkError } from "../utils/ResponseError";
 
@@ -27,7 +27,7 @@ function WikidataValidate(props) {
     permalink: null,
   };
   const initialShExStatus = {
-    shExActiveTab: API.defaultTab,
+    shExActiveSource: API.defaultSource,
     shExTextArea: "",
     shExUrl: "",
     shExFormat: API.defaultShExFormat,
@@ -37,7 +37,7 @@ function WikidataValidate(props) {
   const [entities, setEntities] = useState([]);
 
   const [schemaEntity, setSchemaEntity] = useState("");
-  const [schemaActiveTab, setSchemaActiveTab] = useState("BySchema");
+  const [schemaActiveSource, setSchemaActiveSource] = useState(API.bySchemaSource);
   const [shEx, dispatchShEx] = useReducer(shExReducer, initialShExStatus);
   const [shapeLabel, setShapeLabel] = useState("");
   const url = API.schemaValidate;
@@ -54,16 +54,16 @@ function WikidataValidate(props) {
 
   function paramsFromShEx(shExStatus) {
     let params = {};
-    params["activeSchemaSource"] = convertTabSchema(shExStatus.shExActiveTab);
+    params["activeSchemaSource"] = convertSourceSchema(shExStatus.shExActiveSource);
     params["schemaFormat"] = shExStatus.shExFormat;
-    switch (shExStatus.shExActiveTab) {
-      case API.byTextTab:
+    switch (shExStatus.shExActiveSource) {
+      case API.byTextSource:
         params["schema"] = shExStatus.shExTextArea;
         break;
-      case API.byUrlTab:
+      case API.byUrlSource:
         params["schemaUrl"] = shExStatus.shExUrl;
         break;
-      case API.byFileTab:
+      case API.byFileSource:
         params["schemaFile"] = shExStatus.shExFile;
         break;
       default:
@@ -74,23 +74,23 @@ function WikidataValidate(props) {
   function shExReducer(status, action) {
     switch (action.type) {
       case "changeTab":
-        return { ...status, shExActiveTab: action.value };
+        return { ...status, shExActiveSource: action.value };
       case "setText":
         return {
           ...status,
-          shExActiveTab: API.byTextTab,
+          shExActiveSource: API.byTextSource,
           shExTextArea: action.value,
         };
       case "setUrl":
         return {
           ...status,
-          shExActiveTab: API.byUrlTab,
+          shExActiveSource: API.byUrlSource,
           shExUrl: action.value,
         };
       case "setFile":
         return {
           ...status,
-          shExActiveTab: API.byFileTab,
+          shExActiveSource: API.byFileSource,
           shExFile: action.value,
         };
       case "setFormat":
@@ -169,7 +169,7 @@ function WikidataValidate(props) {
   }
 
   function handleTabChange(e) {
-    setSchemaActiveTab(e);
+    setSchemaActiveSource(e);
   }
 
   return (
@@ -195,7 +195,7 @@ function WikidataValidate(props) {
         <Form onSubmit={handleSubmit}>
           <InputEntitiesByText onChange={handleChange} entities={entities} />
           <Tabs
-            activeKey={schemaActiveTab}
+            activeKey={schemaActiveSource}
             transition={false}
             id="SchemaTabs"
             onSelect={handleTabChange}
@@ -212,7 +212,7 @@ function WikidataValidate(props) {
             </Tab>
             <Tab eventKey="ByShExTab" title="ShEx">
               <ShExTabs
-                activeTab={shEx.shExActiveTab}
+                activeSource={shEx.shExActiveSource}
                 handleTabChange={handleShExTabChange}
                 textAreaValue={shEx.shExTextArea}
                 handleByTextChange={handleShExByTextChange}

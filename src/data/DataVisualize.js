@@ -15,12 +15,7 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResponseError, { mkError } from "../utils/ResponseError";
-import {
-  dataParamsFromQueryParams,
-  maxZoom,
-  minZoom,
-  stepZoom,
-} from "../utils/Utils";
+import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
@@ -29,6 +24,7 @@ import {
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams,
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
@@ -39,9 +35,7 @@ function DataVisualize(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [targetGraphicalFormat] = useState(
-    API.defaultGraphicalFormat
-  );
+  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -57,14 +51,14 @@ function DataVisualize(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
 
         const params = {
           ...paramsFromStateData(finalData),
-          targetGraphicalFormat
+          targetGraphicalFormat,
         };
 
         setParams(params);
@@ -78,9 +72,8 @@ function DataVisualize(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -96,7 +89,7 @@ function DataVisualize(props) {
     event.preventDefault();
     setParams({
       ...paramsFromStateData(data),
-      targetGraphicalFormat
+      targetGraphicalFormat,
     });
   }
 
@@ -136,9 +129,9 @@ function DataVisualize(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

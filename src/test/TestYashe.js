@@ -8,14 +8,14 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import QueryForm from '../query/QueryForm';
 import ShExForm from '../shex/ShExForm';
-// import {dataParamsFromQueryParams, shapeMapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
+// import {dataParamsFromQueryParams, shapemapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
 // import {params2Form} from "../Permalink";
 
 function TestYashe(props)  {
     const [shEx,setShEx] = useState('');
     const [sparql,setSparql] = useState('');
     const [msg,setMsg] = useState('');
-    const [activeTab, setActiveTab] = useState('ShEx');
+    const [activeSource, setActiveSource] = useState('ShEx');
     const [yashe, setYashe] = useState(null);
     const [fromParams, setFromParams] = useState(false);
 
@@ -35,7 +35,7 @@ function TestYashe(props)  {
 
 
     function handleTabChange(e) {
-        setActiveTab(e)
+        setActiveSource(e)
     }
 
 
@@ -50,9 +50,9 @@ function TestYashe(props)  {
 */}
        <Form.Group>
            <Form.Label>Select input</Form.Label>
-            <Tabs activeKey={activeTab}
+            <Tabs activeKey={activeSource}
                   id="testYasheTabs"
-                  onSelect={k => setActiveTab(k)}
+                  onSelect={k => setActiveSource(k)}
             >
                 <Tab eventKey="ShEx" title="ShEx">
                 <Form.Group>
@@ -83,7 +83,7 @@ function TestYashe(props)  {
                 </Tab>
             </Tabs>
             <br/>
-            <p>ActiveTab: {activeTab}</p>
+            <p>ActiveSource: {activeSource}</p>
             <pre>ShEx: {shEx}</pre>
             <pre>Yashe: {typeof yashe}</pre>
            <Button variant="primary"

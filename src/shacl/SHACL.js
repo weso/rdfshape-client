@@ -2,19 +2,11 @@ import React from "react";
 import API from "../API";
 import SelectSHACLEngine from "../components/SelectSHACLEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
-import { convertTabSchema } from "../shex/ShEx";
+import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
 import SHACLTabs from "./SHACLTabs";
 
-/*export const initialSHACLStatus = {
-
-    shaclActiveTab: API.defaultTab,
-    shaclTextArea: '',
-    shaclUrl: '',
-    shaclFormat: API.defaultSHACLFormat
-} ; */
-
 export const InitialShacl = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultSource,
   textArea: "",
   url: "",
   file: null,
@@ -25,78 +17,51 @@ export const InitialShacl = {
   inference: "none",
 };
 
-/*export function shaclReducer(status,action) {
-    switch (action.type) {
-        case 'changeTab':
-            return {
-                ...status,
-                shaclActiveTab: action.value
-            }
-        case 'setText':
-            return {
-                ...status,
-                shaclActiveTab: API.byTextTab,
-                shaclTextArea: action.value
-            }
-        case 'setUrl':
-            return { ...status,
-                shaclActiveTab: API.byUrlTab,
-                shaclUrl: action.value
-            }
-        case 'setFile':
-            return {
-                ...status,
-                shaclActiveTab: API.byFileTab,
-                shaclFile: action.value
-            }
-        case 'setFormat':
-            return { ...status,
-                shaclFormat: action.value
-            }
-        default:
-            return new Error(`shaclReducer: unknown action type: ${action.type}`)
-    }
-}*/
-
 export function updateStateShacl(params, shacl) {
   if (params["schema"]) {
     return {
       ...shacl,
-      activeTab: API.byTextTab,
+      activeSource: API.byTextSource,
       textArea: params["schema"],
       fromParams: true,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
       engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
+      inference: params["schemaInference"]
+        ? params["schemaInference"]
+        : shacl.inference,
     };
   }
   if (params["schemaUrl"]) {
     return {
       ...shacl,
-      activeTab: API.byUrlTab,
+      activeSource: API.byUrlSource,
       url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
       engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
+      inference: params["schemaInference"]
+        ? params["schemaInference"]
+        : shacl.inference,
     };
   }
   if (params["schemaFile"]) {
     return {
       ...shacl,
-      activeTab: API.byFileTab,
+      activeSource: API.byFileSource,
       file: params["schemaFile"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
       engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"] ? params["schemaInference"] : shacl.inference,
+      inference: params["schemaInference"]
+        ? params["schemaInference"]
+        : shacl.inference,
     };
   }
   return shacl;
 }
 
 export function paramsFromStateShacl(state) {
-  const activeTab = state.activeTab;
+  const activeSource = state.activeSource;
   const textArea = state.textArea;
   const format = state.format;
   const url = state.url;
@@ -104,18 +69,18 @@ export function paramsFromStateShacl(state) {
   const engine = state.engine;
   const inference = state.inference;
   let params = {};
-  params["activeSchemaSource"] = convertTabSchema(activeTab);
+  params["activeSchemaSource"] = convertSourceSchema(activeSource);
   params["schemaFormat"] = format;
   params["schemaEngine"] = engine;
   params["schemaInference"] = inference;
-  switch (activeTab) {
-    case API.byTextTab:
+  switch (activeSource) {
+    case API.byTextSource:
       params["schema"] = textArea.trim();
       break;
-    case API.byUrlTab:
+    case API.byUrlSource:
       params["schemaUrl"] = url.trim();
       break;
-    case API.byFileTab:
+    case API.byFileSource:
       params["schemaFile"] = file;
       break;
     default:
@@ -129,14 +94,15 @@ export function shaclParamsFromQueryParams(params) {
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
   if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
   if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
-  if (params.schemaInference) newParams["schemaInference"] = params.schemaInference;
+  if (params.schemaInference)
+    newParams["schemaInference"] = params.schemaInference;
   if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
   return newParams;
 }
 
 export function mkShaclTabs(shacl, setShacl, name, subname) {
   function handleShaclTabChange(value) {
-    setShacl({ ...shacl, activeTab: value });
+    setShacl({ ...shacl, activeSource: value });
   }
   function handleShaclFormatChange(value) {
     setShacl({ ...shacl, format: value });
@@ -164,7 +130,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
       <SHACLTabs
         name={name}
         subname={subname}
-        activeTab={shacl.activeTab}
+        activeSource={shacl.activeSource}
         handleTabChange={handleShaclTabChange}
         textAreaValue={shacl.textArea}
         handleByTextChange={handleShaclByTextChange}
@@ -195,9 +161,9 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
 }
 
 export function getShaclText(shacl) {
-  if (shacl.activeTab === API.byTextTab) {
+  if (shacl.activeSource === API.byTextSource) {
     return encodeURI(shacl.textArea.trim());
-  } else if (shacl.activeTab === API.byUrlTab) {
+  } else if (shacl.activeSource === API.byUrlSource) {
     return encodeURI(shacl.url.trim());
   }
   return "";

@@ -44,7 +44,6 @@ import ShExVisualizeRaw from "./shex/ShExVisualizeRaw.js";
 import TestCode from "./test/TestCode.js";
 import TestCyto from "./test/TestCyto.js";
 import TestGithubSearch from "./test/TestGithubSearch.js";
-import TestInputTabsWithFormat from "./test/TestInputTabsWithFormat";
 import TestRDFArea from "./test/TestRDFArea.js";
 import TestSearch from "./test/TestSearch.js";
 // Only for testing
@@ -234,10 +233,6 @@ function Routes() {
         <Route
           path="/test/github"
           render={() => renderWithNavbar(TestGithubSearch)}
-        />
-        <Route
-          path="/test/inputTabsWithFormat"
-          render={() => renderWithNavbar(TestInputTabsWithFormat)}
         />
         <Route
           path={API.permalinkRoute}

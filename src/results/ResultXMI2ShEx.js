@@ -22,10 +22,10 @@ function ResultXMI2ShEx(props) {
   const result = props.result;
   let msg;
 
-  const [activeTab, setActiveTab] = useState(props.activeTab);
+  const [activeSource, setActiveSource] = useState(props.activeSource);
 
   function handleTabChange(e) {
-    setActiveTab(e);
+    setActiveSource(e);
   }
 
   function fullscreen() {
@@ -100,7 +100,7 @@ function ResultXMI2ShEx(props) {
     msg = (
       <div>
         <Tabs
-          activeKey={activeTab}
+          activeKey={activeSource}
           transition={false}
           id="dataTabs"
           onSelect={handleTabChange}

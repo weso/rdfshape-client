@@ -5,10 +5,10 @@ import Alert from "react-bootstrap/Alert";
 function ResultShapeForm({result, ...props})  {
   let msg;
 
-  const [activeTab, setActiveTab] = useState(props.activeTab);
+  const [activeSource, setActiveSource] = useState(props.activeSource);
 
   function handleTabChange(e) {
-    setActiveTab(e);
+    setActiveSource(e);
   }
 
     useEffect(() => {

@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from 'react';
+import API from "../API";
 import InputTabs from "../components/InputTabs";
 import QueryForm from "./QueryForm";
 
@@ -18,7 +19,7 @@ function QueryTabs(props) {
             <div>
                 <InputTabs
                     name={props.name}
-                    activeTab={props.activeTab}
+                    activeSource={props.activeSource}
                     handleTabChange={props.handleTabChange}
 
                     byTextName={props.subname || ""}
@@ -43,7 +44,7 @@ function QueryTabs(props) {
 }
 
 QueryTabs.propTypes = {
-    activeTab: PropTypes.string,
+    activeSource: PropTypes.string,
     textAreaValue: PropTypes.string,
     handleByTextChange: PropTypes.func.isRequired,
     urlValue: PropTypes.string,
@@ -62,7 +63,7 @@ QueryTabs.propTypes = {
 QueryTabs.defaultProps = {
     textAreaValue: '',
     urlValue: '',
-    activeTab: 'ByText'
+    activeSource: API.defaultSource
 };
 
 export default QueryTabs;

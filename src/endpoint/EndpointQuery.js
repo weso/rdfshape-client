@@ -233,9 +233,9 @@ function EndpointQuery(props) {
                 disabled={
                   getQueryText(query).length + endpoint.length >
                   API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : query.activeTab === API.byFileTab
-                    ? API.byFileTab
+                    ? API.byTextSource
+                    : query.activeSource === API.byFileSource
+                    ? API.byFileSource
                     : false
                 }
               />

@@ -9,7 +9,7 @@ function ShapeMapTabs(props) {
       <InputTabsWithFormat
         defaultFormat={"Compact"}
         nameInputTab={props.name || ""}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname || ""}
         textAreaValue={props.textAreaValue}
@@ -24,7 +24,7 @@ function ShapeMapTabs(props) {
         nameFormat="ShapeMap format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleFormatChange}
-        urlFormats={API.shapeMapFormats}
+        urlFormats={API.shapemapFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
         setCodeMirror={props.setCodeMirror}
@@ -34,8 +34,8 @@ function ShapeMapTabs(props) {
 }
 
 ShapeMapTabs.propTypes = {
-  /** Active tab */
-  activeTab: PropTypes.string,
+  /** Active source */
+  activeSource: PropTypes.string,
 
   /** Textarea value */
   textAreaValue: PropTypes.string,
@@ -63,8 +63,8 @@ ShapeMapTabs.propTypes = {
 };
 
 ShapeMapTabs.defaultProps = {
-  activeTab: "ByText",
-  shapeMapFormat: "TURTLE",
+  activeSource: API.defaultSource,
+  shapeMapFormat: API.defaultShapeMapFormat,
 };
 
 export default ShapeMapTabs;

@@ -13,13 +13,13 @@ import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import ResponseError, { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
+  dataParamsFromQueryParams,
 } from "./Data";
 
 function DataConvert(props) {
@@ -46,7 +46,7 @@ function DataConvert(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         setData(finalData);
@@ -70,9 +70,8 @@ function DataConvert(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataUrl ||
-        (params.dataFile && params.dataFile.name)
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -116,9 +115,9 @@ function DataConvert(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

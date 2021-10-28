@@ -130,9 +130,9 @@ function ShExConvert(props) {
   function checkLinks() {
     const disabled =
       getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shex.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shex.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

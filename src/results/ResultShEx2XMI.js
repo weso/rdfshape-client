@@ -16,10 +16,10 @@ function ResultShEx2XMI(props) {
   const result = props.result;
   let msg;
 
-  const [activeTab, setActiveTab] = useState(props.activeTab);
+  const [activeSource, setActiveSource] = useState(props.activeSource);
 
   function handleTabChange(e) {
-    setActiveTab(e);
+    setActiveSource(e);
   }
 
   useEffect(() => {
@@ -59,7 +59,7 @@ function ResultShEx2XMI(props) {
     msg = (
       <div>
         <Tabs
-          activeKey={activeTab}
+          activeKey={activeSource}
           transition={false}
           id="dataTabs"
           onSelect={handleTabChange}

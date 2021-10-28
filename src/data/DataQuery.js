@@ -17,17 +17,17 @@ import {
   mkQueryTabs,
   paramsFromStateQuery,
   queryParamsFromQueryParams,
-  updateStateQuery
+  updateStateQuery,
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { mkError } from "../utils/ResponseError";
-import { dataParamsFromQueryParams } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData
+  updateStateData,
+  dataParamsFromQueryParams,
 } from "./Data";
 
 function DataQuery(props) {
@@ -50,14 +50,14 @@ function DataQuery(props) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsQuery = {};
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
+      if (queryParams.data) {
         const dataParams = dataParamsFromQueryParams(queryParams);
         const finalData = updateStateData(dataParams, data) || data;
         paramsData = finalData;
         setData(finalData);
       }
 
-      if (queryParams.query || queryParams.queryUrl || queryParams.queryFile) {
+      if (queryParams.query) {
         const queryDataParams = queryParamsFromQueryParams(queryParams);
         const finalQuery = updateStateQuery(queryDataParams, query) || query;
         paramsQuery = finalQuery;
@@ -76,32 +76,21 @@ function DataQuery(props) {
 
   useEffect(() => {
     if (params) {
-      if (
-        (params.data ||
-          params.dataUrl ||
-          (params.dataFile && params.dataFile.name)) &&
-        (params.query ||
-          params.queryUrl ||
-          (params.queryFile && params.queryFile.name))
-      ) {
+      const rdfDataPrensent =
+        params.data &&
+        (params.dataSource == API.byFileSource ? params.data.name : true);
+
+      const sparqlQueryPresent =
+        params.query &&
+        (params.querySource == API.byFileSource ? params.query.name : true);
+
+      if (rdfDataPrensent && sparqlQueryPresent) {
         resetState();
         setUpHistory();
         postQuery();
-      } else if (
-        !(
-          params.data ||
-          params.dataUrl ||
-          (params.dataFile && params.dataFile.name)
-        )
-      ) {
+      } else if (!rdfDataPrensent) {
         setError("No RDF data provided");
-      } else if (
-        !(
-          params.query ||
-          params.queryUrl ||
-          (params.queryFile && params.queryFile.name)
-        )
-      ) {
+      } else if (!sparqlQueryPresent) {
         setError("No query provided");
       }
       window.scrollTo(0, 0);
@@ -122,8 +111,7 @@ function DataQuery(props) {
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
-        if (data.error) setError(data.error);
-        setResult({ result: data });
+        setResult(data);
         setProgressPercent(80);
         setPermalink(mkPermalinkLong(API.dataQueryRoute, params));
         checkLinks();
@@ -144,9 +132,10 @@ function DataQuery(props) {
     const disabled =
       getDataText(data).length + getQueryText(query).length >
       API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab || query.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : data.activeSource === API.byFileSource ||
+          query.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);

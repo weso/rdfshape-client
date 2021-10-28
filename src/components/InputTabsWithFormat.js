@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import API from "../API";
 import InputTabs from "./InputTabs";
 import SelectFormat from "./SelectFormat";
 
@@ -12,7 +13,7 @@ function InputTabsWithFormat(props) {
     <div>
       <InputTabs
         name={props.nameInputTab}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.byTextName}
         textAreaValue={props.textAreaValue}
@@ -86,7 +87,7 @@ InputTabsWithFormat.propTypes = {
 
   // Non-required props
 
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   byTextName: PropTypes.string,
   byTextPlaceholder: PropTypes.string,
   byUrlName: PropTypes.string,
@@ -95,7 +96,7 @@ InputTabsWithFormat.propTypes = {
 };
 
 InputTabsWithFormat.defaultProps = {
-  activeTab: "ByText",
+  activeSource: API.defaultSource,
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",

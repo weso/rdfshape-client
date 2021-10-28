@@ -4,7 +4,7 @@ import QueryTabs from "./QueryTabs";
 // import ShExTabs from "../shex/ShExTabs";
 
 export const InitialQuery = {
-  activeTab: API.defaultTab,
+  activeSource: API.defaultTab,
   textArea: "",
   url: "",
   file: null,
@@ -12,77 +12,58 @@ export const InitialQuery = {
   codeMirror: null,
 };
 
+export function updateStateQuery(params, query) {
+  // Only update state if there is query
+  if (params["query"]) {
+    // Get the raw data string introduced by the user
+    const userData = params["query"];
+    // Get the query source to be used: take it from params or resort to default
+    const querySource = params["querySource"] || API.defaultSource;
+
+    return {
+      ...query,
+      activeSource: querySource,
+      textArea: querySource == API.byTextSource ? userData : query.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      url: querySource == API.byUrlSource ? userData : query.url,
+      file: querySource == API.byFileSource ? userData : query.file,
+      fromParams: true,
+    };
+  }
+  return query;
+}
+
+export function queryParamsFromQueryParams(params) {
+  // if (params["queryUrl"]) params["url"] = params["queryUrl"];
+  // return params;
+
+  let newParams = {};
+  if (params.query) newParams["query"] = params.query;
+  if (params.querySource) newParams["querySource"] = params.querySource;
+
+  return newParams;
+}
+
 export function paramsFromStateQuery(query) {
   let params = {};
-  let activeTab = query.activeTab;
-  params["activeQuerySource"] = convertTabQuery(activeTab);
-  switch (activeTab) {
-    case "byText":
+  params["querySource"] = query.activeSource;
+  switch (query.activeSource) {
+    case API.byTextSource:
       params["query"] = query.textArea.trim();
       break;
-    case "byUrl":
-      params["queryUrl"] = query.url.trim();
+    case API.byUrlSource:
+      params["query"] = query.url.trim();
       break;
-    case "byFile":
-      params["queryFile"] = query.file;
+    case API.byFileSource:
+      params["query"] = query.file;
       break;
     default:
   }
   return params;
 }
 
-export function convertTabQuery(key) {
-  switch (key) {
-    case API.byTextTab:
-      return "#queryTextArea";
-    case API.byFileTab:
-      return "#queryFile";
-    case API.byUrlTab:
-      return "#queryUrl";
-    default:
-      console.info("Unknown queryTab: " + key);
-      return key;
-  }
-}
-
-export function updateStateQuery(params, query) {
-  if (params["query"]) {
-    return {
-      ...query,
-      activeTab: API.byTextTab,
-      textArea: params["query"],
-      fromParams: true,
-      format: params["queryFormat"]
-        ? params["queryFormat"]
-        : API.defaultQueryFormat,
-    };
-  } else if (params["queryUrl"]) {
-    return {
-      ...query,
-      activeTab: API.byUrlTab,
-      url: params["queryUrl"],
-      fromParams: false,
-      format: params["queryFormat"]
-        ? params["queryFormat"]
-        : API.defaultQueryFormat,
-    };
-  } else if (params["queryFile"]) {
-    return {
-      ...query,
-      activeTab: API.byFileTab,
-      file: params["queryFile"],
-      fromParams: false,
-      format: params["queryFormat"]
-        ? params["queryFormat"]
-        : API.defaultQueryFormat,
-    };
-  }
-  return query;
-}
-
 export function mkQueryTabs(query, setQuery, name, subname) {
   function handleQueryTabChange(value) {
-    setQuery({ ...query, activeTab: value });
+    setQuery({ ...query, activeSource: value });
   }
   function handleQueryByTextChange(value) {
     setQuery({ ...query, textArea: value });
@@ -99,7 +80,7 @@ export function mkQueryTabs(query, setQuery, name, subname) {
     <QueryTabs
       name={name}
       subname={subname}
-      activeTab={query.activeTab}
+      activeSource={query.activeSource}
       handleTabChange={handleQueryTabChange}
       textAreaValue={query.textArea}
       handleByTextChange={handleQueryByTextChange}
@@ -113,24 +94,10 @@ export function mkQueryTabs(query, setQuery, name, subname) {
   );
 }
 
-export function queryParamsFromQueryParams(params) {
-  // if (params["queryUrl"]) params["url"] = params["queryUrl"];
-  // return params;
-
-  let newParams = {};
-  if (params.query) newParams["query"] = params.query;
-  if (params.queryUrl) {
-    newParams["queryUrl"] = params.queryUrl;
-    // newParams["url"] = params.queryUrl;
-  }
-  if (params.queryFile) newParams["queryFile"] = params.queryFile;
-  return newParams;
-}
-
 export function getQueryText(query) {
-  if (query.activeTab === API.byTextTab) {
+  if (query.activeSource === API.byTextSource) {
     return encodeURI(query.textArea.trim());
-  } else if (query.activeTab === API.byUrlTab) {
+  } else if (query.activeSource === API.byUrlSource) {
     return encodeURI(query.textArea.trim());
   }
   return "";

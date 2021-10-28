@@ -29,7 +29,7 @@ class ShExVisualizeCytoscape extends React.Component {
       shExFormat: API.defaultShExFormat,
       shExUrl: "",
       shExFile: null,
-      shExActiveTab: API.defaultTab,
+      shExActiveSource: API.defaultSource,
     };
 
     this.handleShExTabChange = this.handleShExTabChange.bind(this);
@@ -46,7 +46,7 @@ class ShExVisualizeCytoscape extends React.Component {
   }
 
   handleShExTabChange(value) {
-    this.setState({ shExActiveTab: value });
+    this.setState({ shExActiveSource: value });
   }
   handleShExFormatChange(value) {
     this.setState({ shExFormat: value });
@@ -78,17 +78,17 @@ class ShExVisualizeCytoscape extends React.Component {
 
   updateStateShEx(params) {
     if (params["shEx"]) {
-      this.setState({ shExActiveTab: API.byTextTab });
+      this.setState({ shExActiveSource: API.byTextSource });
       this.setState({ shExTextArea: params["shEx"] });
     }
     if (params["shExFormat"])
       this.setState({ shExFormat: params["shExFormat"] });
     if (params["shExUrl"]) {
-      this.setState({ shExActiveTab: API.byUrlTab });
+      this.setState({ shExActiveSource: API.byUrlSource });
       this.setState({ shExUrl: params["shExUrl"] });
     }
     if (params["shExFile"]) {
-      this.setState({ shExActiveTab: API.byFileTab });
+      this.setState({ shExActiveSource: API.byFileSource });
       this.setState({ shExFile: params["shExFile"] });
     }
   }
@@ -143,7 +143,7 @@ class ShExVisualizeCytoscape extends React.Component {
           ) : null}
           {this.state.permalink && <Permalink url={this.state.permalink} />}
           <ShExTabs
-            activeTab={this.state.shExActiveTab}
+            activeSource={this.state.shExActiveSource}
             handleTabChange={this.handleShExTabChange}
             textAreaValue={this.state.shExTextArea}
             handleByTextChange={this.handleShExByTextChange}

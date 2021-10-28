@@ -163,7 +163,7 @@ function EndpointInfo(props) {
                 permalink={permalink}
                 disabled={
                   endpoint && endpoint.length > API.byTextCharacterLimit
-                    ? API.byTextTab
+                    ? API.byTextSource
                     : false
                 }
               />

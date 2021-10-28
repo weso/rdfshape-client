@@ -26,22 +26,6 @@ export function dot2svg(dot, cb) {
   });
 }
 
-/*export function maybeAdd(maybe,name,obj) {
-    if (maybe) obj[name] = maybe ;
-    return obj;
-}*/
-
-export function dataParamsFromQueryParams(params) {
-  // This code is redundant, it could be just return params
-  // We keep it because we could do some error checking
-  let newParams = {};
-  if (params.data) newParams["data"] = params.data;
-  if (params.dataFormat) newParams["dataFormat"] = params.dataFormat;
-  if (params.dataUrl) newParams["dataUrl"] = params.dataUrl;
-  if (params.dataFile) newParams["dataFile"] = params.dataFile;
-  if (params.inference) newParams["inference"] = params.inference;
-  return newParams;
-}
 
 /**
  * Converts Turtle representation of values to a structure

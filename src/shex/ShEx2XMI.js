@@ -23,7 +23,7 @@ import {
   updateStateUML
 } from "../uml/UML";
 import {
-  convertTabSchema,
+  convertSourceSchema,
   getShexText,
   InitialShEx,
   mkShExTabs,
@@ -129,16 +129,16 @@ export default function ShEx2XMI(props) {
 
   function mkServerParams(source, format) {
     let params = {};
-    params["activeSchemaSource"] = convertTabSchema(source.activeTab);
+    params["activeSchemaSource"] = convertSourceSchema(source.activeSource);
     params["schemaFormat"] = source.format;
-    switch (source.activeTab) {
-      case API.byTextTab:
+    switch (source.activeSource) {
+      case API.byTextSource:
         params["schema"] = source.textArea;
         break;
-      case API.byUrlTab:
+      case API.byUrlSource:
         params["schemaUrl"] = source.url;
         break;
-      case API.byFileTab:
+      case API.byFileSource:
         params["schemaFile"] = source.file;
         break;
       default:
@@ -242,9 +242,9 @@ export default function ShEx2XMI(props) {
   function checkLinks() {
     const disabled =
       getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shex.activeTab === API.byFileTab
-        ? API.byFileTab
+        ? API.byTextSource
+        : shex.activeSource === API.byFileSource
+        ? API.byFileSource
         : false;
 
     setDisabledLinks(disabled);
@@ -407,12 +407,12 @@ export default function ShEx2XMI(props) {
                     result={result}
                     mode={targetFormatMode("TURTLE")}
                     permalink={permalink}
-                    activeTab="XMI"
+                    activeSource="XMI"
                     disabled={
                       getUmlText(xmi).length > API.byTextCharacterLimit
-                        ? API.byTextTab
-                        : xmi.activeTab === API.byFileTab
-                        ? API.byFileTab
+                        ? API.byTextSource
+                        : xmi.activeSource === API.byFileSource
+                        ? API.byFileSource
                         : false
                     }
                   />

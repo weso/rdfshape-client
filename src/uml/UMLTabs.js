@@ -15,7 +15,7 @@ function UMLTabs(props) {
     <div>
       <InputTabs
         name={"UML Input (XMI)"}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname || ""}
         textAreaValue={props.textAreaValue}
@@ -41,7 +41,7 @@ function UMLTabs(props) {
 }
 
 UMLTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -62,7 +62,7 @@ UMLTabs.propTypes = {
 };
 
 UMLTabs.defaultProps = {
-  activeTab: "ByText",
+  activeSource: API.defaultSource,
 };
 
 export default UMLTabs;
