@@ -31,13 +31,13 @@ function DataConvert(props) {
   const [error, setError] = useState(null);
   const [data, setData] = useState(InitialData);
   const [targetDataFormat, setTargetDataFormat] = useState(
-    API.defaultDataFormat
+    API.formats.defaultData
   );
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
     value && setTargetDataFormat(value);
@@ -71,7 +71,7 @@ function DataConvert(props) {
     if (params) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -99,7 +99,7 @@ function DataConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataConvertRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -114,10 +114,10 @@ function DataConvert(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource
-        ? API.byFileSource
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -134,7 +134,7 @@ function DataConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -142,7 +142,7 @@ function DataConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataConvertRoute, params)
+      mkPermalinkLong(API.routes.client.dataConvertRoute, params)
     );
 
     setLastParams(params);
@@ -169,7 +169,7 @@ function DataConvert(props) {
               name="Target data format"
               selectedFormat={targetDataFormat}
               handleFormatChange={handleTargetDataFormatChange}
-              urlFormats={API.dataFormatsOutput}
+              urlFormats={API.routes.server.dataFormatsOutput}
             />
             <Button
               variant="primary"

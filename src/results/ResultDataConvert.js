@@ -16,8 +16,10 @@ function ResultDataConvert({
   // Destructure request response items for later usage
   const {
     message,
-    result: { data: dataRaw, source, inference },
-    targetDataFormat: { name: outputFormatName },
+    result: {
+      data: dataRaw,
+      format: { name: outputFormatName },
+    },
   } = dataConvertResponse;
 
   if (dataConvertResponse) {
@@ -37,7 +39,7 @@ function ResultDataConvert({
         )}
         <br />
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={dataConvertResponse} />
         </details>
         {permalink && (

@@ -24,7 +24,7 @@ function DataTabs(props) {
         nameFormat="Data format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleDataFormatChange}
-        urlFormats={API.dataFormatsInput}
+        urlFormats={API.routes.server.dataFormatsInput}
         setCodeMirror={props.setCodeMirror}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
@@ -51,7 +51,7 @@ DataTabs.propTypes = {
 
 DataTabs.defaultProps = {
   name: "",
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
 };
 
 export default DataTabs;

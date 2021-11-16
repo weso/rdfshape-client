@@ -37,7 +37,7 @@ function DataExtract(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataExtract;
+  const url = API.routes.server.dataExtract;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -59,7 +59,7 @@ function DataExtract(props) {
     if (params) {
       const dataPresent =
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true);
+        (params.dataSource == API.sources.byFile ? params.data.name : true);
 
       const nodeSelectorPresent =
         nodeSelector && nodeSelector.trim().length > 0;
@@ -95,7 +95,7 @@ function DataExtract(props) {
       .then(async (data) => {
         setProgressPercent(60);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -113,10 +113,10 @@ function DataExtract(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource
-        ? API.byFileSource
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -133,7 +133,7 @@ function DataExtract(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataExtractRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataExtractRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -141,7 +141,7 @@ function DataExtract(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataExtractRoute, params)
+      mkPermalinkLong(API.routes.client.dataExtractRoute, params)
     );
 
     setLastParams(params);

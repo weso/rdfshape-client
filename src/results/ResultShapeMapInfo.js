@@ -3,14 +3,14 @@ import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
-import { mkMode } from "../utils/Utils";
+import { format2mode } from "../utils/Utils";
 
 function ResultShapeMapInfo(props) {
   const successMessage = "Well formed ShapeMap";
   const result = props.result;
   let msg = null;
   if (result) {
-    const mode = mkMode(result.shapeMapFormat);
+    const mode = format2mode(result.shapeMapFormat);
     if (result.error) {
       msg = <Alert variant="danger">{result.error}</Alert>;
     } else {
@@ -34,7 +34,7 @@ function ResultShapeMapInfo(props) {
             </Fragment>
           )}
           <details>
-            <summary>{API.responseSummaryText}</summary>
+            <summary>{API.texts.responseSummaryText}</summary>
             <pre>{JSON.stringify(result)}</pre>
           </details>
         </div>

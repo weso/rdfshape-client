@@ -18,15 +18,15 @@ function WikidataQuery(props) {
     const [loading, setLoading] = useState(false);
     const [error,setError] = useState(null);
     const [query, setQuery] = useState(InitialQuery);
-    const serverUrl = API.endpointQuery ;
+    const serverUrl = API.routes.server.endpointQuery ;
 
 
     async function handleSubmit(event) {
         event.preventDefault();
         const permalinkParams = queryParamsFromQueryParams();
         let serviceParams = permalinkParams;
-        serviceParams['endpoint'] = API.wikidataUrl;
-        let permalink = await mkPermalink(API.wikidataQueryRoute, permalinkParams);
+        serviceParams['endpoint'] = API.routes.utils.wikidataUrl;
+        let permalink = await mkPermalink(API.routes.client.wikidataQueryRoute, permalinkParams);
         setLoading(true);
         postProcess(serverUrl, serviceParams, permalink);
     }

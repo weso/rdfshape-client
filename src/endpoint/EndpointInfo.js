@@ -23,7 +23,7 @@ function EndpointInfo(props) {
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
-  const url = API.endpointInfo;
+  const url = API.routes.server.endpointInfo;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -77,7 +77,7 @@ function EndpointInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.endpointInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.endpointInfoRoute, params));
         setProgressPercent(100);
       })
       .catch(function(error) {
@@ -97,7 +97,7 @@ function EndpointInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.endpointInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.endpointInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -105,7 +105,7 @@ function EndpointInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.endpointInfoRoute, params)
+      mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
     );
 
     setLastParams(params);
@@ -162,8 +162,8 @@ function EndpointInfo(props) {
                 error={error}
                 permalink={permalink}
                 disabled={
-                  endpoint && endpoint.length > API.byTextCharacterLimit
-                    ? API.byTextSource
+                  endpoint && endpoint.length > API.limits.byTextCharacterLimit
+                    ? API.sources.byText
                     : false
                 }
               />

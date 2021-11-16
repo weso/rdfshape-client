@@ -16,13 +16,13 @@ function DataMergeVisualizeRaw(props) {
   const [data2, setData2] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [targetDataFormat] = useState("dot");
-  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
+  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [visualization, setVisualization] = useState(null);
   const [message] = useState("Processing...");
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   const minSvgZoom = minZoom;
   const maxSvgZoom = maxZoom;

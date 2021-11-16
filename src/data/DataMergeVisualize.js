@@ -32,7 +32,7 @@ function DataMergeVisualize(props) {
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [targetDataFormat] = useState("dot");
-  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
+  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
@@ -43,7 +43,7 @@ function DataMergeVisualize(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   const minSvgZoom = minZoom;
   const maxSvgZoom = maxZoom;
@@ -134,8 +134,8 @@ function DataMergeVisualize(props) {
         setProgressPercent(70);
         const dot = data.result.data; // Get the DOT string from the axios data object
         processData(dot, targetGraphicalFormat);
-        setPermalink(mkPermalinkLong(API.dataMergeVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.dataMergeVisualizeRouteRaw, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataMergeVisualizeRoute, params));
+        setEmbedLink(mkPermalinkLong(API.routes.client.dataMergeVisualizeRouteRaw, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -154,10 +154,10 @@ function DataMergeVisualize(props) {
   function checkLinks() {
     const disabled =
       getDataText(data1).length + getDataText(data2).length >
-      API.byTextCharacterLimit
-        ? API.byTextSource
-        : data1.activeSource === API.byFileSource || data2.activeSource === API.byFileSource
-        ? API.byTextSource
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data1.activeSource === API.sources.byFile || data2.activeSource === API.sources.byFile
+        ? API.sources.byText
         : false;
 
     setDisabledLinks(disabled);
@@ -184,7 +184,7 @@ function DataMergeVisualize(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataMergeVisualizeRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataMergeVisualizeRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -192,7 +192,7 @@ function DataMergeVisualize(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataMergeVisualizeRoute, params)
+      mkPermalinkLong(API.routes.client.dataMergeVisualizeRoute, params)
     );
 
     setLastParams(params);

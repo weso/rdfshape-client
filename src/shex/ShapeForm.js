@@ -14,12 +14,12 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ShexParser from "./shapeform/ShExParser.js";
 import {
-  convertSourceSchema,
   getShexText,
   InitialShEx,
   mkShExTabs,
+  paramsFromStateShEx,
   shExParamsFromQueryParams,
-  updateStateShEx
+  updateStateShEx,
 } from "./ShEx";
 
 export default function ShEx2XMI(props) {
@@ -38,7 +38,7 @@ export default function ShEx2XMI(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const fetchUrl = API.fetchUrl;
+  const fetchUrl = API.routes.server.fetchUrl;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -106,27 +106,16 @@ export default function ShEx2XMI(props) {
     }
   }
 
-  function mkServerParams(source, format) {
-    let params = {};
-    params["activeSchemaSource"] = convertSourceSchema(source.activeSource);
-    params["schemaFormat"] = source.format;
-    switch (source.activeSource) {
-      case API.byTextSource:
-        params["schema"] = source.textArea;
-        break;
-      case API.byUrlSource:
-        params["schemaUrl"] = source.url;
-        break;
-      case API.byFileSource:
-        params["schemaFile"] = source.file;
-        break;
-      default:
-    }
-
+  function mkServerParams(shex, format) {
+    const params = {
+      ...paramsFromStateShEx(shex),
+      targetSchemaFormat: targetFormat,
+    };
+    // Change target format if needed
     if (format) {
       setTargetFormat(format);
-      params["targetSchemaFormat"] = format;
-    } else params["targetSchemaFormat"] = targetFormat;
+      params.targetSchemaFormat = format;
+    }
     return params;
   }
 
@@ -183,7 +172,7 @@ export default function ShEx2XMI(props) {
       let result = { result: res, msg: "Succesful generation" };
       setResult(result);
       setPermalink(
-        mkPermalinkLong(API.shapeFormRoute, {
+        mkPermalinkLong(API.routes.client.shapeFormRoute, {
           schema: params.schema || undefined,
           schemaUrl: params.schemaUrl || undefined,
           schemaFile: params.schemaFile || undefined,
@@ -203,10 +192,10 @@ export default function ShEx2XMI(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -223,7 +212,7 @@ export default function ShEx2XMI(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shapeFormRoute, {
+        mkPermalinkLong(API.routes.client.shapeFormRoute, {
           schema: lastParams.schema || undefined,
           schemaUrl: lastParams.schemaUrl || undefined,
           schemaFile: lastParams.schemaFile || undefined,
@@ -236,7 +225,7 @@ export default function ShEx2XMI(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shapeFormRoute, {
+      mkPermalinkLong(API.routes.client.shapeFormRoute, {
         schema: params.schema || undefined,
         schemaUrl: params.schemaUrl || undefined,
         schemaFile: params.schemaFile || undefined,

@@ -24,7 +24,7 @@ import { mkError } from "../utils/ResponseError";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 
 function DataVisualizeCyto(props) {
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
   const cose = "cose";
   const circle = "circle";
   const layouts = [cose, circle];
@@ -72,7 +72,7 @@ function DataVisualizeCyto(props) {
     if (params) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -86,10 +86,10 @@ function DataVisualizeCyto(props) {
 
   useEffect(() => {
     setPermalink(
-      mkPermalinkLong(API.cytoVisualizeRoute, { ...params, layout })
+      mkPermalinkLong(API.routes.client.cytoVisualizeRoute, { ...params, layout })
     );
     setEmbedLink(
-      mkPermalinkLong(API.cytoVisualizeRouteRaw, { ...params, layout })
+      mkPermalinkLong(API.routes.client.cytoVisualizeRouteRaw, { ...params, layout })
     );
   }, [layout]);
 
@@ -111,8 +111,8 @@ function DataVisualizeCyto(props) {
         const rdfAsJson = data.result.data; // Raw data converted to JSON, as received from server
         processData(rdfAsJson);
         setProgressPercent(80);
-        setPermalink(mkPermalinkLong(API.cytoVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.cytoVisualizeRouteRaw, params));
+        setPermalink(mkPermalinkLong(API.routes.client.cytoVisualizeRoute, params));
+        setEmbedLink(mkPermalinkLong(API.routes.client.cytoVisualizeRouteRaw, params));
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
@@ -137,10 +137,10 @@ function DataVisualizeCyto(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource
-        ? API.byFileSource
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -157,7 +157,7 @@ function DataVisualizeCyto(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.cytoVisualizeRoute, lastParams)
+        mkPermalinkLong(API.routes.client.cytoVisualizeRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -165,7 +165,7 @@ function DataVisualizeCyto(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.cytoVisualizeRoute, params)
+      mkPermalinkLong(API.routes.client.cytoVisualizeRoute, params)
     );
     setLastParams(params);
   }

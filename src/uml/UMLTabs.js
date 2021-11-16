@@ -32,7 +32,7 @@ function UMLTabs(props) {
         nameFormat="XMI format"
         mode={props.selectedFormat}
         handleFormatChange={props.handleFormatChange}
-        urlFormats={API.shExFormats}
+        urlFormats={API.routes.server.shExFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
       />
@@ -62,7 +62,7 @@ UMLTabs.propTypes = {
 };
 
 UMLTabs.defaultProps = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
 };
 
 export default UMLTabs;

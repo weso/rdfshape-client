@@ -10,7 +10,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectLanguage from "./SelectLanguage";
 
-const SEARCH_URI = API.wikidataSearchEntity;
+const SEARCH_URI = API.routes.server.wikidataSearchEntity;
 const PER_PAGE = 50;
 const defaultLanguage = [{ label: "en", name: "English" }];
 

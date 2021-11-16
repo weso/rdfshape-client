@@ -63,7 +63,7 @@ export function convertDot(dot, engine, format, setError, setVisualization) {
       viz = new Viz({ Module, render });
       setError(
         <ResponseError
-          errorOrigin={API.rootApi}
+          errorOrigin={API.routes.server.root}
           errorMessage={`Could not convert to ${format}.\n ${error}\nDOT:\n${dot.toString()}`}
         />
       );

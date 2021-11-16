@@ -20,15 +20,16 @@ import {
   InitialUML,
   mkUMLTabs,
   UMLParamsFromQueryParams,
-  updateStateUML
+  updateStateUML,
 } from "../uml/UML";
 import {
   convertSourceSchema,
   getShexText,
   InitialShEx,
   mkShExTabs,
+  paramsFromStateShEx,
   shExParamsFromQueryParams,
-  updateStateShEx
+  updateStateShEx,
 } from "./ShEx";
 
 export default function ShEx2XMI(props) {
@@ -48,7 +49,7 @@ export default function ShEx2XMI(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const fetchUrl = API.fetchUrl;
+  const fetchUrl = API.routes.server.fetchUrl;
 
   const [isShEx2UML, setIsShEx2UML] = useState(true);
 
@@ -127,27 +128,16 @@ export default function ShEx2XMI(props) {
     }
   }
 
-  function mkServerParams(source, format) {
-    let params = {};
-    params["activeSchemaSource"] = convertSourceSchema(source.activeSource);
-    params["schemaFormat"] = source.format;
-    switch (source.activeSource) {
-      case API.byTextSource:
-        params["schema"] = source.textArea;
-        break;
-      case API.byUrlSource:
-        params["schemaUrl"] = source.url;
-        break;
-      case API.byFileSource:
-        params["schemaFile"] = source.file;
-        break;
-      default:
-    }
-
+  function mkServerParams(shex, format) {
+    const params = {
+      ...paramsFromStateShEx(shex),
+      targetSchemaFormat: targetFormat,
+    };
+    // Change target format if needed
     if (format) {
       setTargetFormat(format);
-      params["targetSchemaFormat"] = format;
-    } else params["targetSchemaFormat"] = targetFormat;
+      params.targetSchemaFormat = format;
+    }
     return params;
   }
 
@@ -217,7 +207,7 @@ export default function ShEx2XMI(props) {
       let result = { result: res, grafico: grf, msg: "Succesful conversion" };
       setResult(result);
       setPermalink(
-        mkPermalinkLong(API.shEx2XMIRoute, {
+        mkPermalinkLong(API.routes.client.shEx2XMIRoute, {
           schema: params.schema || undefined,
           schemaUrl: params.schemaUrl || undefined,
           schemaFile: params.schemaFile || undefined,
@@ -241,10 +231,10 @@ export default function ShEx2XMI(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -261,7 +251,7 @@ export default function ShEx2XMI(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shEx2XMIRoute, {
+        mkPermalinkLong(API.routes.client.shEx2XMIRoute, {
           schema: lastParams.schema || undefined,
           schemaUrl: lastParams.schemaUrl || undefined,
           schemaFile: lastParams.schemaFile || undefined,
@@ -274,7 +264,7 @@ export default function ShEx2XMI(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shEx2XMIRoute, {
+      mkPermalinkLong(API.routes.client.shEx2XMIRoute, {
         schema: params.schema || undefined,
         schemaUrl: params.schemaUrl || undefined,
         schemaFile: params.schemaFile || undefined,
@@ -409,10 +399,10 @@ export default function ShEx2XMI(props) {
                     permalink={permalink}
                     activeSource="XMI"
                     disabled={
-                      getUmlText(xmi).length > API.byTextCharacterLimit
-                        ? API.byTextSource
-                        : xmi.activeSource === API.byFileSource
-                        ? API.byFileSource
+                      getUmlText(xmi).length > API.limits.byTextCharacterLimit
+                        ? API.sources.byText
+                        : xmi.activeSource === API.sources.byFile
+                        ? API.sources.byFile
                         : false
                     }
                   />

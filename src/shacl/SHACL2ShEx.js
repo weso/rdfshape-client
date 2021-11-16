@@ -12,19 +12,19 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
-import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
   mkShaclTabs,
+  paramsFromStateShacl,
   shaclParamsFromQueryParams,
   updateStateShacl,
 } from "./SHACL";
 
 export default function SHACL2ShEx(props) {
   const [shacl, setShacl] = useState(InitialShacl);
-  const [targetFormat, setTargetFormat] = useState(API.defaultShExFormat);
+  const [targetFormat, setTargetFormat] = useState(API.formats.defaultShex);
 
   const [result, setResult] = useState("");
 
@@ -38,7 +38,7 @@ export default function SHACL2ShEx(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaConvert;
+  const url = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -107,29 +107,15 @@ export default function SHACL2ShEx(props) {
   }
 
   function mkServerParams(shacl, format) {
-    let params = {};
-    params["activeSchemaSource"] = convertSourceSchema(shacl.activeSource);
-    params["schemaFormat"] = shacl.format;
-    params["schemaEngine"] = shacl.engine;
-    params["schemaInference"] = shacl.inference;
-    switch (shacl.activeSource) {
-      case API.byTextSource:
-        params["schema"] = shacl.textArea;
-        break;
-      case API.byUrlSource:
-        params["schemaUrl"] = shacl.url;
-        break;
-      case API.byFileSource:
-        params["schemaFile"] = shacl.file;
-        break;
-      default:
-    }
-
+    const params = {
+      ...paramsFromStateShacl(shacl),
+      targetSchemaFormat: targetFormat,
+    };
+    // Change target format if needed
     if (format) {
       setTargetFormat(format);
-      params["targetSchemaFormat"] = format;
-    } else params["targetSchemaFormat"] = targetFormat;
-
+      params.targetSchemaFormat = format;
+    }
     return params;
   }
 
@@ -154,7 +140,7 @@ export default function SHACL2ShEx(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          mkPermalinkLong(API.shacl2ShExRoute, {
+          mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
             schemaFormat: params.schemaFormat,
             targetSchemaFormat: params.targetSchemaFormat,
             schemaEngine: params.schemaEngine,
@@ -178,10 +164,10 @@ export default function SHACL2ShEx(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShaclText(shacl).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shacl.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShaclText(shacl).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shacl.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -198,7 +184,7 @@ export default function SHACL2ShEx(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shacl2ShExRoute, {
+        mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
           schemaFormat: lastParams.schemaFormat,
           targetSchemaFormat: lastParams.targetSchemaFormat,
           schemaEngine: lastParams.schemaEngine,
@@ -214,7 +200,7 @@ export default function SHACL2ShEx(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shacl2ShExRoute, {
+      mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
         schemaFormat: params.schemaFormat,
         targetSchemaFormat: params.targetSchemaFormat,
         schemaEngine: params.schemaEngine,
@@ -250,7 +236,7 @@ export default function SHACL2ShEx(props) {
               defaultFormat="TURTLE"
               selectedFormat={targetFormat}
               handleFormatChange={(value) => setTargetFormat(value)}
-              urlFormats={API.shExFormats}
+              urlFormats={API.routes.server.shExFormats}
             />
 
             <hr />

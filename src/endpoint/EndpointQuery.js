@@ -34,7 +34,7 @@ function EndpointQuery(props) {
   const [progressPercent, setProgressPercent] = useState(0);
   const [controlPressed, setControlPressed] = useState(false);
 
-  const url = API.endpointQuery;
+  const url = API.routes.server.endpointQuery;
   const resultsElementId = "results";
 
   useEffect(() => {
@@ -132,7 +132,7 @@ function EndpointQuery(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult({ result: data });
-        setPermalink(mkPermalinkLong(API.endpointQueryRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.endpointQueryRoute, params));
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);
@@ -163,7 +163,7 @@ function EndpointQuery(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.endpointQueryRoute, lastParams)
+        mkPermalinkLong(API.routes.client.endpointQueryRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -171,7 +171,7 @@ function EndpointQuery(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.endpointQueryRoute, params)
+      mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
     );
 
     setLastParams(params);
@@ -232,10 +232,10 @@ function EndpointQuery(props) {
                 permalink={permalink}
                 disabled={
                   getQueryText(query).length + endpoint.length >
-                  API.byTextCharacterLimit
-                    ? API.byTextSource
-                    : query.activeSource === API.byFileSource
-                    ? API.byFileSource
+                  API.limits.byTextCharacterLimit
+                    ? API.sources.byText
+                    : query.activeSource === API.sources.byFile
+                    ? API.sources.byFile
                     : false
                 }
               />

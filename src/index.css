@@ -315,3 +315,17 @@ table td {
 #navigation :where(.dropdown > a, .nav-link):where(:hover, :focus) {
   color: rgba(255, 255, 255, 1) !important;
 }
+
+/* Insert accordion as parts of a list */
+:is(ul, ol, dl) li.list-details {
+  list-style-type: none;
+  margin-left: -15px;
+}
+
+:is(ul, ol, dl) li.list-details details > :not(summary) {
+  margin-left: 15px;
+}
+
+.prefixMapTable {
+  padding-top: 12px;
+}

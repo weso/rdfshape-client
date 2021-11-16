@@ -71,7 +71,7 @@ function ResultValidate(props) {
           </Fragment>
         )}
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={result} />
         </details>
       </div>

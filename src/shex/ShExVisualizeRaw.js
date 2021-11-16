@@ -22,7 +22,7 @@ function ShExVisualizeRaw(props) {
   const [error, setError] = useState(null);
   const [message] = useState("Processing...");
 
-  const url = API.schemaVisualize;
+  const url = API.routes.server.schemaVisualize;
 
   useEffect(() => {
     if (props.location?.search) {

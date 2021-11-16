@@ -41,7 +41,7 @@ function ResultDataExtract({
         <br />
         {/* Full response */}
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={extractResponse} />
         </details>
         {/* Permalink */}

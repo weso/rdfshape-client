@@ -4,11 +4,11 @@ import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { mkMode } from "../utils/Utils";
+import { format2mode } from "../utils/Utils";
 
 function ResultSHACLConvert(props) {
   const result = props.result;
-  const mode = mkMode(result.targetSchemaFormat);
+  const mode = format2mode(result.targetSchemaFormat);
   let msg;
   if (result === "") {
     msg = null;
@@ -35,7 +35,7 @@ function ResultSHACLConvert(props) {
           </Fragment>
         )}
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={result} />
         </details>
       </div>

@@ -4,12 +4,12 @@ import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultDataFormat,
-  inference: API.defaultInference,
+  format: API.formats.defaultData,
+  inference: API.inferences.default,
   fromParams: false,
   codeMirror: null,
 };
@@ -20,18 +20,19 @@ export function updateStateData(params, data) {
     // Get the raw data string introduced by the user
     const userData = params["data"];
     // Get the data source to be used: take it from params or resort to default
-    const dataSource = params["dataSource"] || API.defaultSource;
+    const dataSource = params["dataSource"] || API.sources.default;
 
     // Compose new Data State building from the old one
     return {
       ...data,
       activeSource: dataSource, // New data source (activates the corresponsing edit tab)
-      textArea: dataSource == API.byTextSource ? userData : data.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
-      url: dataSource == API.byUrlSource ? userData : data.url,
-      file: dataSource == API.byFileSource ? userData : data.file,
+       // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      textArea: dataSource == API.sources.byText ? userData : data.textArea,
+      url: dataSource == API.sources.byUrl ? userData : data.url,
+      file: dataSource == API.sources.byFile ? userData : data.file,
       fromParams: true,
-      format: params["dataFormat"] || API.defaultDataFormat,
-      inference: params["inference"] || API.defaultInference,
+      format: params["dataFormat"] || API.formats.defaultData,
+      inference: params["inference"] || API.inferences.default,
     };
   }
   return data;
@@ -56,16 +57,15 @@ export function paramsFromStateData(data) {
 
   // Send the "data" param to the server, that will use the "dataSource" to know hot to treat the data (raw, URL, file...)
   switch (data.activeSource) {
-    case API.byTextSource:
+    case API.sources.byText:
       params["data"] = data.textArea.trim();
       break;
-    case API.byUrlSource:
+    case API.sources.byUrl:
       params["data"] = data.url.trim();
       break;
-    case API.byFileSource:
+    case API.sources.byFile:
       params["data"] = data.file;
       break;
-    default:
   }
   return params;
 }
@@ -120,9 +120,9 @@ export function mkDataTabs(data, setData, name, subname) {
 }
 
 export function getDataText(data) {
-  if (data.activeSource === API.byTextSource) {
+  if (data.activeSource === API.sources.byText) {
     return encodeURI(data.textArea.trim());
-  } else if (data.activeSource === API.byUrlSource) {
+  } else if (data.activeSource === API.sources.byUrl) {
     return encodeURI(data.url.trim());
   }
   return "";

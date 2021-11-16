@@ -1,4 +1,3 @@
-// import React from 'react';
 import React, { Fragment } from "react";
 import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
@@ -6,16 +5,6 @@ import Viz from "viz.js/viz.js";
 import API from "../API";
 
 const { Module, render } = require("viz.js/full.render.js");
-
-/*
-function *intersperse(a, delim) {
-    let first = true;
-    for (const x of a) {
-        if (!first) yield delim;
-        first = false;
-        yield x;
-    }
-}*/
 
 export function dot2svg(dot, cb) {
   const digraph = "digraph { a -> b; }";
@@ -25,7 +14,6 @@ export function dot2svg(dot, cb) {
     cb(svg);
   });
 }
-
 
 /**
  * Converts Turtle representation of values to a structure
@@ -235,50 +223,6 @@ export function paramsFromStateEndpoint(state) {
   return params;
 }
 
-export function format2mode(format) {
-  if (format) {
-    switch (format.toLowerCase()) {
-      case "turtle":
-        return "turtle";
-      case "rdf/xml":
-        return "xml";
-      case "sparql":
-        return "sparql";
-      case "html":
-        return "htmlmixed";
-      case "json-ld":
-        return "javascript";
-      case "rdf/json":
-        return "javascript";
-      case "trig":
-        return "xml";
-      case "shexc":
-        return "shex";
-      case "html-microdata":
-        return "htmlmixed";
-      case "html-rdfa11":
-        return "htmlmixed";
-      default:
-        return "turtle";
-    }
-  } else return "turtle";
-}
-const formatModes = {
-  html: "htmlmixed",
-  json: "javascript",
-  "rdf/json": "javascript",
-  "rdf/xml": "xml",
-  shexc: "shex",
-  shexj: "javascript",
-  trig: "xml",
-  turtle: "turtle",
-  sparql: "sparql",
-  "html-microdata": "htmlmixed",
-  "html-rdfa11": "htmlmixed",
-};
-
-const defaultMode = "turtle";
-
 export const notificationSettings = {
   permalinkText: "Link copied to clipboard!",
   position: "bottom-right",
@@ -292,13 +236,37 @@ export const notificationSettings = {
   limit: 1,
 };
 
-// TODO: replace format2mode by mkMode ?
-export function mkMode(format) {
-  let mode = format
-    ? formatModes[format.toLowerCase()] || defaultMode
-    : defaultMode;
-  return mode;
+export function format2mode(format) {
+  switch (format?.toLowerCase()) {
+    case API.formats.turtle.toLowerCase():
+      return "turtle";
+    case API.formats.xml.toLowerCase():
+    case API.formats.rdfXml.toLowerCase():
+    case API.formats.triG.toLowerCase():
+      return "xml";
+    case API.formats.sparql.toLowerCase():
+      return "sparql";
+    case API.formats.html.toLowerCase():
+      return "htmlmixed";
+    case API.formats.json.toLowerCase():
+    case API.formats.jsonld.toLowerCase():
+    case API.formats.rdfJson.toLowerCase():
+    case API.formats.shexj.toLowerCase():
+      return "javascript";
+    case API.formats.triG.toLowerCase():
+      return "xml";
+    case API.formats.shexc.toLowerCase():
+      return "shex";
+    case API.formats.html.toLowerCase():
+    case API.formats.htmlMicrodata.toLowerCase():
+    case API.formats.htmlRdf.toLowerCase():
+      return "htmlmixed";
+    default:
+      console.log(defaultMode == "turtle");
+      return defaultMode;
+  }
 }
+const defaultMode = API.formats.turtle.toLowerCase();
 
 export function copyToClipboard(text) {
   // Create a dummy input to copy the link from it
@@ -325,3 +293,15 @@ export function copyToClipboard(text) {
 export const minZoom = 0.2;
 export const maxZoom = 1.9;
 export const stepZoom = 0.1;
+
+// Prefixes for prefix map tables
+export const prefixMapTableColumns = [
+  {
+    dataField: "prefixName",
+    text: "Name",
+  },
+  {
+    dataField: "prefixIRI",
+    text: "IRI",
+  },
+];

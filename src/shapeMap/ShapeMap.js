@@ -3,11 +3,11 @@ import API from "../API";
 import ShapeMapTabs from "./ShapeMapTabs";
 
 export const InitialShapemap = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultShapeMapFormat,
+  format: API.formats.defaultShapeMap,
   fromParams: false,
   codeMirror: null,
 };
@@ -17,13 +17,13 @@ export function paramsFromStateShapemap(shapemap) {
   params["shapemapSource"] = shapemap.activeSource;
   params["shapemapFormat"] = shapemap.format;
   switch (shapemap.activeSource) {
-    case API.byTextSource:
+    case API.sources.byText:
       params["shapemap"] = shapemap.textArea.trim();
       break;
-    case API.byUrlSource:
+    case API.sources.byUrl:
       params["shapemap"] = shapemap.url.trim();
       break;
-    case API.byFileSource:
+    case API.sources.byFile:
       params["shapemap"] = shapemap.file;
       break;
     default:
@@ -37,17 +37,17 @@ export function updateStateShapeMap(params, shapemap) {
     // Get the raw data string introduced by the user
     const userData = params["shapemap"];
     // Get the data source to be used: take it from params or resort to default
-    const shapemapSource = params["shapemapSource"] || API.defaultSource;
+    const shapemapSource = params["shapemapSource"] || API.sources.default;
 
     // Compose new Shapemap State building from the old one
     return {
       ...shapemap,
       activeSource: shapemapSource,
-      textArea: shapemapSource == API.byTextSource ? userData : shapemap.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
-      url: shapemapSource == API.byUrlSource ? userData : shapemap.url,
-      file: shapemapSource == API.byFileSource ? userData : shapemap.file,
+      textArea: shapemapSource == API.sources.byText ? userData : shapemap.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      url: shapemapSource == API.sources.byUrl ? userData : shapemap.url,
+      file: shapemapSource == API.sources.byFile ? userData : shapemap.file,
       fromParams: true,
-      format: params["shapemapFormat"] || API.defaultShapeMapFormat,
+      format: params["shapemapFormat"] || API.formats.defaultShapeMap,
     };
   }
   return shapemap;
@@ -104,9 +104,9 @@ export function mkShapeMapTabs(shapemap, setShapeMap, name, subname) {
 }
 
 export function getShapeMapText(shapeMap) {
-  if (shapeMap.activeSource === API.byTextSource) {
+  if (shapeMap.activeSource === API.sources.byText) {
     return encodeURI(shapeMap.textArea.trim());
-  } else if (shapeMap.activeSource === API.byUrlSource) {
+  } else if (shapeMap.activeSource === API.sources.byUrl) {
     return encodeURI(shapeMap.url.trim());
   }
   return "";

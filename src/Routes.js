@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  Switch
+  Switch,
 } from "react-router-dom";
 import About from "./About.js";
 import API from "./API.js";
@@ -75,144 +75,144 @@ function Routes() {
       <Switch>
         <Route path="/" exact render={() => renderWithNavbar(Home)} />
         <Route
-          path={API.dataInfoRoute}
+          path={API.routes.client.dataInfoRoute}
           render={() => renderWithNavbar(DataInfo)}
         />
         <Route
-          path={API.dataConvertRoute}
+          path={API.routes.client.dataConvertRoute}
           render={() => renderWithNavbar(DataConvert)}
         />
         <Route
-          path={API.dataVisualizeRoute}
+          path={API.routes.client.dataVisualizeRoute}
           render={() => renderWithNavbar(DataVisualize)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.dataVisualizeRouteRaw}
+          path={API.routes.client.dataVisualizeRouteRaw}
           render={() => renderWithoutNavbar(DataVisualizeRaw)}
         />
         <Route
-          path={API.cytoVisualizeRoute}
+          path={API.routes.client.cytoVisualizeRoute}
           render={() => renderWithNavbar(DataVisualizeCyto)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.cytoVisualizeRouteRaw}
+          path={API.routes.client.cytoVisualizeRouteRaw}
           render={() => renderWithoutNavbar(DataVisualizeCytoRaw)}
         />
         <Route
-          path={API.dataQueryRoute}
+          path={API.routes.client.dataQueryRoute}
           render={() => renderWithNavbar(DataQuery)}
         />
         <Route
-          path={API.dataExtractRoute}
+          path={API.routes.client.dataExtractRoute}
           render={() => renderWithNavbar(DataExtract)}
         />
         <Route
-          path={API.dataMergeRoute}
+          path={API.routes.client.dataMergeRoute}
           render={() => renderWithNavbar(DataMerge)}
         />
         <Route
-          path={API.dataMergeVisualizeRoute}
+          path={API.routes.client.dataMergeVisualizeRoute}
           render={() => renderWithNavbar(DataMergeVisualize)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.dataMergeVisualizeRouteRaw}
+          path={API.routes.client.dataMergeVisualizeRouteRaw}
           render={() => renderWithoutNavbar(DataMergeVisualizeRaw)}
         />
 
         <Route
-          path={API.endpointInfoRoute}
+          path={API.routes.client.endpointInfoRoute}
           render={() => renderWithNavbar(EndpointInfo)}
         />
         <Route
-          path={API.endpointQueryRoute}
+          path={API.routes.client.endpointQueryRoute}
           render={() => renderWithNavbar(EndpointQuery)}
         />
         <Route
-          path={API.endpointExtractRoute}
+          path={API.routes.client.endpointExtractRoute}
           render={() => renderWithNavbar(EndpointExtract)}
         />
 
         <Route
-          path={API.shExValidateRoute}
+          path={API.routes.client.shExValidateRoute}
           render={() => renderWithNavbar(ShExValidate)}
         />
         <Route
-          path={API.shExValidateEndpointRoute}
+          path={API.routes.client.shExValidateEndpointRoute}
           render={() => renderWithNavbar(ShExValidateEndpoint)}
         />
         <Route
-          path={API.shExInfoRoute}
+          path={API.routes.client.shExInfoRoute}
           render={() => renderWithNavbar(ShExInfo)}
         />
         <Route
-          path={API.shExVisualizeRoute}
+          path={API.routes.client.shExVisualizeRoute}
           render={() => renderWithNavbar(ShExVisualize)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.shExVisualizeRouteRaw}
+          path={API.routes.client.shExVisualizeRouteRaw}
           render={() => renderWithoutNavbar(ShExVisualizeRaw)}
         />
         <Route
-          path={API.shExVisualizeCytoscapeRoute}
+          path={API.routes.client.shExVisualizeCytoscapeRoute}
           render={() => renderWithNavbar(ShExVisualizeCytoscape)}
         />
         <Route
-          path={API.shExConvertRoute}
+          path={API.routes.client.shExConvertRoute}
           render={() => renderWithNavbar(ShExConvert)}
         />
         <Route
-          path={API.shEx2ShaclRoute}
+          path={API.routes.client.shEx2ShaclRoute}
           render={() => renderWithNavbar(ShEx2Shacl)}
         />
         <Route
-          path={API.shEx2XMIRoute}
+          path={API.routes.client.shEx2XMIRoute}
           render={() => renderWithNavbar(ShEx2XMI)}
         />
 
         <Route
-          path={API.shapeFormRoute}
+          path={API.routes.client.shapeFormRoute}
           render={() => renderWithNavbar(ShapeForm)}
         />
 
         <Route
-          path={API.shaclInfoRoute}
+          path={API.routes.client.shaclInfoRoute}
           render={() => renderWithNavbar(SHACLInfo)}
         />
         <Route
-          path={API.shaclValidateRoute}
+          path={API.routes.client.shaclValidateRoute}
           render={() => renderWithNavbar(SHACLValidate)}
         />
         <Route
-          path={API.shaclConvertRoute}
+          path={API.routes.client.shaclConvertRoute}
           render={() => renderWithNavbar(SHACLConvert)}
         />
         <Route
-          path={API.shacl2ShExRoute}
+          path={API.routes.client.shacl2ShExRoute}
           render={() => renderWithNavbar(SHACL2ShEx)}
         />
 
         <Route
-          path={API.shapeMapInfoRoute}
+          path={API.routes.client.shapemapInfoRoute}
           render={() => renderWithNavbar(ShapeMapInfo)}
         />
 
         <Route
-          path={API.wikidataQueryRoute}
+          path={API.routes.client.wikidataQueryRoute}
           render={() => renderWithNavbar(WikidataQuery)}
         />
         <Route
-          path={API.wikidataValidateRoute}
+          path={API.routes.client.wikidataValidateRoute}
           render={() => renderWithNavbar(WikidataValidate)}
         />
         <Route
-          path={API.wikidataExtractRoute}
+          path={API.routes.client.wikidataExtractRoute}
           render={() => renderWithNavbar(WikidataExtract)}
         />
-        <Route path={API.aboutRoute} render={() => renderWithNavbar(About)} />
+        <Route path={API.routes.client.aboutRoute} render={() => renderWithNavbar(About)} />
 
         {/*The following route is for backwards compatibility*/}
         <Route path="/validate" render={() => renderWithNavbar(ShExValidate)} />
@@ -235,47 +235,14 @@ function Routes() {
           render={() => renderWithNavbar(TestGithubSearch)}
         />
         <Route
-          path={API.permalinkRoute}
+          path={API.routes.client.permalinkRoute}
           component={PermalinkReceiver}
           // render={() => renderWithNavbar(PermalinkReceiver)}
-        />
-
-        <Route
-          path="/links/i1"
-          render={() => (
-            <Redirect to="/dataInfo?data=%40prefix%20%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2F%3E%20.%0A%40prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20.%0A%40prefix%20item%3A%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F04802%2F%3E%20.%0A%40prefix%20dbr%3A%20%20%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%20.%0A%40prefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20.%0A%40prefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20.%0A%40prefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.example.org%2Fitem%2F%3E%20.%0A%40prefix%20wd%3A%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%20.%0A%40prefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20.%0A%0A%3Aalice%20%20a%20%20%20%20%20%20%20foaf%3APerson%20.%0A%0A%3Abob%20%20%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%221990-07-04%22%5E%5Exsd%3Adate%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2Falice%23me%3E%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Atopic_interest%20%20wd%3AQ12418%20.%0A%0A%3Acarol%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%22unknown%22%20.%0A%0Awd%3AQ12418%20%20dcterms%3Acreator%20%20dbr%3ALeonardo_da_Vinci%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22Mona%20Lisa%22%20.%0A%0Ait%3A243FA%20%20dcterms%3Asubject%20%20wd%3AQ12418%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22La%20Joconde%20%C3%A0%20Washington%22%40fr%20.%0A&dataFormat=TURTLE&inference=NONE" />
-          )}
-        />
-        <Route
-          path="/links/i2"
-          render={() => (
-            <Redirect to="/dataConvert?data=%40prefix%20%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2F%3E%20.%0A%40prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20.%0A%40prefix%20item%3A%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F04802%2F%3E%20.%0A%40prefix%20dbr%3A%20%20%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%20.%0A%40prefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20.%0A%40prefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20.%0A%40prefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.example.org%2Fitem%2F%3E%20.%0A%40prefix%20wd%3A%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%20.%0A%40prefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20.%0A%0A%3Aalice%20%20a%20%20%20%20%20%20%20foaf%3APerson%20.%0A%0A%3Abob%20%20%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%221990-07-04%22%5E%5Exsd%3Adate%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2Falice%23me%3E%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Atopic_interest%20%20wd%3AQ12418%20.%0A%0A%3Acarol%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%22unknown%22%20.%0A%0Awd%3AQ12418%20%20dcterms%3Acreator%20%20dbr%3ALeonardo_da_Vinci%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22Mona%20Lisa%22%20.%0A%0Ait%3A243FA%20%20dcterms%3Asubject%20%20wd%3AQ12418%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22La%20Joconde%20%C3%A0%20Washington%22%40fr%20.&amp;dataFormat=TURTLE&amp;targetDataFormat=JSON-LD&amp;inference=NONE" />
-          )}
-        />
-        <Route
-          path="/links/i3"
-          render={() => (
-            <Redirect to="/shExConvert?activeSchemaSource=%23schemaTextArea&schema=prefix%20schema%3A%20<http%3A%2F%2Fschema.org%2F>%20%0Aprefix%20xsd%3A%20%20%20<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%20%0Aprefix%20dcterms%3A%20<http%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F>%20%0Aprefix%20it%3A%20%20%20%20<http%3A%2F%2Fdata.europeana.eu%2Fitem%2F>%20%0Aprefix%20foaf%3A%20%20<http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F>%20%0A%0A<User>%20IRI%20%7B%20%0A%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%20foaf%3APerson%20%5D%3B%20%0A%20schema%3AbirthDate%20%20%20%20%20xsd%3Adate%3F%20%20%3B%0A%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%40<User>%2A%20%3B%0A%20foaf%3Atopic_interest%20%20%40<Topic>%7B0%2C10%7D%0A%7D%0A%0A<Topic>%20%7B%0A%20%20dcterms%3Atitle%20%20%20xsd%3Astring%20%3B%0A%20%20dcterms%3Acreator%20IRI%20%3B%0A%20%20%5Edcterms%3Asubject%20%40<Item>%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%7D%0A%0A<Item>%20%7B%0A%20%20dcterms%3Atitle%20%5B%40en%20%40fr%20%40es%5D%20%3B%0A%7D&schemaEngine=ShEx&schemaFormat=ShExC&schemaFormatTextArea=ShExC&targetSchemaFormat=JSON-LD" />
-          )}
-        />
-        <Route
-          path="/links/i4"
-          render={() => (
-            <Redirect to="/shExInfo?schema=prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20%0Aprefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20%0Aprefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20%0Aprefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F%3E%20%0Aprefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20%0A%0A%3CUser%3E%20IRI%20%7B%20%0A%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%20foaf%3APerson%20%5D%3B%20%0A%20schema%3AbirthDate%20%20%20%20%20xsd%3Adate%3F%20%20%3B%0A%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%40%3CUser%3E*%20%3B%0A%20foaf%3Atopic_interest%20%20%40%3CTopic%3E%7B0%2C10%7D%0A%7D%0A%0A%3CTopic%3E%20%7B%0A%20%20dcterms%3Atitle%20%20%20xsd%3Astring%20%3B%0A%20%20dcterms%3Acreator%20IRI%20%3B%0A%20%20%5Edcterms%3Asubject%20%40%3CItem%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%7D%0A%0A%3CItem%3E%20%7B%0A%20%20dcterms%3Atitle%20%5B%40en%20%40fr%20%40es%5D%20%3B%0A%7D&schemaFormat=ShExC&schemaEngine=ShEx" />
-          )}
-        />
-        <Route
-          path="/links/i5"
-          render={() => (
-            <Redirect to="/validate?data=%40prefix%20%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2F%3E%20.%0A%40prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20.%0A%40prefix%20item%3A%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F04802%2F%3E%20.%0A%40prefix%20dbr%3A%20%20%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%20.%0A%40prefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20.%0A%40prefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20.%0A%40prefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.example.org%2Fitem%2F%3E%20.%0A%40prefix%20wd%3A%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%20.%0A%40prefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20.%0A%0A%3Aalice%20%20a%20%20%20%20%20%20%20foaf%3APerson%20.%0A%0A%3Abob%20%20%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%221990-07-04%22%5E%5Exsd%3Adate%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%3Aalice%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Atopic_interest%20%20wd%3AQ12418%20.%0A%0A%3Acarol%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%22unknown%22%20.%0A%0Awd%3AQ12418%20%20dcterms%3Acreator%20%20dbr%3ALeonardo_da_Vinci%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22Mona%20Lisa%22%20.%0A%0Ait%3A243FA%20%20dcterms%3Asubject%20%20wd%3AQ12418%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22La%20Joconde%20%C3%A0%20Washington%22%40fr%20.&amp;dataFormat=TURTLE&amp;schema=prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20%0Aprefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20%0Aprefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20%0Aprefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F%3E%20%0Aprefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20%0A%0A%3CUser%3E%20IRI%20%7B%20%0A%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%20foaf%3APerson%20%5D%3B%20%0A%20schema%3AbirthDate%20%20%20%20%20xsd%3Adate%3F%20%20%3B%0A%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%40%3CUser%3E*%20%3B%0A%20foaf%3Atopic_interest%20%20%40%3CTopic%3E%7B0%2C10%7D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%7D%0A%0A%3CTopic%3E%20%7B%0A%20%20dcterms%3Atitle%20%20%20xsd%3Astring%20%3B%0A%20%20dcterms%3Acreator%20IRI%20%3B%0A%20%20%5Edcterms%3Asubject%20%40%3CItem%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%7D%0A%0A%3CItem%3E%20%7B%0A%20%20dcterms%3Atitle%20%5B%40en%20%40fr%20%40es%5D%20%3B%0A%7D&amp;schemaFormat=ShExC&amp;schemaEngine=ShEx&amp;triggerMode=ShapeMap&amp;inference=NONE&amp;activeDataSource=%23dataTextArea&amp;activeSchemaSource=%23schemaTextArea&amp;activeShapeMapSource=%23shapeMapTextArea&amp;&amp;shapeMap=%3Abob%40%3CUser%3E%2C%3Acarol%40%3CUser%3E" />
-          )}
         />
         <Route render={() => renderWithNavbar(NotFound)} />
       </Switch>
     </Router>
   );
-
-  // <Redirect to="/dataInfo?data=%40prefix%20%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2F%3E%20.%0A%40prefix%20schema%3A%20%3Chttp%3A%2F%2Fschema.org%2F%3E%20.%0A%40prefix%20item%3A%20%20%3Chttp%3A%2F%2Fdata.europeana.eu%2Fitem%2F04802%2F%3E%20.%0A%40prefix%20dbr%3A%20%20%20%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%20.%0A%40prefix%20xsd%3A%20%20%20%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%20.%0A%40prefix%20dcterms%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20.%0A%40prefix%20it%3A%20%20%20%20%3Chttp%3A%2F%2Fdata.example.org%2Fitem%2F%3E%20.%0A%40prefix%20wd%3A%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%20.%0A%40prefix%20foaf%3A%20%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20.%0A%0A%3Aalice%20%20a%20%20%20%20%20%20%20foaf%3APerson%20.%0A%0A%3Abob%20%20%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%221990-07-04%22%5E%5Exsd%3Adate%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Aknows%20%20%20%20%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fexample.org%2Falice%23me%3E%20%3B%0A%20%20%20%20%20%20%20%20foaf%3Atopic_interest%20%20wd%3AQ12418%20.%0A%0A%3Acarol%20%20a%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20foaf%3APerson%20%3B%0A%20%20%20%20%20%20%20%20schema%3AbirthDate%20%20%22unknown%22%20.%0A%0Awd%3AQ12418%20%20dcterms%3Acreator%20%20dbr%3ALeonardo_da_Vinci%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22Mona%20Lisa%22%20.%0A%0Ait%3A243FA%20%20dcterms%3Asubject%20%20wd%3AQ12418%20%3B%0A%20%20%20%20%20%20%20%20dcterms%3Atitle%20%20%20%20%22La%20Joconde%20%C3%A0%20Washington%22%40fr%20.%0A&dataFormat=TURTLE&inference=NONE"/>
 }
 
 export default Routes;

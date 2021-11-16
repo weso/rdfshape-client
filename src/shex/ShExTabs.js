@@ -25,7 +25,7 @@ function ShExTabs(props) {
         nameFormat="ShEx format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleShExFormatChange}
-        urlFormats={API.shExFormats}
+        urlFormats={API.routes.server.shExFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
       />
@@ -55,7 +55,7 @@ ShExTabs.propTypes = {
 };
 
 ShExTabs.defaultProps = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   shExFormat: "ShExC",
 };
 

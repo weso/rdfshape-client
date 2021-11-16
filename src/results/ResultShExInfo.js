@@ -1,52 +1,73 @@
-import PropTypes from "prop-types"
-import React, { Fragment } from 'react'
-import Alert from 'react-bootstrap/Alert'
-import API from "../API"
-import { Permalink } from "../Permalink"
-import PrintJson from "../utils/PrintJson"
+import PropTypes from "prop-types";
+import React, { Fragment } from "react";
+import BootstrapTable from "react-bootstrap-table-next";
+import Alert from "react-bootstrap/Alert";
+import API from "../API";
+import { Permalink } from "../Permalink";
+import PrintJson from "../utils/PrintJson";
+import { prefixMapTableColumns } from "../utils/Utils";
 
-function ResultShExInfo(props) {
+function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
+  // Destructure request response items for later usage
+  const {
+    message,
+    schema,
+    result: {
+      format: { name: formatName },
+      engine,
+      shapes,
+      prefixMap,
+    },
+  } = shexInfoResponse;
 
-  const result = props.result
-  let msg
-  if (result === "") {
-    msg = null
-  } else
-  if (!result.wellFormed) {
-    msg =
+  if (shexInfoResponse) {
+    return (
       <div>
-        <Alert variant="danger">{result.errors && "Invalid ShEx schema" }</Alert>
+        <Alert variant="success">{message}</Alert>
+        <br />
         <ul>
-          {result.errors.map( error => <li>{error}</li>)}
+          <li>Number of shapes: {shapes.length}</li>
+          <li>
+            Schema format: <span>{formatName}</span>
+          </li>
+          <li>
+            Schema engine: <span>{engine}</span>
+          </li>
+          {prefixMap?.length > 0 ? (
+            <li className="list-details">
+              <details>
+                <summary>Prefix map</summary>
+                {/* Table with prefix map */}
+                <div className="prefixMapTable">
+                  <BootstrapTable
+                    keyField="prefixName"
+                    data={prefixMap}
+                    columns={prefixMapTableColumns}
+                  ></BootstrapTable>
+                </div>
+              </details>
+            </li>
+          ) : (
+            <li>{API.texts.noPrefixes}</li>
+          )}
         </ul>
+        <details>
+          <summary>{API.texts.responseSummaryText}</summary>
+          <PrintJson json={shexInfoResponse} />
+        </details>
+        {permalink && (
+          <Fragment>
+            <Permalink url={permalink} disabled={disabled} />
+            <hr />
+          </Fragment>
+        )}
       </div>
-  } else {
-
-    msg =
-        <div>
-          <Alert variant="success">Well formed schema</Alert>
-          {
-            props.permalink &&
-            <Fragment>
-              <Permalink url={props.permalink} disabled={props.disabled}/>
-              <hr/>
-            </Fragment>
-          }
-          <details>
-          <summary>{API.responseSummaryText}</summary>
-            <PrintJson json={result} />
-          </details>
-        </div>
+    );
   }
-
-  return (
-    <div>{msg}</div>
-  );
-
 }
 
-ResultShExInfo.propTypes = {
-    result: PropTypes.object
-}
+ResultShExInfo.defaultProps = {
+  disabled: false,
+};
 
-export default ResultShExInfo
+export default ResultShExInfo;

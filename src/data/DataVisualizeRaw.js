@@ -23,11 +23,11 @@ function DataVisualizeRaw(props) {
   const [params, setParams] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
+  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [visualization, setVisualization] = useState(null);
   const [message] = useState("Processing...");
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -53,7 +53,7 @@ function DataVisualizeRaw(props) {
     if (params) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         postVisualize();
       } else {

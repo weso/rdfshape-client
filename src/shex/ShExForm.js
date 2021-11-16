@@ -21,6 +21,7 @@ function ShExForm(props) {
         // setQuery(cm.getValue())
         props.onChange(cm.getValue(), y);
         // y.refresh();
+        console.log(y)
       });
       y.setValue(props.value);
       y.refresh();

@@ -38,7 +38,7 @@ function ResultShExVisualize({ result, zoom, showDetails }) {
             <PrintSVG svg={result.svg} />
           </div>
           <details>
-            <summary>{API.responseSummaryText}</summary>
+            <summary>{API.texts.responseSummaryText}</summary>
             <PrintJson json={result} />
           </details>
         </>

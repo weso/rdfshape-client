@@ -24,7 +24,7 @@ function SHACLTabs(props) {
         nameFormat="SHACL format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleDataFormatChange}
-        urlFormats={API.dataFormatsInput}
+        urlFormats={API.routes.server.dataFormatsInput}
         setCodeMirror={props.setCodeMirror}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
@@ -54,7 +54,7 @@ SHACLTabs.propTypes = {
 
 SHACLTabs.defaultProps = {
   name: "SHACL Shapes",
-  actiactiveSourceveTab: API.defaultSource,
+  actiactiveSourceveTab: API.sources.default,
   // dataFormat: 'TURTLE'
 };
 

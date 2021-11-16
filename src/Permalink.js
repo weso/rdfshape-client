@@ -21,7 +21,7 @@ export async function mkPermalink(route, params) {
 
 export async function mkPermalinkFromUrl(url) {
   try {
-    const res = await axios.get(API.serverPermalinkEndpoint, {
+    const res = await axios.get(API.routes.server.serverPermalinkEndpoint, {
       params: { url },
     });
     // The server only returns the permalink code. The full link is: current host + code
@@ -65,7 +65,7 @@ function getHost() {
 // Returns a tuple [status, message], the message being the target link or an error in case of failure
 export async function getOriginalLink(code) {
   try {
-    const res = await axios.get(API.serverOriginalLinkEndpoint, {
+    const res = await axios.get(API.routes.server.serverOriginalLinkEndpoint, {
       params: { urlCode: code },
     });
     return [true, `${getHost()}${res.data}`];
@@ -143,7 +143,7 @@ export function Permalink(props) {
         </Button>
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
-            {props.disabled === API.byTextSource
+            {props.disabled === API.sources.byText
               ? "Can't generate links for long manual inputs, try inserting data by URL"
               : "Can't generate links for file-based inputs, try inserting data by URL"}
           </ReactTooltip>

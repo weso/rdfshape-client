@@ -20,7 +20,7 @@ function SelectGraphFormat(props) {
     }
 
     componentDidMount() {
-        const url = API.dataVisualFormats;
+        const url = API.routes.server.dataVisualFormats;
         axios.get(url).then(response => response.data)
             .then((data) => {
                 this.setState({ formats: data })

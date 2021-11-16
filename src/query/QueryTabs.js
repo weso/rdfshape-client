@@ -63,7 +63,7 @@ QueryTabs.propTypes = {
 QueryTabs.defaultProps = {
     textAreaValue: '',
     urlValue: '',
-    activeSource: API.defaultSource
+    activeSource: API.sources.default
 };
 
 export default QueryTabs;

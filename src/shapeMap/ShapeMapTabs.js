@@ -24,7 +24,7 @@ function ShapeMapTabs(props) {
         nameFormat="ShapeMap format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleFormatChange}
-        urlFormats={API.shapemapFormats}
+        urlFormats={API.routes.server.shapemapFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
         setCodeMirror={props.setCodeMirror}
@@ -63,8 +63,8 @@ ShapeMapTabs.propTypes = {
 };
 
 ShapeMapTabs.defaultProps = {
-  activeSource: API.defaultSource,
-  shapeMapFormat: API.defaultShapeMapFormat,
+  activeSource: API.sources.default,
+  shapeMapFormat: API.formats.defaultShapeMap,
 };
 
 export default ShapeMapTabs;

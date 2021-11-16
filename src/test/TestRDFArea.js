@@ -128,7 +128,7 @@ function TestRDFArea(props)  {
                               setMode(cnvMode(newFormat))
                           }}
                           urlFormats={API.dataFormats}
-                          urlDefaultFormat={API.defaultDataFormat}
+                          urlDefaultFormat={API.formats.defaultData}
                           handleError={(error) => setMsg(`Error from SelectFormat\n${error}`)}
             />
             <Button variant="primary"

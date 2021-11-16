@@ -22,7 +22,7 @@ function InputWikidataSchema(props) {
     const fetchData = async () => {
       dispatch({ type: "setLoading" });
       try {
-        const result = await axios(API.wikidataSchemaContent, {
+        const result = await axios(API.routes.server.wikidataSchemaContent, {
           params: { wdSchema: status.number },
         });
         const json = result.data;

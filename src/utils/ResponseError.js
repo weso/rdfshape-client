@@ -8,7 +8,7 @@ import environmentConfiguration from "../EnvironmentConfig";
 function ResponseError({ errorOrigin, errorMessage }) {
   return (
     <details>
-      <summary>{`${API.errorResponsePrefix} from ${errorOrigin}`} </summary>
+      <summary>{`${API.texts.errorResponsePrefix} from ${errorOrigin}`} </summary>
       {errorMessage && (
         <>
           <hr />

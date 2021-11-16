@@ -96,7 +96,7 @@ InputTabsWithFormat.propTypes = {
 };
 
 InputTabsWithFormat.defaultProps = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",

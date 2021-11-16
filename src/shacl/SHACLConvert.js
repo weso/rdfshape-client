@@ -24,7 +24,7 @@ import {
 
 function SHACLConvert(props) {
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
-    API.defaultSHACLFormat
+    API.formats.defaultShacl
   );
   const [shacl, setShacl] = useState(InitialShacl);
 
@@ -40,7 +40,7 @@ function SHACLConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaConvert;
+  const url = API.routes.server.schemaConvert;
 
   function handleTargetSchemaFormatChange(value) {
     setTargetSchemaFormat(value);
@@ -113,7 +113,7 @@ function SHACLConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.shaclConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shaclConvertRoute, params));
         checkLinks();
         setProgressPercent(90);
         if (cb) cb();
@@ -128,10 +128,10 @@ function SHACLConvert(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShaclText(shacl).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shacl.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShaclText(shacl).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shacl.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -148,7 +148,7 @@ function SHACLConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shaclConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shaclConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -156,7 +156,7 @@ function SHACLConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shaclConvertRoute, params)
+      mkPermalinkLong(API.routes.client.shaclConvertRoute, params)
     );
 
     setLastParams(params);
@@ -183,7 +183,7 @@ function SHACLConvert(props) {
               name="Target schema format"
               selectedFormat={targetSchemaFormat}
               handleFormatChange={handleTargetSchemaFormatChange}
-              urlFormats={API.shExFormats}
+              urlFormats={API.routes.server.shExFormats}
             />
             <hr />
             <Button

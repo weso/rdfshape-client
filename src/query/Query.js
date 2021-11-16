@@ -8,6 +8,7 @@ export const InitialQuery = {
   textArea: "",
   url: "",
   file: null,
+  format: API.formats.defaultQuery,
   fromParams: false,
   codeMirror: null,
 };
@@ -18,14 +19,14 @@ export function updateStateQuery(params, query) {
     // Get the raw data string introduced by the user
     const userData = params["query"];
     // Get the query source to be used: take it from params or resort to default
-    const querySource = params["querySource"] || API.defaultSource;
+    const querySource = params["querySource"] || API.sources.default;
 
     return {
       ...query,
       activeSource: querySource,
-      textArea: querySource == API.byTextSource ? userData : query.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
-      url: querySource == API.byUrlSource ? userData : query.url,
-      file: querySource == API.byFileSource ? userData : query.file,
+      textArea: querySource == API.sources.byText ? userData : query.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      url: querySource == API.sources.byUrl ? userData : query.url,
+      file: querySource == API.sources.byFile ? userData : query.file,
       fromParams: true,
     };
   }
@@ -47,13 +48,13 @@ export function paramsFromStateQuery(query) {
   let params = {};
   params["querySource"] = query.activeSource;
   switch (query.activeSource) {
-    case API.byTextSource:
+    case API.sources.byText:
       params["query"] = query.textArea.trim();
       break;
-    case API.byUrlSource:
+    case API.sources.byUrl:
       params["query"] = query.url.trim();
       break;
-    case API.byFileSource:
+    case API.sources.byFile:
       params["query"] = query.file;
       break;
     default:
@@ -95,9 +96,9 @@ export function mkQueryTabs(query, setQuery, name, subname) {
 }
 
 export function getQueryText(query) {
-  if (query.activeSource === API.byTextSource) {
+  if (query.activeSource === API.sources.byText) {
     return encodeURI(query.textArea.trim());
-  } else if (query.activeSource === API.byUrlSource) {
+  } else if (query.activeSource === API.sources.byUrl) {
     return encodeURI(query.textArea.trim());
   }
   return "";

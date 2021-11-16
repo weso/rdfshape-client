@@ -3,115 +3,180 @@
 import environmentConfiguration from "./EnvironmentConfig";
 
 class API {
-  // Routes in server
-  static rootApi = environmentConfiguration.apiHost + "/api/"; // "http(s)://localhost:8080/api/";
+  // Routes
+  static rootApi = environmentConfiguration.apiHost + "/api/";
+  static routes = {
+    // Routes in server
+    server: {
+      root: this.rootApi,
+      health: this.rootApi + "health",
 
-  static healthServer = API.rootApi + "health";
-  static dataInfo = API.rootApi + "data/info";
-  static dataConvert = API.rootApi + "data/convert";
-  static dataVisualize = API.rootApi + "data/visualize";
-  static dataFormatsInput = API.rootApi + "data/formats/input";
-  static dataFormatsOutput = API.rootApi + "data/formats/output";
-  static inferenceEngines = API.rootApi + "data/inferenceEngines";
-  static dataQuery = API.rootApi + "data/query";
-  static dataExtract = API.rootApi + "data/extract";
-  static dataVisualFormats = API.rootApi + "data/formats/visual";
-  static endpointInfo = API.rootApi + "endpoint/info";
-  static endpointQuery = API.rootApi + "endpoint/query";
-  static shExFormats = API.rootApi + "schema/formats?schemaEngine=shex";
-  static shapemapInfo = API.rootApi + "shapemap/info";
-  static shapemapFormats = API.rootApi + "shapemap/formats";
-  static shaclFormats = API.rootApi + "schema/formats?schemaEngine=shaclex";
-  static schemaValidate = API.rootApi + "schema/validate";
-  static schemaInfo = API.rootApi + "schema/info";
-  static schemaVisualize = API.rootApi + "schema/visualize";
-  static schemaConvert = API.rootApi + "schema/convert";
-  static schemaVisualizeCytoscape = API.rootApi + "schema/cytoscape";
-  static schemaSHACLEngines = API.rootApi + "schema/engines/shacl";
+      dataInfo: this.rootApi + "data/info",
+      dataConvert: this.rootApi + "data/convert",
+      dataVisualize: this.rootApi + "data/visualize",
+      dataQuery: this.rootApi + "data/query",
+      dataExtract: this.rootApi + "data/extract",
+      dataFormatsInput: this.rootApi + "data/formats/input",
+      dataFormatsOutput: this.rootApi + "data/formats/output",
+      dataVisualFormats: this.rootApi + "data/formats/visual",
 
-  static wikidataEntityLabel = API.rootApi + "wikidata/entityLabel";
-  static wikidataSearchEntity = API.rootApi + "wikidata/searchEntity";
-  static wikidataLanguages = API.rootApi + "wikidata/languages";
-  static wikidataSchemaContent = API.rootApi + "wikidata/schemaContent";
+      shExFormats: this.rootApi + "schema/formats?schemaEngine=shex",
+      shaclFormats: this.rootApi + "schema/formats?schemaEngine=shaclex",
+      schemaValidate: this.rootApi + "schema/validate",
+      schemaInfo: this.rootApi + "schema/info",
+      schemaVisualize: this.rootApi + "schema/visualize",
+      schemaConvert: this.rootApi + "schema/convert",
+      schemaVisualizeCytoscape: this.rootApi + "schema/cytoscape",
+      schemaSHACLEngines: this.rootApi + "schema/engines/shacl",
 
-  // Routes in client
-  static dataInfoRoute = "/dataInfo";
-  static dataConvertRoute = "/dataConvert";
-  static dataVisualizeRoute = "/dataVisualize";
-  static dataVisualizeRouteRaw = "/dataVisualizeRaw";
-  static cytoVisualizeRoute = "/dataVisualizeCyto";
-  static cytoVisualizeRouteRaw = "/dataVisualizeCytoRaw";
-  static dataExtractRoute = "/dataExtract";
-  static dataMergeRoute = "/dataMerge";
-  static dataMergeVisualizeRoute = "/dataMergeVisualize";
-  static dataMergeVisualizeRouteRaw = "/dataMergeVisualizeRaw";
-  static dataQueryRoute = "/dataQuery";
+      shapemapInfo: this.rootApi + "shapemap/info",
+      shapemapFormats: this.rootApi + "shapemap/formats",
 
-  static endpointInfoRoute = "/endpointInfo";
-  static endpointExtractRoute = "/endpointExtract";
-  static endpointQueryRoute = "/endpointQuery";
+      endpointInfo: this.rootApi + "endpoint/info",
+      endpointQuery: this.rootApi + "endpoint/query",
 
-  static shExInfoRoute = "/shExInfo";
-  static shExConvertRoute = "/shExConvert";
-  static shExVisualizeRoute = "/shExVisualize";
-  static shExVisualizeRouteRaw = "/shExVisualizeRaw";
-  static shExVisualizeCytoscapeRoute = "/shExVisualizeCytoscape";
-  static shEx2ShaclRoute = "/shEx2Shacl";
-  static shExValidateRoute = "/shExValidate";
-  static shExValidateEndpointRoute = "/shExValidateEndpoint";
-  static shEx2XMIRoute = "/shEx2XMI";
-  static shapeFormRoute = "/shapeForm";
+      inferenceEngines: this.rootApi + "data/inferenceEngines",
 
-  static shaclInfoRoute = "/shaclInfo";
-  static shaclConvertRoute = "/shaclConvert";
-  static shacl2ShExRoute = "/shacl2ShEx";
-  static shaclValidateRoute = "/shaclValidate";
-  static jenaShaclValidateRoute = "/jenaShaclValidate";
+      serverPermalinkEndpoint: this.rootApi + "permalink/generate",
+      serverOriginalLinkEndpoint: this.rootApi + "permalink/get",
+      fetchUrl: this.rootApi + "fetch",
 
-  static shapemapInfoRoute = "/shapemapInfo";
+      wikidataEntityLabel: this.rootApi + "wikidata/entityLabel",
+      wikidataSearchEntity: this.rootApi + "wikidata/searchEntity",
+      wikidataLanguages: this.rootApi + "wikidata/languages",
+      wikidataSchemaContent: this.rootApi + "wikidata/schemaContent",
+    },
+    // Routes in client
+    client: {
+      dataInfoRoute: "/dataInfo",
+      dataConvertRoute: "/dataConvert",
+      dataVisualizeRoute: "/dataVisualize",
+      dataVisualizeRouteRaw: "/dataVisualizeRaw",
+      cytoVisualizeRoute: "/dataVisualizeCyto",
+      cytoVisualizeRouteRaw: "/dataVisualizeCytoRaw",
+      dataExtractRoute: "/dataExtract",
+      dataMergeRoute: "/dataMerge",
+      dataMergeVisualizeRoute: "/dataMergeVisualize",
+      dataMergeVisualizeRouteRaw: "/dataMergeVisualizeRaw",
+      dataQueryRoute: "/dataQuery",
 
-  static wikidataQueryRoute = "/wikidataQuery";
-  static wikidataValidateRoute = "/wikidataValidate";
-  static wikidataExtractRoute = "/wikTURTLEidataExtract";
+      endpointInfoRoute: "/endpointInfo",
+      endpointExtractRoute: "/endpointExtract",
+      endpointQueryRoute: "/endpointQuery",
 
-  static aboutRoute = "/about";
+      shExInfoRoute: "/shExInfo",
+      shExConvertRoute: "/shExConvert",
+      shExVisualizeRoute: "/shExVisualize",
+      shExVisualizeRouteRaw: "/shExVisualizeRaw",
+      shExVisualizeCytoscapeRoute: "/shExVisualizeCytoscape",
+      shEx2ShaclRoute: "/shEx2Shacl",
+      shExValidateRoute: "/shExValidate",
+      shExValidateEndpointRoute: "/shExValidateEndpoint",
+      shEx2XMIRoute: "/shEx2XMI",
+      shapeFormRoute: "/shapeForm",
 
-  static permalinkRoute = "/link/:urlCode";
+      shaclInfoRoute: "/shaclInfo",
+      shaclConvertRoute: "/shaclConvert",
+      shacl2ShExRoute: "/shacl2ShEx",
+      shaclValidateRoute: "/shaclValidate",
+      jenaShaclValidateRoute: "/jenaShaclValidate",
 
-  static byTextSource = "byText";
-  static byUrlSource = "byUrl";
-  static byFileSource = "byFile";
-  static bySchemaSource = "bySchema";
-  static xmiTab = "XMI";
-  static umlTab = "UML";
-  static defaultSource = this.byTextSource; // Data source: either text, URL or file
-  static defaultDataFormat = "turtle";
-  static turtleDataFormat = "turtle";
-  static defaultInference = "None";
-  static defaultShExFormat = "shexc";
-  static shexcDataFormat = "shexc";
-  static defaultSHACLFormat = "turtle";
-  static defaultSHACLEngine = "JenaSHACL";
-  static defaultShapeMapFormat = "Compact";
-  static defaultQueryFormat = "SPARQL";
-  static defaultXMLFormat = "xml";
-  static defaultGraphicalFormat = "SVG";
+      shapemapInfoRoute: "/shapemapInfo",
 
-  static serverPermalinkEndpoint = API.rootApi + "permalink/generate";
-  static serverOriginalLinkEndpoint = API.rootApi + "permalink/get";
-  static fetchUrl = API.rootApi + "fetch";
+      wikidataQueryRoute: "/wikidataQuery",
+      wikidataValidateRoute: "/wikidataValidate",
+      wikidataExtractRoute: "/wikTURTLEidataExtract",
 
-  static wikidataUrl = "https://query.wikidata.org/sparql";
-  static dbpediaUrl = "https://dbpedia.org/sparql";
+      permalinkRoute: "/link/:urlCode",
 
-  static testInputTabsWithFormatRoute = "/test/inputTabsWithFormat";
+      aboutRoute: "/about",
+    },
+    // Other useful routes
+    utils: {
+      wikidataUrl: "https://query.wikidata.org/sparql",
+      dbpediaUrl: "https://dbpedia.org/sparql",
+      testInputTabsWithFormatRoute: "/test/inputTabsWithFormat",
+    },
+  };
+
+  // Information sources / tabs
+  static sources = {
+    byText: "byText",
+    byUrl: "byUrl",
+    byFile: "byFile",
+    bySchema: "bySchema",
+
+    default: "byText",
+  };
+
+  static tabs = {
+    xmi: "XMI",
+    uml: "UML",
+  };
+
+  // Formats (most formats come from server but we need defaults for data initialization)
+  static formats = {
+    turtle: "turtle",
+    triG: "TriG",
+    compact: "Compact",
+    shexc: "ShExC",
+    shexj: "ShExJ",
+    sparql: "SPARQL",
+    xml: "XML",
+    rdfXml: "RDF/XML",
+    rdfJson: "RDF/JSON",
+    svg: "SVG",
+    html: "HTML",
+    htmlMicrodata: "html-microdata",
+    htmlRdf: "html-rdfa11",
+    json: "JSON",
+    jsonld: "JSON-LD",
+
+    defaultData: "turtle",
+    defaultShex: "ShExC",
+    defaultShacl: "turtle",
+    defaultShacl: "turtle",
+    defaultShapeMap: "Compact",
+    defaultQuery: "SPARQL",
+    defaultGraphical: "SVG",
+  };
+
+  // Inferences
+  static inferences = {
+    default: "None",
+
+    none: "None",
+  };
+
+  // Engines
+  static engines = {
+    default: "ShEx",
+    defaultShex: "ShEx",
+    defaultShacl: "JenaSHACL",
+
+    shex: "ShEx",
+    jenaShacl: "JenaSHACL",
+  };
+
+  // Trigger modes
+  static triggerModes = {
+    default: "shapeMap",
+
+    shapeMap: "shapeMap",
+    targetDecls: "targetDecls",
+  };
 
   // By text limitations
-  static byTextCharacterLimit = 2200;
+  static limits = {
+    byTextCharacterLimit: 2200,
+  };
 
   // Text constants
-  static errorResponsePrefix = "Error response";
-  static responseSummaryText = "Full response";
+  static texts = {
+    errorResponsePrefix: "Error response",
+    responseSummaryText: "Full response",
+    noPrefixes: "No prefixes",
+  };
 }
 
 export default API;

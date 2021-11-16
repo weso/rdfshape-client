@@ -1,23 +1,26 @@
 import React, { Fragment } from "react";
+import BootstrapTable from "react-bootstrap-table-next";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { mkMode } from "../utils/Utils";
+import { prefixMapTableColumns } from "../utils/Utils";
 
 function ResultDataInfo({
   result: dataInfoResponse, // Request successful response
   permalink,
   disabled,
 }) {
-  // Destructure request response items for later usage
+  // Destructure response items for later usage
   const {
     message,
     result: {
       numberOfStatements,
+      prefixMap,
       format: { name: formatName },
     },
   } = dataInfoResponse;
+
   if (dataInfoResponse) {
     return (
       <div>
@@ -26,11 +29,29 @@ function ResultDataInfo({
         <ul>
           <li>Number of statements: {numberOfStatements}</li>
           <li>
-            DataFormat: <span>{formatName}</span>
+            Data format: <span>{formatName}</span>
           </li>
+          {prefixMap?.length > 0 ? (
+            <li className="list-details">
+              <details>
+                <summary>Prefix map</summary>
+                {/* Table with prefix map */}
+                <div className="prefixMapTable">
+                  <BootstrapTable
+                    className="prefixMapTable"
+                    keyField="prefixName"
+                    data={prefixMap}
+                    columns={prefixMapTableColumns}
+                  ></BootstrapTable>
+                </div>
+              </details>
+            </li>
+          ) : (
+            <li>{API.texts.noPrefixes}</li>
+          )}
         </ul>
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={dataInfoResponse} />
         </details>
         {permalink && (

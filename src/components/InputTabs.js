@@ -29,7 +29,7 @@ function InputTabs(props) {
         id="dataTabs"
         onSelect={handleTabChange}
       >
-        <Tab eventKey={API.byTextSource} title="Text">
+        <Tab eventKey={API.sources.byText} title="Text">
           <ByText
             name={props.byTextName}
             textAreaValue={props.textAreaValue}
@@ -41,7 +41,7 @@ function InputTabs(props) {
             resetFromParams={props.resetFromParams}
           />
         </Tab>
-        <Tab eventKey={API.byUrlSource} title="URL">
+        <Tab eventKey={API.sources.byUrl} title="URL">
           <ByURL
             name={props.byURLName}
             urlValue={props.urlValue}
@@ -49,7 +49,7 @@ function InputTabs(props) {
             placeholder={props.byURLPlaceholder}
           />
         </Tab>
-        <Tab eventKey={API.byFileSource} title="File">
+        <Tab eventKey={API.sources.byFile} title="File">
           <ByFile
             name={props.byFileName}
             handleFileUpload={props.handleFileUpload}
@@ -88,7 +88,7 @@ InputTabs.propTypes = {
 };
 
 InputTabs.defaultProps = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",

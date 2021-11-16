@@ -15,7 +15,7 @@ import {
   mkDataTabs,
   paramsFromStateData,
   updateStateData,
-  dataParamsFromQueryParams
+  dataParamsFromQueryParams,
 } from "../data/Data";
 import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
@@ -50,7 +50,7 @@ function SHACLValidate(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaValidate;
+  const url = API.routes.server.schemaValidate;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -88,7 +88,7 @@ function SHACLValidate(props) {
         ...paramsFromStateShacl(paramsShacl),
         endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
         schemaEngine: queryParams.schemaEngine || shacl.engine,
-        triggerMode: "targetDecls",
+        triggerMode: API.triggerModes.targetDecls,
       };
 
       setParams(params);
@@ -128,7 +128,7 @@ function SHACLValidate(props) {
       ...paramsFromStateData(data),
       ...paramsEndpoint,
       schemaEngine: shacl.engine,
-      triggerMode: "targetDecls",
+      triggerMode: API.triggerModes.targetDecls,
     });
   }
 
@@ -144,7 +144,7 @@ function SHACLValidate(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.shaclValidateRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shaclValidateRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -160,11 +160,11 @@ function SHACLValidate(props) {
   function checkLinks() {
     const disabled =
       getShaclText(shacl).length + getDataText(data).length >
-      API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource ||
-          shacl.activeSource === API.byFileSource
-        ? API.byFileSource
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile ||
+          shacl.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -181,7 +181,7 @@ function SHACLValidate(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shaclValidateRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shaclValidateRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -189,7 +189,7 @@ function SHACLValidate(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shaclValidateRoute, params)
+      mkPermalinkLong(API.routes.client.shaclValidateRoute, params)
     );
 
     setLastParams(params);
@@ -203,7 +203,7 @@ function SHACLValidate(props) {
   }
 
   return (
-    <Container>
+    <Container fluid={true}>
       <Row>
         <h1>Validate RDF data with SHACL</h1>
       </Row>

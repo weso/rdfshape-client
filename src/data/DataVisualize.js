@@ -35,14 +35,14 @@ function DataVisualize(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [targetGraphicalFormat] = useState(API.defaultGraphicalFormat);
+  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [visualization, setVisualization] = useState(null);
   const [svgZoom, setSvgZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
   const [embedLink, setEmbedLink] = useState(null);
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   const minSvgZoom = minZoom;
   const maxSvgZoom = maxZoom;
@@ -73,7 +73,7 @@ function DataVisualize(props) {
     if (params) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -105,8 +105,8 @@ function DataVisualize(props) {
         const dot = data.result.data; // Get the DOT string from the axios data object
         setProgressPercent(70);
         processData(dot, targetGraphicalFormat);
-        setPermalink(mkPermalinkLong(API.dataVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.dataVisualizeRouteRaw, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataVisualizeRoute, params));
+        setEmbedLink(mkPermalinkLong(API.routes.client.dataVisualizeRouteRaw, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -128,10 +128,10 @@ function DataVisualize(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource
-        ? API.byFileSource
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -158,7 +158,7 @@ function DataVisualize(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataVisualizeRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataVisualizeRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -166,7 +166,7 @@ function DataVisualize(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataVisualizeRoute, params)
+      mkPermalinkLong(API.routes.client.dataVisualizeRoute, params)
     );
 
     setLastParams(params);

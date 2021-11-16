@@ -15,7 +15,7 @@ import InputShapeLabel from "../components/InputShapeLabel";
 import InputWikidataSchema from "../components/InputWikidataSchema";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
-import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
+import { paramsFromStateShEx } from "../shex/ShEx";
 import ShExTabs from "../shex/ShExTabs";
 import { mkError } from "../utils/ResponseError";
 
@@ -27,20 +27,22 @@ function WikidataValidate(props) {
     permalink: null,
   };
   const initialShExStatus = {
-    shExActiveSource: API.defaultSource,
+    shExActiveSource: API.sources.default,
     shExTextArea: "",
     shExUrl: "",
-    shExFormat: API.defaultShExFormat,
+    shExFormat: API.formats.defaultShex,
   };
 
   const [status, dispatch] = useReducer(statusReducer, initialStatus);
   const [entities, setEntities] = useState([]);
 
   const [schemaEntity, setSchemaEntity] = useState("");
-  const [schemaActiveSource, setSchemaActiveSource] = useState(API.bySchemaSource);
+  const [schemaActiveSource, setSchemaActiveSource] = useState(
+    API.sources.bySchema
+  );
   const [shEx, dispatchShEx] = useReducer(shExReducer, initialShExStatus);
   const [shapeLabel, setShapeLabel] = useState("");
-  const url = API.schemaValidate;
+  const url = API.routes.server.schemaValidate;
   const [permalink, setPermalink] = useState(null);
 
   function handleChange(es) {
@@ -52,25 +54,6 @@ function WikidataValidate(props) {
     setSchemaEntity(e);
   }
 
-  function paramsFromShEx(shExStatus) {
-    let params = {};
-    params["activeSchemaSource"] = convertSourceSchema(shExStatus.shExActiveSource);
-    params["schemaFormat"] = shExStatus.shExFormat;
-    switch (shExStatus.shExActiveSource) {
-      case API.byTextSource:
-        params["schema"] = shExStatus.shExTextArea;
-        break;
-      case API.byUrlSource:
-        params["schemaUrl"] = shExStatus.shExUrl;
-        break;
-      case API.byFileSource:
-        params["schemaFile"] = shExStatus.shExFile;
-        break;
-      default:
-    }
-    return params;
-  }
-
   function shExReducer(status, action) {
     switch (action.type) {
       case "changeTab":
@@ -78,19 +61,19 @@ function WikidataValidate(props) {
       case "setText":
         return {
           ...status,
-          shExActiveSource: API.byTextSource,
+          shExActiveSource: API.sources.byText,
           shExTextArea: action.value,
         };
       case "setUrl":
         return {
           ...status,
-          shExActiveSource: API.byUrlSource,
+          shExActiveSource: API.sources.byUrl,
           shExUrl: action.value,
         };
       case "setFile":
         return {
           ...status,
-          shExActiveSource: API.byFileSource,
+          shExActiveSource: API.sources.byFile,
           shExFile: action.value,
         };
       case "setFormat":
@@ -125,16 +108,18 @@ function WikidataValidate(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const paramsShEx = paramsFromShEx(shEx);
+    const paramsShEx = paramsFromStateShEx(shEx);
     const shapeMap = shapeMapFromEntities(entities, shapeLabel);
-    const paramsEndpoint = { endpoint: API.wikidataUrl };
+    const paramsEndpoint = { endpoint: API.routes.utils.wikidataUrl };
     let params = { ...paramsEndpoint, ...paramsShEx };
     params["schemaEngine"] = "ShEx";
-    params["triggerMode"] = "shapeMap";
+    params["triggerMode"] = API.triggerModes.shapeMap;
     params["shapeMap"] = shapeMap;
-    params["shapeMapFormat"] = "Compact";
+    params["shapeMapFormat"] = API.formats.compact;
     const formData = params2Form(params);
-    setPermalink(mkPermalinkLong(API.wikidataValidateRoute, params));
+    setPermalink(
+      mkPermalinkLong(API.routes.client.wikidataValidateRoute, params)
+    );
     postValidate(url, formData);
   }
 

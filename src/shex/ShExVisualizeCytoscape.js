@@ -13,7 +13,7 @@ import { mkError } from "../utils/ResponseError";
 import { paramsFromStateShEx, shExParamsFromQueryParams } from "./ShEx";
 import ShExTabs from "./ShExTabs";
 
-const url = API.schemaVisualizeCytoscape;
+const url = API.routes.server.schemaVisualizeCytoscape;
 
 class ShExVisualizeCytoscape extends React.Component {
   constructor(props) {
@@ -26,10 +26,10 @@ class ShExVisualizeCytoscape extends React.Component {
       error: null,
       loading: false,
       shExTextArea: "",
-      shExFormat: API.defaultShExFormat,
+      shExFormat: API.formats.defaultShex,
       shExUrl: "",
       shExFile: null,
-      shExActiveSource: API.defaultSource,
+      shExActiveSource: API.sources.default,
     };
 
     this.handleShExTabChange = this.handleShExTabChange.bind(this);
@@ -78,17 +78,17 @@ class ShExVisualizeCytoscape extends React.Component {
 
   updateStateShEx(params) {
     if (params["shEx"]) {
-      this.setState({ shExActiveSource: API.byTextSource });
+      this.setState({ shExActiveSource: API.sources.byText });
       this.setState({ shExTextArea: params["shEx"] });
     }
     if (params["shExFormat"])
       this.setState({ shExFormat: params["shExFormat"] });
     if (params["shExUrl"]) {
-      this.setState({ shExActiveSource: API.byUrlSource });
+      this.setState({ shExActiveSource: API.sources.byUrl });
       this.setState({ shExUrl: params["shExUrl"] });
     }
     if (params["shExFile"]) {
-      this.setState({ shExActiveSource: API.byFileSource });
+      this.setState({ shExActiveSource: API.sources.byFile });
       this.setState({ shExFile: params["shExFile"] });
     }
   }
@@ -97,7 +97,7 @@ class ShExVisualizeCytoscape extends React.Component {
     let params = paramsFromStateShEx(this.state);
     params["schemaEngine"] = "ShEx";
     let formData = params2Form(params);
-    let permalink = await mkPermalink(API.shExVisualizeRoute, params);
+    let permalink = await mkPermalink(API.routes.client.shExVisualizeRoute, params);
     this.setState({ loading: true });
     this.setState({ permalink: permalink });
     this.postVisualize(url, formData);

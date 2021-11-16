@@ -36,7 +36,7 @@ function DataInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataInfo;
+  const url = API.routes.server.dataInfo;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -60,7 +60,7 @@ function DataInfo(props) {
     if (params && !loading) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
@@ -88,7 +88,7 @@ function DataInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -103,10 +103,10 @@ function DataInfo(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource
-        ? API.byFileSource
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -123,7 +123,7 @@ function DataInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -131,7 +131,7 @@ function DataInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataInfoRoute, params)
+      mkPermalinkLong(API.routes.client.dataInfoRoute, params)
     );
 
     setLastParams(params);

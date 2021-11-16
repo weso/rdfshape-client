@@ -10,8 +10,8 @@ import PropTypes from "prop-types";
 function EndpointInput(props) {
 
     const endpoints = [
-        {name: "wikidata", url: API.wikidataUrl },
-        {name: "dbpedia", url: API.dbpediaUrl },
+        {name: "wikidata", url: API.routes.utils.wikidataUrl },
+        {name: "dbpedia", url: API.routes.utils.dbpediaUrl },
     ];
 
     const dropDownItems = endpoints.map((endpoint,index) =>

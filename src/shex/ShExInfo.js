@@ -18,7 +18,7 @@ import {
   mkShExTabs,
   paramsFromStateShEx,
   shExParamsFromQueryParams,
-  updateStateShEx
+  updateStateShEx,
 } from "./ShEx";
 
 function ShExInfo(props) {
@@ -36,30 +36,24 @@ function ShExInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaInfo;
+  const url = API.routes.server.schemaInfo;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsShEx = {};
 
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
+      if (queryParams.schema) {
         const schemaParams = shExParamsFromQueryParams(queryParams);
         const finalSchema = updateStateShEx(schemaParams, shex) || shex;
         setShEx(finalSchema);
-        paramsShEx = finalSchema;
-      }
 
-      let params = {
-        ...paramsFromStateShEx(paramsShEx),
-        schemaEngine: "ShEx",
-      };
-      setParams(params);
-      setLastParams(params);
+        const params = paramsFromStateShEx(finalSchema);
+
+        setParams(params);
+        setLastParams(params);
+      } else {
+        setError("Could not parse URL data");
+      }
     }
   }, [props.location?.search]);
 
@@ -82,16 +76,14 @@ function ShExInfo(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      ...paramsFromStateShEx(shex),
-      schemaEngine: "ShEx",
-    });
+    setParams(paramsFromStateShEx(shex));
   }
 
   function postRequest(cb) {
     setLoading(true);
     setProgressPercent(20);
     const formData = params2Form(params);
+    formData.append("schemaEngine", "ShEx");
 
     axios
       .post(url, formData)
@@ -99,7 +91,7 @@ function ShExInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.shExInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shExInfoRoute, params));
         setProgressPercent(90);
         checkLinks();
         if (cb) cb();
@@ -114,10 +106,10 @@ function ShExInfo(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byTextSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byText
         : false;
 
     setDisabledLinks(disabled);
@@ -134,7 +126,7 @@ function ShExInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shExInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shExInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -142,7 +134,7 @@ function ShExInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shExInfoRoute, params)
+      mkPermalinkLong(API.routes.client.shExInfoRoute, params)
     );
 
     setLastParams(params);

@@ -42,7 +42,7 @@ function ShExVisualize(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaVisualize;
+  const url = API.routes.server.schemaVisualize;
 
   const minSvgZoom = minZoom;
   const maxSvgZoom = maxZoom;
@@ -119,8 +119,8 @@ function ShExVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.shExVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.shExVisualizeRouteRaw, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shExVisualizeRoute, params));
+        setEmbedLink(mkPermalinkLong(API.routes.client.shExVisualizeRouteRaw, params));
         setProgressPercent(90);
         checkLinks();
         if (cb) cb();
@@ -135,10 +135,10 @@ function ShExVisualize(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -155,7 +155,7 @@ function ShExVisualize(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shExVisualizeRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shExVisualizeRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -163,7 +163,7 @@ function ShExVisualize(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shExVisualizeRoute, params)
+      mkPermalinkLong(API.routes.client.shExVisualizeRoute, params)
     );
 
     setLastParams(params);

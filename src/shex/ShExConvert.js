@@ -24,7 +24,7 @@ import {
 
 function ShExConvert(props) {
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
-    API.defaultShExFormat
+    API.formats.defaultShex
   );
   const [shex, setShex] = useState(InitialShEx);
 
@@ -40,7 +40,7 @@ function ShExConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaConvert;
+  const url = API.routes.server.schemaConvert;
 
   function handleTargetSchemaFormatChange(value) {
     setTargetSchemaFormat(value);
@@ -114,7 +114,7 @@ function ShExConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.shExConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shExConvertRoute, params));
         setProgressPercent(90);
         checkLinks();
         if (cb) cb();
@@ -129,10 +129,10 @@ function ShExConvert(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -149,7 +149,7 @@ function ShExConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shExConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shExConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -157,7 +157,7 @@ function ShExConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shExConvertRoute, params)
+      mkPermalinkLong(API.routes.client.shExConvertRoute, params)
     );
 
     setLastParams(params);
@@ -184,7 +184,7 @@ function ShExConvert(props) {
               name="Target schema format"
               selectedFormat={targetSchemaFormat}
               handleFormatChange={handleTargetSchemaFormatChange}
-              urlFormats={API.shExFormats}
+              urlFormats={API.routes.server.shExFormats}
             />
             <hr />
             <Button

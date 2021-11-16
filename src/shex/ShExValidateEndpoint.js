@@ -49,7 +49,7 @@ function ShExValidateEndpoint(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaValidate;
+  const url = API.routes.server.schemaValidate;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -91,8 +91,8 @@ function ShExValidateEndpoint(props) {
         ...paramsFromStateShEx(paramsShEx),
         ...paramsFromStateShapemap(paramsShapeMap),
         endpoint: paramsEndpoint.endpoint || endpoint,
-        schemaEngine: "ShEx",
-        triggerMode: "shapeMap",
+        schemaEngine: API.engines.defaultShex,
+        triggerMode: API.triggerModes.shapeMap,
       };
 
       setParams(params);
@@ -140,7 +140,7 @@ function ShExValidateEndpoint(props) {
       ...paramsFromStateShapemap(shapeMap),
       endpoint,
       schemaEngine: "ShEx",
-      triggerMode: "shapeMap",
+      triggerMode: API.triggerModes.shapeMap,
     });
   }
 
@@ -156,7 +156,7 @@ function ShExValidateEndpoint(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.shExValidateEndpointRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shExValidateEndpointRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -174,11 +174,11 @@ function ShExValidateEndpoint(props) {
       endpoint.length +
         getShexText(shex).length +
         getShapeMapText(shapeMap).length >
-      API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource ||
-          shapeMap.activeSource === API.byFileSource
-        ? API.byFileSource
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile ||
+          shapeMap.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -195,7 +195,7 @@ function ShExValidateEndpoint(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shExValidateEndpointRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shExValidateEndpointRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -203,7 +203,7 @@ function ShExValidateEndpoint(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shExValidateEndpointRoute, params)
+      mkPermalinkLong(API.routes.client.shExValidateEndpointRoute, params)
     );
 
     setLastParams(params);

@@ -22,7 +22,7 @@ function InputEntity(props) {
 
   function findEntityLabel(entity, language) {
     axios
-      .get(API.wikidataEntityLabel, {
+      .get(API.routes.server.wikidataEntityLabel, {
         params: {
           wdEntity: entity,
           language: language,

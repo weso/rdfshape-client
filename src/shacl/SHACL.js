@@ -2,102 +2,71 @@ import React from "react";
 import API from "../API";
 import SelectSHACLEngine from "../components/SelectSHACLEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
-import { convertSourceSchema, convertTabSchema } from "../shex/ShEx";
 import SHACLTabs from "./SHACLTabs";
 
 export const InitialShacl = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultSHACLFormat,
-  engine: API.defaultSHACLEngine,
+  format: API.formats.defaultShacl,
+  engine: API.engines.defaultShacl,
+  inference: API.inferences.none,
   fromParams: false,
   codeMirror: null,
-  inference: "none",
 };
 
 export function updateStateShacl(params, shacl) {
   if (params["schema"]) {
+    const userSchema = params["schema"];
+    const schemaSource = params["schemaSource"] || API.sources.default;
+
     return {
       ...shacl,
-      activeSource: API.byTextSource,
-      textArea: params["schema"],
+      activeSource: schemaSource,
+      textArea:
+        schemaSource == API.sources.byText ? userSchema : shacl.textArea,
+      url: schemaSource == API.sources.byUrl ? userSchema : shacl.url,
+      file: schemaSource == API.sources.byFile ? userSchema : shacl.file,
       fromParams: true,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
-      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"]
-        ? params["schemaInference"]
-        : shacl.inference,
-    };
-  }
-  if (params["schemaUrl"]) {
-    return {
-      ...shacl,
-      activeSource: API.byUrlSource,
-      url: params["schemaUrl"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
-      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"]
-        ? params["schemaInference"]
-        : shacl.inference,
-    };
-  }
-  if (params["schemaFile"]) {
-    return {
-      ...shacl,
-      activeSource: API.byFileSource,
-      file: params["schemaFile"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shacl.format,
-      engine: params["schemaEngine"] ? params["schemaEngine"] : shacl.engine,
-      inference: params["schemaInference"]
-        ? params["schemaInference"]
-        : shacl.inference,
+      format: params["schemaFormat"] || shacl.format,
+      engine: params["schemaEngine"] || shacl.engine,
+      inference: params["schemaInference"] || shacl.inference,
     };
   }
   return shacl;
-}
-
-export function paramsFromStateShacl(state) {
-  const activeSource = state.activeSource;
-  const textArea = state.textArea;
-  const format = state.format;
-  const url = state.url;
-  const file = state.file;
-  const engine = state.engine;
-  const inference = state.inference;
-  let params = {};
-  params["activeSchemaSource"] = convertSourceSchema(activeSource);
-  params["schemaFormat"] = format;
-  params["schemaEngine"] = engine;
-  params["schemaInference"] = inference;
-  switch (activeSource) {
-    case API.byTextSource:
-      params["schema"] = textArea.trim();
-      break;
-    case API.byUrlSource:
-      params["schemaUrl"] = url.trim();
-      break;
-    case API.byFileSource:
-      params["schemaFile"] = file;
-      break;
-    default:
-  }
-  return params;
 }
 
 export function shaclParamsFromQueryParams(params) {
   let newParams = {};
   if (params.schema) newParams["schema"] = params.schema;
   if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
   if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
   if (params.schemaInference)
     newParams["schemaInference"] = params.schemaInference;
-  if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
   return newParams;
+}
+
+export function paramsFromStateShacl(shacl) {
+  let params = {};
+  params["schemaSource"] = shacl.activeSource;
+  params["schemaFormat"] = shacl.format;
+  params["schemaEngine"] = shacl.engine;
+  params["schemaInference"] = shacl.inference;
+
+  switch (shacl.activeSource) {
+    case API.sources.byText:
+      params["schema"] = shacl.textArea.trim();
+      break;
+    case API.sources.byUrl:
+      params["schema"] = shacl.url.trim();
+      break;
+    case API.sources.byFile:
+      params["schema"] = shacl.file;
+      break;
+    default:
+  }
+  return params;
 }
 
 export function mkShaclTabs(shacl, setShacl, name, subname) {
@@ -161,9 +130,9 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
 }
 
 export function getShaclText(shacl) {
-  if (shacl.activeSource === API.byTextSource) {
+  if (shacl.activeSource === API.sources.byText) {
     return encodeURI(shacl.textArea.trim());
-  } else if (shacl.activeSource === API.byUrlSource) {
+  } else if (shacl.activeSource === API.sources.byUrl) {
     return encodeURI(shacl.url.trim());
   }
   return "";

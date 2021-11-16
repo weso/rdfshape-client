@@ -64,7 +64,7 @@ function ResultShEx2XMI(props) {
           id="dataTabs"
           onSelect={handleTabChange}
         >
-          <Tab eventKey={API.xmiTab} title="XMI">
+          <Tab eventKey={API.tabs.xmi} title="XMI">
             {result.result && (
               <Code
                 value={result.result}
@@ -75,11 +75,11 @@ function ResultShEx2XMI(props) {
               />
             )}
             <details>
-              <summary>{API.responseSummaryText}</summary>
+              <summary>{API.texts.responseSummaryText}</summary>
               <PrintJson json={result} />
             </details>
           </Tab>
-          <Tab eventKey={API.umlTab} title="UML Diagram">
+          <Tab eventKey={API.tabs.uml} title="UML Diagram">
             <div id="umlcontainer">
               <div
                 id="umlcd"

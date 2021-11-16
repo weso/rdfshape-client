@@ -17,7 +17,7 @@ import { generateDownloadLink } from "./CytoVisualize";
 // Requests to this endpoint will redirect to the raw visualization of the data requested
 
 function CytoVisualizeRaw(props) {
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
   const cose = "cose";
   const circle = "circle";
   const layouts = [cose, circle];
@@ -60,7 +60,7 @@ function CytoVisualizeRaw(props) {
     if (params) {
       if (
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true) // Extra check for files
+        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
       ) {
         postConvert();
       } else {

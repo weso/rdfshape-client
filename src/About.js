@@ -10,8 +10,8 @@ function About() {
   const [status, setStatus] = useState({ msg: `Asking info to server` });
 
   useEffect(() => {
-    const url = API.healthServer;
-    setStatus({ msg: `Requesting server status to ${API.healthServer}` });
+    const url = API.routes.server.health;
+    setStatus({ msg: `Requesting server status to ${API.routes.server.health}` });
     axios
       .get(url)
       .then((response) => response.data)
@@ -20,7 +20,7 @@ function About() {
       })
       .catch((error) => {
         setStatus({
-          msg: `Server error: ${error}. Server address: ${API.healthServer}`,
+          msg: `Server error: ${error}. Server address: ${API.routes.server.health}`,
           error: error,
         });
       });
@@ -81,7 +81,7 @@ function About() {
       </ul>
       <details>
         <p>
-          Server: <code>{API.rootApi}</code>
+          Server: <code>{API.routes.server.root}</code>
         </p>
         <p>
           Server status: <code>{status.msg}</code>

@@ -7,7 +7,7 @@ function SelectSHACLEngine(props) {
     return (
         <SelectFormat handleFormatChange={props.handleSHACLEngineChange}
                       selectedFormat={props.selectedSHACLEngine}
-                      urlFormats={API.schemaSHACLEngines}
+                      urlFormats={API.routes.server.schemaSHACLEngines}
                       name={props.name} />
     );
 }

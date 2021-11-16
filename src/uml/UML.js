@@ -7,18 +7,18 @@ export const InitialUML = {
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultXMLFormat,
+  format: API.formats.xml,
   fromParams: false,
   codeMirror: null,
 };
 
 export function convertTabSchema(key) {
   switch (key) {
-    case API.byTextSource:
+    case API.sources.byText:
       return "#schemaTextArea";
-    case API.byFileSource:
+    case API.sources.byFile:
       return "#schemaFile";
-    case API.byUrlSource:
+    case API.sources.byUrl:
       return "#schemaUrl";
     default:
       console.info("Unknown schemaTab: " + key);
@@ -36,13 +36,13 @@ export function paramsFromStateUML(state) {
   params["activeSchemaSource"] = convertTabSchema(activeSource);
   params["schemaFormat"] = format;
   switch (activeSource) {
-    case API.byTextSource:
+    case API.sources.byText:
       params["schema"] = textArea;
       break;
-    case API.byUrlSource:
+    case API.sources.byUrl:
       params["schemaUrl"] = url;
       break;
-    case API.byFileSource:
+    case API.sources.byFile:
       params["schemaFile"] = file;
       break;
     default:
@@ -54,7 +54,7 @@ export function updateStateUML(params, xmi) {
   if (params["schema"]) {
     return {
       ...xmi,
-      activeSource: API.byTextSource,
+      activeSource: API.sources.byText,
       textArea: params["schema"],
       fromParams: true,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -63,7 +63,7 @@ export function updateStateUML(params, xmi) {
   if (params["schemaUrl"]) {
     return {
       ...xmi,
-      activeSource: API.byUrlSource,
+      activeSource: API.sources.byUrl,
       url: params["schemaUrl"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -72,7 +72,7 @@ export function updateStateUML(params, xmi) {
   if (params["schemaFile"]) {
     return {
       ...xmi,
-      activeSource: API.byFileSource,
+      activeSource: API.sources.byFile,
       file: params["schemaFile"],
       fromParams: false,
       format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
@@ -132,9 +132,9 @@ export function UMLParamsFromQueryParams(params) {
 }
 
 export function getUmlText(xmi) {
-  if (xmi.activeSource === API.byTextSource) {
+  if (xmi.activeSource === API.sources.byText) {
     return xmi.textArea;
-  } else if (xmi.activeSource === API.byUrlSource) {
+  } else if (xmi.activeSource === API.sources.byUrl) {
     return xmi.url;
   }
   return "";

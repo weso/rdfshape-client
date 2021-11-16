@@ -25,14 +25,14 @@ function WikidataExtract(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const url = API.dataExtract;
+    const url = API.routes.server.dataExtract;
     let params = {};
-    params["endpoint"] = API.wikidataUrl;
+    params["endpoint"] = API.routes.utils.wikidataUrl;
     if (entities.length > 0 && entities[0].uri) {
       const nodeSelector = entities[0].uri;
       params["nodeSelector"] = "<" + nodeSelector + ">";
       console.info(`Node selector: ${nodeSelector}`);
-      setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
+      setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
       let formData = params2Form(params);
       postConvert(url, formData);
     } else {

@@ -3,91 +3,83 @@ import API from "../API";
 import ShExTabs from "./ShExTabs";
 
 export const InitialShEx = {
-  activeSource: API.defaultSource,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultShExFormat,
+  format: API.formats.defaultShex,
+  engine: API.engines.defaultShex,
   fromParams: false,
   codeMirror: null,
 };
 
-export function convertSourceSchema(key) {
-  switch (key) {
-    case API.byTextSource:
-      return "#schemaTextArea";
-    case API.byFileSource:
-      return "#schemaFile";
-    case API.byUrlSource:
-      return "#schemaUrl";
-    default:
-      console.info(`Unknown schemaTab: ${key}`);
-      return key;
-  }
-}
-
-export function paramsFromStateShEx(state) {
-  const activeSource = state.activeSource;
-  const textArea = state.textArea;
-  const format = state.format;
-  const url = state.url;
-  const file = state.file;
-  let params = {};
-  params["activeSchemaSource"] = convertSourceSchema(activeSource);
-  params["schemaFormat"] = format;
-  switch (activeSource) {
-    case API.byTextSource:
-      params["schema"] = textArea.trim();
-      break;
-    case API.byUrlSource:
-      params["schemaUrl"] = url.trim();
-      break;
-    case API.byFileSource:
-      params["schemaFile"] = file;
-      break;
-    default:
-  }
-  return params;
-}
-
 export function updateStateShEx(params, shex) {
+  // Only update state if there is shex
   if (params["schema"]) {
+    // Get the raw data string introduced by the user
+    const userSchema = params["schema"];
+    // Get the schema source to be used: take it from params or resort to default
+    const schemaSource = params["schemaSource"] || API.sources.default;
+
+    // Compose new Schema State building from the old one
     return {
       ...shex,
-      activeSource: API.byTextSource,
-      textArea: params["schema"],
+      activeSource: schemaSource,
+      // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      textArea: schemaSource == API.sources.byText ? userSchema : shex.textArea,
+      url: schemaSource == API.sources.byUrl ? userSchema : shex.url,
+      file: schemaSource == API.sources.byFile ? userSchema : shex.file,
       fromParams: true,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
-    };
-  }
-  if (params["schemaUrl"]) {
-    return {
-      ...shex,
-      activeSource: API.byUrlSource,
-      url: params["schemaUrl"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
-    };
-  }
-  if (params["schemaFile"]) {
-    return {
-      ...shex,
-      activeSource: API.byFileSource,
-      file: params["schemaFile"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : shex.format,
+      format: params["schemaFormat"] || shex.format,
+      // Get the schema engine or leave it as is
+      engine: params["schemaEngine"] || shex.engine,
     };
   }
   return shex;
 }
 
+export function shExParamsFromQueryParams(params) {
+  let newParams = {};
+  if (params.schema) newParams["schema"] = params.schema;
+  if (params.schemaSource) newParams["schemaSource"] = params.schemaSource;
+  if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
+  if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
+  return newParams;
+}
+
+export function paramsFromStateShEx(shex) {
+  let params = {};
+  params["schemaSource"] = shex.activeSource;
+  params["schemaFormat"] = shex.format;
+  params["schemaEngine"] = shex.engine;
+
+  // Send the "schema" param to the server, that will use the "schemaSource" to know hot to treat the schema (raw, URL, file...)
+  switch (shex.activeSource) {
+    case API.sources.byText:
+      params["schema"] = shex.textArea.trim();
+      break;
+    case API.sources.byUrl:
+      params["schema"] = shex.url.trim();
+      break;
+    case API.sources.byFile:
+      params["schema"] = shex.file;
+      break;
+  }
+  return params;
+}
+
+export function getShexText(shex) {
+  if (shex.activeSource === API.sources.byText) {
+    return encodeURI(shex.textArea.trim());
+  } else if (shex.activeSource === API.sources.byUrl) {
+    return encodeURI(shex.url.trim());
+  }
+  return "";
+}
+
 export function mkShExTabs(shex, setShEx, name, subname) {
   function handleShExTabChange(value) {
     setShEx({ ...shex, activeSource: value });
-  }
-
-  function handleShExFormatChange(value) {
-    setShEx({ ...shex, format: value });
   }
 
   function handleShExByTextChange(value) {
@@ -101,6 +93,12 @@ export function mkShExTabs(shex, setShEx, name, subname) {
   function handleShExFileUpload(value) {
     setShEx({ ...shex, file: value });
   }
+
+  function handleShExFormatChange(value) {
+    setShEx({ ...shex, format: value });
+  }
+
+  console.log("MK: ", shex.activeSource);
 
   return (
     <ShExTabs
@@ -120,22 +118,4 @@ export function mkShExTabs(shex, setShEx, name, subname) {
       resetFromParams={() => setShEx({ ...shex, fromParams: false })}
     />
   );
-}
-
-export function shExParamsFromQueryParams(params) {
-  let newParams = {};
-  if (params.schema) newParams["schema"] = params.schema;
-  if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
-  if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
-  return newParams;
-}
-
-export function getShexText(shex) {
-  if (shex.activeSource === API.byTextSource) {
-    return encodeURI(shex.textArea.trim());
-  } else if (shex.activeSource === API.byUrlSource) {
-    return encodeURI(shex.url.trim());
-  }
-  return "";
 }

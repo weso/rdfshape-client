@@ -43,7 +43,7 @@ function DataQuery(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataQuery;
+  const url = API.routes.server.dataQuery;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -78,11 +78,11 @@ function DataQuery(props) {
     if (params) {
       const rdfDataPrensent =
         params.data &&
-        (params.dataSource == API.byFileSource ? params.data.name : true);
+        (params.dataSource == API.sources.byFile ? params.data.name : true);
 
       const sparqlQueryPresent =
         params.query &&
-        (params.querySource == API.byFileSource ? params.query.name : true);
+        (params.querySource == API.sources.byFile ? params.query.name : true);
 
       if (rdfDataPrensent && sparqlQueryPresent) {
         resetState();
@@ -113,7 +113,7 @@ function DataQuery(props) {
         setProgressPercent(70);
         setResult(data);
         setProgressPercent(80);
-        setPermalink(mkPermalinkLong(API.dataQueryRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
@@ -131,11 +131,11 @@ function DataQuery(props) {
   function checkLinks() {
     const disabled =
       getDataText(data).length + getQueryText(query).length >
-      API.byTextCharacterLimit
-        ? API.byTextSource
-        : data.activeSource === API.byFileSource ||
-          query.activeSource === API.byFileSource
-        ? API.byFileSource
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile ||
+          query.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -152,7 +152,7 @@ function DataQuery(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataQueryRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataQueryRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -160,7 +160,7 @@ function DataQuery(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataQueryRoute, params)
+      mkPermalinkLong(API.routes.client.dataQueryRoute, params)
     );
 
     setLastParams(params);

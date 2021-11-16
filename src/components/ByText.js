@@ -16,8 +16,8 @@ function ByText(props) {
   // Use a generic <Code> element with text by default
   let inputText;
 
-  switch (props.textFormat?.toUpperCase()) {
-    case API.turtleDataFormat:
+  switch (props.textFormat?.toLowerCase()) {
+    case API.formats.turtle.toLowerCase():
       inputText = (
         <TurtleForm
           onChange={props.handleByTextChange}
@@ -28,7 +28,7 @@ function ByText(props) {
       );
       break;
 
-    case API.shexcDataFormat:
+    case API.formats.shexc.toLowerCase():
       inputText = (
         <ShExForm
           onChange={props.handleByTextChange}

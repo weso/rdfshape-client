@@ -18,13 +18,14 @@ import {
   getShexText,
   InitialShEx,
   mkShExTabs,
+  paramsFromStateShEx,
   shExParamsFromQueryParams,
   updateStateShEx,
 } from "./ShEx";
 
 export default function ShEx2Shacl(props) {
   const [shex, setShEx] = useState(InitialShEx);
-  const [targetFormat, setTargetFormat] = useState(API.defaultSHACLFormat);
+  const [targetFormat, setTargetFormat] = useState(API.formats.defaultShacl);
 
   const [result, setResult] = useState("");
 
@@ -38,7 +39,7 @@ export default function ShEx2Shacl(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.schemaConvert;
+  const url = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -107,26 +108,15 @@ export default function ShEx2Shacl(props) {
   }
 
   function mkServerParams(shex, format) {
-    let params = {};
-    params["activeSchemaSource"] = convertSourceSchema(shex.activeSource);
-    params["schemaFormat"] = shex.format;
-    switch (shex.activeSource) {
-      case API.byTextSource:
-        params["schema"] = shex.textArea;
-        break;
-      case API.byUrlSource:
-        params["schemaUrl"] = shex.url;
-        break;
-      case API.byFileSource:
-        params["schemaFile"] = shex.file;
-        break;
-      default:
-    }
-
+    const params = {
+      ...paramsFromStateShEx(shex),
+      targetSchemaFormat: targetFormat,
+    };
+    // Change target format if needed
     if (format) {
       setTargetFormat(format);
-      params["targetSchemaFormat"] = format;
-    } else params["targetSchemaFormat"] = targetFormat;
+      params.targetSchemaFormat = format;
+    }
     return params;
   }
 
@@ -151,7 +141,7 @@ export default function ShEx2Shacl(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          mkPermalinkLong(API.shEx2ShaclRoute, {
+          mkPermalinkLong(API.routes.client.shEx2ShaclRoute, {
             schemaFormat: params.schemaFormat,
             targetSchemaFormat: params.targetSchemaFormat,
             schema: params.schema || undefined,
@@ -173,10 +163,10 @@ export default function ShEx2Shacl(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getShexText(shex).length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shex.activeSource === API.byFileSource
-        ? API.byFileSource
+      getShexText(shex).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shex.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -193,7 +183,7 @@ export default function ShEx2Shacl(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shEx2ShaclRoute, {
+        mkPermalinkLong(API.routes.client.shEx2ShaclRoute, {
           schemaFormat: lastParams.schemaFormat,
           targetSchemaFormat: lastParams.targetSchemaFormat,
           schema: lastParams.schema || undefined,
@@ -207,7 +197,7 @@ export default function ShEx2Shacl(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shEx2ShaclRoute, {
+      mkPermalinkLong(API.routes.client.shEx2ShaclRoute, {
         schemaFormat: params.schemaFormat,
         targetSchemaFormat: params.targetSchemaFormat,
         schema: params.schema || undefined,
@@ -241,7 +231,7 @@ export default function ShEx2Shacl(props) {
               defaultFormat="TURTLE"
               selectedFormat={targetFormat}
               handleFormatChange={(value) => setTargetFormat(value)}
-              urlFormats={API.shaclFormats}
+              urlFormats={API.routes.server.shaclFormats}
             />
 
             <hr />

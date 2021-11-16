@@ -27,7 +27,7 @@ function ResultQuery({ result: dataQueryResponse }) {
           condensed
         />
         <details>
-          <summary>{API.responseSummaryText}</summary>
+          <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={dataQueryResponse} />
         </details>
       </div>

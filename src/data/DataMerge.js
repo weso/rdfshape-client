@@ -27,7 +27,7 @@ function DataMerge(props) {
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [targetDataFormat, setTargetDataFormat] = useState(
-    API.defaultDataFormat
+    API.formats.defaultData
   );
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -37,7 +37,7 @@ function DataMerge(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
     setTargetDataFormat(value);
@@ -119,7 +119,7 @@ function DataMerge(props) {
       .then(async (data) => {
         setProgressPercent(75);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataMergeRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.dataMergeRoute, params));
         setProgressPercent(90);
         checkLinks();
         if (cb) cb();
@@ -138,10 +138,10 @@ function DataMerge(props) {
   function checkLinks() {
     const disabled =
       getDataText(data1).length + getDataText(data2).length >
-      API.byTextCharacterLimit
-        ? API.byTextSource
-        : data1.activeSource === API.byFileSource || data2.activeSource === API.byFileSource
-        ? API.byFileSource
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data1.activeSource === API.sources.byFile || data2.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -158,7 +158,7 @@ function DataMerge(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataMergeRoute, {
+        mkPermalinkLong(API.routes.client.dataMergeRoute, {
           compoundData: lastParams.compoundData,
           targetDataFormat,
         })
@@ -169,7 +169,7 @@ function DataMerge(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataMergeRoute, {
+      mkPermalinkLong(API.routes.client.dataMergeRoute, {
         compoundData: params.compoundData,
         targetDataFormat,
       })
@@ -201,7 +201,7 @@ function DataMerge(props) {
               name="Target data format"
               selectedFormat={targetDataFormat}
               handleFormatChange={handleTargetDataFormatChange}
-              urlFormats={API.dataFormatsOutput}
+              urlFormats={API.routes.server.dataFormatsOutput}
             />
             <Button
               id="submit"

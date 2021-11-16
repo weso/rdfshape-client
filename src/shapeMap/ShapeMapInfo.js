@@ -32,7 +32,7 @@ function ShapeMapInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.shapemapInfo;
+  const url = API.routes.server.shapemapInfo;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -56,7 +56,7 @@ function ShapeMapInfo(props) {
     if (params) {
       if (
         params.shapemap &&
-        (params.shapemapSource == API.byFileSource
+        (params.shapemapSource == API.sources.byFile
           ? params.shapemap.name
           : true) // Extra check for files
       ) {
@@ -87,7 +87,7 @@ function ShapeMapInfo(props) {
         setError(null);
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.shapemapInfoRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shapemapInfoRoute, params));
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -105,11 +105,11 @@ function ShapeMapInfo(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      shapemap.activeSource === API.byTextSource &&
-      shapemap.textArea.length > API.byTextCharacterLimit
-        ? API.byTextSource
-        : shapemap.activeSource === API.byFileSource
-        ? API.byFileSource
+      shapemap.activeSource === API.sources.byText &&
+      shapemap.textArea.length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shapemap.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -126,7 +126,7 @@ function ShapeMapInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shapemapInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shapemapInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -134,7 +134,7 @@ function ShapeMapInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shapemapInfoRoute, params)
+      mkPermalinkLong(API.routes.client.shapemapInfoRoute, params)
     );
 
     setLastParams(params);
