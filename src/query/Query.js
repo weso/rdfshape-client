@@ -15,11 +15,12 @@ export const InitialQuery = {
 
 export function updateStateQuery(params, query) {
   // Only update state if there is query
-  if (params["query"]) {
+  if (params[API.queryParameters.query.query]) {
     // Get the raw data string introduced by the user
-    const userData = params["query"];
+    const userData = params[API.queryParameters.query.query];
     // Get the query source to be used: take it from params or resort to default
-    const querySource = params["querySource"] || API.sources.default;
+    const querySource =
+      params[API.queryParameters.query.source] || API.sources.default;
 
     return {
       ...query,
@@ -33,29 +34,18 @@ export function updateStateQuery(params, query) {
   return query;
 }
 
-export function queryParamsFromQueryParams(params) {
-  // if (params["queryUrl"]) params["url"] = params["queryUrl"];
-  // return params;
-
-  let newParams = {};
-  if (params.query) newParams["query"] = params.query;
-  if (params.querySource) newParams["querySource"] = params.querySource;
-
-  return newParams;
-}
-
 export function paramsFromStateQuery(query) {
   let params = {};
-  params["querySource"] = query.activeSource;
+  params[API.queryParameters.query.source] = query.activeSource;
   switch (query.activeSource) {
     case API.sources.byText:
-      params["query"] = query.textArea.trim();
+      params[API.queryParameters.query.query] = query.textArea.trim();
       break;
     case API.sources.byUrl:
-      params["query"] = query.url.trim();
+      params[API.queryParameters.query.query] = query.url.trim();
       break;
     case API.sources.byFile:
-      params["query"] = query.file;
+      params[API.queryParameters.query.query] = query.file;
       break;
     default:
   }

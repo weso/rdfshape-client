@@ -1,28 +1,26 @@
 import PropTypes from "prop-types";
 import React from "react";
 import API from "../API";
-import InputTabs from "../components/InputTabs";
+import InputTabsWithFormat from "../components/InputTabsWithFormat";
 
-function UMLTabs(props) {
-  const umlForm = null;
+function ShexTabs(props) {
   return (
     <div>
-      <InputTabs
-        name={props.name}
+      <InputTabsWithFormat
+        nameInputTab={props.name}
         activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
         textAreaValue={props.textAreaValue}
-        byTextPlaceholder={API.texts.placeholders.xmi}
+        byTextPlaceholder={API.texts.placeholders.shex}
         handleByTextChange={props.handleByTextChange}
         setCodeMirror={props.setCodeMirror}
-        inputForm={umlForm}
-        handleUrlChange={props.handleXmiUrlChange}
+        handleUrlChange={props.handleShExUrlChange}
         urlValue={props.urlValue}
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        mode={props.selectedFormat}
-        handleFormatChange={props.handleFormatChange}
+        selectedFormat={props.selectedFormat}
+        handleFormatChange={props.handleShExFormatChange}
         urlFormats={API.routes.server.shExFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
@@ -31,7 +29,7 @@ function UMLTabs(props) {
   );
 }
 
-UMLTabs.propTypes = {
+ShexTabs.propTypes = {
   activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
@@ -39,11 +37,11 @@ UMLTabs.propTypes = {
   setCodeMirror: PropTypes.func.isRequired,
 
   urlValue: PropTypes.string.isRequired,
-  handleXmiUrlChange: PropTypes.func.isRequired,
+  handleShExUrlChange: PropTypes.func.isRequired,
 
   handleFileUpload: PropTypes.func.isRequired,
   selectedFormat: PropTypes.string.isRequired,
-  //   handleShExFormatChange: PropTypes.func.isRequired,
+  handleShExFormatChange: PropTypes.func.isRequired,
 
   /** Flag to signal if values come from Params */
   fromParams: PropTypes.bool.isRequired,
@@ -52,10 +50,11 @@ UMLTabs.propTypes = {
   resetFromParams: PropTypes.func.isRequired,
 };
 
-UMLTabs.defaultProps = {
-  name: API.texts.dataTabs.umlHeader,
+ShexTabs.defaultProps = {
+  name: API.texts.dataTabs.shexHeader,
   subname: "",
+  selectedFormat: API.formats.defaultShex,
   activeSource: API.sources.default,
 };
 
-export default UMLTabs;
+export default ShexTabs;

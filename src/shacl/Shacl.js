@@ -1,8 +1,8 @@
 import React from "react";
 import API from "../API";
-import SelectSHACLEngine from "../components/SelectSHACLEngine";
+import SelectShaclEngine from "../components/SelectShaclEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
-import SHACLTabs from "./SHACLTabs";
+import ShaclTabs from "./ShaclTabs";
 
 export const InitialShacl = {
   activeSource: API.sources.default,
@@ -12,14 +12,16 @@ export const InitialShacl = {
   format: API.formats.defaultShacl,
   engine: API.engines.defaultShacl,
   inference: API.inferences.none,
+  triggerMode: API.triggerModes.targetDecls,
   fromParams: false,
   codeMirror: null,
 };
 
 export function updateStateShacl(params, shacl) {
-  if (params["schema"]) {
-    const userSchema = params["schema"];
-    const schemaSource = params["schemaSource"] || API.sources.default;
+  if (params[API.queryParameters.schema.schema]) {
+    const userSchema = params[API.queryParameters.schema.schema];
+    const schemaSource =
+      params[API.queryParameters.schema.source] || API.sources.default;
 
     return {
       ...shacl,
@@ -29,45 +31,38 @@ export function updateStateShacl(params, shacl) {
       url: schemaSource == API.sources.byUrl ? userSchema : shacl.url,
       file: schemaSource == API.sources.byFile ? userSchema : shacl.file,
       fromParams: true,
-      format: params["schemaFormat"] || shacl.format,
-      engine: params["schemaEngine"] || shacl.engine,
-      inference: params["schemaInference"] || shacl.inference,
+      format: params[API.queryParameters.schema.format] || shacl.format,
+      engine: params[API.queryParameters.schema.engine] || shacl.engine,
+      inference:
+        params[API.queryParameters.schema.inference] || shacl.inference,
     };
   }
   return shacl;
 }
 
-export function shaclParamsFromQueryParams(params) {
-  let newParams = {};
-  if (params.schema) newParams["schema"] = params.schema;
-  if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaEngine) newParams["schemaEngine"] = params.schemaEngine;
-  if (params.schemaInference)
-    newParams["schemaInference"] = params.schemaInference;
-  return newParams;
-}
-
 export function paramsFromStateShacl(shacl) {
   let params = {};
-  params["schemaSource"] = shacl.activeSource;
-  params["schemaFormat"] = shacl.format;
-  params["schemaEngine"] = shacl.engine;
-  params["schemaInference"] = shacl.inference;
+  params[API.queryParameters.schema.source] = shacl.activeSource;
+  params[API.queryParameters.schema.format] = shacl.format;
+  params[API.queryParameters.schema.engine] = shacl.engine;
+  params[API.queryParameters.schema.inference] = shacl.inference;
+  params[API.queryParameters.schema.triggerMode] = shacl.triggerMode;
 
   switch (shacl.activeSource) {
     case API.sources.byText:
-      params["schema"] = shacl.textArea.trim();
+      params[API.queryParameters.schema.schema] = shacl.textArea.trim();
       break;
     case API.sources.byUrl:
-      params["schema"] = shacl.url.trim();
+      params[API.queryParameters.schema.schema] = shacl.url.trim();
       break;
     case API.sources.byFile:
-      params["schema"] = shacl.file;
+      params[API.queryParameters.schema.schema] = shacl.file;
       break;
     default:
   }
   return params;
 }
+
 
 export function mkShaclTabs(shacl, setShacl, name, subname) {
   function handleShaclTabChange(value) {
@@ -96,7 +91,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
 
   return (
     <React.Fragment>
-      <SHACLTabs
+      <ShaclTabs
         name={name}
         subname={subname}
         activeSource={shacl.activeSource}
@@ -112,7 +107,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />
-      <SelectSHACLEngine
+      <SelectShaclEngine
         handleSHACLEngineChange={handleSHACLEngineChange}
         selectedSHACLEngine={shacl.engine}
         fromParams={shacl.fromParams}

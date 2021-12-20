@@ -4,24 +4,20 @@ import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
 
 function DataTabs(props) {
-
   return (
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name}
         activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
-        byTextName={props.subname || ""}
+        byTextName={props.subname}
         textAreaValue={props.textAreaValue}
-        byTextPlaceholder="RDF data..."
+        byTextPlaceholder={API.texts.placeholders.rdf}
         handleByTextChange={props.handleByTextChange}
-        byUrlName="URL data"
         handleUrlChange={props.handleDataUrlChange}
         urlValue={props.urlValue}
-        byURLPlaceholder="http://..."
-        byFileName="RDF File"
+        byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        nameFormat="Data format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleDataFormatChange}
         urlFormats={API.routes.server.dataFormatsInput}
@@ -50,7 +46,9 @@ DataTabs.propTypes = {
 };
 
 DataTabs.defaultProps = {
-  name: "",
+  name: API.texts.dataTabs.dataHeader,
+  subname: "",
+  selectedFormat: API.formats.defaultData,
   activeSource: API.sources.default,
 };
 

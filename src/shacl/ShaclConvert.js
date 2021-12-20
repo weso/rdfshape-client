@@ -11,20 +11,21 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultShacl2ShEx from "../results/ResultShacl2ShEx";
+import ResultSHACLConvert from "../results/ResultShaclConvert";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
   mkShaclTabs,
   paramsFromStateShacl,
-  shaclParamsFromQueryParams,
-  updateStateShacl,
-} from "./SHACL";
+  updateStateShacl
+} from "./Shacl";
 
-export default function SHACL2ShEx(props) {
+function ShaclConvert(props) {
+  const [targetSchemaFormat, setTargetSchemaFormat] = useState(
+    API.formats.defaultShacl
+  );
   const [shacl, setShacl] = useState(InitialShacl);
-  const [targetFormat, setTargetFormat] = useState(API.formats.defaultShex);
 
   const [result, setResult] = useState("");
 
@@ -40,95 +41,67 @@ export default function SHACL2ShEx(props) {
 
   const url = API.routes.server.schemaConvert;
 
+  function handleTargetSchemaFormatChange(value) {
+    setTargetSchemaFormat(value);
+  }
+
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsShacl = {};
 
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
-        const schemaParams = shaclParamsFromQueryParams(queryParams);
-        const finalSchema = updateStateShacl(schemaParams, shacl) || shacl;
-
-        paramsShacl = finalSchema;
+      if (queryParams[API.queryParameters.schema.schema]) {
+        const finalSchema = updateStateShacl(queryParams, shacl) || shacl;
         setShacl(finalSchema);
+
+        if (queryParams[API.queryParameters.schema.targetFormat]) {
+          setTargetSchemaFormat(
+            queryParams[API.queryParameters.schema.targetFormat]
+          );
+        }
+
+        const params = {
+          ...paramsFromStateShacl(finalSchema),
+          [API.queryParameters.schema.targetFormat]:
+            queryParams[API.queryParameters.schema.targetFormat] ||
+            targetSchemaFormat,
+        };
+
+        setParams(params);
+        setLastParams(params);
+      } else {
+        setError(API.texts.errorParsingUrl);
       }
-
-      if (queryParams.targetSchemaFormat)
-        setTargetFormat(queryParams.targetSchemaFormat);
-
-      let params = {
-        ...mkServerParams(
-          paramsShacl,
-          queryParams.targetSchemaFormat || "TURTLE"
-        ),
-        // schemaEngine: "SHACLex",
-        targetSchemaEngine: "ShEx",
-      };
-
-      setParams(params);
-      setLastParams(params);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.schema ||
-        params.schemaUrl ||
-        (params.schemaFile && params.schemaFile.name)
+        params[API.queryParameters.schema.schema] &&
+        (params[API.queryParameters.schema.source] == API.sources.byFile
+          ? params[API.queryParameters.schema.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
-        postRequest();
+        postConvert();
       } else {
-        setError("No SHACL schema provided");
+        setError(API.texts.noProvidedSchema);
       }
       window.scrollTo(0, 0);
     }
   }, [params]);
 
-  function targetFormatMode(targetFormat) {
-    switch (targetFormat.toUpperCase()) {
-      case "TURTLE":
-        return "turtle";
-      case "RDF/XML":
-        return "xml";
-      case "TRIG":
-        return "xml";
-      case "JSON-LD":
-        return "javascript";
-      default:
-        return "turtle";
-    }
-  }
-
-  function mkServerParams(shacl, format) {
-    const params = {
-      ...paramsFromStateShacl(shacl),
-      targetSchemaFormat: targetFormat,
-    };
-    // Change target format if needed
-    if (format) {
-      setTargetFormat(format);
-      params.targetSchemaFormat = format;
-    }
-    return params;
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
+
     setParams({
-      ...mkServerParams(shacl),
-      // schemaEngine: "SHACLex",
-      targetSchemaEngine: "ShEx",
+      ...paramsFromStateShacl(shacl),
+      [API.queryParameters.schema.targetFormat]: targetSchemaFormat,
     });
   }
 
-  function postRequest(cb) {
+  function postConvert(cb) {
     setLoading(true);
     setProgressPercent(20);
     const formData = params2Form(params);
@@ -140,15 +113,7 @@ export default function SHACL2ShEx(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
-            schemaFormat: params.schemaFormat,
-            targetSchemaFormat: params.targetSchemaFormat,
-            schemaEngine: params.schemaEngine,
-            schemaInference: params.schemaInference,
-            schema: params.schema || undefined,
-            schemaUrl: params.schemaUrl || undefined,
-            schemaFile: params.schemaFile || undefined,
-          })
+          mkPermalinkLong(API.routes.client.shaclConvertRoute, params)
         );
         checkLinks();
         setProgressPercent(90);
@@ -184,15 +149,7 @@ export default function SHACL2ShEx(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
-          schemaFormat: lastParams.schemaFormat,
-          targetSchemaFormat: lastParams.targetSchemaFormat,
-          schemaEngine: lastParams.schemaEngine,
-          schemaInference: lastParams.schemaInference,
-          schema: lastParams.schema || undefined,
-          schemaUrl: lastParams.schemaUrl || undefined,
-          schemaFile: lastParams.schemaFile || undefined,
-        })
+        mkPermalinkLong(API.routes.client.shaclConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -200,15 +157,7 @@ export default function SHACL2ShEx(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.shacl2ShExRoute, {
-        schemaFormat: params.schemaFormat,
-        targetSchemaFormat: params.targetSchemaFormat,
-        schemaEngine: params.schemaEngine,
-        schemaInference: params.schemaInference,
-        schema: params.schema || undefined,
-        schemaUrl: params.schemaUrl || undefined,
-        schemaFile: params.schemaFile || undefined,
-      })
+      mkPermalinkLong(API.routes.client.shaclConvertRoute, params)
     );
 
     setLastParams(params);
@@ -224,21 +173,19 @@ export default function SHACL2ShEx(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Convert SHACL to ShEx</h1>
+        <h1>{API.texts.pageHeaders.shaclConversion}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkShaclTabs(shacl, setShacl, "SHACL Input")}
+            {mkShaclTabs(shacl, setShacl)}
             <hr />
             <SelectFormat
-              name="ShEx format"
-              defaultFormat="TURTLE"
-              selectedFormat={targetFormat}
-              handleFormatChange={(value) => setTargetFormat(value)}
-              urlFormats={API.routes.server.shExFormats}
+              name="Target schema format"
+              selectedFormat={targetSchemaFormat}
+              handleFormatChange={handleTargetSchemaFormatChange}
+              urlFormats={API.routes.server.shaclFormats}
             />
-
             <hr />
             <Button
               variant="primary"
@@ -246,7 +193,7 @@ export default function SHACL2ShEx(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert to ShEx
+              Convert
             </Button>
           </Form>
         </Col>
@@ -262,9 +209,8 @@ export default function SHACL2ShEx(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShacl2ShEx
+              <ResultSHACLConvert
                 result={result}
-                mode={targetFormatMode(targetFormat)}
                 permalink={permalink}
                 disabled={disabledLinks}
               />
@@ -272,10 +218,14 @@ export default function SHACL2ShEx(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Conversion results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.conversionResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>
     </Container>
   );
 }
+
+export default ShaclConvert;

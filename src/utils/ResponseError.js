@@ -1,6 +1,5 @@
-import React from "react";
-import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
+import React from "react";
 import API from "../API";
 import environmentConfiguration from "../EnvironmentConfig";
 
@@ -8,7 +7,9 @@ import environmentConfiguration from "../EnvironmentConfig";
 function ResponseError({ errorOrigin, errorMessage }) {
   return (
     <details>
-      <summary>{`${API.texts.errorResponsePrefix} from ${errorOrigin}`} </summary>
+      <summary>
+        {`${API.texts.errorResponsePrefix} from ${errorOrigin}`}{" "}
+      </summary>
       {errorMessage && (
         <>
           <hr />
@@ -30,6 +31,6 @@ export default ResponseError;
 export const mkError = (error, url = environmentConfiguration.apiHost) => {
   // Parse the server response for a custom error message, else use axios error message
   const errorMessage =
-    error.response?.data?.error || error.message || "Network error";
+    error.response?.data?.error || error.message || API.texts.networkError;
   return <ResponseError errorOrigin={url} errorMessage={errorMessage} />;
 };

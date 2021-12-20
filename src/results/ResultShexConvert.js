@@ -6,37 +6,37 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 
-function ResultDataConvert({
-  result: dataConvertResponse, // Request successful response
+function ResultShExConvert({
+  result: shexConvertResponse,
   permalink,
-  fromParams,
-  resetFromParams,
   disabled,
 }) {
   // Destructure request response items for later usage
   const {
     message,
-    data: {
+    schema: {
+      schema: inputSchema,
       format: { name: inputFormatName },
+      engine: inputEngine,
     },
     result: {
-      data: dataRaw,
+      schema: outputSchema,
       format: { name: outputFormatName },
+      engine: outputEngine,
     },
-  } = dataConvertResponse;
+  } = shexConvertResponse;
 
-  if (dataConvertResponse) {
+  if (shexConvertResponse) {
     return (
       <div>
         {/* Alert */}
         <Alert variant="success">{message}</Alert>
-        {/* Output data */}
-        {dataRaw && outputFormatName && (
+        {/* Output schema */}
+        {outputSchema && outputFormatName && (
+          // TODO: output schema should be in Yashe too
           <Code
-            value={dataRaw}
+            value={outputSchema}
             mode={format2mode(outputFormatName)}
-            fromParams={fromParams}
-            resetFromParams={resetFromParams}
             readOnly={true}
           />
         )}
@@ -44,12 +44,13 @@ function ResultDataConvert({
         <details>
           <summary>{API.texts.operationInformation}</summary>
           <ul>
+            <li>{`Engine conversion: ${inputEngine} => ${outputEngine}`}</li>
             <li>{`Format conversion: ${inputFormatName} => ${outputFormatName}`}</li>
           </ul>
         </details>
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={dataConvertResponse} />
+          <PrintJson json={shexConvertResponse} />
         </details>
         {permalink && (
           <Fragment>
@@ -62,4 +63,4 @@ function ResultDataConvert({
   }
 }
 
-export default ResultDataConvert;
+export default ResultShExConvert;

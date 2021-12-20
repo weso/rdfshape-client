@@ -15,8 +15,8 @@ import InputShapeLabel from "../components/InputShapeLabel";
 import InputWikidataSchema from "../components/InputWikidataSchema";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultValidate from "../results/ResultValidate";
-import { paramsFromStateShEx } from "../shex/ShEx";
-import ShExTabs from "../shex/ShExTabs";
+import { paramsFromStateShex } from "../shex/Shex";
+import ShExTabs from "../shex/ShexTabs";
 import { mkError } from "../utils/ResponseError";
 
 function WikidataValidate(props) {
@@ -108,7 +108,7 @@ function WikidataValidate(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const paramsShEx = paramsFromStateShEx(shEx);
+    const paramsShEx = paramsFromStateShex(shEx);
     const shapeMap = shapeMapFromEntities(entities, shapeLabel);
     const paramsEndpoint = { endpoint: API.routes.utils.wikidataUrl };
     let params = { ...paramsEndpoint, ...paramsShEx };

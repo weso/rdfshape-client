@@ -4,19 +4,15 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import { mkError } from "../utils/ResponseError";
-import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
-import { InitialData, paramsFromStateData, updateStateData } from "./Data";
-import { generateDownloadLink } from "./DataVisualize";
-import { convertDot } from "./dotUtils";
+import { InitialData, updateStateData } from "./Data";
+import { processDotData } from "./DataVisualizeGraphviz";
 
 function DataMergeVisualizeRaw(props) {
   const [data1, setData1] = useState(InitialData);
   const [data2, setData2] = useState(InitialData);
   const [params, setParams] = useState(null);
-  const [targetDataFormat] = useState("dot");
-  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [visualization, setVisualization] = useState(null);
@@ -24,68 +20,63 @@ function DataMergeVisualizeRaw(props) {
 
   const url = API.routes.server.dataConvert;
 
-  const minSvgZoom = minZoom;
-  const maxSvgZoom = maxZoom;
-  const svgZoomStep = stepZoom;
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.compoundData) {
+      if (queryParams[API.queryParameters.data.compound]) {
         try {
-          const contents = JSON.parse(queryParams.compoundData);
+          const contents = JSON.parse(
+            queryParams[API.queryParameters.data.compound]
+          );
+          setData1(updateStateData(contents[0], data1) || data1);
+          setData2(updateStateData(contents[1], data2) || data2);
 
-          const newData1 = updateStateData(contents[0], data1) || data1;
-          const newData2 = updateStateData(contents[1], data2) || data2;
-
-          setData1(newData1);
-          setData2(newData2);
-
-          setParams({
-            ...queryParams,
-            targetGraphicalFormat,
-          });
+          setParams(queryParams);
         } catch {
-          setError("Could not parse URL data");
+          setError(API.texts.errorParsingUrl);
         }
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
 
   useEffect(() => {
-    if (params && params.compoundData) {
-      const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.dataFile)) {
+    if (params && params[API.queryParameters.data.compound]) {
+      const parameters = JSON.parse(params[API.queryParameters.data.compound]);
+      if (
+        parameters.some(
+          (p) => p[API.queryParameters.data.source] == API.sources.byFile
+        )
+      ) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
+          (p) =>
+            p[API.queryParameters.data.data] &&
+            (p[API.queryParameters.data.source] == API.sources.byFile
+              ? params[API.queryParameters.data.data].name
+              : true) // Extra check for files
         )
       ) {
         postVisualize();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
   }, [params]);
 
-  function processData(dot, targetFormat) {
-    convertDot(dot, "dot", targetFormat, setError, setVisualization);
-  }
-
   function postVisualize(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "dot");
+    formData.append(API.queryParameters.data.targetFormat, API.formats.dot);
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
         const dot = data.result.data; // Get the DOT string from the axios data object
-        processData(dot, targetGraphicalFormat);
+        processDotData(dot, setError, setVisualization);
         if (cb) cb();
       })
       .catch(function(error) {
@@ -112,7 +103,7 @@ function DataMergeVisualizeRaw(props) {
               >
                 <VisualizationLinks
                   styles={{ position: "fixed" }}
-                  generateDownloadLink={generateDownloadLink(visualization)}
+                  generateDownloadLink={() => {}} // generateDownloadLink(visualization)}
                 />
 
                 <ShowVisualization data={visualization.data} />

@@ -24,7 +24,16 @@ a.dropdown-item {
 .yashe .yashe_buttons,
 .yasqe .yasqe_buttons {
   top: unset !important;
-  bottom: 5px !important;
+  bottom: 2px !important;
+  right: 2px !important;
+}
+
+.relative {
+  position: relative !important;
+}
+
+.absolute {
+  position: absolute !important;
 }
 
 .form-group {
@@ -98,6 +107,10 @@ a.dropdown-item {
   margin: auto 5px auto 10px;
 }
 
+.pointable {
+  cursor: pointer;
+}
+
 .white-icon {
   fill: white;
   transform: scale(1.5);
@@ -148,6 +161,14 @@ table td {
 
 .height-100 {
   height: 100%;
+}
+
+.width-100v {
+  width: 100vw;
+}
+
+.height-100v {
+  height: 100vh;
 }
 
 .bold {
@@ -328,4 +349,92 @@ table td {
 
 .prefixMapTable {
   padding-top: 12px;
+}
+
+.visualization-links {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  display: flex;
+  z-index: 10;
+}
+
+button.discrete {
+  display: contents !important;
+  background: inherit !important;
+  border: 0 !important;
+}
+
+/* Results table, etc. */
+
+table :is(tr, td).table-item {
+  transition: background-color 0.5s ease;
+}
+
+table :is(th.expand-cell-header, td.expand-cell) {
+  cursor: pointer;
+}
+table th.expand-cell-header {
+  width: min-content !important;
+}
+
+table :is(tr, td).table-item.green {
+  background-color: rgba(0, 235, 0, 0.15);
+}
+
+table :is(tr, td).table-item.red {
+  background-color: rgba(235, 0, 0, 0.2);
+}
+
+table :is(tr, td).table-item.green.expanded-parent {
+  font-style: italic;
+  background-color: rgba(0, 235, 0, 0.35);
+}
+
+table :is(tr, td).table-item.red.expanded-parent {
+  font-style: italic;
+  background-color: rgba(235, 0, 0, 0.35);
+}
+
+table :is(tr, td).table-item.expanded-child {
+  /* outline: 1px solid black; */
+}
+
+li.size-per-page-dropdown {
+  cursor: pointer;
+}
+
+li.size-per-page-dropdown > a {
+  text-decoration: none;
+}
+
+.table-options {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.table-options :first-child {
+  margin-right: 5px;
+  margin-left: 0px;
+}
+
+.table-options :last-child {
+  margin-right: 0px;
+}
+
+.table-options > * {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+label.search-label {
+  flex-grow: 1;
+}
+
+button .btn.btn-export-csv {
+  margin: 5px auto;
+  display: inline-flex !important;
+  padding: 5px;
 }

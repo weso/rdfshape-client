@@ -10,10 +10,13 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
-import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import { mkError } from "../utils/ResponseError";
-import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
+import {
+  visualizationMaxZoom,
+  visualizationMinZoom,
+  visualizationStepZoom
+} from "../utils/Utils";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
@@ -23,16 +26,13 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
-import { generateDownloadLink } from "./DataVisualize";
-import { convertDot } from "./dotUtils";
+import { processDotData } from "./DataVisualizeGraphviz";
 
 function DataMergeVisualize(props) {
   const [data1, setData1] = useState(InitialData);
   const [data2, setData2] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
-  const [targetDataFormat] = useState("dot");
-  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
@@ -45,50 +45,49 @@ function DataMergeVisualize(props) {
 
   const url = API.routes.server.dataConvert;
 
-  const minSvgZoom = minZoom;
-  const maxSvgZoom = maxZoom;
-  const svgZoomStep = stepZoom;
-
+  const minSvgZoom = visualizationMinZoom;
+  const maxSvgZoom = visualizationMaxZoom;
+  const svgZoomStep = visualizationStepZoom;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.compoundData) {
+      if (queryParams[API.queryParameters.data.compound]) {
         try {
-          const contents = JSON.parse(queryParams.compoundData);
+          const contents = JSON.parse(
+            queryParams[API.queryParameters.data.compound]
+          );
 
-          const newData1 = updateStateData(contents[0], data1) || data1;
-          const newData2 = updateStateData(contents[1], data2) || data2;
+          setData1(updateStateData(contents[0], data1) || data1);
+          setData2(updateStateData(contents[1], data2) || data2);
 
-          setData1(newData1);
-          setData2(newData2);
-
-          setParams({
-            ...queryParams,
-            targetGraphicalFormat
-          });
-          setLastParams({
-            ...queryParams,
-            targetGraphFormat:
-              queryParams.targetGraphFormat || targetGraphicalFormat,
-          });
+          setParams(queryParams);
+          setLastParams(queryParams);
         } catch {
-          setError("Could not parse URL data");
+          setError(API.texts.errorParsingUrl);
         }
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
 
   useEffect(() => {
-    if (params && params.compoundData) {
-      const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.dataFile)) {
+    if (params && params[API.queryParameters.data.compound]) {
+      const parameters = JSON.parse(params[API.queryParameters.data.compound]);
+      if (
+        parameters.some(
+          (p) => p[API.queryParameters.data.source] == API.sources.byFile
+        )
+      ) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
+          (p) =>
+            p[API.queryParameters.data.data] &&
+            (p[API.queryParameters.data.source] == API.sources.byFile
+              ? params[API.queryParameters.data.data].name
+              : true) // Extra check for files
         )
       ) {
         // Check if some data was uploaded
@@ -96,27 +95,19 @@ function DataMergeVisualize(props) {
         setUpHistory();
         postVisualize();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
   }, [params]);
 
-  function mergeParams(params1, params2) {
-    return { compoundData: JSON.stringify([params1, params2]) };
-  }
-
-  function processData(dot, targetFormat) {
-    convertDot(dot, "dot", targetFormat, setError, setVisualization);
-  }
-
   async function handleSubmit(event) {
     event.preventDefault();
-    let params1 = paramsFromStateData(data1);
-    let params2 = paramsFromStateData(data2);
     setParams({
-      ...mergeParams(params1, params2),
-      targetGraphicalFormat,
+      [API.queryParameters.data.compound]: JSON.stringify([
+        paramsFromStateData(data1),
+        paramsFromStateData(data2),
+      ]),
     });
   }
 
@@ -124,7 +115,7 @@ function DataMergeVisualize(props) {
     setLoading(true);
     setProgressPercent(15);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "DOT"); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
+    formData.append(API.queryParameters.data.targetFormat, API.formats.dot); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
 
     setProgressPercent(35);
     axios
@@ -133,9 +124,13 @@ function DataMergeVisualize(props) {
       .then(async (data) => {
         setProgressPercent(70);
         const dot = data.result.data; // Get the DOT string from the axios data object
-        processData(dot, targetGraphicalFormat);
-        setPermalink(mkPermalinkLong(API.routes.client.dataMergeVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.routes.client.dataMergeVisualizeRouteRaw, params));
+        processDotData(dot, setError, setVisualization);
+        setPermalink(
+          mkPermalinkLong(API.routes.client.dataMergeVisualizeRoute, params)
+        );
+        setEmbedLink(
+          mkPermalinkLong(API.routes.client.dataMergeVisualizeRouteRaw, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -156,7 +151,8 @@ function DataMergeVisualize(props) {
       getDataText(data1).length + getDataText(data2).length >
       API.limits.byTextCharacterLimit
         ? API.sources.byText
-        : data1.activeSource === API.sources.byFile || data2.activeSource === API.sources.byFile
+        : data1.activeSource === API.sources.byFile ||
+          data2.activeSource === API.sources.byFile
         ? API.sources.byText
         : false;
 
@@ -209,14 +205,14 @@ function DataMergeVisualize(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Merge & visualize RDF data</h1>
+        <h1>{API.texts.pageHeaders.dataMergeVisualize}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data1, setData1, "RDF Input 1")}
+            {mkDataTabs(data1, setData1, "RDF input (1)")}
             <hr />
-            {mkDataTabs(data2, setData2, "RDF Input 2")}
+            {mkDataTabs(data2, setData2, "RDF input (2)")}
             <hr />
             <Button
               id="submit"
@@ -275,7 +271,7 @@ function DataMergeVisualize(props) {
                   className="width-100 height-100 border"
                 >
                   <VisualizationLinks
-                    generateDownloadLink={generateDownloadLink(visualization)}
+                    generateDownloadLink={() => {}} // generateDownloadLink(visualization)}
                     embedLink={embedLink}
                     disabled={disabledLinks}
                   />
@@ -295,7 +291,7 @@ function DataMergeVisualize(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Merge results will appear here</Alert>
+            <Alert variant="info">{API.texts.mergeResultsWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

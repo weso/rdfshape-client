@@ -8,7 +8,6 @@ function InputTabsWithFormat(props) {
   function handleTextChange(value) {
     props.handleByTextChange(value);
   }
-
   return (
     <div>
       <InputTabs
@@ -102,6 +101,7 @@ InputTabsWithFormat.defaultProps = {
   byUrlName: "",
   byUrlPlaceholder: "",
   byFileName: "",
+  nameFormat: API.texts.dataTabs.formatHeader,
 };
 
 export default InputTabsWithFormat;

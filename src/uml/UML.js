@@ -2,6 +2,7 @@ import React from "react";
 import API from "../API";
 import UMLTabs from "./UMLTabs";
 
+// UML data representation (XMI)
 export const InitialUML = {
   activeSource: API.defaultTab,
   textArea: "",
@@ -12,130 +13,90 @@ export const InitialUML = {
   codeMirror: null,
 };
 
-export function convertTabSchema(key) {
-  switch (key) {
-    case API.sources.byText:
-      return "#schemaTextArea";
-    case API.sources.byFile:
-      return "#schemaFile";
-    case API.sources.byUrl:
-      return "#schemaUrl";
-    default:
-      console.info("Unknown schemaTab: " + key);
-      return key;
+export function updateStateUml(params, uml) {
+  if (params[API.queryParameters.uml.uml]) {
+    const userUml = params[API.queryParameters.uml.uml];
+    const umlSource =
+      params[API.queryParameters.uml.source] || API.sources.default;
+    return {
+      ...uml,
+      activeSource: umlSource,
+      textArea: umlSource == API.sources.byText ? userUml : uml.textArea,
+      url: umlSource == API.sources.byUrl ? userUml : uml.url,
+      file: umlSource == API.sources.byFile ? userUml : uml.file,
+      fromParams: true,
+      format: params[API.queryParameters.uml.format] || uml.format,
+    };
   }
+
+  return uml;
 }
 
-export function paramsFromStateUML(state) {
-  const activeSource = state.activeSource;
-  const textArea = state.textArea;
-  const format = state.format;
-  const url = state.url;
-  const file = state.file;
+export function paramsFromStateUML(uml) {
   let params = {};
-  params["activeSchemaSource"] = convertTabSchema(activeSource);
-  params["schemaFormat"] = format;
-  switch (activeSource) {
+  params[API.queryParameters.uml.source] = uml.activeSource;
+  params[API.queryParameters.uml.format] = uml.format;
+
+  switch (uml.activeSource) {
     case API.sources.byText:
-      params["schema"] = textArea;
+      params[API.queryParameters.uml.uml] = uml.textArea.trim();
       break;
     case API.sources.byUrl:
-      params["schemaUrl"] = url;
+      params[API.queryParameters.uml.uml] = uml.url.trim();
       break;
     case API.sources.byFile:
-      params["schemaFile"] = file;
+      params[API.queryParameters.uml.uml] = uml.file;
       break;
-    default:
   }
   return params;
 }
 
-export function updateStateUML(params, xmi) {
-  if (params["schema"]) {
-    return {
-      ...xmi,
-      activeSource: API.sources.byText,
-      textArea: params["schema"],
-      fromParams: true,
-      format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
-    };
-  }
-  if (params["schemaUrl"]) {
-    return {
-      ...xmi,
-      activeSource: API.sources.byUrl,
-      url: params["schemaUrl"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
-    };
-  }
-  if (params["schemaFile"]) {
-    return {
-      ...xmi,
-      activeSource: API.sources.byFile,
-      file: params["schemaFile"],
-      fromParams: false,
-      format: params["schemaFormat"] ? params["schemaFormat"] : xmi.format,
-    };
-  }
-  return xmi;
-}
-
-export function mkUMLTabs(xmi, setXmi, name, subname) {
+export function mkUMLTabs(uml, setUml, name, subname) {
   function handleXmiTabChange(value) {
-    setXmi({ ...xmi, activeSource: value });
+    setUml({ ...uml, activeSource: value });
   }
 
   function handleXmiFormatChange(value) {
-    setXmi({ ...xmi, format: value });
+    setUml({ ...uml, format: value });
   }
 
   function handleXmiByTextChange(value) {
-    setXmi({ ...xmi, textArea: value });
+    setUml({ ...uml, textArea: value });
   }
 
   function handleXmiUrlChange(value) {
-    setXmi({ ...xmi, url: value });
+    setUml({ ...uml, url: value });
   }
 
   function handleXmiFileUpload(value) {
-    setXmi({ ...xmi, file: value });
+    setUml({ ...uml, file: value });
   }
 
   return (
     <UMLTabs
       name={name}
       subname={subname}
-      activeSource={xmi.activeSource}
+      activeSource={uml.activeSource}
       handleTabChange={handleXmiTabChange}
-      textAreaValue={xmi.textArea}
+      textAreaValue={uml.textArea}
       handleByTextChange={handleXmiByTextChange}
-      urlValue={xmi.url}
+      urlValue={uml.url}
       handleXmiUrlChange={handleXmiUrlChange}
       handleFileUpload={handleXmiFileUpload}
-      selectedFormat={xmi.format}
+      selectedFormat={uml.format}
       handleFormatChange={handleXmiFormatChange}
-      setCodeMirror={(cm) => setXmi({ ...xmi, codeMirror: cm })}
-      fromParams={xmi.fromParams}
-      resetFromParams={() => setXmi({ ...xmi, fromParams: false })}
+      setCodeMirror={(cm) => setUml({ ...uml, codeMirror: cm })}
+      fromParams={uml.fromParams}
+      resetFromParams={() => setUml({ ...uml, fromParams: false })}
     />
   );
 }
 
-export function UMLParamsFromQueryParams(params) {
-  let newParams = {};
-  if (params.schema) newParams["schema"] = params.schema;
-  if (params.schemaFormat) newParams["schemaFormat"] = params.schemaFormat;
-  if (params.schemaUrl) newParams["schemaUrl"] = params.schemaUrl;
-  if (params.schemaFile) newParams["schemaFile"] = params.schemaFile;
-  return newParams;
-}
-
-export function getUmlText(xmi) {
-  if (xmi.activeSource === API.sources.byText) {
-    return xmi.textArea;
-  } else if (xmi.activeSource === API.sources.byUrl) {
-    return xmi.url;
+export function getUmlText(uml) {
+  if (uml.activeSource === API.sources.byText) {
+    return uml.textArea;
+  } else if (uml.activeSource === API.sources.byUrl) {
+    return uml.url;
   }
   return "";
 }

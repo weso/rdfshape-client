@@ -9,24 +9,19 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultShExConvert from "../results/ResultShExConvert";
+import ResultShExInfo from "../results/ResultShexInfo";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
-} from "./ShEx";
+  InitialShex,
+  mkShexTabs,
+  paramsFromStateShex,
+  updateStateShex
+} from "./Shex";
 
-function ShExConvert(props) {
-  const [targetSchemaFormat, setTargetSchemaFormat] = useState(
-    API.formats.defaultShex
-  );
-  const [shex, setShex] = useState(InitialShEx);
+function ShexInfo(props) {
+  const [shex, setShEx] = useState(InitialShex);
 
   const [result, setResult] = useState("");
 
@@ -40,55 +35,39 @@ function ShExConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.schemaConvert;
-
-  function handleTargetSchemaFormatChange(value) {
-    setTargetSchemaFormat(value);
-  }
+  const url = API.routes.server.schemaInfo;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsShEx = {};
 
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
-        const schemaParams = shExParamsFromQueryParams(queryParams);
-        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
-        setShex(finalSchema);
-        paramsShEx = finalSchema;
+      if (queryParams[API.queryParameters.schema.schema]) {
+        const finalSchema = updateStateShex(queryParams, shex) || shex;
+        setShEx(finalSchema);
+
+        const params = mkParams(finalSchema);
+
+        setParams(params);
+        setLastParams(params);
+      } else {
+        setError(API.texts.errorParsingUrl);
       }
-
-      if (queryParams.targetSchemaFormat)
-        setTargetSchemaFormat(queryParams.targetSchemaFormat);
-
-      let params = {
-        ...paramsFromStateShEx(paramsShEx),
-        schemaEngine: "ShEx",
-        targetSchemaFormat:
-          queryParams.targetSchemaFormat || targetSchemaFormat,
-      };
-
-      setParams(params);
-      setLastParams(params);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.schema ||
-        params.schemaUrl ||
-        (params.schemaFile && params.schemaFile.name)
+        params[API.queryParameters.schema.schema] &&
+        (params[API.queryParameters.schema.source] == API.sources.byFile
+          ? params[API.queryParameters.schema.schema].name
+          : true)
       ) {
         resetState();
         setUpHistory();
-        postConvert();
+        postRequest();
       } else {
-        setError("No ShEx schema provided");
+        setError(API.texts.noProvidedSchema);
       }
       window.scrollTo(0, 0);
     }
@@ -96,14 +75,16 @@ function ShExConvert(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      ...paramsFromStateShEx(shex),
-      schemaEngine: "ShEx",
-      targetSchemaFormat,
-    });
+    setParams(mkParams());
   }
 
-  function postConvert(cb) {
+  function mkParams(shexParams = shex) {
+    return {
+      ...paramsFromStateShex(shexParams),
+    };
+  }
+
+  function postRequest(cb) {
     setLoading(true);
     setProgressPercent(20);
     const formData = params2Form(params);
@@ -114,7 +95,7 @@ function ShExConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.shExConvertRoute, params));
+        setPermalink(mkPermalinkLong(API.routes.client.shexInfoRoute, params));
         setProgressPercent(90);
         checkLinks();
         if (cb) cb();
@@ -132,7 +113,7 @@ function ShExConvert(props) {
       getShexText(shex).length > API.limits.byTextCharacterLimit
         ? API.sources.byText
         : shex.activeSource === API.sources.byFile
-        ? API.sources.byFile
+        ? API.sources.byText
         : false;
 
     setDisabledLinks(disabled);
@@ -149,7 +130,7 @@ function ShExConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.shExConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shexInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -157,7 +138,7 @@ function ShExConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.shExConvertRoute, params)
+      mkPermalinkLong(API.routes.client.shexInfoRoute, params)
     );
 
     setLastParams(params);
@@ -173,19 +154,12 @@ function ShExConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>ShEx: Convert ShEx schemas</h1>
+        <h1>{API.texts.pageHeaders.shexInfo}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkShExTabs(shex, setShex, "ShEx Input")}
-            <hr />
-            <SelectFormat
-              name="Target schema format"
-              selectedFormat={targetSchemaFormat}
-              handleFormatChange={handleTargetSchemaFormatChange}
-              urlFormats={API.routes.server.shExFormats}
-            />
+            {mkShexTabs(shex, setShEx)}
             <hr />
             <Button
               variant="primary"
@@ -193,7 +167,7 @@ function ShExConvert(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert
+              Info about ShEx schema
             </Button>
           </Form>
         </Col>
@@ -209,7 +183,7 @@ function ShExConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExConvert
+              <ResultShExInfo
                 result={result}
                 permalink={permalink}
                 disabled={disabledLinks}
@@ -218,7 +192,7 @@ function ShExConvert(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Conversion results will appear here</Alert>
+            <Alert variant="info">{API.texts.schemaInfoWillAppearHere}</Alert>
           </Col>
         )}
       </Row>
@@ -226,4 +200,4 @@ function ShExConvert(props) {
   );
 }
 
-export default ShExConvert;
+export default ShexInfo;

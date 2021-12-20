@@ -1,3 +1,4 @@
+import "codemirror/addon/display/placeholder";
 import Yate from "perfectkb-yate";
 import "perfectkb-yate/dist/yate.css";
 import PropTypes from "prop-types";
@@ -11,12 +12,13 @@ function TurtleForm(props) {
     if (!yate) {
       const options = {
         ...props.options,
-        placeholder: props.placeholder,
+        autoCloseTags: true,
         start: { line: 0 },
       };
+
       const y = Yate.fromTextArea(textAreaRef.current, options);
+      y.setOption("placeholder", "My Placeholder");
       y.on("change", (cm, change) => {
-        // setQuery(cm.getValue())
         props.onChange(cm.getValue(), y);
       });
       y.setValue(props.value);
@@ -47,17 +49,19 @@ function TurtleForm(props) {
 
   return (
     <div>
-      <textarea id={"Turtle-TextArea"} ref={textAreaRef} />
+      <textarea
+        id={"Turtle-TextArea"}
+        ref={textAreaRef}
+        placeholder={props.options.placeholder}
+      />
     </div>
   );
 }
 
 TurtleForm.propTypes = {
-  //    id: PropTypes.string.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  //    options: PropTypes.object ,
   resetFromParams: PropTypes.func.isRequired,
   fromParams: PropTypes.bool.isRequired,
 };

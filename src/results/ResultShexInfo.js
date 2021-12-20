@@ -8,7 +8,7 @@ import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns } from "../utils/Utils";
 
 function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
-  // Destructure request response items for later usage
+  // Destructure request response items for later use
   const {
     message,
     schema,

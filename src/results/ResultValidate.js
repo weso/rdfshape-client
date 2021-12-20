@@ -1,84 +1,85 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
+import { equalsIgnoreCase } from "../utils/Utils";
 
-const nonConformant = "nonconformant";
+export const conformant = "conformant"; // Status of conformant nodes
+export const nonConformant = "nonconformant"; // Status of non-conformant nodes
 
-function ResultValidate(props) {
-  const result = props.result;
+function ResultSchemaValidate({
+  result: schemaValidateResponse, // Request successful response
+  permalink,
+  disabled,
+}) {
+  const {
+    message,
+    data,
+    schema,
+    trigger,
+    result: {
+      shapeMap: resultsMap,
+      resultErrors,
+      nodesPrefixMap,
+      shapesPrefixMap,
+    },
+  } = schemaValidateResponse;
 
-  const getNonConformant = (nodes) => {
-    if (!nodes) return [];
-    else {
-      const statuses = nodes.filter((node) => node.status === nonConformant);
-      return statuses;
-    }
-  };
+  // Store the resulting nodes in state, plus the invalid ones
+  const [nodes] = useState(resultsMap);
+  const [invalidNodes, setInvalidNodes] = useState([]);
 
-  let msg;
-  if (result === "") {
-    msg = null;
-  } else if (result.error) {
-    msg = (
-      <div>
-        <Alert variant="danger">Error: {result.error}</Alert>
-      </div>
+  // Update invalid nodes on node changes
+  useEffect(() => {
+    const nonConformantNodes = nodes.filter((node) =>
+      equalsIgnoreCase(node.status, nonConformant)
     );
-  } else {
-    msg = (
-      <div>
-        {!Array.isArray(result.shapeMap) ? (
-          <Alert variant="danger">{result.message}</Alert>
-        ) : (
-          <Fragment>
-            {result.errors.length > 0 ? (
-              <Alert variant="danger">
-                Partially invalid data: check the details of each node to learn
-                more
-              </Alert>
-            ) : result.shapeMap.length === 0 ? (
-              <Alert variant="warning">
-                Validation was successful but no results were obtained, check if
-                the input data is coherent
-              </Alert>
-            ) : getNonConformant(result.shapeMap).length > 0 ? (
-              <Alert variant="warning">
-                Partially invalid data: check the details of each node to learn
-                more
-              </Alert>
-            ) : (
-              result.message && (
-                <Alert variant="success">{result.message} </Alert>
-              )
-            )}
+    setInvalidNodes(nonConformantNodes);
+  }, [nodes]);
 
-            {props.permalink && (
-              <Fragment>
-                <Permalink url={props.permalink} disabled={props.disabled} />
-                <hr />
-              </Fragment>
-            )}
-            {result.shapeMap && result.shapeMap.length > 0 && (
-              <ShowShapeMap
-                shapeMap={result.shapeMap}
-                nodesPrefixMap={result.nodesPrefixMap}
-                shapesPrefixMap={result.shapesPrefixMap}
-              />
-            )}
+  if (schemaValidateResponse) {
+    return (
+      <div>
+        {/* Place an alert depending on the validation errors */}
+        {!nodes?.length ? ( // No results but the server returns a successful code
+          <Alert variant="warning">{API.texts.validationResults.noData}</Alert>
+        ) : invalidNodes.length == 0 ? ( // No invalid nodes among the results
+          <Alert variant="success">
+            {API.texts.validationResults.allValid}
+          </Alert>
+        ) : invalidNodes.length == nodes.length ? ( // All invalid nodes
+          <Alert variant="danger">
+            {API.texts.validationResults.noneValid}
+          </Alert>
+        ) : (
+          // Some invalid nodes
+          <Alert variant="warning">
+            {API.texts.validationResults.someValid}
+          </Alert>
+        )}
+        {permalink && (
+          <Fragment>
+            <Permalink url={permalink} disabled={disabled} />
+            <hr />
           </Fragment>
         )}
+        {nodes?.length && (
+          <ShowShapeMap
+            shapeMap={resultsMap}
+            nodesPrefixMap={nodesPrefixMap}
+            shapesPrefixMap={shapesPrefixMap}
+          />
+        )}
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={result} />
+          <PrintJson json={schemaValidateResponse} />
         </details>
       </div>
     );
   }
-
-  return <div>{msg}</div>;
 }
 
-export default ResultValidate;
+export default ResultSchemaValidate;

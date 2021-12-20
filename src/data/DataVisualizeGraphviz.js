@@ -10,61 +10,57 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
-import format from "xml-formatter";
 import API from "../API";
-import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
-import ResponseError, { mkError } from "../utils/ResponseError";
-import { maxZoom, minZoom, stepZoom } from "../utils/Utils";
-import ShowVisualization from "../visualization/ShowVisualization";
-import VisualizationLinks from "../visualization/VisualizationLinks";
+import ResultDataVisualize from "../results/ResultDataVisualize";
+import { mkError } from "../utils/ResponseError";
+import {
+  visualizationMaxZoom,
+  visualizationMinZoom,
+  visualizationStepZoom
+} from "../utils/Utils";
+import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
 
-function DataVisualize(props) {
+function DataVisualizeGraphviz(props) {
   const [data, setData] = useState(InitialData);
+
+  const [result, setResult] = useState({});
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
-  const [targetGraphicalFormat] = useState(API.formats.defaultGraphical);
   const [visualization, setVisualization] = useState(null);
-  const [svgZoom, setSvgZoom] = useState(1);
+  const [zoom, setZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
   const [embedLink, setEmbedLink] = useState(null);
   const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.routes.server.dataConvert;
 
-  const minSvgZoom = minZoom;
-  const maxSvgZoom = maxZoom;
-  const svgZoomStep = stepZoom;
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         setData(finalData);
 
-        const params = {
-          ...paramsFromStateData(finalData),
-          targetGraphicalFormat,
-        };
+        const params = paramsFromStateData(finalData);
 
         setParams(params);
         setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
@@ -72,14 +68,16 @@ function DataVisualize(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data &&
-        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postVisualize();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
@@ -87,26 +85,33 @@ function DataVisualize(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      ...paramsFromStateData(data),
-      targetGraphicalFormat,
-    });
+    setParams(paramsFromStateData(data));
   }
 
   function postVisualize(cb) {
     setLoading(true);
     const formData = params2Form(params);
-    formData.append("targetDataFormat", "DOT"); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
+
+    // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
+    formData.append(API.queryParameters.data.targetFormat, API.formats.dot);
     setProgressPercent(20);
     axios
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
+        setResult(data);
         const dot = data.result.data; // Get the DOT string from the axios data object
         setProgressPercent(70);
-        processData(dot, targetGraphicalFormat);
-        setPermalink(mkPermalinkLong(API.routes.client.dataVisualizeRoute, params));
-        setEmbedLink(mkPermalinkLong(API.routes.client.dataVisualizeRouteRaw, params));
+        processDotData(dot, setError, setVisualization);
+        setPermalink(
+          mkPermalinkLong(API.routes.client.dataVisualizeGraphvizRoute, params)
+        );
+        setEmbedLink(
+          mkPermalinkLong(
+            API.routes.client.dataVisualizeGraphvizRouteRaw,
+            params
+          )
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -119,10 +124,6 @@ function DataVisualize(props) {
         setLoading(false);
         window.scrollTo(0, 0);
       });
-  }
-
-  function processData(dot, targetFormat) {
-    convertDot(dot, "dot", targetFormat, setError, setVisualization);
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -139,11 +140,17 @@ function DataVisualize(props) {
 
   function zoomSvg(zoomIn) {
     if (zoomIn) {
-      const zoom = Math.min(maxSvgZoom, svgZoom + svgZoomStep);
-      setSvgZoom(zoom);
+      const new_zoom = Math.min(
+        visualizationMaxZoom,
+        zoom + visualizationStepZoom
+      );
+      setZoom(new_zoom);
     } else {
-      const zoom = Math.max(minSvgZoom, svgZoom - svgZoomStep);
-      setSvgZoom(zoom);
+      const new_zoom = Math.max(
+        visualizationMinZoom,
+        zoom - visualizationStepZoom
+      );
+      setZoom(new_zoom);
     }
   }
 
@@ -158,7 +165,10 @@ function DataVisualize(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.dataVisualizeRoute, lastParams)
+        mkPermalinkLong(
+          API.routes.client.dataVisualizeGraphvizRoute,
+          lastParams
+        )
       );
     }
     // Change current url for shareable links
@@ -166,7 +176,7 @@ function DataVisualize(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.dataVisualizeRoute, params)
+      mkPermalinkLong(API.routes.client.dataVisualizeGraphvizRoute, params)
     );
 
     setLastParams(params);
@@ -174,7 +184,7 @@ function DataVisualize(props) {
 
   function resetState() {
     setVisualization(null);
-    setSvgZoom(1);
+    setZoom(1);
     setPermalink(null);
     setEmbedLink(null);
     setError(null);
@@ -184,12 +194,12 @@ function DataVisualize(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Visualize RDF data</h1>
+        <h1>{API.texts.pageHeaders.dataVisualization}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form className={"width-100"} onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <hr />
             <Button
               variant="primary"
@@ -214,7 +224,7 @@ function DataVisualize(props) {
                         onClick={() => zoomSvg(false)}
                         className="btn-zoom"
                         variant="secondary"
-                        disabled={svgZoom <= minSvgZoom}
+                        disabled={zoom <= visualizationMinZoom}
                       >
                         <ZoomOutIcon className="white-icon" />
                       </Button>
@@ -223,7 +233,7 @@ function DataVisualize(props) {
                         style={{ marginLeft: "1px" }}
                         className="btn-zoom"
                         variant="secondary"
-                        disabled={svgZoom >= maxSvgZoom}
+                        disabled={zoom >= visualizationMaxZoom}
                       >
                         <ZoomInIcon className="white-icon" />
                       </Button>
@@ -241,32 +251,23 @@ function DataVisualize(props) {
               ) : error ? (
                 <Alert variant="danger">{error}</Alert>
               ) : visualization && visualization.data ? (
-                <div
-                  style={{ position: "relative" }}
-                  className="width-100 height-100 border"
-                >
-                  <VisualizationLinks
-                    generateDownloadLink={generateDownloadLink(visualization)}
-                    embedLink={embedLink}
-                    disabled={disabledLinks}
-                  />
-
-                  <div
-                    style={{ overflow: "auto" }}
-                    className={"width-100 height-100"}
-                  >
-                    <ShowVisualization
-                      data={visualization.data}
-                      zoom={svgZoom}
-                    />
-                  </div>
-                </div>
+                <ResultDataVisualize
+                  result={result}
+                  data={visualization.data}
+                  type={visualizationTypes.svgObject}
+                  raw={false}
+                  zoom={zoom}
+                  embedLink={embedLink}
+                  disabledLinks={disabledLinks}
+                />
               ) : null}
             </Fragment>
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Visualizations will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.visualizationsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>
@@ -274,53 +275,8 @@ function DataVisualize(props) {
   );
 }
 
-// Receives a visualization
-// Returns a function that returns the dowload link to the visualization
-// Depends on the visualization type (SVG, PNG, textual...)
-export const generateDownloadLink = ({ data }) => {
-  if (!data) return;
+export function processDotData(dot, setError, setVisualization) {
+  convertDot(dot, "dot", API.formats.svg, setError, setVisualization);
+}
 
-  const visualizationType = Object.getPrototypeOf(data).toString();
-  switch (visualizationType) {
-    // SVG: data contains the SVG outer HTML
-    case "[object SVGSVGElement]":
-      return () => ({
-        link: URL.createObjectURL(
-          new Blob([data.outerHTML], {
-            type: "image/svg+xml;charset=utf-8",
-          })
-        ),
-        type: "svg",
-      });
-
-    // Image: data contains the image location
-    case "[object HTMLImageElement]":
-      return () => ({
-        link: data.src,
-        type: "png",
-      });
-
-    // JSON:
-    case "[object Object]":
-      return () => ({
-        link: URL.createObjectURL(
-          new Blob([JSON.stringify(data, null, 2)], {
-            type: "application/json;charset=utf-8",
-          })
-        ),
-        type: "json",
-      });
-    // DOT, PS (String)
-    default:
-      return () => ({
-        link: URL.createObjectURL(
-          new Blob([format(data)], {
-            type: "application/xml;charset=utf-8",
-          })
-        ),
-        type: "xml",
-      });
-  }
-};
-
-export default DataVisualize;
+export default DataVisualizeGraphviz;

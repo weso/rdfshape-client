@@ -1,0 +1,18 @@
+{
+  // https://stackoverflow.com/a/48073761/9744696
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug app (firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "pathMappings": [
+        {
+          "url": "http://localhost:3000/",
+          "path": "${workspaceFolder}/"
+        }
+      ]
+    }
+  ]
+}

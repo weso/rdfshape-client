@@ -3,7 +3,7 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import API from "../API";
 import TurtleForm from "../data/TurtleForm";
-import ShExForm from "../shex/ShExForm";
+import ShexForm from "../shex/ShexForm";
 import { format2mode } from "../utils/Utils";
 import Code from "./Code";
 
@@ -24,18 +24,20 @@ function ByText(props) {
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
+          options={{ placeholder: props.placeholder, readonly: props.readonly }}
         />
       );
       break;
 
     case API.formats.shexc.toLowerCase():
       inputText = (
-        <ShExForm
+        <ShexForm
           onChange={props.handleByTextChange}
           setCodeMirror={props.setCodeMirror}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
+          options={{ placeholder: props.placeholder, readonly: props.readonly }}
         />
       );
       break;
@@ -50,7 +52,7 @@ function ByText(props) {
           onChange={handleChange}
           setCodeMirror={props.setCodeMirror}
           placeholder={props.placeholder}
-          readonly="false"
+          readonly={props.readonly}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
         />
@@ -76,10 +78,12 @@ ByText.propTypes = {
   importForm: PropTypes.element,
   resetFromParams: PropTypes.func.isRequired,
   fromParams: PropTypes.bool.isRequired,
+  readonly: PropTypes.bool,
 };
 
 ByText.defaultProps = {
-  placeholder: "",
+  placeholder: "...",
+  readonly: false,
 };
 
 export default ByText;

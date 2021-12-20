@@ -16,8 +16,7 @@ import {
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
-  queryParamsFromQueryParams,
-  updateStateQuery,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { mkError } from "../utils/ResponseError";
@@ -26,19 +25,21 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "./Data";
 
 function DataQuery(props) {
   const [data, setData] = useState(InitialData);
+  const [query, setQuery] = useState(InitialQuery);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [result, setResult] = useState(null);
-  const [query, setQuery] = useState(InitialQuery);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState("");
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
@@ -50,16 +51,15 @@ function DataQuery(props) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsQuery = {};
-      if (queryParams.data) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         paramsData = finalData;
         setData(finalData);
       }
 
-      if (queryParams.query) {
-        const queryDataParams = queryParamsFromQueryParams(queryParams);
-        const finalQuery = updateStateQuery(queryDataParams, query) || query;
+      if (queryParams[API.queryParameters.query.query]) {
+        const finalQuery = updateStateQuery(queryParams, query) || query;
         paramsQuery = finalQuery;
         setQuery(finalQuery);
       }
@@ -76,22 +76,26 @@ function DataQuery(props) {
 
   useEffect(() => {
     if (params) {
-      const rdfDataPrensent =
-        params.data &&
-        (params.dataSource == API.sources.byFile ? params.data.name : true);
+      const rdfDataPresent =
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true);
 
-      const sparqlQueryPresent =
-        params.query &&
-        (params.querySource == API.sources.byFile ? params.query.name : true);
+      const queryPresent =
+        params[API.queryParameters.query.query] &&
+        (params[API.queryParameters.query.source] == API.sources.byFile
+          ? params[API.queryParameters.query.query].name
+          : true);
 
-      if (rdfDataPrensent && sparqlQueryPresent) {
+      if (rdfDataPresent && queryPresent) {
         resetState();
         setUpHistory();
         postQuery();
-      } else if (!rdfDataPrensent) {
-        setError("No RDF data provided");
-      } else if (!sparqlQueryPresent) {
-        setError("No query provided");
+      } else if (!rdfDataPresent) {
+        setError(API.texts.noProvidedRdf);
+      } else if (!queryPresent) {
+        setError(API.texts.noProvidedQuery);
       }
       window.scrollTo(0, 0);
     }
@@ -176,13 +180,13 @@ function DataQuery(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Data Query</h1>
+        <h1>{API.texts.pageHeaders.dataQuery}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
-            {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
+            {mkDataTabs(data, setData)}
+            {mkQueryTabs(query, setQuery)}
             <hr />
             <Button
               variant="primary"
@@ -218,7 +222,7 @@ function DataQuery(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Query results will appear here</Alert>
+            <Alert variant="info">{API.texts.queryResultsWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

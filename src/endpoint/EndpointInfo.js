@@ -28,27 +28,31 @@ function EndpointInfo(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.endpoint) {
+      if (queryParams[API.queryParameters.endpoint.endpoint]) {
         // Update form input with queried endpoint
-        setEndpoint(queryParams.endpoint);
+        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
 
         // Update inner state and perform query
-        setParams({ endpoint: queryParams.endpoint });
-        setLastParams({ endpoint: queryParams.endpoint });
+        const params = {
+          [API.queryParameters.endpoint.endpoint]:
+            queryParams[API.queryParameters.endpoint.endpoint],
+        };
+        setParams(params);
+        setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
-      if (params.endpoint) {
+      if (params[API.queryParameters.endpoint.endpoint]) {
         resetState();
         setUpHistory();
         postEndpointInfo();
       } else {
-        setError("No endpoint provided");
+        setError(API.texts.noProvidedEndpoint);
       }
     }
   }, [params]);
@@ -63,7 +67,7 @@ function EndpointInfo(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ endpoint: endpoint.trim() });
+    setParams({ [API.queryParameters.endpoint.endpoint]: endpoint.trim() });
   }
 
   function postEndpointInfo() {
@@ -77,7 +81,9 @@ function EndpointInfo(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.endpointInfoRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
+        );
         setProgressPercent(100);
       })
       .catch(function(error) {
@@ -120,7 +126,7 @@ function EndpointInfo(props) {
 
   return (
     <Container fluid={true}>
-      <h1>Endpoint Info</h1>
+      <h1>{API.texts.pageHeaders.endpointInfo}</h1>
       <Form id="common-endpoints" onSubmit={handleSubmit}>
         <EndpointInput
           value={endpoint}

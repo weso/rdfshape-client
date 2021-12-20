@@ -11,14 +11,13 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
-import ResponseError, { mkError } from "../utils/ResponseError";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "./Data";
 
 function DataInfo(props) {
@@ -41,9 +40,8 @@ function DataInfo(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         setData(finalData);
 
         const params = paramsFromStateData(finalData);
@@ -51,7 +49,7 @@ function DataInfo(props) {
         setParams(params);
         setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
@@ -59,14 +57,16 @@ function DataInfo(props) {
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.data &&
-        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postDataInfo();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
@@ -147,12 +147,12 @@ function DataInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>RDF Data info</h1>
+        <h1>{API.texts.pageHeaders.dataInfo}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <hr />
             <Button
               id="submit"
@@ -161,7 +161,7 @@ function DataInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Info about data
+              Analyze
             </Button>
           </Form>
         </Col>
@@ -192,7 +192,7 @@ function DataInfo(props) {
           </Fragment>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">{API.texts.dataInfoWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

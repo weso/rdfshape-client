@@ -1,27 +1,25 @@
+import "codemirror/addon/display/placeholder";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
 import Yashe from "yashe/dist/yashe.bundled.min";
 import "yashe/dist/yashe.min.css";
 
-function ShExForm(props) {
+function ShexForm(props) {
   const [yashe, setYashe] = useState(null);
   const textAreaRef = useRef(null);
 
   useEffect(() => {
+    const options = {
+      ...props.options,
+      start: { line: 0 },
+    };
     if (!yashe) {
-      const options = {
-        placeholder: props.placeholder,
-        readonly: props.readonly,
-        start: { line: 0 },
-      };
-
       const y = Yashe.fromTextArea(textAreaRef.current, options);
       if (props.setCodeMirror) props.setCodeMirror(y);
       y.on("change", (cm, change) => {
         // setQuery(cm.getValue())
         props.onChange(cm.getValue(), y);
         // y.refresh();
-        console.log(y)
       });
       y.setValue(props.value);
       y.refresh();
@@ -42,12 +40,12 @@ function ShExForm(props) {
 
   return (
     <div>
-      <textarea ref={textAreaRef} />
+      <textarea ref={textAreaRef} placeholder={props.placeholder} />
     </div>
   );
 }
 
-ShExForm.propTypes = {
+ShexForm.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
@@ -57,9 +55,9 @@ ShExForm.propTypes = {
   setCodeMirror: PropTypes.func,
 };
 
-ShExForm.defaultProps = {
+ShexForm.defaultProps = {
   value: "",
   readonly: false,
 };
 
-export default ShExForm;
+export default ShexForm;

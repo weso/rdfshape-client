@@ -13,15 +13,14 @@ import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import { mkError } from "../utils/ResponseError";
 import {
-  InitialShapemap,
+  InitialShapeMap,
   mkShapeMapTabs,
   paramsFromStateShapemap,
-  shapemapParamsFromQueryParams,
-  updateStateShapeMap,
+  updateStateShapeMap
 } from "./ShapeMap";
 
 function ShapeMapInfo(props) {
-  const [shapemap, setShapemap] = useState(InitialShapemap);
+  const [shapemap, setShapemap] = useState(InitialShapeMap);
   const [result, setResult] = useState(null);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -32,22 +31,21 @@ function ShapeMapInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.shapemapInfo;
+  const url = API.routes.server.shapeMapInfo;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.shapemap) {
-        const shapemapParams = shapemapParamsFromQueryParams(queryParams);
+      if (queryParams[API.queryParameters.shapeMap.shapeMap]) {
         const finalShapemap =
-          updateStateShapeMap(shapemapParams, shapemap) || shapemap;
+          updateStateShapeMap(queryParams, shapemap) || shapemap;
         setShapemap(finalShapemap);
 
         const params = paramsFromStateShapemap(finalShapemap);
 
         setParams(params);
         setLastParams(params);
-      } else setError("Could not parse URL data");
+      } else setError(API.texts.errorParsingUrl);
     }
   }, [props.location?.search]);
 
@@ -55,16 +53,16 @@ function ShapeMapInfo(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.shapemap &&
-        (params.shapemapSource == API.sources.byFile
-          ? params.shapemap.name
+        params[API.queryParameters.shapeMap.shapeMap] &&
+        (params[API.queryParameters.shapeMap.source] == API.sources.byFile
+          ? params[API.queryParameters.shapeMap.shapeMap].name
           : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postShapeMapInfo();
       } else {
-        setError("No ShapeMap provided");
+        setError(API.texts.noProvidedShapeMap);
       }
       window.scrollTo(0, 0);
     }
@@ -84,16 +82,19 @@ function ShapeMapInfo(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        setError(null);
+        console.info(data)
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.routes.client.shapemapInfoRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
       .catch((error) => {
+        console.error(error);
         setError(mkError(error, url));
       })
       .finally(() => {
@@ -126,7 +127,7 @@ function ShapeMapInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.shapemapInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shapeMapInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -134,7 +135,7 @@ function ShapeMapInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.shapemapInfoRoute, params)
+      mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
     );
 
     setLastParams(params);
@@ -150,12 +151,12 @@ function ShapeMapInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>ShapeMap Information</h1>
+        <h1>{API.texts.pageHeaders.shapeMapInfo}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkShapeMapTabs(shapemap, setShapemap, "Input ShapeMap")}
+            {mkShapeMapTabs(shapemap, setShapemap)}
             <hr />
             <Button
               variant="primary"
@@ -193,7 +194,9 @@ function ShapeMapInfo(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.validationResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

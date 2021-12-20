@@ -1,15 +1,8 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import About from "./About.js";
 import API from "./API.js";
 import "./App.css";
-import DataVisualizeCyto from "./cytoscape/CytoVisualize.js";
-import DataVisualizeCytoRaw from "./cytoscape/CytoVisualizeRaw.js";
 import DataConvert from "./data/DataConvert.js";
 import DataExtract from "./data/DataExtract.js";
 import DataInfo from "./data/DataInfo.js";
@@ -17,39 +10,32 @@ import DataMerge from "./data/DataMerge";
 import DataMergeVisualize from "./data/DataMergeVisualize";
 import DataMergeVisualizeRaw from "./data/DataMergeVisualizeRaw.js";
 import DataQuery from "./data/DataQuery.js";
-import DataVisualize from "./data/DataVisualize.js";
-import DataVisualizeRaw from "./data/DataVisualizeRaw.js";
+import DataVisualizeCytoscape from "./data/DataVisualizeCytoscape";
+import DataVisualizeCytoscapeRaw from "./data/DataVisualizeCytoscapeRaw";
+import DataVisualizeGraphviz from "./data/DataVisualizeGraphviz.js";
+import DataVisualizeGraphvizRaw from "./data/DataVisualizeGraphvizRaw.js";
 import EndpointExtract from "./endpoint/EndpointExtract.js";
-import EndpointInfo from "./endpoint/EndpointInfo.js";
-import EndpointQuery from "./endpoint/EndpointQuery.js";
+import EndpointInfo from "./endpoint/EndpointInfo";
+import EndpointQuery from "./endpoint/EndpointQuery";
 import Home from "./Home.js";
 import NotFound from "./NotFound.js";
-import PermalinkReceiver from "./PermalinkReceiver.js";
-import RDFShapeNavbar from "./RDFShapeNavbar.js";
-import SHACL2ShEx from "./shacl/SHACL2ShEx.js";
-import SHACLConvert from "./shacl/SHACLConvert.js";
-import SHACLInfo from "./shacl/SHACLInfo.js";
-import SHACLValidate from "./shacl/SHACLValidate.js";
+import PermalinkReceiver from "./PermalinkReceiver";
+import RDFShapeNavbar from "./RDFShapeNavbar";
+import Shacl2Shex from "./shacl/Shacl2Shex";
+import ShaclConvert from "./shacl/ShaclConvert";
+import ShaclInfo from "./shacl/ShaclInfo";
+import ShaclValidate from "./shacl/ShaclValidate";
 import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
-import ShapeForm from "./shex/ShapeForm.js";
-import ShEx2Shacl from "./shex/ShEx2Shacl.js";
-import ShEx2XMI from "./shex/ShEx2XMI.js";
-import ShExConvert from "./shex/ShExConvert.js";
-import ShExInfo from "./shex/ShExInfo.js";
-import ShExValidate from "./shex/ShExValidate.js";
-import ShExValidateEndpoint from "./shex/ShExValidateEndpoint.js";
-import ShExVisualize from "./shex/ShExVisualize.js";
-import ShExVisualizeCytoscape from "./shex/ShExVisualizeCytoscape.js";
-import ShExVisualizeRaw from "./shex/ShExVisualizeRaw.js";
-import TestCode from "./test/TestCode.js";
-import TestCyto from "./test/TestCyto.js";
-import TestGithubSearch from "./test/TestGithubSearch.js";
-import TestRDFArea from "./test/TestRDFArea.js";
-import TestSearch from "./test/TestSearch.js";
+import ShapeForm from "./shex/ShapeForm";
+import Shex2Shacl from "./shex/Shex2Shacl";
+import Shex2xmi from "./shex/Shex2xmi";
+import ShexConvert from "./shex/ShexConvert";
+import ShexInfo from "./shex/ShexInfo";
+import ShexValidate from "./shex/ShexValidate";
+import ShexValidateEndpoint from "./shex/ShexValidateEndpoint";
+import ShexVisualizeUml from "./shex/ShexVisualizeUml";
+import ShexVisualizeUmlRaw from "./shex/ShexVisualizeUmlRaw";
 // Only for testing
-import TestYashe from "./test/TestYashe.js";
-import TestYasqe from "./test/TestYasqe.js";
-import TestYate from "./test/TestYate.js";
 import WikidataExtract from "./wikidata/WikidataExtract.js";
 import WikidataQuery from "./wikidata/WikidataQuery.js";
 import WikidataValidate from "./wikidata/WikidataValidate.js";
@@ -83,22 +69,22 @@ function Routes() {
           render={() => renderWithNavbar(DataConvert)}
         />
         <Route
-          path={API.routes.client.dataVisualizeRoute}
-          render={() => renderWithNavbar(DataVisualize)}
+          path={API.routes.client.dataVisualizeGraphvizRoute}
+          render={() => renderWithNavbar(DataVisualizeGraphviz)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.routes.client.dataVisualizeRouteRaw}
-          render={() => renderWithoutNavbar(DataVisualizeRaw)}
+          path={API.routes.client.dataVisualizeGraphvizRouteRaw}
+          render={() => renderWithoutNavbar(DataVisualizeGraphvizRaw)}
         />
         <Route
-          path={API.routes.client.cytoVisualizeRoute}
-          render={() => renderWithNavbar(DataVisualizeCyto)}
+          path={API.routes.client.dataVisualizeCytoscapeRoute}
+          render={() => renderWithNavbar(DataVisualizeCytoscape)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.routes.client.cytoVisualizeRouteRaw}
-          render={() => renderWithoutNavbar(DataVisualizeCytoRaw)}
+          path={API.routes.client.dataVisualizeCytoscapeRouteRaw}
+          render={() => renderWithoutNavbar(DataVisualizeCytoscapeRaw)}
         />
         <Route
           path={API.routes.client.dataQueryRoute}
@@ -136,41 +122,37 @@ function Routes() {
         />
 
         <Route
-          path={API.routes.client.shExValidateRoute}
-          render={() => renderWithNavbar(ShExValidate)}
+          path={API.routes.client.shexValidateRoute}
+          render={() => renderWithNavbar(ShexValidate)}
         />
         <Route
-          path={API.routes.client.shExValidateEndpointRoute}
-          render={() => renderWithNavbar(ShExValidateEndpoint)}
+          path={API.routes.client.shexValidateEndpointRoute}
+          render={() => renderWithNavbar(ShexValidateEndpoint)}
         />
         <Route
-          path={API.routes.client.shExInfoRoute}
-          render={() => renderWithNavbar(ShExInfo)}
+          path={API.routes.client.shexInfoRoute}
+          render={() => renderWithNavbar(ShexInfo)}
         />
         <Route
-          path={API.routes.client.shExVisualizeRoute}
-          render={() => renderWithNavbar(ShExVisualize)}
+          path={API.routes.client.shexVisualizeUmlRoute}
+          render={() => renderWithNavbar(ShexVisualizeUml)}
         />
         {/* RAW visualization */}
         <Route
-          path={API.routes.client.shExVisualizeRouteRaw}
-          render={() => renderWithoutNavbar(ShExVisualizeRaw)}
+          path={API.routes.client.shexVisualizeUmlRouteRaw}
+          render={() => renderWithoutNavbar(ShexVisualizeUmlRaw)}
         />
         <Route
-          path={API.routes.client.shExVisualizeCytoscapeRoute}
-          render={() => renderWithNavbar(ShExVisualizeCytoscape)}
+          path={API.routes.client.shexConvertRoute}
+          render={() => renderWithNavbar(ShexConvert)}
         />
         <Route
-          path={API.routes.client.shExConvertRoute}
-          render={() => renderWithNavbar(ShExConvert)}
+          path={API.routes.client.shex2ShaclRoute}
+          render={() => renderWithNavbar(Shex2Shacl)}
         />
         <Route
-          path={API.routes.client.shEx2ShaclRoute}
-          render={() => renderWithNavbar(ShEx2Shacl)}
-        />
-        <Route
-          path={API.routes.client.shEx2XMIRoute}
-          render={() => renderWithNavbar(ShEx2XMI)}
+          path={API.routes.client.shex2XmiRoute}
+          render={() => renderWithNavbar(Shex2xmi)}
         />
 
         <Route
@@ -180,23 +162,23 @@ function Routes() {
 
         <Route
           path={API.routes.client.shaclInfoRoute}
-          render={() => renderWithNavbar(SHACLInfo)}
+          render={() => renderWithNavbar(ShaclInfo)}
         />
         <Route
           path={API.routes.client.shaclValidateRoute}
-          render={() => renderWithNavbar(SHACLValidate)}
+          render={() => renderWithNavbar(ShaclValidate)}
         />
         <Route
           path={API.routes.client.shaclConvertRoute}
-          render={() => renderWithNavbar(SHACLConvert)}
+          render={() => renderWithNavbar(ShaclConvert)}
         />
         <Route
           path={API.routes.client.shacl2ShExRoute}
-          render={() => renderWithNavbar(SHACL2ShEx)}
+          render={() => renderWithNavbar(Shacl2Shex)}
         />
 
         <Route
-          path={API.routes.client.shapemapInfoRoute}
+          path={API.routes.client.shapeMapInfoRoute}
           render={() => renderWithNavbar(ShapeMapInfo)}
         />
 
@@ -212,32 +194,14 @@ function Routes() {
           path={API.routes.client.wikidataExtractRoute}
           render={() => renderWithNavbar(WikidataExtract)}
         />
-        <Route path={API.routes.client.aboutRoute} render={() => renderWithNavbar(About)} />
-
-        {/*The following route is for backwards compatibility*/}
-        <Route path="/validate" render={() => renderWithNavbar(ShExValidate)} />
-
-        <Route path="/test/yashe" render={() => renderWithNavbar(TestYashe)} />
-        <Route path="/test/yasqe" render={() => renderWithNavbar(TestYasqe)} />
         <Route
-          path="/test/rdfArea"
-          render={() => renderWithNavbar(TestRDFArea)}
+          path={API.routes.client.aboutRoute}
+          render={() => renderWithNavbar(About)}
         />
-        <Route path="/test/cyto" render={() => renderWithNavbar(TestCyto)} />
-        <Route path="/test/code" render={() => renderWithNavbar(TestCode)} />
-        <Route path="/test/turtle" render={() => renderWithNavbar(TestYate)} />
-        <Route
-          path="/test/search"
-          render={() => renderWithNavbar(TestSearch)}
-        />
-        <Route
-          path="/test/github"
-          render={() => renderWithNavbar(TestGithubSearch)}
-        />
+        {/* Route to be shown for processing permalinks */}
         <Route
           path={API.routes.client.permalinkRoute}
           component={PermalinkReceiver}
-          // render={() => renderWithNavbar(PermalinkReceiver)}
         />
         <Route render={() => renderWithNavbar(NotFound)} />
       </Switch>

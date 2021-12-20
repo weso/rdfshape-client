@@ -1,17 +1,16 @@
-import React from 'react';
+import React from "react";
 import PropTypes from "prop-types";
 
-function mkInner(inner) {
-    return {__html: inner};
+function PrintSVG({ svg }) {
+  function mkInner(inner) {
+    return { __html: inner };
+  }
+
+  return <div dangerouslySetInnerHTML={mkInner(svg)} />;
 }
 
-const PrintSVG = React.memo(({svg}) => (
-   <div dangerouslySetInnerHTML={mkInner(svg)}/>
- )
-);
-
 PrintSVG.propTypes = {
-    svg: PropTypes.isRequired,
+  svg: PropTypes.string,
 };
 
 export default PrintSVG;

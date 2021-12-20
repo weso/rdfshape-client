@@ -26,7 +26,7 @@ function DataMerge(props) {
   const [data2, setData2] = useState(InitialData);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
-  const [targetDataFormat, setTargetDataFormat] = useState(
+  const [dataTargetFormat, setDataTargetFormat] = useState(
     API.formats.defaultData
   );
   const [result, setResult] = useState(null);
@@ -40,20 +40,22 @@ function DataMerge(props) {
   const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
-    setTargetDataFormat(value);
+    setDataTargetFormat(value);
   }
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
 
-      if (queryParams.targetDataFormat) {
-        setTargetDataFormat(queryParams.targetDataFormat);
+      if (queryParams[API.queryParameters.data.targetFormat]) {
+        setDataTargetFormat(queryParams[API.queryParameters.data.targetFormat]);
       }
 
-      if (queryParams.compoundData) {
+      if (queryParams[[API.queryParameters.data.compound]]) {
         try {
-          const contents = JSON.parse(queryParams.compoundData);
+          const contents = JSON.parse(
+            queryParams[API.queryParameters.data.compound]
+          );
           const newData1 = updateStateData(contents[0], data1) || data1;
           const newData2 = updateStateData(contents[1], data2) || data2;
 
@@ -63,22 +65,30 @@ function DataMerge(props) {
           setParams(queryParams);
           setLastParams(queryParams);
         } catch {
-          setError("Could not parse URL data");
+          setError(API.texts.errorParsingUrl);
         }
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
 
   useEffect(() => {
-    if (params && params.compoundData) {
-      const parameters = JSON.parse(params.compoundData);
-      if (parameters.some((p) => p.dataFile)) {
+    if (params && params[API.queryParameters.data.compound]) {
+      const parameters = JSON.parse(params[API.queryParameters.data.compound]);
+      if (
+        parameters.some(
+          (p) => p[API.queryParameters.data.source] == API.sources.byFile
+        )
+      ) {
         setError("Not implemented Merge from files.");
       } else if (
         parameters.some(
-          (p) => p.data || p.dataUrl || (p.dataFile && p.dataFile.name)
+          (p) =>
+            p[API.queryParameters.data.data] &&
+            (p[API.queryParameters.data.source] == API.sources.byFile
+              ? params[API.queryParameters.data.data].name
+              : true) // Extra check for files
         )
       ) {
         // Check if some data was uploaded
@@ -86,7 +96,7 @@ function DataMerge(props) {
         setUpHistory();
         postMerge();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
@@ -95,15 +105,13 @@ function DataMerge(props) {
   async function handleSubmit(event) {
     event.preventDefault();
     // Combine params
-    let params1 = paramsFromStateData(data1);
-    let params2 = paramsFromStateData(data2);
-    setParams({ ...mergeParams(params1, params2), targetDataFormat });
-  }
-
-  function mergeParams(params1, params2) {
-    return {
-      compoundData: JSON.stringify([params1, params2]),
-    };
+    setParams({
+      [API.queryParameters.data.compound]: JSON.stringify([
+        paramsFromStateData(data1),
+        paramsFromStateData(data2),
+      ]),
+      [API.queryParameters.data.targetFormat]: dataTargetFormat,
+    });
   }
 
   function postMerge(cb) {
@@ -140,7 +148,8 @@ function DataMerge(props) {
       getDataText(data1).length + getDataText(data2).length >
       API.limits.byTextCharacterLimit
         ? API.sources.byText
-        : data1.activeSource === API.sources.byFile || data2.activeSource === API.sources.byFile
+        : data1.activeSource === API.sources.byFile ||
+          data2.activeSource === API.sources.byFile
         ? API.sources.byFile
         : false;
 
@@ -159,8 +168,9 @@ function DataMerge(props) {
         null,
         document.title,
         mkPermalinkLong(API.routes.client.dataMergeRoute, {
-          compoundData: lastParams.compoundData,
-          targetDataFormat,
+          [API.queryParameters.data.compound]:
+            lastParams[API.queryParameters.data.compound],
+          [API.queryParameters.data.targetFormat]: dataTargetFormat,
         })
       );
     }
@@ -170,8 +180,9 @@ function DataMerge(props) {
       null,
       document.title,
       mkPermalinkLong(API.routes.client.dataMergeRoute, {
-        compoundData: params.compoundData,
-        targetDataFormat,
+        [API.queryParameters.data.compound]:
+          params[API.queryParameters.data.compound],
+        [API.queryParameters.data.targetFormat]: dataTargetFormat,
       })
     );
 
@@ -188,18 +199,18 @@ function DataMerge(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Merge & convert RDF data</h1>
+        <h1>{API.texts.pageHeaders.dataMergeConvert}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data1, setData1, "RDF Input 1")}
+            {mkDataTabs(data1, setData1, "RDF input (1)")}
             <hr />
-            {mkDataTabs(data2, setData2, "RDF Input 2")}
+            {mkDataTabs(data2, setData2, "RDF input (2)")}
             <hr />
             <SelectFormat
               name="Target data format"
-              selectedFormat={targetDataFormat}
+              selectedFormat={dataTargetFormat}
               handleFormatChange={handleTargetDataFormatChange}
               urlFormats={API.routes.server.dataFormatsOutput}
             />
@@ -210,7 +221,7 @@ function DataMerge(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Merge & convert
+              Merge
             </Button>
           </Form>
         </Col>
@@ -221,6 +232,7 @@ function DataMerge(props) {
                 striped
                 animated
                 variant="info"
+                fromParams
                 now={progressPercent}
               />
             ) : error ? (
@@ -239,7 +251,7 @@ function DataMerge(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Merge results will appear here</Alert>
+            <Alert variant="info">{API.texts.mergeResultsWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

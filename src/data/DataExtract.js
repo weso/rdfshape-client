@@ -9,7 +9,6 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
-import { node } from "yashe/dist/yashe.bundled.min";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
@@ -20,8 +19,7 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "./Data";
 
 function DataExtract(props) {
@@ -42,24 +40,25 @@ function DataExtract(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
+      if (queryParams[API.queryParameters.data.data]) {
+        setData(updateStateData(queryParams, data));
 
-        setData(updateStateData(dataParams, data));
-
-        if (queryParams.nodeSelector) setNodeSelector(queryParams.nodeSelector);
+        if (queryParams[API.queryParameters.data.nodeSelector])
+          setNodeSelector(queryParams[API.queryParameters.data.nodeSelector]);
 
         setParams(queryParams);
         setLastParams(queryParams);
-      } else setError("Could not parse URL data");
+      } else setError(API.texts.errorParsingUrl);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
       const dataPresent =
-        params.data &&
-        (params.dataSource == API.sources.byFile ? params.data.name : true);
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true);
 
       const nodeSelectorPresent =
         nodeSelector && nodeSelector.trim().length > 0;
@@ -69,7 +68,7 @@ function DataExtract(props) {
         setUpHistory();
         postExtract();
       } else if (!dataPresent) {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       } else if (!nodeSelectorPresent) {
         setError("No node selector provided");
       }
@@ -81,7 +80,7 @@ function DataExtract(props) {
     event.preventDefault();
     setParams({
       ...paramsFromStateData(data),
-      nodeSelector,
+      [API.queryParameters.data.nodeSelector]: nodeSelector,
     });
   }
 
@@ -95,7 +94,9 @@ function DataExtract(props) {
       .then(async (data) => {
         setProgressPercent(60);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.dataExtractRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -157,12 +158,12 @@ function DataExtract(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Extract ShEx from data</h1>
+        <h1>{API.texts.pageHeaders.dataShexExtraction}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <NodeSelector
               value={nodeSelector}
               handleChange={(value) => setNodeSelector(value.trim())}
@@ -202,7 +203,9 @@ function DataExtract(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Extraction results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.extractionResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

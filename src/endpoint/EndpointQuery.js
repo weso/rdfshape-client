@@ -14,12 +14,10 @@ import {
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
-  queryParamsFromQueryParams,
-  updateStateQuery,
+  updateStateQuery
 } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { mkError } from "../utils/ResponseError";
-import { endpointParamsFromQueryParams } from "./Endpoint";
 import EndpointInput from "./EndpointInput";
 
 function EndpointQuery(props) {
@@ -44,21 +42,24 @@ function EndpointQuery(props) {
         paramsEndpoint = {};
 
       // Query State
-      if (queryParams.query || queryParams.queryUrl || queryParams.queryFile) {
-        paramsQuery = queryParamsFromQueryParams(queryParams);
-        setQuery(updateStateQuery(paramsQuery, query) || query);
+      if (queryParams[API.queryParameters.query.query]) {
+        paramsQuery = updateStateQuery(queryParams, query) || query;
+        setQuery(paramsQuery);
       }
 
       // Endpoint State
-      if (queryParams.endpoint) {
-        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
-        setEndpoint(paramsEndpoint.endpoint);
+      if (queryParams[API.queryParameters.endpoint.endpoint]) {
+        paramsEndpoint = {
+          [API.queryParameters.endpoint.endpoint]:
+            queryParams[API.queryParameters.endpoint.endpoint],
+        };
+        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
       }
 
       // Params to be used in first query
       let params = {
-        ...paramsFromStateQuery(updateStateQuery(paramsQuery, query) || query),
-        endpoint: paramsEndpoint.endpoint || endpoint,
+        ...paramsFromStateQuery(paramsQuery),
+        ...paramsEndpoint,
       };
 
       setParams(params);
@@ -69,20 +70,18 @@ function EndpointQuery(props) {
   // Perform query on params change (normally on submit)
   useEffect(() => {
     if (params && !loading) {
-      if (!params.endpoint) setError("No endpoint provided");
+      if (!params[API.queryParameters.endpoint.endpoint])
+        setError(API.texts.noProvidedEndpoint);
       else if (
-        !(
-          params.query ||
-          params.queryUrl ||
-          (params.queryFile && params.queryFile.name)
-        )
-      )
-        setError("No query provided");
-      else {
+        params[API.queryParameters.query.query] &&
+        (params[API.queryParameters.query.source] == API.sources.byFile
+          ? params[API.queryParameters.query.query].name
+          : true) // Extra check for files
+      ) {
         resetState();
         setUpHistory();
         postQuery();
-      }
+      } else setError(API.texts.noProvidedQuery);
     }
   }, [params]);
 
@@ -113,7 +112,10 @@ function EndpointQuery(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateQuery(query), endpoint });
+    setParams({
+      ...paramsFromStateQuery(query),
+      [API.queryParameters.endpoint.endpoint]: endpoint,
+    });
   }
 
   function postQuery(cb) {
@@ -122,17 +124,14 @@ function EndpointQuery(props) {
     const formData = params2Form(params);
 
     axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
+      .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
         setProgressPercent(70);
         setResult({ result: data });
-        setPermalink(mkPermalinkLong(API.routes.client.endpointQueryRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
+        );
         setProgressPercent(90);
         if (cb) cb();
         setProgressPercent(100);
@@ -186,7 +185,7 @@ function EndpointQuery(props) {
 
   return (
     <Container fluid={true}>
-      <h1>Endpoint query</h1>
+      <h1>{API.texts.pageHeaders.endpointQuery}</h1>
       <Form
         id="common-endpoints"
         onSubmit={handleSubmit}
@@ -198,7 +197,7 @@ function EndpointQuery(props) {
           handleOnChange={handleOnChange}
           handleOnSelect={handleOnSelect}
         />
-        {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
+        {mkQueryTabs(query, setQuery)}
         <hr />
         <Button
           variant="primary"

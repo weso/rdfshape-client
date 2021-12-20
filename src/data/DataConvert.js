@@ -12,14 +12,13 @@ import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
-import ResponseError, { mkError } from "../utils/ResponseError";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "./Data";
 
 function DataConvert(props) {
@@ -30,7 +29,7 @@ function DataConvert(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(InitialData);
-  const [targetDataFormat, setTargetDataFormat] = useState(
+  const [dataTargetFormat, setDataTargetFormat] = useState(
     API.formats.defaultData
   );
   const [progressPercent, setProgressPercent] = useState(0);
@@ -40,29 +39,32 @@ function DataConvert(props) {
   const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
-    value && setTargetDataFormat(value);
+    value && setDataTargetFormat(value);
   }
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         setData(finalData);
 
-        if (queryParams.targetDataFormat) {
-          setTargetDataFormat(queryParams.targetDataFormat);
+        if (queryParams[API.queryParameters.data.targetFormat]) {
+          setDataTargetFormat(
+            queryParams[API.queryParameters.data.targetFormat]
+          );
         }
         const params = {
           ...paramsFromStateData(finalData),
-          targetDataFormat: queryParams.targetDataFormat || targetDataFormat,
+          [API.queryParameters.data.targetFormat]:
+            queryParams[API.queryParameters.data.targetFormat] ||
+            dataTargetFormat,
         };
 
         setParams(params);
         setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
@@ -70,14 +72,16 @@ function DataConvert(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data &&
-        (params.dataSource == API.sources.byFile ? params.data.name : true) // Extra check for files
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postConvert();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
       window.scrollTo(0, 0);
     }
@@ -85,7 +89,10 @@ function DataConvert(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateData(data), targetDataFormat });
+    setParams({
+      ...paramsFromStateData(data),
+      [API.queryParameters.data.targetFormat]: dataTargetFormat,
+    });
   }
 
   function postConvert(cb) {
@@ -99,7 +106,9 @@ function DataConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.dataConvertRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.dataConvertRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -158,16 +167,16 @@ function DataConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Convert RDF data</h1>
+        <h1>{API.texts.pageHeaders.dataConversion}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <hr />
             <SelectFormat
               name="Target data format"
-              selectedFormat={targetDataFormat}
+              selectedFormat={dataTargetFormat}
               handleFormatChange={handleTargetDataFormatChange}
               urlFormats={API.routes.server.dataFormatsOutput}
             />
@@ -177,7 +186,7 @@ function DataConvert(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert data
+              Convert
             </Button>
           </Form>
         </Col>
@@ -204,7 +213,9 @@ function DataConvert(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Conversion results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.conversionResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

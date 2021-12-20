@@ -7,8 +7,8 @@ import Form from "react-bootstrap/Form";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import QueryForm from '../query/QueryForm';
-import ShExForm from '../shex/ShExForm';
-// import {dataParamsFromQueryParams, shapemapParamsFromQueryParams, shExParamsFromQueryParams} from "../Utils";
+import ShexForm from '../shex/ShexForm';
+// import {dataParamsFromQueryParams} from "../Utils";
 // import {params2Form} from "../Permalink";
 
 function TestYashe(props)  {
@@ -57,7 +57,7 @@ function TestYashe(props)  {
                 <Tab eventKey="ShEx" title="ShEx">
                 <Form.Group>
                  <Form.Label>ShEx</Form.Label>
-                 <ShExForm // id="shExArea"
+                 <ShexForm // id="shExArea"
                       value={shEx}
                       onChange={(value) => {
                           setShEx(value);

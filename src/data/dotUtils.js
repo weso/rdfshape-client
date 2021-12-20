@@ -18,34 +18,34 @@ export function convertDot(dot, engine, format, setError, setVisualization) {
 
   switch (format) {
     // SVG
-    case "SVG":
+    case API.formats.svg:
       promise = viz.renderSVGElement(dot, {
         ...options,
-        mimeType: "image/svg+xml",
+        mimeType: API.mimeTypes.svg,
       });
       textual = false;
       break;
 
     // Image (deprecated)
-    case "PNG":
+    case API.formats.png:
       promise = viz.renderImageElement(dot, {
         ...options,
         format: "png-image-element",
-        mimeType: "image/png",
+        mimeType: API.mimeTypes.png,
         scale: 0,
       });
       textual = false;
       break;
 
     // JSON
-    case "JSON":
+    case API.formats.json:
       promise = viz.renderJSONObject(dot, options);
       textual = true;
       break;
 
     // String
-    case "PS":
-    case "DOT":
+    case API.formats.ps:
+    case API.formats.dot:
     default:
       promise = viz.renderString(dot, options);
       textual = true;

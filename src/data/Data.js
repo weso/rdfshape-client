@@ -16,55 +16,45 @@ export const InitialData = {
 
 export function updateStateData(params, data) {
   // Only update state if there is data
-  if (params["data"]) {
+  if (params[API.queryParameters.data.data]) {
     // Get the raw data string introduced by the user
-    const userData = params["data"];
+    const userData = params[API.queryParameters.data.data];
     // Get the data source to be used: take it from params or resort to default
-    const dataSource = params["dataSource"] || API.sources.default;
+    const dataSource =
+      params[API.queryParameters.data.source] || API.sources.default;
 
     // Compose new Data State building from the old one
     return {
       ...data,
       activeSource: dataSource, // New data source (activates the corresponsing edit tab)
-       // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      // Fill in the data containers with the user data if necessary. Else leave them as they were.
       textArea: dataSource == API.sources.byText ? userData : data.textArea,
       url: dataSource == API.sources.byUrl ? userData : data.url,
       file: dataSource == API.sources.byFile ? userData : data.file,
       fromParams: true,
-      format: params["dataFormat"] || API.formats.defaultData,
-      inference: params["inference"] || API.inferences.default,
+      format: params[API.queryParameters.data.format] || data.format,
+      inference: params[API.queryParameters.data.inference] || data.inference,
     };
   }
   return data;
 }
 
-export function dataParamsFromQueryParams(params) {
-  // This code is redundant, it could be just return params
-  // We keep it because we could do some error checking
-  let newParams = {};
-  if (params.data) newParams["data"] = params.data;
-  if (params.dataSource) newParams["dataSource"] = params.dataSource;
-  if (params.dataFormat) newParams["dataFormat"] = params.dataFormat;
-  if (params.inference) newParams["inference"] = params.inference;
-  return newParams;
-}
-
 export function paramsFromStateData(data) {
   let params = {};
-  params["dataSource"] = data.activeSource;
-  params["dataFormat"] = data.format;
-  params["inference"] = data.inference;
+  params[API.queryParameters.data.source] = data.activeSource;
+  params[API.queryParameters.data.format] = data.format;
+  params[API.queryParameters.data.inference] = data.inference;
 
   // Send the "data" param to the server, that will use the "dataSource" to know hot to treat the data (raw, URL, file...)
   switch (data.activeSource) {
     case API.sources.byText:
-      params["data"] = data.textArea.trim();
+      params[API.queryParameters.data.data] = data.textArea.trim();
       break;
     case API.sources.byUrl:
-      params["data"] = data.url.trim();
+      params[API.queryParameters.data.data] = data.url.trim();
       break;
     case API.sources.byFile:
-      params["data"] = data.file;
+      params[API.queryParameters.data.data] = data.file;
       break;
   }
   return params;

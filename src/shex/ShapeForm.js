@@ -12,19 +12,19 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong } from "../Permalink";
 import ResultShapeForm from "../results/ResultShapeForm";
-import ShexParser from "./shapeform/ShExParser.js";
+import { mkError } from "../utils/ResponseError";
+import ShexParser from "./shapeform/ShExParser";
 import {
   getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx,
-} from "./ShEx";
+  InitialShex,
+  mkShexTabs,
+  paramsFromStateShex,
+  updateStateShex
+} from "./Shex";
 
 export default function ShEx2XMI(props) {
-  const [shex, setShEx] = useState(InitialShEx);
-  const [targetFormat, setTargetFormat] = useState("RDF/XML");
+  const successMessage = "Form generated successfully";
+  const [shex, setShEx] = useState(InitialShex);
 
   const [result, setResult] = useState("");
 
@@ -38,151 +38,118 @@ export default function ShEx2XMI(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const fetchUrl = API.routes.server.fetchUrl;
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsShEx = {};
 
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
-        const schemaParams = shExParamsFromQueryParams(queryParams);
-        const finalSchema = updateStateShEx(schemaParams, shex) || shex;
-
-        paramsShEx = finalSchema;
+      if (queryParams[API.queryParameters.schema.schema]) {
+        const finalSchema = updateStateShex(queryParams, shex) || shex;
         setShEx(finalSchema);
+
+        const params = mkParams(finalSchema);
+
+        setParams(params);
+        setLastParams(params);
+      } else {
+        setError(API.texts.noProvidedRdf);
       }
-
-      if (queryParams.targetSchemaFormat)
-        setTargetFormat(queryParams.targetSchemaFormat);
-
-      const params = {
-        ...mkServerParams(
-          paramsShEx,
-          queryParams.targetSchemaFormat || "TURTLE"
-        ),
-        schemaEngine: "ShEx",
-        targetSchemaEngine: "SHACL",
-      };
-
-      setParams(params);
-      setLastParams(params);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.schema ||
-        params.schemaUrl ||
-        (params.schemaFile && params.schemaFile.name)
+        params[API.queryParameters.schema.schema] &&
+        (params[API.queryParameters.schema.source] == API.sources.byFile
+          ? params[API.queryParameters.schema.schema].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         doRequest();
       } else {
-        setError("No ShEx schema provided");
+        setError(API.texts.noProvidedSchema);
       }
       window.scrollTo(0, 0);
     }
   }, [params]);
 
-  function targetFormatMode(targetFormat) {
-    switch (targetFormat.toUpperCase()) {
-      case "TURTLE":
-        return "turtle";
-      case "RDF/XML":
-        return "xml";
-      case "TRIG":
-        return "xml";
-      case "JSON-LD":
-        return "javascript";
-      default:
-        return "xml";
-    }
-  }
+  // This validation is done in the client, so the client must parse the input,
+  // whether it's plain text, a URL to be fetched or a file to be parsed.
+  async function getConverterInput() {
+    const schemaData = params[API.queryParameters.schema.schema];
 
-  function mkServerParams(shex, format) {
-    const params = {
-      ...paramsFromStateShEx(shex),
-      targetSchemaFormat: targetFormat,
-    };
-    // Change target format if needed
-    if (format) {
-      setTargetFormat(format);
-      params.targetSchemaFormat = format;
+    switch (params[API.queryParameters.schema.source]) {
+      // Plain text, do nothing
+      case API.sources.byText:
+        return schemaData;
+
+      // URL, ask the RDFShape server to fetch the contents for us (prevent CORS)
+      case API.sources.byUrl:
+        return axios
+          .get(API.routes.server.fetchUrl, {
+            params: { url: schemaData },
+          })
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          });
+
+      // File upload, read the file and return the raw text
+      case API.sources.byFile:
+        return await new Promise((res, rej) => {
+          const reader = new FileReader();
+          reader.onload = () => res(reader.result);
+          reader.readAsText(schemaData);
+        });
     }
-    return params;
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    let newParams = {};
-    newParams = {
-      ...mkServerParams(shex, "xml"),
-      schemaEngine: "ShEx",
-      targetSchemaEngine: "xml",
+    setParams(mkParams());
+  }
+
+  function mkParams(shexParams = shex) {
+    return {
+      ...paramsFromStateShex(shexParams),
+      [API.queryParameters.schema.engine]: API.engines.shex, // Always converting from ShEx
+      [API.queryParameters.schema.targetEngine]: API.engines.xml, // Always converting to ShEx
     };
-
-    setParams(newParams);
   }
 
-  // This validation is done in the client, so the client must parse the input,
-  // wether it's plain text, a URL to be fetched or a file to be parsed.
-  async function getConverterInput() {
-    // Plain text, do nothing
-    if (params.schema) return params.schema;
-    else if (params.schemaUrl) {
-      // URL, ask the RdfShape server to fetch the contents for us (prevent CORS)
-      return axios
-        .get(fetchUrl, {
-          params: { url: params.schemaUrl },
-        })
-        .then((res) => res.data)
-        .catch((err) => {
-          console.error(err);
-          return `Error accessing URL. $err`;
-        });
-    } else if (params.schemaFile) {
-      // File upload, read the file and return the raw text
-      return new Promise((res, rej) => {
-        const reader = new FileReader();
-        reader.onload = () => res(reader.result);
-        reader.readAsText(params.schemaFile);
-      }).then();
-    }
-  }
-
-  async function doRequest(cb) {
+  async function doRequest() {
     setLoading(true);
     setProgressPercent(20);
-    let res = "";
     try {
+      // Get the raw data passed to the converter
       const input = await getConverterInput();
-
-      let sp = new ShexParser();
-      res = sp.parseShExToForm(input);
-
+      // Parse the ShEx to form
+      const result = new ShexParser().parseShExToForm(input);
+      // Finish updating state, UI
       setProgressPercent(90);
       checkLinks();
-      let result = { result: res, msg: "Succesful generation" };
-      setResult(result);
+      setResult({
+        result,
+        msg: successMessage,
+      });
       setPermalink(
         mkPermalinkLong(API.routes.client.shapeFormRoute, {
-          schema: params.schema || undefined,
-          schemaUrl: params.schemaUrl || undefined,
-          schemaFile: params.schemaFile || undefined,
-          targetSchemaEngine: params.targetSchemaEngine,
+          [API.queryParameters.schema.schema]:
+            params[API.queryParameters.schema.schema],
+          [API.queryParameters.schema.format]:
+            params[API.queryParameters.schema.format],
+          [API.queryParameters.schema.source]:
+            params[API.queryParameters.schema.source],
         })
       );
       setProgressPercent(100);
     } catch (error) {
       setError(
-        `An error has occurred while creating the Form equivalent. Check the input.\n${error}`
+        mkError({
+          ...error,
+          message: `An error has occurred while creating the Form equivalent:\n${error}`,
+        })
       );
     } finally {
       setLoading(false);
@@ -213,10 +180,12 @@ export default function ShEx2XMI(props) {
         null,
         document.title,
         mkPermalinkLong(API.routes.client.shapeFormRoute, {
-          schema: lastParams.schema || undefined,
-          schemaUrl: lastParams.schemaUrl || undefined,
-          schemaFile: lastParams.schemaFile || undefined,
-          targetSchemaEngine: lastParams.targetSchemaEngine,
+          [API.queryParameters.schema.schema]:
+            lastParams[API.queryParameters.schema.schema],
+          [API.queryParameters.schema.format]:
+            lastParams[API.queryParameters.schema.format],
+          [API.queryParameters.schema.source]:
+            lastParams[API.queryParameters.schema.source],
         })
       );
     }
@@ -226,10 +195,12 @@ export default function ShEx2XMI(props) {
       null,
       document.title,
       mkPermalinkLong(API.routes.client.shapeFormRoute, {
-        schema: params.schema || undefined,
-        schemaUrl: params.schemaUrl || undefined,
-        schemaFile: params.schemaFile || undefined,
-        targetSchemaEngine: params.targetSchemaEngine || undefined,
+        [API.queryParameters.schema.schema]:
+          params[API.queryParameters.schema.schema],
+        [API.queryParameters.schema.format]:
+          params[API.queryParameters.schema.format],
+        [API.queryParameters.schema.source]:
+          params[API.queryParameters.schema.source],
       })
     );
 
@@ -247,12 +218,12 @@ export default function ShEx2XMI(props) {
     <Container fluid={true}>
       <>
         <Row>
-          <h1>Create Form from ShEx</h1>
+          <h1>{API.texts.pageHeaders.shexToForm}</h1>
         </Row>
         <Row>
           <Col className={"half-col border-right"}>
             <Form onSubmit={handleSubmit}>
-              {mkShExTabs(shex, setShEx, "ShEx Input")}
+              {mkShexTabs(shex, setShEx)}
               <hr />
               <Button
                 variant="primary"
@@ -278,7 +249,7 @@ export default function ShEx2XMI(props) {
               ) : result ? (
                 <ResultShapeForm
                   result={result}
-                  mode={targetFormatMode("xml")}
+                  mode={API.formats.xml}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />
@@ -291,7 +262,9 @@ export default function ShEx2XMI(props) {
               <Alert variant="warning">
                 Be advised: Shape Start is required in input
               </Alert>
-              <Alert variant="info">Conversion results will appear here</Alert>
+              <Alert variant="info">
+                {API.texts.conversionResultsWillAppearHere}
+              </Alert>
             </Col>
           )}
         </Row>

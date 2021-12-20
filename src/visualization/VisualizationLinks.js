@@ -1,43 +1,27 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
 import ExternalLinkIcon from "react-open-iconic-svg/dist/ExternalLinkIcon";
 import ReactTooltip from "react-tooltip";
+import API from "../API";
 
 function VisualizationLinks({
   embedLink,
   disabled,
-  generateDownloadLink,
+  generateDownloadLink, // Function creating the correct download link + type
   styles,
   tooltips,
 }) {
   const iconScaling = 2;
   const tooltipScaling = 1 / iconScaling;
 
-  const [downloadLink, setDownloadLink] = useState("#");
-  const [downloadType, setDownloadType] = useState("");
-
-  useEffect(() => {
-    udpateLink();
-  }, []);
-
-  const udpateLink = () => {
-    const { link, type } = generateDownloadLink();
-    link && setDownloadLink(link);
-    type && setDownloadType(type);
-  };
+  const [downloadLink, setDownloadLink] = useState({
+    link: "#",
+    type: null,
+  });
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        right: "8px",
-        top: "0",
-        display: "flex",
-        zIndex: "10",
-        ...styles,
-      }}
-    >
+    <div className="visualization-links" style={styles}>
       {
         <div
           data-tip
@@ -47,9 +31,12 @@ function VisualizationLinks({
         >
           <a
             id="downloadLink"
-            href={downloadLink}
-            download={"visualization" + (downloadType && `.${downloadType}`)}
-            onClick={udpateLink}
+            href={downloadLink.link}
+            download={
+              "visualization" +
+              (downloadLink.type ? `.${downloadLink.type}` : "")
+            }
+            onMouseEnter={() => setDownloadLink(generateDownloadLink())}
           >
             <DataTransferDownloadIcon style={{ fill: "black" }} />
           </a>
@@ -80,11 +67,11 @@ function VisualizationLinks({
           {tooltips ?? (
             <div style={{ transform: `scale(${tooltipScaling})` }}>
               <ReactTooltip id="embedLinkTip" place="top" effect="solid">
-                {disabled == "byText"
-                  ? "Can't generate links for long manual inputs, try inserting data by URL"
-                  : disabled == "byFile"
-                  ? "Can't generate links for file-based inputs, try inserting data by URL"
-                  : "Embedded link"}
+                {disabled == API.sources.byText
+                  ? API.texts.noPermalinkManual
+                  : disabled == API.sources.byFile
+                  ? API.texts.noPermalinkFile
+                  : API.texts.embeddedLink}
               </ReactTooltip>
             </div>
           )}
@@ -96,7 +83,7 @@ function VisualizationLinks({
 
 VisualizationLinks.propTypes = {
   generateDownloadLink: PropTypes.func,
-  embedLink: PropTypes.string,
+  embedLink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   styles: PropTypes.object,
   tooltips: PropTypes.bool,

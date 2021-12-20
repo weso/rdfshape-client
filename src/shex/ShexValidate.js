@@ -14,47 +14,43 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams
+  updateStateData
 } from "../data/Data";
-import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultValidate from "../results/ResultValidate";
+import ResultSchemaValidate from "../results/ResultValidate";
 import {
   getShapeMapText,
-  InitialShapemap,
+  InitialShapeMap,
   mkShapeMapTabs,
   paramsFromStateShapemap,
-  shapemapParamsFromQueryParams,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
-  InitialShEx,
-  mkShExTabs,
-  paramsFromStateShEx,
-  shExParamsFromQueryParams,
-  updateStateShEx
-} from "./ShEx";
+  InitialShex,
+  mkShexTabs,
+  paramsFromStateShex,
+  updateStateShex
+} from "./Shex";
 
-function ShExValidate(props) {
-  const [shex, setShEx] = useState(InitialShEx);
+function ShexValidate(props) {
   const [data, setData] = useState(InitialData);
-  const [shapeMap, setShapeMap] = useState(InitialShapemap);
+  const [shex, setShEx] = useState(InitialShex);
+  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
 
   const [endpoint, setEndpoint] = useState("");
-  const [withEndpoint, setWithEndpoint] = useState(false);
+  const [withEndpoint, setWithEndpoint] = useState(false); // UI reference
 
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [permalink, setPermalink] = useState(null);
 
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
 
-  const [permalink, setPermalink] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
@@ -65,87 +61,87 @@ function ShExValidate(props) {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
-        paramsShEx,
+        paramsShex,
         paramsShapeMap,
         paramsEndpoint = {};
 
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
-        paramsData = finalData;
-        setData(finalData);
+      if (queryParams[API.queryParameters.data.data]) {
+        paramsData = updateStateData(queryParams, data) || data;
+        setData(paramsData);
       }
 
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
-        const shexParams = shExParamsFromQueryParams(queryParams);
-        const finalSchema = updateStateShEx(shexParams, shex) || shex;
-        paramsShEx = finalSchema;
-        setShEx(finalSchema);
+      if (queryParams[API.queryParameters.schema.schema]) {
+        paramsShex = updateStateShex(queryParams, shex) || shex;
+        setShEx(paramsShex);
       }
 
-      if (
-        queryParams.shapeMap ||
-        queryParams.shapeMapUrl ||
-        queryParams.shapeMapFile
-      ) {
-        const shapeMapParams = shapemapParamsFromQueryParams(queryParams);
+      if (queryParams[API.queryParameters.shapeMap.shapeMap]) {
         const finalShapeMap =
-          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
+          updateStateShapeMap(queryParams, shapeMap) || shapeMap;
         paramsShapeMap = finalShapeMap;
         setShapeMap(finalShapeMap);
       }
 
       // Endpoint State
-      if (queryParams.endpoint) {
-        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
-        setEndpoint(paramsEndpoint.endpoint);
-        setWithEndpoint(!!paramsEndpoint.endpoint);
+      if (queryParams[API.queryParameters.endpoint.endpoint]) {
+        paramsEndpoint = {
+          [API.queryParameters.endpoint.endpoint]:
+            queryParams[API.queryParameters.endpoint.endpoint],
+        };
+        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
+        setWithEndpoint(!!queryParams[API.queryParameters.endpoint.endpoint]);
       }
 
-      let params = {
-        ...paramsFromStateData(paramsData),
-        ...paramsFromStateShEx(paramsShEx),
-        ...paramsFromStateShapemap(paramsShapeMap),
-        endpoint: paramsEndpoint.endpoint || endpoint,
-        schemaEngine: "ShEx",
-        triggerMode: API.triggerModes.shapeMap,
-      };
+      const params = mkParams(
+        paramsData,
+        paramsShex,
+        paramsShapeMap,
+        paramsEndpoint
+      );
 
       setParams(params);
       setLastParams(params);
     }
   }, [props.location?.search]);
 
+  function mkParams(
+    paramsData = data,
+    paramsShex = shex,
+    paramsShapeMap = shapeMap,
+    paramsEndpoint = {}
+  ) {
+    return {
+      ...paramsFromStateData(paramsData),
+      ...paramsFromStateShex(paramsShex),
+      ...paramsFromStateShapemap(paramsShapeMap), // + trigger mode
+      ...paramsEndpoint,
+      [API.queryParameters.schema.targetEngine]: API.engines.shex, // Target is always ShEx
+    };
+  }
+
   useEffect(() => {
-    if (params && !loading) {
-      if (
-        !(
-          params.data ||
-          params.dataUrl ||
-          (params.dataFile && params.dataFile.name)
-        )
-      )
-        setError("No RDF data provided");
-      else if (
-        !(
-          params.schema ||
-          params.schemaUrl ||
-          (params.schemaFile && params.schemaFile.name)
-        )
-      )
-        setError("No ShEx schema provided");
-      else if (
-        !(
-          params.shapeMap ||
-          params.shapeMapUrl ||
-          (params.shapeMapFile && params.shapeMapFile.name)
-        )
-      )
-        setError("No ShapeMap provided");
+    if (params) {
+      const dataPresent =
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true);
+
+      const schemaPresent =
+        params[API.queryParameters.schema.schema] &&
+        (params[API.queryParameters.schema.source] == API.sources.byFile
+          ? params[API.queryParameters.schema.schema].name
+          : true);
+
+      const shapeMapPresent =
+        params[API.queryParameters.shapeMap.shapeMap] &&
+        (params[API.queryParameters.shapeMap.source] == API.sources.byFile
+          ? params[API.queryParameters.shapeMap.shapeMap].name
+          : true);
+
+      if (!dataPresent) setError(API.texts.noProvidedRdf);
+      else if (!schemaPresent) setError(API.texts.noProvidedSchema);
+      else if (!shapeMapPresent) setError(API.texts.noProvidedShapeMap);
       else {
         resetState();
         setUpHistory();
@@ -155,21 +151,10 @@ function ShExValidate(props) {
     }
   }, [params]);
 
-  function handleEndpointChange(value) {
-    setEndpoint(value.trim());
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
 
-    setParams({
-      ...paramsFromStateData(data),
-      ...paramsFromStateShEx(shex),
-      ...paramsFromStateShapemap(shapeMap),
-      endpoint,
-      schemaEngine: "ShEx",
-      triggerMode: API.triggerModes.shapeMap,
-    });
+    setParams(mkParams());
   }
 
   function postValidate(cb) {
@@ -184,7 +169,9 @@ function ShExValidate(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.routes.client.shExValidateRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.shexValidateRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -224,7 +211,7 @@ function ShExValidate(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.shExValidateRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shexValidateRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -232,7 +219,7 @@ function ShExValidate(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.shExValidateRoute, params)
+      mkPermalinkLong(API.routes.client.shexValidateRoute, params)
     );
 
     setLastParams(params);
@@ -248,12 +235,12 @@ function ShExValidate(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Validate RDF data with ShEx</h1>
+        <h1>{API.texts.pageHeaders.shexValidation}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <Button
               variant="secondary"
               onClick={() => {
@@ -268,13 +255,13 @@ function ShExValidate(props) {
             {withEndpoint ? (
               <EndpointInput
                 value={endpoint}
-                handleOnChange={handleEndpointChange}
+                handleOnChange={(value) => setEndpoint(value.trim())}
               />
             ) : null}
             <hr />
-            {mkShExTabs(shex, setShEx, "Shapes graph (ShEx)")}
+            {mkShexTabs(shex, setShEx)}
             <hr />
-            {mkShapeMapTabs(shapeMap, setShapeMap, "ShapeMap")}
+            {mkShapeMapTabs(shapeMap, setShapeMap)}
             <hr />
             <Button
               variant="primary"
@@ -299,21 +286,18 @@ function ShExValidate(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultValidate
+              <ResultSchemaValidate
                 result={result}
-                permalink={
-                  !params.dataFile &&
-                  !params.schemaFile &&
-                  !params.shapeMapFile &&
-                  permalink
-                }
+                permalink={permalink}
                 disabled={disabledLinks}
               />
             ) : null}
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.validationResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>
@@ -321,4 +305,4 @@ function ShExValidate(props) {
   );
 }
 
-export default ShExValidate;
+export default ShexValidate;

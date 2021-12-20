@@ -10,7 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactTooltip from "react-tooltip";
 import API from "./API";
-import { copyToClipboard, notificationSettings } from "./utils/Utils";
+import { notificationSettings } from "./utils/Utils";
 
 // Returns a promise that will return a shortened permalink generated on the server
 // or the full-length permalink if the server response fails
@@ -94,7 +94,7 @@ export function Permalink(props) {
 
     // If a permalink has been generated already, copy to clipboard and notify
     if (permalink) {
-      copyToClipboard(permalink);
+      navigator.clipboard.writeText(permalink);
       toast.info(notificationSettings.permalinkText);
       return;
     }
@@ -108,7 +108,7 @@ export function Permalink(props) {
       : props.url;
 
     // Copy results and update state
-    copyToClipboard(newPermalink);
+    navigator.clipboard.writeText(newPermalink);
     setPermalink(newPermalink);
     setLoading(false);
 
@@ -144,8 +144,8 @@ export function Permalink(props) {
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
             {props.disabled === API.sources.byText
-              ? "Can't generate links for long manual inputs, try inserting data by URL"
-              : "Can't generate links for file-based inputs, try inserting data by URL"}
+              ? API.texts.noPermalinkManual
+              : API.texts.noPermalinkFile}
           </ReactTooltip>
         )}
         <ToastContainer

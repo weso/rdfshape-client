@@ -1,6 +1,5 @@
 import "codemirror/addon/display/placeholder";
-// import ShExForm from "../shex/ShExForm";
-// import TurtleForm from "../data/TurtleForm";
+import "codemirror/addon/edit/closetag";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/mode/javascript/javascript.js";
@@ -26,6 +25,7 @@ function Code(props) {
     lineWrapping: true,
     readOnly: props.readOnly,
     placeholder: props.placeholder,
+    autoCloseTags: true,
   };
 
   useEffect(() => {
@@ -39,22 +39,6 @@ function Code(props) {
 
   let code = null;
   switch (props.mode.toLowerCase()) {
-    /* case 'shexc': code = <ShExForm value={props.value}
-                                       theme={props.theme}
-                                       onChange={()=> null}
-                                       options={options}
-                                       fromParams={props.fromParams}
-                                       resetFromParams={props.resetFromParams}
-        />;
-        break;
-        case 'turtle': code = <TurtleForm value={props.value}
-                                       theme={props.theme}
-                                       onChange={()=> null}
-                                       options={options}
-                                       fromParams={props.fromParams}
-                                       resetFromParams={props.resetFromParams}
-        />;
-        break; */
     default:
       code = (
         <React.Fragment>
@@ -68,15 +52,6 @@ function Code(props) {
               setEditor(editor);
             }}
           />
-          {/*<DropdownButton id="dropdown-basic-button" title="Theme" variant="secondary">*/}
-          {/*    { ThemeList.map((t) =>*/}
-          {/*        <Dropdown.Item onSelect={() => setTheme(t)}*/}
-          {/*            // href={setTheme(t)}*/}
-          {/*        >*/}
-          {/*        {t}*/}
-          {/*       </Dropdown.Item>*/}
-          {/*    )}*/}
-          {/*</DropdownButton>*/}
         </React.Fragment>
       );
   }

@@ -218,15 +218,13 @@ export function cnvValueFromSPARQL(value) {
 }
 
 export function paramsFromStateEndpoint(state) {
-  let params = {};
-  params["endpoint"] = state.endpoint;
-  return params;
+  return { [API.queryParameters.endpoint.endpoint]: state.endpoint };
 }
 
 export const notificationSettings = {
-  permalinkText: "Link copied to clipboard!",
+  permalinkText: API.texts.permalinkCopied,
   position: "bottom-right",
-  autoClose: 2500,
+  autoCCytoscapeComponentlose: 2500,
   hideProgressBar: true,
   closeOnClick: true,
   pauseOnFocusLoss: false,
@@ -262,37 +260,10 @@ export function format2mode(format) {
     case API.formats.htmlRdf.toLowerCase():
       return "htmlmixed";
     default:
-      console.log(defaultMode == "turtle");
       return defaultMode;
   }
 }
 const defaultMode = API.formats.turtle.toLowerCase();
-
-export function copyToClipboard(text) {
-  // Create a dummy input to copy the link from it
-  const dummy = document.createElement("input");
-
-  // Add to document
-  document.body.appendChild(dummy);
-  dummy.setAttribute("id", "dummy_id");
-
-  // Output the link into it
-  document.getElementById("dummy_id").value = text;
-
-  // Select it
-  dummy.select();
-
-  // Copy its contents
-  document.execCommand("copy");
-
-  // Remove it as its not needed anymore
-  document.body.removeChild(dummy);
-}
-
-// Scaling limits for visualizations
-export const minZoom = 0.2;
-export const maxZoom = 1.9;
-export const stepZoom = 0.1;
 
 // Prefixes for prefix map tables
 export const prefixMapTableColumns = [
@@ -305,3 +276,14 @@ export const prefixMapTableColumns = [
     text: "IRI",
   },
 ];
+
+export const equalsIgnoreCase = (str1, str2, exact = false) => {
+  return exact
+    ? str1.toLowerCase() === str2.toLowerCase()
+    : str1.toLowerCase() == str2.toLowerCase();
+};
+
+// Zoom limits for non-cyto visualizations, whose zoom is controlled with CSS
+export const visualizationMinZoom = 0.2;
+export const visualizationMaxZoom = 1.9;
+export const visualizationStepZoom = 0.1;

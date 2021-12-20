@@ -92,7 +92,7 @@ InputTabs.defaultProps = {
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",
-  byURLPlaceholder: "http://...",
+  byURLPlaceholder: API.texts.placeholders.url,
   byFileName: "",
 };
 

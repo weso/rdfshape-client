@@ -14,10 +14,8 @@ import {
   InitialData,
   mkDataTabs,
   paramsFromStateData,
-  updateStateData,
-  dataParamsFromQueryParams,
+  updateStateData
 } from "../data/Data";
-import { endpointParamsFromQueryParams } from "../endpoint/Endpoint";
 import EndpointInput from "../endpoint/EndpointInput";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
@@ -27,11 +25,10 @@ import {
   InitialShacl,
   mkShaclTabs,
   paramsFromStateShacl,
-  shaclParamsFromQueryParams,
-  updateStateShacl,
-} from "./SHACL";
+  updateStateShacl
+} from "./Shacl";
 
-function SHACLValidate(props) {
+function ShaclValidate(props) {
   const [shacl, setShacl] = useState(InitialShacl);
   const [data, setData] = useState(InitialData);
 
@@ -59,38 +56,28 @@ function SHACLValidate(props) {
         paramsShacl,
         paramsEndpoint = {};
 
-      if (queryParams.data || queryParams.dataUrl || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         paramsData = finalData;
         setData(finalData);
       }
-      if (
-        queryParams.schema ||
-        queryParams.schemaUrl ||
-        queryParams.schemaFile
-      ) {
-        const shaclParams = shaclParamsFromQueryParams(queryParams);
-        const finalSchema = updateStateShacl(shaclParams, shacl) || shacl;
+      if (queryParams[API.queryParameters.schema.schema]) {
+        const finalSchema = updateStateShacl(queryParams, shacl) || shacl;
         paramsShacl = finalSchema;
         setShacl(finalSchema);
       }
 
       // Endpoint State
-      if (queryParams.endpoint) {
-        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
-        setEndpoint(paramsEndpoint.endpoint);
-        setWithEndpoint(!!paramsEndpoint.endpoint);
+      if (queryParams[API.queryParameters.endpoint.endpoint]) {
+        paramsEndpoint = {
+          [API.queryParameters.endpoint.endpoint]:
+            queryParams[API.queryParameters.endpoint.endpoint],
+        };
+        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
+        setWithEndpoint(!!queryParams[API.queryParameters.endpoint.endpoint]);
       }
 
-      let params = {
-        ...paramsFromStateData(paramsData),
-        ...paramsFromStateShacl(paramsShacl),
-        endpoint: paramsEndpoint.endpoint ? paramsEndpoint.endpoint : "",
-        schemaEngine: queryParams.schemaEngine || shacl.engine,
-        triggerMode: API.triggerModes.targetDecls,
-      };
-
+      const params = mkParams(paramsData, paramsShacl, paramsEndpoint);
       setParams(params);
       setLastParams(params);
     }
@@ -98,10 +85,24 @@ function SHACLValidate(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (!(params.data || params.dataUrl || params.dataFile))
-        setError("No RDF data provided");
-      else if (!(params.schema || params.schemaUrl || params.schemaFile))
-        setError("No SHACL schema provided");
+      if (
+        !(
+          params[API.queryParameters.data.data] &&
+          (params[API.queryParameters.data.source] == API.sources.byFile
+            ? params[API.queryParameters.data.data].name
+            : true)
+        )
+      )
+        setError(API.texts.noProvidedRdf);
+      else if (
+        !(
+          params[API.queryParameters.schema.schema] &&
+          (params[API.queryParameters.schema.source] == API.sources.byFile
+            ? params[API.queryParameters.schema.schema].name
+            : true)
+        )
+      )
+        setError(API.texts.noProvidedSchema);
       else {
         resetState();
         setUpHistory();
@@ -120,16 +121,27 @@ function SHACLValidate(props) {
 
     const paramsEndpoint = {};
     if (endpoint !== "") {
-      paramsEndpoint["endpoint"] = endpoint.trim();
+      paramsEndpoint[API.queryParameters.endpoint.endpoint] = endpoint.trim();
     }
 
-    setParams({
-      ...paramsFromStateShacl(shacl),
-      ...paramsFromStateData(data),
+    setParams(mkParams());
+  }
+
+  function mkParams(
+    paramsData = data,
+    paramsShacl = shacl,
+    paramsEndpoint = {}
+  ) {
+    const params = {
+      ...paramsFromStateData(paramsData),
+      ...paramsFromStateShacl(paramsShacl),
       ...paramsEndpoint,
-      schemaEngine: shacl.engine,
-      triggerMode: API.triggerModes.targetDecls,
-    });
+      triggerMode: API.triggerModes.targetDecls, // SHACL Validation
+    };
+    if (endpoint !== "") {
+      params[API.queryParameters.endpoint.endpoint] = endpoint.trim();
+    }
+    return params;
   }
 
   function postValidate(cb) {
@@ -144,7 +156,9 @@ function SHACLValidate(props) {
       .then(async (data) => {
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.routes.client.shaclValidateRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.shaclValidateRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
@@ -205,12 +219,12 @@ function SHACLValidate(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Validate RDF data with SHACL</h1>
+        <h1>{API.texts.pageHeaders.shaclValidation}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <Button
               variant="secondary"
               onClick={() => {
@@ -229,7 +243,7 @@ function SHACLValidate(props) {
               />
             ) : null}
             <hr />
-            {mkShaclTabs(shacl, setShacl, "Shapes graph (SHACL)")}
+            {mkShaclTabs(shacl, setShacl)}
             <hr />
             <Button
               variant="primary"
@@ -263,7 +277,9 @@ function SHACLValidate(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.validationResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>
@@ -271,4 +287,4 @@ function SHACLValidate(props) {
   );
 }
 
-export default SHACLValidate;
+export default ShaclValidate;
