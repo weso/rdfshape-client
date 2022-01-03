@@ -1,5 +1,5 @@
 import "codemirror/addon/display/placeholder";
-import Yate from "perfectkb-yate";
+import YATE from "perfectkb-yate";
 import "perfectkb-yate/dist/yate.css";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
@@ -11,36 +11,26 @@ function TurtleForm(props) {
   useEffect(() => {
     if (!yate) {
       const options = {
-        ...props.options,
+        readOnly: true,
         autoCloseTags: true,
         start: { line: 0 },
+        ...props.options,
       };
 
-      const y = Yate.fromTextArea(textAreaRef.current, options);
-      y.setOption("placeholder", "My Placeholder");
+      const y = YATE.fromTextArea(textAreaRef.current, options);
       y.on("change", (cm, change) => {
         props.onChange(cm.getValue(), y);
       });
       y.setValue(props.value);
       y.refresh();
       setYate(y);
-    } else {
-      if (props.options) {
-        yate.setOption("readOnly", props.options.readOnly);
-      }
-      if (props.fromParams) {
-        yate.setValue(props.value);
-        if (props.resetFromParams) {
-          props.resetFromParams();
-        } else {
-          console.error(`resetFromParams is not a function...`);
-        }
-      }
+    } else if (props.fromParams) {
+      yate.setValue(props.value);
+      props.resetFromParams && props.resetFromParams();
     }
   }, [
     yate,
     props.onChange,
-    props.placeholder,
     props.fromParams,
     props.resetFromParams,
     props.options,
@@ -50,7 +40,6 @@ function TurtleForm(props) {
   return (
     <div>
       <textarea
-        id={"Turtle-TextArea"}
         ref={textAreaRef}
         placeholder={props.options.placeholder}
       />

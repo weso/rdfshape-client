@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Container, Row } from "react-bootstrap";
+import API from "./API";
 import { getOriginalLink } from "./Permalink";
 
 export default function PermalinkReceiver(props) {
@@ -16,7 +17,7 @@ export default function PermalinkReceiver(props) {
       } else setError(fetchLink[1]);
     };
 
-    const code = props.match.params.urlCode;
+    const code = props.match.params[API.queryParameters.permalink.code];
     if (code) {
       fetchLink(code);
     }
@@ -36,7 +37,9 @@ export default function PermalinkReceiver(props) {
             </p>
           </Row>
           <Row>
-            <Alert className="width-100" variant="danger">{error}</Alert>
+            <Alert className="width-100" variant="danger">
+              {error}
+            </Alert>
           </Row>
           <hr />
           <Row>

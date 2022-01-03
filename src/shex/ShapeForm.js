@@ -1,5 +1,4 @@
 import axios from "axios";
-//import SelectFormat from "../components/SelectFormat"
 import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -26,7 +25,10 @@ export default function ShEx2XMI(props) {
   const successMessage = "Form generated successfully";
   const [shex, setShEx] = useState(InitialShex);
 
-  const [result, setResult] = useState("");
+  // Results passed down to the results component, containing:
+  // form: contains the HTML form generate by shapeForm
+  // msg: message broadly describing the result
+  const [result, setResult] = useState(null);
 
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -37,6 +39,9 @@ export default function ShEx2XMI(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
+
+  const shapeFormHelpUrl =
+    "https://github.com/weso/shapeForms#requirementslimitations";
 
   useEffect(() => {
     if (props.location?.search) {
@@ -130,8 +135,8 @@ export default function ShEx2XMI(props) {
       setProgressPercent(90);
       checkLinks();
       setResult({
-        result,
-        msg: successMessage,
+        form: result,
+        message: successMessage,
       });
       setPermalink(
         mkPermalinkLong(API.routes.client.shapeFormRoute, {
@@ -249,7 +254,6 @@ export default function ShEx2XMI(props) {
               ) : result ? (
                 <ResultShapeForm
                   result={result}
-                  mode={API.formats.xml}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />
@@ -260,7 +264,11 @@ export default function ShEx2XMI(props) {
           ) : (
             <Col className={"half-col"}>
               <Alert variant="warning">
-                Be advised: Shape Start is required in input
+                {API.texts.shapeStartRequired} (
+                <a href={shapeFormHelpUrl} target="_blank">
+                  learn more
+                </a>
+                )
               </Alert>
               <Alert variant="info">
                 {API.texts.conversionResultsWillAppearHere}

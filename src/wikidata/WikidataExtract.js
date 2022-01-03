@@ -27,10 +27,12 @@ function WikidataExtract(props) {
     event.preventDefault();
     const url = API.routes.server.dataExtract;
     let params = {};
-    params["endpoint"] = API.routes.utils.wikidataUrl;
+    params[API.queryParameters.extraction.endpoint] =
+      API.routes.utils.wikidataUrl;
     if (entities.length > 0 && entities[0].uri) {
       const nodeSelector = entities[0].uri;
-      params["nodeSelector"] = "<" + nodeSelector + ">";
+      params[API.queryParameters.extraction.nodeSelector] =
+        "<" + nodeSelector + ">";
       console.info(`Node selector: ${nodeSelector}`);
       setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
       let formData = params2Form(params);

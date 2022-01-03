@@ -1,8 +1,10 @@
-import "codemirror/addon/display/placeholder";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
-import Yashe from "yashe/dist/yashe.bundled.min";
+import YASHE from "yashe/dist/yashe.bundled.min";
 import "yashe/dist/yashe.min.css";
+import "../utils/yashe/placeholder-fix";
+
+
 
 function ShexForm(props) {
   const [yashe, setYashe] = useState(null);
@@ -10,28 +12,25 @@ function ShexForm(props) {
 
   useEffect(() => {
     const options = {
+      start: { line: 5 },
       ...props.options,
-      start: { line: 0 },
     };
     if (!yashe) {
-      const y = Yashe.fromTextArea(textAreaRef.current, options);
+      const y = YASHE.fromTextArea(textAreaRef.current, options);
       if (props.setCodeMirror) props.setCodeMirror(y);
       y.on("change", (cm, change) => {
-        // setQuery(cm.getValue())
-        props.onChange(cm.getValue(), y);
-        // y.refresh();
+        props.onChange && props.onChange(cm.getValue(), y);
       });
       y.setValue(props.value);
       y.refresh();
       setYashe(y);
     } else if (props.fromParams) {
       yashe.setValue(props.value);
-      props.resetFromParams();
+      props.resetFromParams && props.resetFromParams();
     }
   }, [
     yashe,
     props.onChange,
-    props.placeholder,
     props.fromParams,
     props.resetFromParams,
     props.setCodeMirror,

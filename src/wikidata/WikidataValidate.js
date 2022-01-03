@@ -112,10 +112,10 @@ function WikidataValidate(props) {
     const shapeMap = shapeMapFromEntities(entities, shapeLabel);
     const paramsEndpoint = { endpoint: API.routes.utils.wikidataUrl };
     let params = { ...paramsEndpoint, ...paramsShEx };
-    params["schemaEngine"] = "ShEx";
-    params["triggerMode"] = API.triggerModes.shapeMap;
-    params["shapeMap"] = shapeMap;
-    params["shapeMapFormat"] = API.formats.compact;
+    params[API.queryParameters.schema.engine] = API.engines.shex;
+    params[API.queryParameters.schema.triggerMode] = API.triggerModes.shapeMap;
+    params[API.queryParameters.shapeMap.shapeMap] = shapeMap;
+    params[API.queryParameters.shapeMap.format] = API.formats.compact;
     const formData = params2Form(params);
     setPermalink(
       mkPermalinkLong(API.routes.client.wikidataValidateRoute, params)

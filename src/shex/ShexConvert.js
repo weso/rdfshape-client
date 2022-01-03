@@ -115,7 +115,7 @@ function ShexConvert(props) {
         setProgressPercent(70);
         setResult(data);
         setPermalink(
-          mkPermalinkLong(API.routes.client.shExConvertRoute, params)
+          mkPermalinkLong(API.routes.client.shexConvertRoute, params)
         );
         setProgressPercent(90);
         checkLinks();
@@ -151,7 +151,7 @@ function ShexConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.routes.client.shExConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shexConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -159,7 +159,7 @@ function ShexConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.routes.client.shExConvertRoute, params)
+      mkPermalinkLong(API.routes.client.shexConvertRoute, params)
     );
 
     setLastParams(params);

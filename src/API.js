@@ -127,6 +127,10 @@ class API {
       query: "query",
       source: "querySource",
     },
+    extraction: {
+      endpoint: "endpoint",
+      nodeSelector: "nodeSelector"
+    },
     endpoint: {
       endpoint: "endpoint",
     },
@@ -134,6 +138,9 @@ class API {
       uml: "uml",
       source: "umlSource",
       format: "umlFormat",
+    },
+    permalink: {
+      code: "urlCode",
     },
   };
 
@@ -313,6 +320,7 @@ class API {
       "Can't generate links for file-based inputs, try inserting data by URL",
     embeddedLink: "Embedded link",
     permalinkCopied: "Link copied to clipboard!",
+    shapeStartRequired:"\"Shape Start\" is required on input"
   };
 }
 

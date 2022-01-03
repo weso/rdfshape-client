@@ -9,46 +9,38 @@ import Code from "./Code";
 
 function ByText(props) {
   function handleChange(value) {
-    props.handleByTextChange(value);
+    props.handleByTextChange && props.handleByTextChange(value);
   }
 
-  // Choose which input component to use regarding the format of the data.
-  // Use a generic <Code> element with text by default
-  let inputText;
+  const textFormat = props.textFormat?.toLowerCase();
 
-  switch (props.textFormat?.toLowerCase()) {
-    case API.formats.turtle.toLowerCase():
-      inputText = (
+  return (
+    <Form.Group>
+      <Form.Label>{props.name}</Form.Label>
+      {/* Choose which input component to use regarding the format of the data.
+      Use a generic <Code> element with text by default */}
+      {textFormat == API.formats.turtle.toLowerCase() ? (
         <TurtleForm
-          onChange={props.handleByTextChange}
+          onChange={handleChange}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
-          options={{ placeholder: props.placeholder, readonly: props.readonly }}
+          options={{ placeholder: props.placeholder, readOnly: props.readonly }}
         />
-      );
-      break;
-
-    case API.formats.shexc.toLowerCase():
-      inputText = (
+      ) : textFormat == API.formats.shexc.toLowerCase() ? (
         <ShexForm
-          onChange={props.handleByTextChange}
+          onChange={handleChange}
           setCodeMirror={props.setCodeMirror}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
-          options={{ placeholder: props.placeholder, readonly: props.readonly }}
+          options={{ readonly: props.readonly }}
+          placeholder={props.placeholder}
         />
-      );
-      break;
-
-    default:
-      // no special format, default to <Code> item.
-      const mode = format2mode(props.textFormat);
-      inputText = (
+      ) : (
         <Code
           value={props.textAreaValue}
-          mode={mode}
+          mode={format2mode(props.textFormat)}
           onChange={handleChange}
           setCodeMirror={props.setCodeMirror}
           placeholder={props.placeholder}
@@ -56,14 +48,7 @@ function ByText(props) {
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
         />
-      );
-      break;
-  }
-
-  return (
-    <Form.Group>
-      <Form.Label>{props.name}</Form.Label>
-      {inputText}
+      )}
     </Form.Group>
   );
 }
@@ -71,12 +56,12 @@ function ByText(props) {
 ByText.propTypes = {
   name: PropTypes.string,
   textAreaValue: PropTypes.string,
-  handleByTextChange: PropTypes.func.isRequired,
+  handleByTextChange: PropTypes.func,
   setCodeMirror: PropTypes.func,
   placeholder: PropTypes.string,
   textFormat: PropTypes.string,
   importForm: PropTypes.element,
-  resetFromParams: PropTypes.func.isRequired,
+  resetFromParams: PropTypes.func,
   fromParams: PropTypes.bool.isRequired,
   readonly: PropTypes.bool,
 };
@@ -84,6 +69,7 @@ ByText.propTypes = {
 ByText.defaultProps = {
   placeholder: "...",
   readonly: false,
+  fromParams: false,
 };
 
 export default ByText;

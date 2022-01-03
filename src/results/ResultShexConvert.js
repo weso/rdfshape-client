@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
@@ -33,11 +33,11 @@ function ResultShExConvert({
         <Alert variant="success">{message}</Alert>
         {/* Output schema */}
         {outputSchema && outputFormatName && (
-          // TODO: output schema should be in Yashe too
-          <Code
-            value={outputSchema}
-            mode={format2mode(outputFormatName)}
-            readOnly={true}
+          <ByText
+            textAreaValue={outputSchema}
+            textFormat={format2mode(outputFormatName)}
+            readonly={true}
+            fromParams={false}
           />
         )}
         <br />
