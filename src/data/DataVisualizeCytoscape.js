@@ -277,7 +277,7 @@ function DataVisualizeCytoscape(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Visualize
+              {API.texts.actionButtons.visualize}
             </Button>
           </Form>
         </Col>

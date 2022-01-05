@@ -140,7 +140,7 @@ function EndpointInfo(props) {
           className={"btn-with-icon " + (loading ? "disabled" : "")}
           disabled={loading}
         >
-          Info about endpoint
+          {API.texts.actionButtons.fetch}
         </Button>
       </Form>
 
@@ -161,7 +161,7 @@ function EndpointInfo(props) {
           ) : result ? (
             <Fragment>
               <Alert className="width-100" variant="success">
-                Endpoint ONLINE
+                {API.texts.endpoints.online}
               </Alert>
               <ResultEndpointInfo
                 result={result}

@@ -164,7 +164,7 @@ function ShapeMapInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Info about shape map
+              {API.texts.actionButtons.analyze}
             </Button>
           </Form>
         </Col>

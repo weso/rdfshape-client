@@ -12,6 +12,7 @@ import API from "../API";
 import { mkPermalinkLong } from "../Permalink";
 import ResultShapeForm from "../results/ResultShapeForm";
 import { mkError } from "../utils/ResponseError";
+import { getFileContents } from "../utils/Utils";
 import ShexParser from "./shapeform/ShExParser";
 import {
   getShexText,
@@ -102,11 +103,7 @@ export default function ShEx2XMI(props) {
 
       // File upload, read the file and return the raw text
       case API.sources.byFile:
-        return await new Promise((res, rej) => {
-          const reader = new FileReader();
-          reader.onload = () => res(reader.result);
-          reader.readAsText(schemaData);
-        });
+        return getFileContents(schemaData);
     }
   }
 
@@ -236,7 +233,7 @@ export default function ShEx2XMI(props) {
                 className={"btn-with-icon " + (loading ? "disabled" : "")}
                 disabled={loading}
               >
-                Create Form
+                {API.texts.actionButtons.createForm}
               </Button>
             </Form>
           </Col>

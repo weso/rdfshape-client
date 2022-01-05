@@ -159,7 +159,7 @@ function WikidataValidate(props) {
 
   return (
     <Container>
-      <h1>Validate Wikidata entities</h1>
+      <h1>{API.texts.pageHeaders.wikidataValidate}</h1>
       {status.result || status.loading || status.error ? (
         <Row>
           {status.loading ? (

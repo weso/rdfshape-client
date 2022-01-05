@@ -231,7 +231,7 @@ function ShexValidateEndpoint(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Validate from endpoint
+              {API.texts.actionButtons.validate}
             </Button>
           </Form>
         </Col>

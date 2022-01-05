@@ -175,7 +175,7 @@ function DataExtract(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Extract schema
+              {API.texts.actionButtons.extract}
             </Button>
           </Form>
         </Col>

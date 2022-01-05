@@ -129,7 +129,7 @@ class API {
     },
     extraction: {
       endpoint: "endpoint",
-      nodeSelector: "nodeSelector"
+      nodeSelector: "nodeSelector",
     },
     endpoint: {
       endpoint: "endpoint",
@@ -240,7 +240,11 @@ class API {
       dataMergeConvert: "Data merge & convert",
       dataMergeVisualize: "Data merge & visualize",
       dataQuery: "Data query",
+      wikidataQuery: "Query Wikidata",
+      wikidataValidate: "Validate Wikidata entities",
       dataShexExtraction: "Extract ShEx from Data",
+      wikidataSchemaExtraction: "Extract schema from Wikidata entities",
+      endpointSchemaExtraction: "Extract schema from Endpoint node",
 
       endpointInfo: "Endpoint information",
       endpointQuery: "Endpoint query",
@@ -273,6 +277,16 @@ class API {
       formatHeader: "Format",
     },
 
+    endpoints: {
+      commonEndpoints: "Common endpoints",
+      online: "Endpoint ONLINE",
+    },
+
+    xmi: {
+      umlToShex: "Load UML to ShEx converter",
+      shexToUml: "Load ShEx to UML converter",
+    },
+
     placeholders: {
       sparqlQuery: "SELECT...",
       rdf: "RDF...",
@@ -281,6 +295,18 @@ class API {
       shacl: "SHACL...",
       shapeMap: "<node>@<Shape>...>",
       xmi: "XMI...",
+    },
+
+    actionButtons: {
+      analyze: "Analyze",
+      convert: "Convert",
+      visualize: "Visualize",
+      validate: "Validate",
+      merge: "Merge",
+      query: "Query",
+      extract: "Extract",
+      fetch: "Fetch",
+      createForm: "Create form",
     },
 
     validationResults: {
@@ -305,6 +331,7 @@ class API {
     errorResponsePrefix: "Error response",
     responseSummaryText: "Full response",
     noPrefixes: "No prefixes",
+
     operationInformation: "Operation information",
     visualizationsWillAppearHere: "Visualizations will appear here",
     dataInfoWillAppearHere: "Data info will appear here",
@@ -320,7 +347,7 @@ class API {
       "Can't generate links for file-based inputs, try inserting data by URL",
     embeddedLink: "Embedded link",
     permalinkCopied: "Link copied to clipboard!",
-    shapeStartRequired:"\"Shape Start\" is required on input"
+    shapeStartRequired: '"Shape Start" is required on input',
   };
 }
 

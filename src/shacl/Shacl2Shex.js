@@ -249,7 +249,7 @@ export default function Shacl2Shex(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert to ShEx
+              {API.texts.actionButtons.convert}
             </Button>
           </Form>
         </Col>

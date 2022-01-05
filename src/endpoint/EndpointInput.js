@@ -39,7 +39,7 @@ function EndpointInput({ value, handleOnChange, handleOnSelect }) {
       <Dropdown onSelect={onSelect}>
         <DropdownButton
           alignRight
-          title="Common endpoints"
+          title={API.texts.endpoints.commonEndpoints}
           id="select-endpoint"
         >
           {dropDownItems}

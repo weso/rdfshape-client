@@ -287,3 +287,11 @@ export const equalsIgnoreCase = (str1, str2, exact = false) => {
 export const visualizationMinZoom = 0.2;
 export const visualizationMaxZoom = 1.9;
 export const visualizationStepZoom = 0.1;
+
+// Function for reading Files from the client and extracting their text contents
+export const getFileContents = async (file) =>
+  await new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = () => res(reader.result);
+    reader.readAsText(file);
+  });

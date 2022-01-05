@@ -207,7 +207,7 @@ function DataVisualizeGraphviz(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Visualize
+              {API.texts.actionButtons.visualize}
             </Button>
           </Form>
         </Col>
@@ -276,7 +276,13 @@ function DataVisualizeGraphviz(props) {
 }
 
 export function processDotData(dot, setError, setVisualization) {
-  convertDot(dot, "dot", API.formats.svg, setError, setVisualization);
+  convertDot(
+    dot,
+    API.formats.dot.toLowerCase(),
+    API.formats.svg,
+    setError,
+    setVisualization
+  );
 }
 
 export default DataVisualizeGraphviz;

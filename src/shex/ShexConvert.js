@@ -195,7 +195,7 @@ function ShexConvert(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert
+              {API.texts.actionButtons.convert}
             </Button>
           </Form>
         </Col>

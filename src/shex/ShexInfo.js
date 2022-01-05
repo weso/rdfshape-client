@@ -167,7 +167,7 @@ function ShexInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Info about ShEx schema
+              {API.texts.actionButtons.analyze}
             </Button>
           </Form>
         </Col>

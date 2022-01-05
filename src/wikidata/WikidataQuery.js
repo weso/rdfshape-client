@@ -9,10 +9,7 @@ import Row from "react-bootstrap/Row";
 import Pace from "react-pace-progress";
 import API from "../API";
 import { mkPermalink, Permalink } from "../Permalink";
-import {
-    InitialQuery,
-    mkQueryTabs
-} from "../query/Query";
+import { InitialQuery, mkQueryTabs } from "../query/Query";
 import ResultEndpointQuery from "../results/ResultEndpointQuery";
 import { mkError } from "../utils/ResponseError";
 
@@ -55,7 +52,7 @@ function WikidataQuery(props) {
 
   return (
     <Container>
-      <h1>Query Wikidata</h1>
+      <h1>{API.texts.pageHeaders.wikidataQuery}</h1>
       <Row>
         {result || loading || error ? (
           <Col>
@@ -73,7 +70,7 @@ function WikidataQuery(props) {
           <Form onSubmit={handleSubmit}>
             {mkQueryTabs(query, setQuery)}
             <Button variant="primary" type="submit">
-              Query
+              {API.texts.actionButtons.query}
             </Button>
           </Form>
         </Col>

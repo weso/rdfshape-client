@@ -59,7 +59,7 @@ function WikidataExtract(props) {
 
   return (
     <Container>
-      <h1>Extract schema from Wikidata entities</h1>
+      <h1>{API.texts.pageHeaders.wikidataSchemaExtraction}</h1>
       <InputEntitiesByText onChange={handleChange} entities={entities} />
       <Table>
         {entities.map((e) => (
@@ -72,7 +72,7 @@ function WikidataExtract(props) {
       </Table>
       <Form onSubmit={handleSubmit}>
         <Button variant="primary" type="submit">
-          Extract Schema
+          {API.texts.actionButtons.extract}
         </Button>
       </Form>
       {loading ? <Pace color="#27ae60" /> : null}

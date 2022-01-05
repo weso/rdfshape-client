@@ -251,7 +251,7 @@ function ShaclValidate(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Validate
+              {API.texts.actionButtons.validate}
             </Button>
           </Form>
         </Col>

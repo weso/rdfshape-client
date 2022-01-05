@@ -194,7 +194,7 @@ function DataQuery(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Query
+              {API.texts.actionButtons.query}
             </Button>
           </Form>
         </Col>

@@ -100,6 +100,7 @@ function ShowVisualization({
     switch (vType) {
       case visualizationTypes.svgRaw:
       case visualizationTypes.svgObject:
+
         return () => ({
           link: URL.createObjectURL(
             new Blob([vData.outerHTML || vData], {

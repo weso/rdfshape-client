@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import API from "../API";
 import EndpointInput from "./EndpointInput";
 
 function EndpointExtract() {
@@ -30,7 +31,7 @@ function EndpointExtract() {
 
   return (
     <Container fluid={true}>
-      <h1>Extract schema from Endpoint node</h1>
+      <h1>{API.texts.pageHeaders.endpointSchemaExtraction}</h1>
       <Alert variant="danger">Not implemented yet</Alert>
       <Form id="common-endpoints" onSubmit={handleSubmit}>
         <EndpointInput
@@ -45,7 +46,7 @@ function EndpointExtract() {
           className={"btn-with-icon " + (loading ? "disabled" : "")}
           disabled={loading}
         >
-          Extract schema
+          {API.texts.actionButtons.extract}
         </Button>
       </Form>
       {loading || result || error || permalink ? (

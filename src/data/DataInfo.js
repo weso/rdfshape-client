@@ -161,7 +161,7 @@ function DataInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Analyze
+              {API.texts.actionButtons.analyze}
             </Button>
           </Form>
         </Col>

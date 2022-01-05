@@ -17,7 +17,9 @@ import {
   visualizationMinZoom,
   visualizationStepZoom
 } from "../utils/Utils";
-import ShowVisualization from "../visualization/ShowVisualization";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import {
   getDataText,
@@ -26,11 +28,15 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
+import { mkServerParams } from "./DataMerge";
 import { processDotData } from "./DataVisualizeGraphviz";
 
 function DataMergeVisualize(props) {
   const [data1, setData1] = useState(InitialData);
   const [data2, setData2] = useState(InitialData);
+  // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
+  const [dataTargetFormat] = useState(API.formats.dot);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [error, setError] = useState(null);
@@ -58,11 +64,14 @@ function DataMergeVisualize(props) {
             queryParams[API.queryParameters.data.compound]
           );
 
-          setData1(updateStateData(contents[0], data1) || data1);
-          setData2(updateStateData(contents[1], data2) || data2);
+          const newData1 = updateStateData(contents[0], data1) || data1;
+          const newData2 = updateStateData(contents[1], data2) || data2;
+          setData1(newData1);
+          setData2(newData2);
 
-          setParams(queryParams);
-          setLastParams(queryParams);
+          const params = mkParams(newData1, newData2);
+          setParams(params);
+          setLastParams(params);
         } catch {
           setError(API.texts.errorParsingUrl);
         }
@@ -75,21 +84,7 @@ function DataMergeVisualize(props) {
   useEffect(() => {
     if (params && params[API.queryParameters.data.compound]) {
       const parameters = JSON.parse(params[API.queryParameters.data.compound]);
-      if (
-        parameters.some(
-          (p) => p[API.queryParameters.data.source] == API.sources.byFile
-        )
-      ) {
-        setError("Not implemented Merge from files.");
-      } else if (
-        parameters.some(
-          (p) =>
-            p[API.queryParameters.data.data] &&
-            (p[API.queryParameters.data.source] == API.sources.byFile
-              ? params[API.queryParameters.data.data].name
-              : true) // Extra check for files
-        )
-      ) {
+      if (parameters.some((p) => p[API.queryParameters.data.data])) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -103,21 +98,35 @@ function DataMergeVisualize(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      [API.queryParameters.data.compound]: JSON.stringify([
-        paramsFromStateData(data1),
-        paramsFromStateData(data2),
-      ]),
-    });
+    setParams(mkParams());
   }
 
-  function postVisualize(cb) {
+  function mkParams(data1Params = data1, data2Params = data2) {
+    const finalDataParams = [
+      paramsFromStateData(data1Params),
+      paramsFromStateData(data2Params),
+    ];
+
+    return {
+      [API.queryParameters.data.compound]: JSON.stringify(finalDataParams),
+      [API.queryParameters.data.targetFormat]: dataTargetFormat,
+    };
+  }
+
+  async function postVisualize(cb) {
     setLoading(true);
     setProgressPercent(15);
-    const formData = params2Form(params);
-    formData.append(API.queryParameters.data.targetFormat, API.formats.dot); // The server internally converts to DOT and the client interprets that DOT as the user needs it (SVG, PNG...)
 
+    const serverParams = await mkServerParams(data1, data2, dataTargetFormat);
+    if (!serverParams) {
+      resetState();
+      setError(API.texts.noProvidedRdf);
+      return;
+    }
+
+    const formData = params2Form(serverParams);
     setProgressPercent(35);
+
     axios
       .post(url, formData)
       .then((response) => response.data)
@@ -199,6 +208,7 @@ function DataMergeVisualize(props) {
     setSvgZoom(1);
     setPermalink(null);
     setError(null);
+    setLoading(false);
     setProgressPercent(0);
   }
 
@@ -282,7 +292,11 @@ function DataMergeVisualize(props) {
                   >
                     <ShowVisualization
                       data={visualization.data}
+                      type={visualizationTypes.svgObject}
+                      raw={false}
                       zoom={svgZoom}
+                      embedLink={embedLink}
+                      disabledLinks={disabledLinks}
                     />
                   </div>
                 </div>

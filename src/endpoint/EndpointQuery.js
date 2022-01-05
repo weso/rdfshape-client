@@ -205,7 +205,7 @@ function EndpointQuery(props) {
           className={"btn-with-icon " + (loading ? "disabled" : "")}
           disabled={loading}
         >
-          Query endpoint (Ctrl+Enter)
+          {API.texts.actionButtons.query}
         </Button>
       </Form>
 

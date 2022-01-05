@@ -11,8 +11,9 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultDataConvert from "../results/ResultDataConvert";
+import ResultDataMerge from "../results/ResultDataMerge";
 import { mkError } from "../utils/ResponseError";
+import { getFileContents } from "../utils/Utils";
 import {
   getDataText,
   InitialData,
@@ -62,8 +63,14 @@ function DataMerge(props) {
           setData1(newData1);
           setData2(newData2);
 
-          setParams(queryParams);
-          setLastParams(queryParams);
+          const params = mkParams(
+            newData1,
+            newData2,
+            queryParams[API.queryParameters.data.targetFormat] ||
+              dataTargetFormat
+          );
+          setParams(params);
+          setLastParams(params);
         } catch {
           setError(API.texts.errorParsingUrl);
         }
@@ -76,21 +83,7 @@ function DataMerge(props) {
   useEffect(() => {
     if (params && params[API.queryParameters.data.compound]) {
       const parameters = JSON.parse(params[API.queryParameters.data.compound]);
-      if (
-        parameters.some(
-          (p) => p[API.queryParameters.data.source] == API.sources.byFile
-        )
-      ) {
-        setError("Not implemented Merge from files.");
-      } else if (
-        parameters.some(
-          (p) =>
-            p[API.queryParameters.data.data] &&
-            (p[API.queryParameters.data.source] == API.sources.byFile
-              ? params[API.queryParameters.data.data].name
-              : true) // Extra check for files
-        )
-      ) {
+      if (parameters.some((p) => p[API.queryParameters.data.data])) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -104,21 +97,38 @@ function DataMerge(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    // Combine params
-    setParams({
-      [API.queryParameters.data.compound]: JSON.stringify([
-        paramsFromStateData(data1),
-        paramsFromStateData(data2),
-      ]),
-      [API.queryParameters.data.targetFormat]: dataTargetFormat,
-    });
+    setParams(mkParams());
   }
 
-  function postMerge(cb) {
+  function mkParams(
+    data1Params = data1,
+    data2Params = data2,
+    targetFormat = dataTargetFormat
+  ) {
+    const finalDataParams = [
+      paramsFromStateData(data1Params),
+      paramsFromStateData(data2Params),
+    ];
+
+    return {
+      [API.queryParameters.data.compound]: JSON.stringify(finalDataParams),
+      [API.queryParameters.data.targetFormat]: targetFormat,
+    };
+  }
+
+  async function postMerge(cb) {
     setLoading(true);
     setProgressPercent(15);
 
-    const formData = params2Form(params);
+    const serverParams = await mkServerParams(data1, data2, dataTargetFormat);
+    if (!serverParams) {
+      resetState();
+      setError(API.texts.noProvidedRdf);
+      return;
+    }
+
+    const formData = params2Form(serverParams);
+
     setProgressPercent(35);
 
     axios
@@ -193,6 +203,7 @@ function DataMerge(props) {
     setResult(null);
     setPermalink(null);
     setError(null);
+    setLoading(false);
     setProgressPercent(0);
   }
 
@@ -221,7 +232,7 @@ function DataMerge(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Merge
+              {API.texts.actionButtons.merge}
             </Button>
           </Form>
         </Col>
@@ -232,18 +243,18 @@ function DataMerge(props) {
                 striped
                 animated
                 variant="info"
-                fromParams
                 now={progressPercent}
               />
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultDataConvert
+              <ResultDataMerge
                 result={result}
                 fromParams={data1.fromParams}
-                resetFromParams={() =>
-                  setData1({ ...data1, fromParams: false })
-                }
+                resetFromParams={() => {
+                  setData1({ ...data1, fromParams: false });
+                  setData2({ ...data2, fromParams: false });
+                }}
                 permalink={permalink}
                 disabled={disabledLinks}
               />
@@ -260,3 +271,39 @@ function DataMerge(props) {
 }
 
 export default DataMerge;
+
+// Make the "fake" params used to implement File uploads. More info below.
+export async function mkServerParams(data1Params, data2Params, targetFormat) {
+  const dataItems = [data1Params, data2Params];
+  // Check for invalid file parameters first
+  if (
+    dataItems.some(
+      (it) => it.activeSource === API.sources.byFile && !it.file?.name
+    )
+  )
+    return;
+
+  const finalDataParams = dataItems
+    .map(paramsFromStateData)
+    .filter((it) => !!it[API.queryParameters.data.data]); // Do not include empty data in the array
+
+  // We upload to the server all the data items after applying JSON.stringify.
+  // This destroys data items uploaded by file, thus:
+  // 1- If any data item is uploaded by File, extract file contents as raw text
+  // 2- In the API request, change the source to byText and the contents to the text to
+  // pretend it is a raw text upload
+
+  for (const it of finalDataParams) {
+    if (it[API.queryParameters.data.source] === API.sources.byFile) {
+      it[API.queryParameters.data.source] = API.sources.byText;
+      it[API.queryParameters.data.data] = await getFileContents(
+        it[API.queryParameters.data.data]
+      );
+    }
+  }
+
+  return {
+    [API.queryParameters.data.compound]: JSON.stringify(finalDataParams),
+    [API.queryParameters.data.targetFormat]: targetFormat,
+  };
+}

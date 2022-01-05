@@ -22,6 +22,7 @@ import {
   updateStateUml
 } from "../uml/UML";
 import { mkError } from "../utils/ResponseError";
+import { getFileContents } from "../utils/Utils";
 import {
   getShexText,
   InitialShex,
@@ -190,11 +191,7 @@ export default function Shex2Xmi(props) {
 
       // File upload, read the file and return the raw text
       case API.sources.byFile:
-        return await new Promise((res, rej) => {
-          const reader = new FileReader();
-          reader.onload = () => res(reader.result);
-          reader.readAsText(userData);
-        });
+        return getFileContents(userData);
     }
   }
 
@@ -307,7 +304,7 @@ export default function Shex2Xmi(props) {
                   className={"btn-with-icon " + (loading ? "disabled" : "")}
                   disabled={loading}
                 >
-                  Convert to UML
+                  {API.texts.actionButtons.convert}
                 </Button>
               </Form>
               <Button
@@ -317,7 +314,7 @@ export default function Shex2Xmi(props) {
                 className={"btn-with-icon " + (loading ? "disabled" : "")}
                 disabled={loading}
               >
-                Load UML to ShEx converter
+                {API.texts.xmi.umlToShex}
               </Button>
             </Col>
             {loading || result || error || permalink ? (
@@ -368,7 +365,7 @@ export default function Shex2Xmi(props) {
                   className={"btn-with-icon " + (loading ? "disabled" : "")}
                   disabled={loading}
                 >
-                  Convert to ShEx
+                  {API.texts.actionButtons.convert}
                 </Button>
               </Form>
               <Button
@@ -378,7 +375,7 @@ export default function Shex2Xmi(props) {
                 className={"btn-with-icon " + (loading ? "disabled" : "")}
                 disabled={loading}
               >
-                Load ShEx to UML converter
+                {API.texts.xmi.shexToUml}
               </Button>
             </Col>
             {loading || result || error || permalink ? (
