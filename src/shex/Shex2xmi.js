@@ -209,11 +209,11 @@ export default function Shex2Xmi(props) {
         result = shumlex.XMIToShEx(input);
         graph = shumlex.crearGrafo(result);
       }
-      checkLinks();
       setProgressPercent(90);
+      checkLinks();
       setResult({
         result,
-        grafico: graph,
+        graph,
         msg: successMessage,
       });
       setPermalink(
@@ -226,7 +226,7 @@ export default function Shex2Xmi(props) {
           ...error,
           message: `An error has occurred while creating the ${
             isShEx2Uml ? "UML" : "ShEx"
-          } equivalent:\n${error}`,
+          } equivalent. Check your inputs.\n${error}`,
         })
       );
     } finally {
@@ -236,12 +236,17 @@ export default function Shex2Xmi(props) {
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
-    const disabled =
-      getShexText(shex).length > API.limits.byTextCharacterLimit
+    const disabled = isShEx2Uml
+      ? getShexText(shex).length > API.limits.byTextCharacterLimit
         ? API.sources.byText
         : shex.activeSource === API.sources.byFile
         ? API.sources.byFile
-        : false;
+        : false
+      : getUmlText(uml).length > API.limits.byTextCharacterLimit
+      ? API.sources.byText
+      : uml.activeSource === API.sources.byFile
+      ? API.sources.byFile
+      : false;
 
     setDisabledLinks(disabled);
   }
@@ -288,6 +293,7 @@ export default function Shex2Xmi(props) {
 
   return (
     <Container fluid={true}>
+      {/* Render ShEx to UML converter */}
       {isShEx2Uml && (
         <>
           <Row>
@@ -331,13 +337,10 @@ export default function Shex2Xmi(props) {
                 ) : result ? (
                   <ResultShex2Xmi
                     result={result}
-                    mode={API.formats.xml}
                     permalink={permalink}
                     disabled={disabledLinks}
                   />
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Col>
             ) : (
               <Col className={"half-col"}>
@@ -349,13 +352,14 @@ export default function Shex2Xmi(props) {
           </Row>
         </>
       )}
+      {/* Render UML to ShEx converter */}
       {!isShEx2Uml && (
         <>
           <Row>
             <h1>{API.texts.pageHeaders.umlToShex}</h1>
           </Row>
           <Row>
-            <Col className={"half-col border-right"}>
+            <Col className="half-col border-right">
               <Form onSubmit={handleSubmit}>
                 {mkUMLTabs(uml, setUml)}
                 <hr />
@@ -379,7 +383,7 @@ export default function Shex2Xmi(props) {
               </Button>
             </Col>
             {loading || result || error || permalink ? (
-              <Col className={"half-col"} style={{ marginTop: "1.95em" }}>
+              <Col className="half-col">
                 {loading ? (
                   <ProgressBar
                     striped
@@ -392,23 +396,13 @@ export default function Shex2Xmi(props) {
                 ) : result ? (
                   <ResultXmi2Shex
                     result={result}
-                    mode={API.formats.turtle}
                     permalink={permalink}
-                    activeSource="XMI"
-                    disabled={
-                      getUmlText(uml).length > API.limits.byTextCharacterLimit
-                        ? API.sources.byText
-                        : uml.activeSource === API.sources.byFile
-                        ? API.sources.byFile
-                        : false
-                    }
+                    disabled={disabledLinks}
                   />
-                ) : (
-                  ""
-                )}
+                ) : null}
               </Col>
             ) : (
-              <Col className={"half-col"}>
+              <Col className="half-col">
                 <Alert variant="info">
                   {API.texts.conversionResultsWillAppearHere}
                 </Alert>

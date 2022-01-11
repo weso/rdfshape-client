@@ -25,7 +25,6 @@ function InputTabs(props) {
       <Form.Label style={{ fontWeight: "bold" }}>{props.name}</Form.Label>
       <Tabs
         activeKey={activeSource}
-        transition={false}
         id="dataTabs"
         onSelect={handleTabChange}
       >

@@ -68,11 +68,12 @@ function ShowVisualization({
         return (
           <CytoscapeComponent
             elements={vData.elements}
-            stylesheet={stylesheetCytoscape}
+            stylesheet={[...stylesheetCytoscape, ...(vData.stylesheet || [])]} // Overwrite default styles with user styles, if any
             minZoom={cytoscapeMinZoom}
             maxZoom={cytoscapeMaxZoom}
+            wheelSensitivity={0.4}
             className={"cyto-container"}
-            layout={vData.layout || breadthfirst}
+            layout={(vData.layout || breadthfirst)}
             cy={(cy) => {
               cy.ready(() => {
                 vData.refCyto.current = cy;
@@ -100,7 +101,6 @@ function ShowVisualization({
     switch (vType) {
       case visualizationTypes.svgRaw:
       case visualizationTypes.svgObject:
-
         return () => ({
           link: URL.createObjectURL(
             new Blob([vData.outerHTML || vData], {

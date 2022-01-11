@@ -268,7 +268,7 @@ function DataVisualizeCytoscape(props) {
         <h1>{API.texts.pageHeaders.dataVisualization}</h1>
       </Row>
       <Row>
-        <Col className={"half-col border-right"}>
+        <Col className="half-col border-right">
           <Form onSubmit={handleSubmit}>
             {mkDataTabs(data, setData)}
             <Button

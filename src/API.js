@@ -157,6 +157,8 @@ class API {
   static tabs = {
     xmi: "XMI",
     uml: "UML",
+    shex: "ShEx",
+    visualization: "visualization",
   };
 
   // Formats (most formats come from server but we need defaults for data initialization)
@@ -320,10 +322,20 @@ class API {
         "Validation was completed but no results were obtained, check if the input data is coherent",
     },
 
+    misc: {
+      shex: "ShEx",
+      xmi: "XMI",
+      graph: "Graph",
+      umlDiagram: "UML Diagram",
+      fullscreen: "Fullscreen",
+      download: "Download",
+    },
+
     networkError: "Network error",
     errorParsingUrl: "Could not parse URL information",
     noProvidedRdf: "No RDF data provided",
     noProvidedSchema: "No schema provided",
+    invalidXmiSchema: "Invalid XMI schema",
     noProvidedShapeMap: "No shapeMap provided",
     noProvidedQuery: "No query provided",
     noProvidedEndpoint: "No endpoint provided",
@@ -348,6 +360,9 @@ class API {
     embeddedLink: "Embedded link",
     permalinkCopied: "Link copied to clipboard!",
     shapeStartRequired: '"Shape Start" is required on input',
+
+    enableFullscreen: "Show at fullscreen",
+    leaveFullscreen: "✖ Leave fullscreen",
   };
 }
 
