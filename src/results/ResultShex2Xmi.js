@@ -9,7 +9,7 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 import ShowVisualization, {
-  visualizationTypes
+  visualizationTypes,
 } from "../visualization/ShowVisualization";
 
 function ResultShEx2XMI({
@@ -30,10 +30,6 @@ function ResultShEx2XMI({
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [svg, setSvg] = useState("");
-
-  function handleTabChange(e) {
-    setActiveTab(e);
-  }
 
   // useEffect(() => setSvg(mkSvgElement()), []);
 
@@ -61,7 +57,11 @@ function ResultShEx2XMI({
   if (conversionResult)
     return (
       <div>
-        <Tabs activeKey={activeTab} id="dataTabs" onSelect={handleTabChange}>
+        <Tabs
+          activeKey={activeTab}
+          id="dataTabs"
+          onSelect={(e) => setActiveTab(e)}
+        >
           <Tab eventKey={API.tabs.xmi} title={API.texts.misc.xmi}>
             {resultRaw && (
               <Code
@@ -88,22 +88,6 @@ function ResultShEx2XMI({
                 disabledLinks={disabled}
               />
             </div>
-            {/* <div id="uml-placeholder">
-              <div
-                id="umlcd"
-                style={{ overflowX: "auto", border: "double black" }}
-              ></div>
-              <Button
-                id="fullscreen"
-                variant="secondary"
-                style={{ margin: "0.5em" }}
-              >
-                {API.texts.enableFullscreen}
-              </Button>
-              <a id="descargarumlsvg" className="btn btn-secondary">
-                {API.texts.misc.download}
-              </a>
-            </div> */}
           </Tab>
         </Tabs>
         <details>

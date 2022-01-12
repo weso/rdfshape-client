@@ -22,6 +22,7 @@ function ByText(props) {
       {textFormat == API.formats.turtle.toLowerCase() ? (
         <TurtleForm
           onChange={handleChange}
+          engine={props.textEngine}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
@@ -34,8 +35,7 @@ function ByText(props) {
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
-          options={{ readonly: props.readonly }}
-          placeholder={props.placeholder}
+          options={{ placeholder: props.placeholder, readonly: props.readonly }}
         />
       ) : (
         <Code

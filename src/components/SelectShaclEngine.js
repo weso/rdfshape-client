@@ -6,23 +6,27 @@ import SelectFormat from "./SelectFormat";
 function SelectSHACLEngine(props) {
   return (
     <SelectFormat
-      handleFormatChange={props.handleSHACLEngineChange}
-      selectedFormat={props.selectedSHACLEngine}
-      urlFormats={API.routes.server.schemaShaclEngines}
       name={props.name}
+      urlFormats={props.urlEngines}
+      selectedFormat={props.selectedEngine}
+      handleFormatChange={props.handleEngineChange}
+      fromParams={props.fromParams}
+      resetFromParams={props.resetFromParams}
     />
   );
 }
 
 SelectSHACLEngine.propTypes = {
-  handleSHACLEngineChange: PropTypes.func.isRequired,
-  selectedSHACLEngine: PropTypes.string.isRequired,
+  urlEngines: PropTypes.string,
+  handleEngineChange: PropTypes.func.isRequired,
+  selectedEngine: PropTypes.string.isRequired,
   resetFromParams: PropTypes.func,
   fromParams: PropTypes.bool,
 };
 
 SelectSHACLEngine.defaultProps = {
   name: "SHACL engine",
+  urlEngines: API.routes.server.schemaShaclEngines,
 };
 
 export default SelectSHACLEngine;

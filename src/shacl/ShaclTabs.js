@@ -19,6 +19,7 @@ function ShaclTabs(props) {
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
         selectedFormat={props.selectedFormat}
+        selectedEngine={props.selectedEngine}
         handleFormatChange={props.handleDataFormatChange}
         urlFormats={API.routes.server.shaclFormats}
         setCodeMirror={props.setCodeMirror}

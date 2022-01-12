@@ -8,6 +8,11 @@ function SelectFormat(props) {
   const [formats, setFormats] = useState([]);
   const [format, setFormat] = useState(props.selectedFormat);
 
+  const handleFormatChange = (value) => {
+    setFormat(value);
+    props.handleFormatChange && props.handleFormatChange(value);
+  };
+
   useEffect(() => {
     const url = props.urlFormats;
     axios
@@ -25,19 +30,17 @@ function SelectFormat(props) {
     const newFormat = formats.find(
       (format) => format.toLowerCase() === props.selectedFormat.toLowerCase()
     );
-    setFormat(newFormat);
-    props.handleFormatChange(newFormat);
+    handleFormatChange(newFormat);
   }, [props.selectedFormat, formats]);
-
-  function handleFormatChange(e) {
-    setFormat(e.target.value);
-    props.handleFormatChange(e.target.value);
-  }
 
   return (
     <Form.Group>
       <Form.Label>{props.name}</Form.Label>
-      <Form.Control as="select" onChange={handleFormatChange} value={format}>
+      <Form.Control
+        as="select"
+        onChange={(e) => handleFormatChange(e.target.value)}
+        value={format}
+      >
         {formats.map((format, key) => (
           <option key={key} defaultValue={format === format}>
             {format}

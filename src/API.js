@@ -159,6 +159,9 @@ class API {
     uml: "UML",
     shex: "ShEx",
     visualization: "visualization",
+
+    shaclValidationReportText: "shaclReportText",
+    shaclValidationReportNodes: "shaclReportNodes",
   };
 
   // Formats (most formats come from server but we need defaults for data initialization)
@@ -186,7 +189,6 @@ class API {
 
     defaultData: "turtle",
     defaultShex: "ShExC",
-    defaultShacl: "turtle",
     defaultShacl: "turtle",
     defaultShapeMap: "Compact",
     defaultQuery: "SPARQL",
@@ -312,7 +314,7 @@ class API {
     },
 
     validationResults: {
-      allValid: "Validation successfull",
+      allValid: "Validation successful",
       nodeValid: "Valid",
       nodeInvalid: "Invalid",
       someValid:
@@ -329,6 +331,9 @@ class API {
       umlDiagram: "UML Diagram",
       fullscreen: "Fullscreen",
       download: "Download",
+
+      shaclValidationReportText: "Validation report",
+      shaclValidationReportNodes: "Results per node",
     },
 
     networkError: "Network error",

@@ -59,12 +59,7 @@ function ResultSchemaValidate({
             {API.texts.validationResults.someValid}
           </Alert>
         )}
-        {permalink && (
-          <Fragment>
-            <Permalink url={permalink} disabled={disabled} />
-            <hr />
-          </Fragment>
-        )}
+
         {nodes?.length && (
           <ShowShapeMap
             shapeMap={resultsMap}
@@ -77,6 +72,13 @@ function ResultSchemaValidate({
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={schemaValidateResponse} />
         </details>
+
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
       </div>
     );
   }

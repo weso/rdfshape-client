@@ -138,8 +138,6 @@ function ShexValidateEndpoint(props) {
     const formData = params2Form(params);
     setProgressPercent(30);
 
-    console.info(params);
-
     axios
       .post(url, formData)
       .then((response) => response.data)

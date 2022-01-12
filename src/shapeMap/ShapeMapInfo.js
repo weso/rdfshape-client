@@ -82,7 +82,6 @@ function ShapeMapInfo(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        console.info(data)
         setResult(data);
         setProgressPercent(70);
         setPermalink(

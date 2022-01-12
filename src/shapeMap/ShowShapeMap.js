@@ -27,17 +27,12 @@ function NodeItem({ iri, link, name }) {
 }
 
 // Return a node cell item
-function NodeDescriptionItem({
-  resultItem: {
-    reason,
-    resultInfo: { errors, evidences },
-  },
-}) {
+function NodeDescriptionItem({ resultItem: { reason, resultInfo } }) {
   return (
     <pre style={{ whiteSpace: "pre-line" }}>
-      {!errors ? (
+      {resultInfo && !resultInfo.errors ? (
         <ul>
-          {evidences.map((evidence, index) => (
+          {resultInfo.evidences.map((evidence, index) => (
             <li key={index}>{evidence}</li>
           ))}
         </ul>

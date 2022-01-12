@@ -23,11 +23,7 @@ function InputTabs(props) {
   return (
     <Form.Group>
       <Form.Label style={{ fontWeight: "bold" }}>{props.name}</Form.Label>
-      <Tabs
-        activeKey={activeSource}
-        id="dataTabs"
-        onSelect={handleTabChange}
-      >
+      <Tabs activeKey={activeSource} id="dataTabs" onSelect={handleTabChange}>
         <Tab eventKey={API.sources.byText} title="Text">
           <ByText
             name={props.byTextName}
@@ -35,6 +31,7 @@ function InputTabs(props) {
             placeholder={props.byTextPlaceholder}
             handleByTextChange={props.handleByTextChange}
             textFormat={props.textFormat}
+            textEngine={props.textEngine}
             setCodeMirror={props.setCodeMirror}
             fromParams={props.fromParams}
             resetFromParams={props.resetFromParams}

@@ -4,15 +4,15 @@ import YASHE from "yashe/dist/yashe.bundled.min";
 import "yashe/dist/yashe.min.css";
 import "../utils/yashe/placeholder-fix";
 
-
-
 function ShexForm(props) {
   const [yashe, setYashe] = useState(null);
   const textAreaRef = useRef(null);
 
   useEffect(() => {
     const options = {
-      start: { line: 5 },
+      readOnly: true,
+      autoCloseTags: true,
+      start: { line: 0 },
       ...props.options,
     };
     if (!yashe) {

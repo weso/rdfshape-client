@@ -39,10 +39,7 @@ function TurtleForm(props) {
 
   return (
     <div>
-      <textarea
-        ref={textAreaRef}
-        placeholder={props.options.placeholder}
-      />
+      <textarea ref={textAreaRef} />
     </div>
   );
 }

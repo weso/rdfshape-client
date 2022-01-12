@@ -63,13 +63,15 @@ export function paramsFromStateShacl(shacl) {
   return params;
 }
 
-
 export function mkShaclTabs(shacl, setShacl, name, subname) {
   function handleShaclTabChange(value) {
     setShacl({ ...shacl, activeSource: value });
   }
   function handleShaclFormatChange(value) {
     setShacl({ ...shacl, format: value });
+  }
+  function handleSHACLEngineChange(value) {
+    setShacl({ ...shacl, engine: value });
   }
   function handleShaclByTextChange(value) {
     setShacl({ ...shacl, textArea: value });
@@ -84,10 +86,9 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
     setShacl({ ...shacl, inference: value });
   }
 
-  function handleSHACLEngineChange(value) {
-    setShacl({ ...shacl, engine: value });
-  }
-  const resetParams = () => setShacl({ ...shacl, fromParams: false });
+  const resetParams = () => {
+    setShacl({ ...shacl, fromParams: false });
+  };
 
   return (
     <React.Fragment>
@@ -102,14 +103,15 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
         handleDataUrlChange={handleShaclUrlChange}
         handleFileUpload={handleShaclFileUpload}
         selectedFormat={shacl.format}
+        selectedEngine={shacl.engine}
         handleDataFormatChange={handleShaclFormatChange}
         setCodeMirror={(cm) => setShacl({ ...shacl, codeMirror: cm })}
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />
       <SelectShaclEngine
-        handleSHACLEngineChange={handleSHACLEngineChange}
-        selectedSHACLEngine={shacl.engine}
+        handleEngineChange={handleSHACLEngineChange}
+        selectedEngine={shacl.engine}
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />
