@@ -88,9 +88,6 @@ function WikidataValidate(props) {
       case "set-loading":
         return { ...status, loading: true, error: false, result: null };
       case "set-result":
-        console.info(
-          `statusReducer: set-result: ${JSON.stringify(action.value)}`
-        );
         return { loading: false, error: false, result: action.value };
       case "set-error":
         return { loading: false, error: action.value, result: null };

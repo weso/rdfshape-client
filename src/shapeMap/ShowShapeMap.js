@@ -45,53 +45,53 @@ function NodeDescriptionItem({ resultItem: { reason, resultInfo } }) {
   );
 }
 
-function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
-  // For a given node resulting of a schema validation, get its name to be shown in
-  // the results table
-  function mkCellElement(node, prefixMap) {
-    const matchedBase = relativeBaseRegex().exec(node);
+// For a given node resulting of a schema validation, get its name to be shown in
+// the results table (abbreviated if possible)
+export function mkCellElement(node, prefixMap) {
+  const matchedBase = relativeBaseRegex().exec(node);
 
-    // Raw internal node, show full qualified name
-    if (matchedBase) {
-      const rawNode = matchedBase[1];
-      return `<${rawNode}>`;
-    }
-
-    // Else, process the node IRI
-    const matchedIri = iriRegex().exec(node);
-    // Node is an IRI, extract the short name (IRI ending)
-    // and return an abbreviation with the full IRI
-    if (matchedIri) {
-      const nodeIRI = matchedIri[0]; // Get the node's full name with '<' and '>'
-      const nodeNameFull = matchedIri[1]; // Get the node's full name without '<' and '>'
-
-      // For each prefix, if it is the one used in the node, return an '<abbr>' element
-      for (const prefix in prefixMap) {
-        if (nodeNameFull.startsWith(prefixMap[prefix])) {
-          const nodeNameLocal = nodeNameFull.slice(prefixMap[prefix].length); // Get the node's short local name
-          return NodeItem({
-            iri: nodeIRI,
-            link: nodeNameFull,
-            name: nodeNameLocal,
-          });
-        }
-      }
-      // If no prefix matched, try to parse the IRI slashes for a friendly name
-      return NodeItem({
-        iri: nodeIRI,
-        link: nodeNameFull,
-        name: nodeNameFull.split("/").pop(),
-      });
-    }
-    // Exceptional case for inner nodes
-    if (node.match(/^[0-9"'_]/)) return node;
-
-    // No matches, return the node as it is, logging the error
-    console.error("Unknown format for node: " + node);
-    return node;
+  // Raw internal node, show full qualified name
+  if (matchedBase) {
+    const rawNode = matchedBase[1];
+    return `<${rawNode}>`;
   }
 
-  // Given the shapemap resulting from a schema validation, map each result to an object
+  // Else, process the node IRI
+  const matchedIri = iriRegex().exec(node);
+  // Node is an IRI, extract the short name (IRI ending)
+  // and return an abbreviation with the full IRI
+  if (matchedIri) {
+    const nodeIRI = matchedIri[0]; // Get the node's full name with '<' and '>'
+    const nodeNameFull = matchedIri[1]; // Get the node's full name without '<' and '>'
+
+    // For each prefix, if it is the one used in the node, return an '<abbr>' element
+    for (const prefix in prefixMap) {
+      if (nodeNameFull.startsWith(prefixMap[prefix])) {
+        const nodeNameLocal = nodeNameFull.slice(prefixMap[prefix].length); // Get the node's short local name
+        return NodeItem({
+          iri: nodeIRI,
+          link: nodeNameFull,
+          name: nodeNameLocal,
+        });
+      }
+    }
+    // If no prefix matched, try to parse the IRI slashes for a friendly name
+    return NodeItem({
+      iri: nodeIRI,
+      link: nodeNameFull,
+      name: nodeNameFull.split("/").pop(),
+    });
+  }
+  // Exceptional case for inner nodes
+  if (node.match(/^[0-9"'_]/)) return node;
+
+  // No matches, return the node as it is, logging the error
+  console.error("Unknown format for node: " + node);
+  return node;
+}
+
+function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
+  // Given the shapeMap resulting from a schema validation, map each result to an object
   // compatible with Bootstrap table
   function mkTableItems(shapeMap) {
     return shapeMap.map((item, index) => ({

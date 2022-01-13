@@ -1,49 +1,66 @@
-import PropTypes from "prop-types"
-import React, { Fragment } from 'react'
-import Alert from "react-bootstrap/Alert"
-import Code from "../components/Code"
-import { Permalink } from "../Permalink"
-import PrintJson from "../utils/PrintJson"
+import PropTypes from "prop-types";
+import React, { Fragment } from "react";
+import Alert from "react-bootstrap/Alert";
+import API from "../API";
+import ByText from "../components/ByText";
+import { Permalink } from "../Permalink";
+import PrintJson from "../utils/PrintJson";
+import { yasheNoButtonsOptions } from "../utils/Utils";
 
-function ResultShacl2ShEx(props) {
-  const result = props.result
-  let msg
+function ResultShacl2ShEx({ result: conversionResult, permalink, disabled }) {
+  const {
+    message,
+    schema: {
+      schema: inputSchema,
+      format: { name: inputFormatName },
+      engine: inputEngine,
+    },
+    result: {
+      schema: outputSchema,
+      format: { name: outputFormatName },
+      engine: outputEngine,
+    },
+  } = conversionResult;
 
-  if (result === "") {
-    msg = null
-  }
-  else if (result.error || result.msg.toLowerCase().includes("error")) {
-    msg =
+  if (conversionResult) {
+    return (
       <div>
-        <Alert variant="danger">Invalid SHACL schema</Alert>
-        <ul>
-          <li className="word-break">{result.error || result.msg}</li>
-        </ul>
+        {/* Alert */}
+        <Alert variant="success">{message}</Alert>
+        {/* Output schema */}
+        {outputSchema && outputFormatName && (
+          <ByText
+            textAreaValue={outputSchema}
+            textFormat={outputFormatName}
+            fromParams={false}
+            options={{ ...yasheNoButtonsOptions }}
+          />
+        )}
+        <details>
+          <summary>{API.texts.operationInformation}</summary>
+          <ul>
+            <li>{`Engine conversion: ${inputEngine} => ${outputEngine}`}</li>
+            <li>{`Format conversion: ${inputFormatName} => ${outputFormatName}`}</li>
+          </ul>
+        </details>
+        <details>
+          <summary>{API.texts.responseSummaryText}</summary>
+          <PrintJson json={conversionResult} />
+        </details>
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
       </div>
+    );
   }
-  else {
-    msg =
-    <div>
-      <Alert variant="success">Conversion successful</Alert>
-      { result.result && <Code value={result.result} mode={props.mode}/> }
-      <details><PrintJson json={result} /></details>
-      { props.permalink &&
-      <Fragment>
-        <hr/>
-        <Permalink url={props.permalink} disabled={props.disabled}/>
-      </Fragment>
-      }
-    </div>
-  }
-
-  return (
-    <div>{msg}</div>
-  )
 }
-
 ResultShacl2ShEx.propTypes = {
   result: PropTypes.object,
-  mode: PropTypes.string
-}
+  permalink: PropTypes.string,
+  disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+};
 
-export default ResultShacl2ShEx
+export default ResultShacl2ShEx;

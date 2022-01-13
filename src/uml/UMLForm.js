@@ -16,7 +16,6 @@ function UMLForm(props) {
         mode: API.formats.xml,
         start: { line: 0 },
       };
-      console.log(textAreaRef.current);
       const y = Yashe.fromTextArea(textAreaRef.current, options);
       if (props.setCodeMirror) props.setCodeMirror(y);
       y.on("change", (cm, change) => {

@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import Code from "../components/Code";
+import React, { useState } from 'react';
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
+import Code from "../components/Code";
 
 function TestCode(props) {
 
@@ -29,7 +29,6 @@ function TestCode(props) {
                 value={code}
                 options={options}
                 onBeforeChange={(editor, data, val) => {
-                    console.log(`onBeforeChange: ${val}`);
                     setCode(val);
                 }}
             />
@@ -56,7 +55,7 @@ function TestCode(props) {
     <Dropdown.Item onSelect={(key,event) => { setTheme('default')} }>Default</Dropdown.Item>
     <Dropdown.Item onSelect={(key,event) => { setTheme('midnight')} }>Midnight</Dropdown.Item>
    </Dropdown.Menu>
-  </Dropdown>      
+  </Dropdown>
 
         </Container>
     );

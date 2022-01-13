@@ -41,8 +41,7 @@ function ShapeMapInfo(props) {
           updateStateShapeMap(queryParams, shapemap) || shapemap;
         setShapemap(finalShapemap);
 
-        const params = paramsFromStateShapemap(finalShapemap);
-
+        const params = mkParams(finalShapemap);
         setParams(params);
         setLastParams(params);
       } else setError(API.texts.errorParsingUrl);
@@ -70,7 +69,11 @@ function ShapeMapInfo(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams(paramsFromStateShapemap(shapemap));
+    setParams(mkParams());
+  }
+
+  function mkParams(paramsShapeMap = shapemap) {
+    return { ...paramsFromStateShapemap(paramsShapeMap) };
   }
 
   function postShapeMapInfo(cb) {
@@ -181,10 +184,6 @@ function ShapeMapInfo(props) {
             ) : result ? (
               <ResultShapeMapInfo
                 result={result}
-                fromParams={shapemap.fromParamsShapeMap}
-                resetFromParams={() =>
-                  setShapemap({ ...shapemap, fromParamsShapeMap: false })
-                }
                 permalink={permalink}
                 disabled={disabledLinks}
               />

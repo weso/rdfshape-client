@@ -77,7 +77,7 @@ class API {
       shaclValidateRoute: "/shaclValidate",
       jenaShaclValidateRoute: "/jenaShaclValidate",
 
-      shapeMapInfoRoute: "/shapemapInfo",
+      shapeMapInfoRoute: "/shapeMapInfo",
 
       wikidataQueryRoute: "/wikidataQuery",
       wikidataValidateRoute: "/wikidataValidate",
@@ -328,6 +328,8 @@ class API {
       shex: "ShEx",
       xmi: "XMI",
       graph: "Graph",
+      prefixMap: "Prefix map",
+      associations: "Associations",
       umlDiagram: "UML Diagram",
       fullscreen: "Fullscreen",
       download: "Download",
@@ -348,6 +350,16 @@ class API {
     errorResponsePrefix: "Error response",
     responseSummaryText: "Full response",
     noPrefixes: "No prefixes",
+    noAssociations: "No associations",
+
+    dataFormat: "Data format",
+    schemaFormat: "Schema format",
+    schemaEngine: "Schema engine",
+    shapeMapFormat: "ShapeMap format",
+
+    numberOfStatements: "Number of statements",
+    numberOfShapes: "Number of shapes",
+    numberOfAssociations: "Number of associations",
 
     operationInformation: "Operation information",
     visualizationsWillAppearHere: "Visualizations will appear here",

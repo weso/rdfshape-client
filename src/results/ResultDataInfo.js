@@ -25,20 +25,18 @@ function ResultDataInfo({
     return (
       <div>
         <Alert variant="success">{message}</Alert>
-        <br />
         <ul>
-          <li>Number of statements: {numberOfStatements}</li>
+          <li>{API.texts.numberOfStatements}: {numberOfStatements}</li>
           <li>
-            Data format: <span>{formatName}</span>
+            {API.texts.dataFormat}: <span className="code">{formatName}</span>
           </li>
           {prefixMap?.length > 0 ? (
             <li className="list-details">
               <details>
-                <summary>Prefix map</summary>
+                <summary>{API.texts.misc.prefixMap}</summary>
                 {/* Table with prefix map */}
                 <div className="prefixMapTable">
                   <BootstrapTable
-                    className="prefixMapTable"
                     keyField="prefixName"
                     data={prefixMap}
                     columns={prefixMapTableColumns}

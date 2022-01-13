@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { Fragment } from "react";
 import BootstrapTable from "react-bootstrap-table-next";
 import Alert from "react-bootstrap/Alert";
@@ -26,12 +25,14 @@ function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
         <Alert variant="success">{message}</Alert>
         <br />
         <ul>
-          <li>Number of shapes: {shapes.length}</li>
           <li>
-            Schema format: <span>{formatName}</span>
+            {API.texts.numberOfShapes}: {shapes.length}
           </li>
           <li>
-            Schema engine: <span>{engine}</span>
+            {API.texts.schemaFormat}: <span className="code">{formatName}</span>
+          </li>
+          <li>
+            {API.texts.schemaEngine}: <span className="code">{engine}</span>
           </li>
           {prefixMap?.length > 0 ? (
             <li className="list-details">

@@ -1,48 +1,61 @@
 import React, { Fragment } from "react";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import { yasheNoButtonsOptions } from "../utils/Utils";
 
-function ResultSHACLConvert(props) {
-  const result = props.result;
-  const mode = format2mode(result.targetSchemaFormat);
-  let msg;
-  if (result === "") {
-    msg = null;
-  } else if (result.error || result.message.toLowerCase().startsWith("error")) {
-    msg = (
+function ResultSHACLConvert({ result: conversionResult, permalink, disabled }) {
+  const {
+    message,
+    schema: {
+      schema: inputSchema,
+      format: { name: inputFormatName },
+      engine: inputEngine,
+    },
+    result: {
+      schema: outputSchema,
+      format: { name: outputFormatName },
+      engine: outputEngine,
+    },
+  } = conversionResult;
+
+  if (conversionResult) {
+    return (
       <div>
-        <Alert variant="danger">Invalid SHACL schema</Alert>
-        <ul>
-          <li className="word-break">{result.error || result.message}</li>
-        </ul>
-      </div>
-    );
-  } else {
-    msg = (
-      <div>
-        <Alert variant="success">{result.message}</Alert>
-        {result.result && (
-          <Code value={result.result} mode={mode} theme="material" />
+        {/* Alert */}
+        <Alert variant="success">{message}</Alert>
+        {/* Output schema */}
+        {outputSchema && outputFormatName && (
+          <ByText
+            textAreaValue={outputSchema}
+            textFormat={outputFormatName}
+            fromParams={false}
+            options={{ ...yasheNoButtonsOptions }}
+          />
         )}
-        {props.permalink && (
-          <Fragment>
-            <Permalink url={props.permalink} disabled={props.disabled} />
-            <hr />
-          </Fragment>
-        )}
+
+        <details>
+          <summary>{API.texts.operationInformation}</summary>
+          <ul>
+            <li>{`Engine conversion: ${inputEngine} => ${outputEngine}`}</li>
+            <li>{`Format conversion: ${inputFormatName} => ${outputFormatName}`}</li>
+          </ul>
+        </details>
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={result} />
+          <PrintJson json={conversionResult} />
         </details>
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
       </div>
     );
   }
-
-  return <div>{msg}</div>;
 }
 
 export default ResultSHACLConvert;

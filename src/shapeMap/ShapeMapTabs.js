@@ -8,7 +8,7 @@ function ShapeMapTabs(props) {
     <div>
       <InputTabsWithFormat
         defaultFormat={API.formats.defaultShapeMap}
-        nameInputTab={props.name || ""}
+        nameInputTab={props.name}
         activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}

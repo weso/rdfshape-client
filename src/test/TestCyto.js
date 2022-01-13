@@ -170,7 +170,6 @@ function CytoSchema(props) {
             <SketchPicker
                 color={ defaultNodesBackgroundColor }
                 onChangeComplete={(color) => {
-                    console.log(`Color change: ${color.hex}`)
                     setNodesBackgroundColor(color.hex)
                 } }
             />

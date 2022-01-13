@@ -1,52 +1,71 @@
 import React, { Fragment } from "react";
+import BootstrapTable from "react-bootstrap-table-next";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
-import Code from "../components/Code";
 import { Permalink } from "../Permalink";
-import { format2mode } from "../utils/Utils";
+import { associationTableColumns } from "../utils/Utils";
 
-function ResultShapeMapInfo(props) {
-  const successMessage = "Well formed ShapeMap";
-  const result = props.result;
-  let msg = null;
-  if (result) {
-    const mode = format2mode(result.shapeMapFormat);
-    if (result.error) {
-      msg = <Alert variant="danger">{result.error}</Alert>;
-    } else {
-      msg = (
-        <div>
-          <Alert variant="success">{successMessage}</Alert>
-          {result.shapeMap && result.shapeMapFormat && (
-            <Code
-              value={result.shapeMap}
-              mode={mode}
-              readOnly={true}
-              onChange={() => {}}
-              fromParams={props.fromParams}
-              resetFromParams={props.resetFromParams}
-            />
-          )}
-          {props.permalink && (
-            <Fragment>
-              <hr />
-              <Permalink url={props.permalink} disabled={props.disabled} />
-            </Fragment>
-          )}
-          <details>
-            <summary>{API.texts.responseSummaryText}</summary>
-            <pre>{JSON.stringify(result)}</pre>
-          </details>
-        </div>
-      );
-    }
-    return <div>{msg}</div>;
-  } else
+function ResultShapeMapInfo({
+  result: shapeMapInfoResult,
+  permalink,
+  disabled,
+}) {
+  const {
+    message,
+    shapeMap: { shapeMap: inputShapeMap, model: shapeMapModel },
+    result: {
+      numberOfAssociations,
+      format: { name: shapeMapFormatName },
+      nodesPrefixMap, // Arrays
+      shapesPrefixMap,
+    },
+  } = shapeMapInfoResult;
+
+  if (shapeMapInfoResult) {
     return (
       <div>
-        <Alert variant="danger">ShapeMap by URL/File not implemented</Alert>
+        {/* Alert */}
+        <Alert variant="success">{message}</Alert>
+        {/* Results */}
+        <ul>
+          <li>
+            {API.texts.numberOfAssociations}: {numberOfAssociations}
+          </li>
+          <li>
+            {API.texts.shapeMapFormat}:{" "}
+            <span className="code">{shapeMapFormatName}</span>
+          </li>
+          {shapeMapModel?.length > 0 ? (
+            <li className="list-details">
+              <details>
+                <summary>{API.texts.misc.associations}</summary>
+                {/* Table with prefix map */}
+                <div className="prefixMapTable">
+                  <BootstrapTable
+                    keyField="node"
+                    data={shapeMapModel}
+                    columns={associationTableColumns}
+                  ></BootstrapTable>
+                </div>
+              </details>
+            </li>
+          ) : (
+            <li>{API.texts.noAssociations}</li>
+          )}
+        </ul>
+
+        <details>
+          <summary>{API.texts.responseSummaryText}</summary>
+          <pre>{JSON.stringify(shapeMapInfoResult)}</pre>
+        </details>
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
       </div>
     );
+  }
 }
-
 export default ResultShapeMapInfo;

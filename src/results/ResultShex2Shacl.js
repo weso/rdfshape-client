@@ -5,7 +5,7 @@ import API from "../API";
 import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import { format2mode, yasheNoButtonsOptions } from "../utils/Utils";
 
 function ResultShEx2Shacl({
   result: shexConvertResponse,
@@ -37,7 +37,8 @@ function ResultShEx2Shacl({
           <ByText
             textAreaValue={outputSchema}
             textFormat={format2mode(outputFormatName)}
-            readonly={true}
+            fromParams={false}
+            options={{ readonly: true, ...yasheNoButtonsOptions }}
           />
         )}
         <br />

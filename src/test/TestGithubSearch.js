@@ -1,6 +1,6 @@
 import React from 'react';
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 
-import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 
 const SEARCH_URI = 'https://api.github.com/search/users';
 
@@ -50,7 +50,6 @@ class TestSearch extends React.Component {
                 )}
                 useCache={false}
                 onChange={(selected) => {
-                    console.log(`Changed Selected: ${selected}`)
                     this.setState({selected: selected})
                 } }
             />

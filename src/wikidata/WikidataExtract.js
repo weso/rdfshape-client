@@ -33,7 +33,6 @@ function WikidataExtract(props) {
       const nodeSelector = entities[0].uri;
       params[API.queryParameters.extraction.nodeSelector] =
         "<" + nodeSelector + ">";
-      console.info(`Node selector: ${nodeSelector}`);
       setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
       let formData = params2Form(params);
       postConvert(url, formData);

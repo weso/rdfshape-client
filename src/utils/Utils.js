@@ -119,7 +119,7 @@ export function showQualify(node, prefixMap) {
           str: `_:${node.value}`,
           node: node,
         };
-      console.log(
+      console.warn(
         `ShowQualify: Unknown format for node: ${JSON.stringify(node)}`
       );
       return {
@@ -277,6 +277,18 @@ export const prefixMapTableColumns = [
   },
 ];
 
+// Prefixes for association tables (shapeMaps)
+export const associationTableColumns = [
+  {
+    dataField: "node",
+    text: "Node",
+  },
+  {
+    dataField: "shape",
+    text: "Shape",
+  },
+];
+
 export const equalsIgnoreCase = (str1, str2, exact = false) => {
   return exact
     ? str1.toLowerCase() === str2.toLowerCase()
@@ -295,3 +307,28 @@ export const getFileContents = async (file) =>
     reader.onload = () => res(reader.result);
     reader.readAsText(file);
   });
+
+// Shortcut to all the settings that must be included in a Yashe object to prevent buttons
+export const yasheNoButtonsOptions = {
+  showTooltip: false,
+  showUploadButton: false,
+  showDownloadButton: false,
+  showCopyButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+  showFullScreenButton: false,
+};
+
+// Shortcut to all the settings that must be included in a Yashe object to show minimal buttons
+export const yasheMinButtonsOptions = {
+  showUploadButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+
+  showTooltip: true,
+  showDownloadButton: true,
+  showCopyButton: true,
+  showFullScreenButton: true,
+};

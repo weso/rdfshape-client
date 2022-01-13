@@ -10,9 +10,11 @@ function ShexForm(props) {
 
   useEffect(() => {
     const options = {
-      readOnly: true,
+      readOnly: "nocursor",
       autoCloseTags: true,
       start: { line: 0 },
+      lineNumbers: true,
+      lineWrapping: true,
       ...props.options,
     };
     if (!yashe) {
@@ -56,7 +58,6 @@ ShexForm.propTypes = {
 
 ShexForm.defaultProps = {
   value: "",
-  readonly: false,
 };
 
 export default ShexForm;

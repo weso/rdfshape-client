@@ -59,12 +59,11 @@ function ShaclConvert(props) {
           );
         }
 
-        const params = {
-          ...paramsFromStateShacl(finalSchema),
-          [API.queryParameters.schema.targetFormat]:
-            queryParams[API.queryParameters.schema.targetFormat] ||
-            targetSchemaFormat,
-        };
+        const params = mkParams(
+          finalSchema,
+          queryParams[API.queryParameters.schema.targetFormat] ||
+            targetSchemaFormat
+        );
 
         setParams(params);
         setLastParams(params);
@@ -94,11 +93,15 @@ function ShaclConvert(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
+    setParams(mkParams());
+  }
 
-    setParams({
-      ...paramsFromStateShacl(shacl),
-      [API.queryParameters.schema.targetFormat]: targetSchemaFormat,
-    });
+  function mkParams(paramsShacl = shacl, targetFormat = targetSchemaFormat) {
+    return {
+      ...paramsFromStateShacl(paramsShacl),
+      [API.queryParameters.schema.targetFormat]: targetFormat,
+      [API.queryParameters.schema.targetEngine]: paramsShacl.engine, // The target engine is the one used in the input
+    };
   }
 
   function postConvert(cb) {

@@ -136,7 +136,7 @@ function ShaclValidate(props) {
       ...paramsFromStateData(paramsData),
       ...paramsFromStateShacl(paramsShacl),
       ...paramsEndpoint,
-      triggerMode: API.triggerModes.targetDecls, // SHACL Validation
+      [API.queryParameters.schema.triggerMode]: API.triggerModes.targetDecls, // SHACL Validation
     };
     if (endpoint !== "") {
       params[API.queryParameters.endpoint.endpoint] = endpoint.trim();

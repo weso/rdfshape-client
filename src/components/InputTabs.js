@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
+import { yasheMinButtonsOptions } from "../utils/Utils";
 import ByFile from "./ByFile";
 import ByText from "./ByText";
 import ByURL from "./ByURL";
@@ -35,6 +36,7 @@ function InputTabs(props) {
             setCodeMirror={props.setCodeMirror}
             fromParams={props.fromParams}
             resetFromParams={props.resetFromParams}
+            options={{ readOnly: false, ...yasheMinButtonsOptions }}
           />
         </Tab>
         <Tab eventKey={API.sources.byUrl} title="URL">

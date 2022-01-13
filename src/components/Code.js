@@ -16,65 +16,53 @@ const ThemeList = ["default", "material", "midnight"];
 const DefaultTheme = "default";
 
 function Code(props) {
-  const [theme, setTheme] = useState(props.theme);
   const [editor, setEditor] = useState(null);
+
   const options = {
-    mode: props.mode,
-    theme: theme,
-    lineNumbers: props.linenumbers,
+    mode: "turtle",
+    theme: "default",
+    lineNumbers: true,
+    readOnly: "nocursor",
     lineWrapping: true,
-    readOnly: props.readOnly,
-    placeholder: props.placeholder,
     autoCloseTags: true,
+    ...props.options, // Override defaults with user settings when necessary
   };
 
   useEffect(() => {
     if (editor) {
       if (props.fromParams) {
         editor.setValue(props.value);
-        props.resetFromParams();
+        props.resetFromParams && props.resetFromParams();
       }
     }
   }, [props.value, props.fromParams, props.resetFromParams]);
 
-  let code = null;
-  switch (props.mode.toLowerCase()) {
-    default:
-      code = (
-        <React.Fragment>
-          <CodeMirror
-            value={props.value}
-            options={options}
-            onBeforeChange={(_editor, _data, val) => {
-              props.onChange(val);
-            }}
-            editorDidMount={(editor) => {
-              setEditor(editor);
-            }}
-          />
-        </React.Fragment>
-      );
-  }
-
-  return code;
+  return (
+    <React.Fragment>
+      <CodeMirror
+        value={props.value}
+        options={options}
+        onBeforeChange={(_editor, _data, val) => {
+          props.onChange(val);
+        }}
+        editorDidMount={(editor) => {
+          setEditor(editor);
+        }}
+      />
+    </React.Fragment>
+  );
 }
 
 Code.propTypes = {
   value: PropTypes.string,
-  mode: PropTypes.string,
-  linenumbers: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  theme: PropTypes.string,
+  options: PropTypes.object,
   onChange: PropTypes.func,
-  placeholder: PropTypes.string,
+  fromParams: PropTypes.bool,
 };
 
 Code.defaultProps = {
-  mode: "turtle",
   value: "",
-  theme: "default",
-  linenumbers: true,
-  readonly: true,
+  fromParams: false,
 };
 
 export default Code;

@@ -21,12 +21,10 @@ function TestYashe(props)  {
 
     useEffect( () => {
             if (props.location?.search) {
-                console.log(`TestYashe with location.search `)
                 const queryParams = qs.parse(props.location.search);
                 if (queryParams['shex']) {
                     setShEx(queryParams['shex']);
                     setFromParams(true);
-                    console.log(`Setting parameter shex=${shEx}`);
                 }
             }
         },

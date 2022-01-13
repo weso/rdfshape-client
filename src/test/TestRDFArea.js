@@ -1,17 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import Button from "react-bootstrap/Button";
-import Alert from "react-bootstrap/Alert";
-import CodeMirror from "codemirror/lib/codemirror";
-import "codemirror/lib/codemirror.css"
-import "codemirror/mode/turtle/turtle"
-import "codemirror/mode/xml/xml"
-import "codemirror/mode/javascript/javascript"
-
-import PropTypes from "prop-types";
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import CodeMirror from "codemirror/lib/codemirror";
+import "codemirror/lib/codemirror.css";
+import "codemirror/mode/javascript/javascript";
+import "codemirror/mode/turtle/turtle";
+import "codemirror/mode/xml/xml";
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import API from "../API"
+import API from "../API";
+
 
 function RDFArea(props) {
     const [codeMirror,setCodeMirror] = useState(null)
@@ -67,7 +67,6 @@ function SelectFormat(props) {
               setFormats(data)
       }).catch((error) => {
           const msg = `Error retrieving formats at url: ${url}\nError: ${error}`
-          console.log(msg)
           props.handleError(msg)
       })
   }, [])

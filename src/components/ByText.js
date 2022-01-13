@@ -26,7 +26,7 @@ function ByText(props) {
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
-          options={{ placeholder: props.placeholder, readOnly: props.readonly }}
+          options={{ placeholder: props.placeholder, ...props.options }}
         />
       ) : textFormat == API.formats.shexc.toLowerCase() ? (
         <ShexForm
@@ -35,18 +35,16 @@ function ByText(props) {
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
           value={props.textAreaValue}
-          options={{ placeholder: props.placeholder, readonly: props.readonly }}
+          options={{ placeholder: props.placeholder, ...props.options }}
         />
       ) : (
         <Code
           value={props.textAreaValue}
           mode={format2mode(props.textFormat)}
           onChange={handleChange}
-          setCodeMirror={props.setCodeMirror}
-          placeholder={props.placeholder}
-          readonly={props.readonly}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
+          options={{ placeholder: props.placeholder, ...props.options }}
         />
       )}
     </Form.Group>
@@ -64,12 +62,14 @@ ByText.propTypes = {
   resetFromParams: PropTypes.func,
   fromParams: PropTypes.bool.isRequired,
   readonly: PropTypes.bool,
+  options: PropTypes.object,
 };
 
 ByText.defaultProps = {
   placeholder: "...",
   readonly: false,
   fromParams: false,
+  options: {},
 };
 
 export default ByText;

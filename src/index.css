@@ -9,7 +9,7 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+    monospace !important;
 }
 
 a.dropdown-item {
@@ -25,7 +25,7 @@ a.dropdown-item {
 .yasqe .yasqe_buttons {
   top: unset !important;
   bottom: 2px !important;
-  right: 2px !important;
+  right: 11px !important;
 }
 
 .relative {

@@ -4,7 +4,7 @@ import API from "../API";
 import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import { yasheNoButtonsOptions } from "../utils/Utils";
 
 function ResultShExConvert({
   result: shexConvertResponse,
@@ -35,12 +35,11 @@ function ResultShExConvert({
         {outputSchema && outputFormatName && (
           <ByText
             textAreaValue={outputSchema}
-            textFormat={format2mode(outputFormatName)}
-            readonly={true}
+            textFormat={outputFormatName}
             fromParams={false}
+            options={{ ...yasheNoButtonsOptions }}
           />
         )}
-        <br />
         <details>
           <summary>{API.texts.operationInformation}</summary>
           <ul>
