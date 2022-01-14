@@ -10,7 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultShExInfo from "../results/ResultShexInfo";
+import ResultSchemaInfo from "../results/ResultSchemaInfo";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
@@ -183,7 +183,7 @@ function ShexInfo(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExInfo
+              <ResultSchemaInfo
                 result={result}
                 permalink={permalink}
                 disabled={disabledLinks}

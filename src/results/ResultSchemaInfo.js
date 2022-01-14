@@ -6,7 +6,8 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns } from "../utils/Utils";
 
-function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
+// Results of querying the API for information about a schema (either ShEx or SHACL)
+function ResultSchemaInfo({ result: shexInfoResponse, permalink, disabled }) {
   // Destructure request response items for later use
   const {
     message,
@@ -41,6 +42,7 @@ function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
                 {/* Table with prefix map */}
                 <div className="prefixMapTable">
                   <BootstrapTable
+                    classes="results-table"
                     keyField="prefixName"
                     data={prefixMap}
                     columns={prefixMapTableColumns}
@@ -58,8 +60,8 @@ function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
         </details>
         {permalink && (
           <Fragment>
-            <Permalink url={permalink} disabled={disabled} />
             <hr />
+            <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
       </div>
@@ -67,8 +69,8 @@ function ResultShExInfo({ result: shexInfoResponse, permalink, disabled }) {
   }
 }
 
-ResultShExInfo.defaultProps = {
+ResultSchemaInfo.defaultProps = {
   disabled: false,
 };
 
-export default ResultShExInfo;
+export default ResultSchemaInfo;

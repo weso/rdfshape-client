@@ -3,6 +3,7 @@ import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
 import API from "../API";
+import { sortCaretGen } from "../shapeMap/ShowShapeMap";
 
 const { Module, render } = require("viz.js/full.render.js");
 
@@ -270,6 +271,8 @@ export const prefixMapTableColumns = [
   {
     dataField: "prefixName",
     text: "Name",
+    sort: true,
+    sortCaret: sortCaretGen,
   },
   {
     dataField: "prefixIRI",

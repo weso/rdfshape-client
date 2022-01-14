@@ -90,6 +90,11 @@ export function mkCellElement(node, prefixMap) {
   return node;
 }
 
+// Function generating the symbol for ordering data in a table
+export const sortCaretGen = (order) => (
+  <button className="discrete">{order === "desc" ? "↓" : "↑"}</button>
+);
+
 function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
   // Given the shapeMap resulting from a schema validation, map each result to an object
   // compatible with Bootstrap table
@@ -109,11 +114,6 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
 
   if (!Array.isArray(shapeMap)) return <></>;
   const tableItems = mkTableItems(shapeMap);
-
-  // Function generating the symbol for ordering data
-  const sortCaretGen = (order) => (
-    <button className="discrete">{order === "desc" ? "↓" : "↑"}</button>
-  );
 
   // Settings for the data appearing in the table columns
   const columns = [

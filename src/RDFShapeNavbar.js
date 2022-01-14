@@ -29,100 +29,115 @@ class RDFShapeNavbar extends React.Component {
         <Navbar.Collapse color="white" id="basic-navbar-nav">
           <Nav className="mr-auto">
             <NavDropdown
-              title="RDF"
+              title={API.texts.navbarHeaders.rdf}
               id="nav-dropdown-data"
               className="navbar-title"
             >
               <NavDropdown.Item href={API.routes.client.dataInfoRoute}>
-                Analysis
+                {API.texts.navbarHeaders.analysis}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.dataConvertRoute}>
-                Conversion
+                {API.texts.navbarHeaders.conversion}
               </NavDropdown.Item>
               <NavDropdown.Item
                 href={API.routes.client.dataVisualizeGraphvizRoute}
               >
-                Visualization (Graphviz)
+                {API.texts.navbarHeaders.visualization} (Graphviz)
               </NavDropdown.Item>
               <NavDropdown.Item
                 href={API.routes.client.dataVisualizeCytoscapeRoute}
               >
-                Visualization (Cytoscape)
+                {API.texts.navbarHeaders.visualization} (Cytoscape)
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.dataMergeRoute}>
-                Merge & Convert
+                {API.texts.navbarHeaders.mergeAndConvert}
               </NavDropdown.Item>
               <NavDropdown.Item
                 href={API.routes.client.dataMergeVisualizeRoute}
               >
-                Merge & Visualize
+                {API.texts.navbarHeaders.mergeAndVisualize}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.dataQueryRoute}>
-                Query (SPARQL)
+                {API.texts.navbarHeaders.sparqlQuery}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.dataExtractRoute}>
-                ShEx Extraction
+                {API.texts.navbarHeaders.shexExtract}
               </NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title="Endpoint" id="nav-dropdown-endpoint">
+            <NavDropdown
+              title={API.texts.navbarHeaders.endpoint}
+              id="nav-dropdown-endpoint"
+            >
               <NavDropdown.Item href={API.routes.client.endpointInfoRoute}>
-                Information
+                {API.texts.navbarHeaders.information}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.endpointQueryRoute}>
-                Query (SPARQL)
+                {API.texts.navbarHeaders.sparqlQuery}
               </NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title="ShEx" id="nav-dropdown-shex">
+            <NavDropdown
+              title={API.texts.navbarHeaders.shex}
+              id="nav-dropdown-shex"
+            >
               <NavDropdown.Item href={API.routes.client.shexInfoRoute}>
-                Analysis
+                {API.texts.navbarHeaders.analysis}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shexConvertRoute}>
-                Conversion
+                {API.texts.navbarHeaders.conversion}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shexValidateRoute}>
-                Validation (user data)
+                {API.texts.navbarHeaders.validationUser}
               </NavDropdown.Item>
               <NavDropdown.Item
                 href={API.routes.client.shexValidateEndpointRoute}
               >
-                Validation (endpoint data)
+                {API.texts.navbarHeaders.validationEndpoint}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shexVisualizeUmlRoute}>
-                Visualization (PlantUML)
+                {API.texts.navbarHeaders.visualization} (PlantUML)
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shex2ShaclRoute}>
-                ShEx &#8594; SHACL
+                {API.texts.navbarHeaders.shexToShacl}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shapeFormRoute}>
-                ShEx &#8594; Form
+                {API.texts.navbarHeaders.shexToForm}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shex2XmiRoute}>
-                ShEx &#10231; UML
+                {API.texts.navbarHeaders.shexToUml}
               </NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title="SHACL" id="nav-dropdown-shacl">
-              <NavDropdown.Item href={API.routes.client.shaclValidateRoute}>
-                Validation (user data)
+            <NavDropdown
+              title={API.texts.navbarHeaders.shacl}
+              id="nav-dropdown-shacl"
+            >
+              <NavDropdown.Item href={API.routes.client.shaclInfoRoute}>
+                {API.texts.navbarHeaders.analysis}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shaclConvertRoute}>
-                Conversion
+                {API.texts.navbarHeaders.conversion}
+              </NavDropdown.Item>
+              <NavDropdown.Item href={API.routes.client.shaclValidateRoute}>
+                {API.texts.navbarHeaders.validationUser}
               </NavDropdown.Item>
               <NavDropdown.Item href={API.routes.client.shacl2ShExRoute}>
-                SHACL &#8594; ShEx
+                {API.texts.navbarHeaders.shaclToShex}
               </NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title="ShapeMap" id="nav-dropdown-shapemap">
+            <NavDropdown
+              title={API.texts.navbarHeaders.shapeMap}
+              id="nav-dropdown-shapemap"
+            >
               <NavDropdown.Item href={API.routes.client.shapeMapInfoRoute}>
-                Analysis
+                {API.texts.navbarHeaders.analysis}
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Link target="_blank" href="http://wikishape.weso.es">
-              Wikishape
+              {API.texts.navbarHeaders.wikishape}
             </Nav.Link>
           </Nav>
           <Nav>
             <NavDropdown
-              title="Examples"
+              title={API.texts.navbarHeaders.examples}
               id="nav-dropdown-examples"
               className="mr-sm-2"
             >
@@ -152,7 +167,7 @@ class RDFShapeNavbar extends React.Component {
                 ShEx conversion
               </NavDropdown.Item>
               <NavDropdown.Item
-                href={`${API.routes.client.shaclValidateRoute}?schemaSource=${API.sources.byText}&dataSource=${API.sources.byText}&data=%40prefix%20%3A%20%20%20%20%20%20%20<http%3A%2F%2Fexample.org%2F>%20.%0A%40prefix%20sh%3A%20%20%20%20%20<http%3A%2F%2Fwww.w3.org%2Fns%2Fshacl%23>%20.%0A%40prefix%20xsd%3A%20%20%20%20<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%20.%0A%40prefix%20schema%3A%20<http%3A%2F%2Fschema.org%2F>%20.%0A%40prefix%20foaf%3A%20%20%20<http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F>%20.%0A%40prefix%20rdfs%3A%20%20%20<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%20.%0A%20%20%20%20%20%20%20%20%0A%0A%3Aalice%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Alice"%20%3B%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AFemale%20%3B%0A%20%20%20%20%20%20%20schema%3Aknows%20%20%20%20%20%20%20%20%20%20%3Abob%20.%0A%0A%3Abob%20%20%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AMale%20%3B%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Robert"%3B%0A%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%20"1980-03-10"%5E%5Exsd%3Adate%20.%0A%0A%3Acarol%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Carol"%20%3B%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AFemale%20%3B%20%20%0A%20%20%20%20%20%20%20foaf%3Aname%20%20%20%20%20%20%20%20%20%20%20%20%20"Carol"%20.%0A&dataFormat=turtle&inference=${API.inferences.none}&schema=%40prefix%20%3A%20%20%20%20%20%20%20<http%3A%2F%2Fexample.org%2F>%20.%0A%40prefix%20sh%3A%20%20%20%20%20<http%3A%2F%2Fwww.w3.org%2Fns%2Fshacl%23>%20.%0A%40prefix%20xsd%3A%20%20%20%20<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%20.%0A%40prefix%20schema%3A%20<http%3A%2F%2Fschema.org%2F>%20.%0A%40prefix%20foaf%3A%20%20%20<http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F>%20.%0A%40prefix%20rdfs%3A%20%20%20<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%20.%0A%20%20%20%20%20%20%20%20%0A%3AUserShape%20a%20sh%3ANodeShape%3B%0A%20%20%20sh%3AtargetClass%20%3AUser%20%3B%0A%20%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%201%0A%20%20%20%20sh%3Apath%20%20%20%20%20schema%3Aname%20%3B%20%0A%20%20%20%20sh%3AminCount%201%3B%20%0A%20%20%20%20sh%3AmaxCount%201%3B%0A%20%20%20%20sh%3Adatatype%20xsd%3Astring%20%3B%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%202%0A%20%20%20sh%3Apath%20schema%3Agender%20%3B%0A%20%20%20sh%3AminCount%201%3B%0A%20%20%20sh%3AmaxCount%201%3B%0A%20%20%20sh%3Aor%20%28%0A%20%20%20%20%5B%20sh%3Ain%20%28schema%3AMale%20schema%3AFemale%29%20%5D%0A%20%20%20%20%5B%20sh%3Adatatype%20xsd%3Astring%5D%0A%20%20%20%29%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%203%20%20%0A%20%20%20sh%3Apath%20%20%20%20%20schema%3AbirthDate%20%3B%20%0A%20%20%20sh%3AmaxCount%201%3B%20%0A%20%20%20sh%3Adatatype%20xsd%3Adate%20%3B%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%204%20%0A%20%20%20sh%3Apath%20%20%20%20%20schema%3Aknows%20%3B%20%0A%20%20%20sh%3AnodeKind%20sh%3AIRI%20%3B%0A%20%20%20sh%3Aclass%20%20%20%20%3AUser%20%3B%0A%20%20%5D%20.%0A&schemaEngine=${API.engines.jenaShacl}&schemaFormat=TURTLE&triggerMode=${API.triggerModes.targetDecls}`}
+                href={`${API.routes.client.shaclValidateRoute}?schemaSource=${API.sources.byText}&dataSource=${API.sources.byText}&data=%40prefix%20%3A%20%20%20%20%20%20%20<http%3A%2F%2Fexample.org%2F>%20.%0A%40prefix%20sh%3A%20%20%20%20%20<http%3A%2F%2Fwww.w3.org%2Fns%2Fshacl%23>%20.%0A%40prefix%20xsd%3A%20%20%20%20<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%20.%0A%40prefix%20schema%3A%20<http%3A%2F%2Fschema.org%2F>%20.%0A%40prefix%20foaf%3A%20%20%20<http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F>%20.%0A%40prefix%20rdfs%3A%20%20%20<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%20.%0A%20%20%20%20%20%20%20%20%0A%0A%3Aalice%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Alice"%20%3B%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AFemale%20%3B%0A%20%20%20%20%20%20%20schema%3Aknows%20%20%20%20%20%20%20%20%20%20%3Abob%20.%0A%0A%3Abob%20%20%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AMale%20%3B%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Robert"%3B%0A%20%20%20%20%20%20%20schema%3AbirthDate%20%20%20%20%20%20"1980-03-10"%5E%5Exsd%3Adate%20.%0A%0A%3Acarol%20a%20%3AUser%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%25%2A%5CPasses%7B%3AUserShape%7D%20%2A%29%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Aname%20%20%20%20%20%20%20%20%20%20%20"Carol"%20%3B%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20schema%3Agender%20%20%20%20%20%20%20%20%20schema%3AFemale%20%3B%20%20%0A%20%20%20%20%20%20%20foaf%3Aname%20%20%20%20%20%20%20%20%20%20%20%20%20"Carol"%20.%0A&dataFormat=turtle&inference=${API.inferences.none}&schema=%40prefix%20%3A%20%20%20%20%20%20%20<http%3A%2F%2Fexample.org%2F>%20.%0A%40prefix%20sh%3A%20%20%20%20%20<http%3A%2F%2Fwww.w3.org%2Fns%2Fshacl%23>%20.%0A%40prefix%20xsd%3A%20%20%20%20<http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23>%20.%0A%40prefix%20schema%3A%20<http%3A%2F%2Fschema.org%2F>%20.%0A%40prefix%20foaf%3A%20%20%20<http%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F>%20.%0A%40prefix%20rdfs%3A%20%20%20<http%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23>%20.%0A%20%20%20%20%20%20%20%20%0A%3AUserShape%20a%20sh%3ANodeShape%3B%0A%20%20%20sh%3AtargetClass%20%3AUser%20%3B%0A%20%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%201%0A%20%20%20%20sh%3Apath%20%20%20%20%20schema%3Aname%20%3B%20%0A%20%20%20%20sh%3AminCount%201%3B%20%0A%20%20%20%20sh%3AmaxCount%201%3B%0A%20%20%20%20sh%3Adatatype%20xsd%3Astring%20%3B%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%202%0A%20%20%20sh%3Apath%20schema%3Agender%20%3B%0A%20%20%20sh%3AminCount%201%3B%0A%20%20%20sh%3AmaxCount%201%3B%0A%20%20%20sh%3Aor%20%28%0A%20%20%20%20%5B%20sh%3Ain%20%28schema%3AMale%20schema%3AFemale%29%20%5D%0A%20%20%20%20%5B%20sh%3Adatatype%20xsd%3Astring%5D%0A%20%20%20%29%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%203%20%20%0A%20%20%20sh%3Apath%20%20%20%20%20schema%3AbirthDate%20%3B%20%0A%20%20%20sh%3AmaxCount%201%3B%20%0A%20%20%20sh%3Adatatype%20xsd%3Adate%20%3B%0A%20%20%5D%20%3B%0A%20%20sh%3Aproperty%20%5B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%23%20Blank%20node%204%20%0A%20%20%20sh%3Apath%20%20%20%20%20schema%3Aknows%20%3B%20%0A%20%20%20sh%3AnodeKind%20sh%3AIRI%20%3B%0A%20%20%20sh%3Aclass%20%20%20%20%3AUser%20%3B%0A%20%20%5D%20.%0A&schemaEngine=${API.engines.shaclex}&schemaFormat=TURTLE&triggerMode=${API.triggerModes.targetDecls}`}
               >
                 SHACL validation
               </NavDropdown.Item>
@@ -162,20 +177,25 @@ class RDFShapeNavbar extends React.Component {
                 HTML (Microdata) visualization
               </NavDropdown.Item>
             </NavDropdown>
-            <NavDropdown title="Help" id="nav-dropdown-help">
+            <NavDropdown
+              title={API.texts.navbarHeaders.help}
+              id="nav-dropdown-help"
+            >
               <NavDropdown.Item
                 target="_blank"
                 href="https://github.com/weso/rdfshape-client/wiki"
               >
-                Wiki
+                {API.texts.navbarHeaders.wiki}
               </NavDropdown.Item>
               <NavDropdown.Item
                 target="_blank"
                 href="https://www.weso.es/rdfshape-api/"
               >
-                API Docs
+                {API.texts.navbarHeaders.apiDocs}
               </NavDropdown.Item>
-              <NavDropdown.Item href="/about">About</NavDropdown.Item>
+              <NavDropdown.Item href="/about">
+                {API.texts.navbarHeaders.about}
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

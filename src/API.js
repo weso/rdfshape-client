@@ -237,6 +237,34 @@ class API {
 
   // Text constants
   static texts = {
+    navbarHeaders: {
+      rdf: "RDF",
+      endpoint: "Endpoint",
+      shex: "ShEx",
+      shacl: "SHACL",
+      shapeMap: "ShapeMap",
+      analysis: "Analysis",
+      information: "Information",
+      conversion: "Conversion",
+      visualization: "Visualization",
+      validationUser: "Validation (user data)",
+      validationEndpoint: "Validation (endpoint data)",
+      mergeAndConvert: "Merge & Convert",
+      mergeAndVisualize: "Merge & Visualize",
+      sparqlQuery: "Query (SPARQL)",
+      shexExtract: "ShEx extraction",
+      shexToShacl: "ShEx → SHACL",
+      shaclToShex: "SHACL → ShEx",
+      shexToForm: "ShEx → Form",
+      shexToUml: "ShEx ⟷ UML",
+      examples: "Examples",
+      help: "Help",
+      wikishape: "Wikishape",
+      wiki: "Wiki",
+      apiDocs: "API Docs",
+      about: "About",
+    },
+
     pageHeaders: {
       dataInfo: "Data analysis",
       dataConversion: "Data conversion",
@@ -263,6 +291,7 @@ class API {
       shexToUml: "ShEx conversion to UML",
       umlToShex: "UML conversion to ShEx",
 
+      shaclInfo: "SHACL analysis",
       shaclValidation: "SHACL validate user data",
       shaclConversion: "SHACL conversion",
       shaclToShex: "SHACL conversion to ShEx",
