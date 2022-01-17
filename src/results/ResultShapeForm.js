@@ -1,6 +1,7 @@
 import $ from "jquery";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
+import { Permalink } from "../Permalink";
 
 function ResultShapeForm({result, ...props})  {
   let msg;
@@ -41,9 +42,19 @@ function ResultShapeForm({result, ...props})  {
     );
   } else {
     msg = (
-      <div id="resultform">
+		<div>
+		  <div id="resultform">
 
-      </div>
+		  </div>
+		  <div>
+		  {props.permalink && (
+			  <Fragment>
+				<hr />
+				<Permalink url={props.permalink} disabled={props.disabled} />
+			  </Fragment>
+		   )}
+		   </div>
+	    </div>
     );
   }
 
