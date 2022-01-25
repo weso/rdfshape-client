@@ -1,5 +1,5 @@
 ## Build environment. Resulting build in /app/build
-FROM node:alpine as build
+FROM node:lts-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 # Avoid JS heap out of memory when building
