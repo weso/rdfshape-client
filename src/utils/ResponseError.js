@@ -13,7 +13,7 @@ function ResponseError({ errorOrigin, errorMessage }) {
       {errorMessage && (
         <>
           <hr />
-          <p className="code">{errorMessage}</p>
+          <p className="code alert-body">{errorMessage}</p>
         </>
       )}
     </details>

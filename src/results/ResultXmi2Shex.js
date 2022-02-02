@@ -5,8 +5,8 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
 import Code from "../components/Code";
-import { breadthfirst } from "../data/DataVisualizeCytoscape";
 import { Permalink } from "../Permalink";
+import { breadthfirst } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 import ShowVisualization, {

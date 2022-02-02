@@ -9,7 +9,7 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { format2mode } from "../utils/Utils";
 import ShowVisualization, {
-  visualizationTypes,
+  visualizationTypes
 } from "../visualization/ShowVisualization";
 
 function ResultShEx2XMI({
@@ -31,9 +31,8 @@ function ResultShEx2XMI({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [svg, setSvg] = useState("");
 
-  // useEffect(() => setSvg(mkSvgElement()), []);
-
   const mkSvgElement = () => {
+    console.info(resultRaw);
     // Create a dummy HTML element to put the SVG into
     const dummy = document.createElement("div");
     dummy.id = dummyId;

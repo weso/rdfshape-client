@@ -9,6 +9,7 @@ import ToolkitProvider, {
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
 import API from "../API";
 import { conformant } from "../results/ResultValidate";
+import { sortCaretGen } from "../utils/Utils";
 
 const relativeBaseRegex = () => /^<internal:\/\/base\/(.*)>$/g;
 const iriRegex = () => /^<(.*)>$/g;
@@ -90,10 +91,7 @@ export function mkCellElement(node, prefixMap) {
   return node;
 }
 
-// Function generating the symbol for ordering data in a table
-export const sortCaretGen = (order) => (
-  <button className="discrete">{order === "desc" ? "↓" : "↑"}</button>
-);
+
 
 function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
   // Given the shapeMap resulting from a schema validation, map each result to an object

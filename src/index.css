@@ -97,10 +97,50 @@ a.dropdown-item {
   padding: 5px;
 }
 
-.btn-zoom {
-  margin: 5px 0 5px 0px;
+.controls-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.visualization-links {
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.visualization-links > * {
+  margin: 5px 0;
+}
+
+#visualization-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#visualization-container > *:last-child {
+  margin-left: 5px;
+}
+
+/* When fullscreen, make the visualization cover the whole screen space and
+change the controls location */
+#visualization-container:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+}
+#visualization-container:fullscreen .visualization-links {
+  position: fixed;
+  bottom: 0.5em;
+  right: 0.5em;
+  z-index: 999;
+}
+
+.btn-controls {
+  margin: 1px 0;
   display: inline-flex !important;
-  padding: 5px;
+  padding: 0.5em !important;
 }
 
 .btn-with-icon > svg {
@@ -182,12 +222,12 @@ table td {
 }
 
 .fullscreen {
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1100;
+  z-index: 99;
   background-color: white;
 }
 
@@ -351,14 +391,6 @@ table td {
   padding-top: 12px;
 }
 
-.visualization-links {
-  position: absolute;
-  right: 8px;
-  top: 0;
-  display: flex;
-  z-index: 10;
-}
-
 button.discrete {
   display: contents !important;
   background: inherit !important;
@@ -437,4 +469,9 @@ button .btn.btn-export-csv {
   margin: 5px auto;
   display: inline-flex !important;
   padding: 5px;
+}
+
+p.alert-body {
+  overflow: auto;
+  text-overflow: ellipsis;
 }

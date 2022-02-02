@@ -8,17 +8,10 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
-import ZoomInIcon from "react-open-iconic-svg/dist/ZoomInIcon";
-import ZoomOutIcon from "react-open-iconic-svg/dist/ZoomOutIcon";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultShexVisualize from "../results/ResultShexVisualizeUml";
 import { mkError } from "../utils/ResponseError";
-import {
-  visualizationMaxZoom,
-  visualizationMinZoom,
-  visualizationStepZoom
-} from "../utils/Utils";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
   getShexText,
@@ -27,6 +20,7 @@ import {
   paramsFromStateShex,
   updateStateShex
 } from "./Shex";
+
 
 function ShexVisualizeUml(props) {
   const [shex, setShex] = useState(InitialShex);
@@ -39,7 +33,6 @@ function ShexVisualizeUml(props) {
   const [permalink, setPermalink] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [zoom, setZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
   const [embedLink, setEmbedLink] = useState(null);
 
@@ -95,21 +88,6 @@ function ShexVisualizeUml(props) {
     };
   }
 
-  function zoomSvg(zoomIn) {
-    if (zoomIn) {
-      const new_zoom = Math.min(
-        visualizationMaxZoom,
-        zoom + visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    } else {
-      const new_zoom = Math.max(
-        visualizationMinZoom,
-        zoom - visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    }
-  }
 
   function postVisualize(cb) {
     setLoading(true);
@@ -210,24 +188,6 @@ function ShexVisualizeUml(props) {
               {permalink && !error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
                   <Permalink url={permalink} disabled={disabledLinks} />
-                  <div className="divider"></div>
-                  <Button
-                    onClick={() => zoomSvg(false)}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={zoom <= visualizationMinZoom}
-                  >
-                    <ZoomOutIcon className="white-icon" />
-                  </Button>
-                  <Button
-                    onClick={() => zoomSvg(true)}
-                    style={{ marginLeft: "1px" }}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={zoom >= visualizationMaxZoom}
-                  >
-                    <ZoomInIcon className="white-icon" />
-                  </Button>
                 </div>
               ) : null}
               {loading ? (
@@ -244,7 +204,6 @@ function ShexVisualizeUml(props) {
                   result={result}
                   type={visualizationTypes.svgRaw}
                   raw={false}
-                  zoom={zoom}
                   embedLink={embedLink}
                   disabledLinks={disabledLinks}
                 />

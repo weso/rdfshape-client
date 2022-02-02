@@ -10,9 +10,9 @@ import {
 } from "../data/Data";
 import { params2Form } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
+import { breadthfirst, getLayoutByUIName } from "../utils/cytoscape/cytoUtils";
 import { mkError } from "../utils/ResponseError";
 import { visualizationTypes } from "../visualization/ShowVisualization";
-import { breadthfirst, getLayoutByUIName } from "./DataVisualizeCytoscape";
 
 // Requests to this endpoint will redirect to the raw visualization of the data requested
 

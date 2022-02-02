@@ -6,7 +6,6 @@ import ShowVisualization, {
 function ResultShExVisualize({
   result: shexVisualizeResponse,
   raw,
-  zoom,
   embedLink,
   disabledLinks,
 }) {
@@ -20,7 +19,7 @@ function ResultShExVisualize({
         data={outputSchema}
         type={visualizationTypes.svgRaw}
         raw={raw}
-        zoom={zoom}
+        controls={true}
         embedLink={embedLink}
         disabledLinks={disabledLinks}
       />

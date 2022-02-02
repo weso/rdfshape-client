@@ -9,16 +9,10 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
-import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
 import { mkError } from "../utils/ResponseError";
-import {
-  visualizationMaxZoom,
-  visualizationMinZoom,
-  visualizationStepZoom
-} from "../utils/Utils";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
   getDataText,
@@ -28,6 +22,7 @@ import {
   updateStateData
 } from "./Data";
 import { convertDot } from "./dotUtils";
+
 
 function DataVisualizeGraphviz(props) {
   const [data, setData] = useState(InitialData);
@@ -41,7 +36,6 @@ function DataVisualizeGraphviz(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [visualization, setVisualization] = useState(null);
-  const [zoom, setZoom] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
   const [embedLink, setEmbedLink] = useState(null);
   const [disabledLinks, setDisabledLinks] = useState(false);
@@ -138,21 +132,7 @@ function DataVisualizeGraphviz(props) {
     setDisabledLinks(disabled);
   }
 
-  function zoomSvg(zoomIn) {
-    if (zoomIn) {
-      const new_zoom = Math.min(
-        visualizationMaxZoom,
-        zoom + visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    } else {
-      const new_zoom = Math.max(
-        visualizationMinZoom,
-        zoom - visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    }
-  }
+
 
   function setUpHistory() {
     // Store the last search URL in the browser history to allow going back
@@ -184,7 +164,6 @@ function DataVisualizeGraphviz(props) {
 
   function resetState() {
     setVisualization(null);
-    setZoom(1);
     setPermalink(null);
     setEmbedLink(null);
     setError(null);
@@ -217,28 +196,6 @@ function DataVisualizeGraphviz(props) {
               {permalink && !error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
                   <Permalink url={permalink} disabled={disabledLinks} />
-                  {!visualization?.textual && (
-                    <>
-                      <div className="divider"></div>
-                      <Button
-                        onClick={() => zoomSvg(false)}
-                        className="btn-zoom"
-                        variant="secondary"
-                        disabled={zoom <= visualizationMinZoom}
-                      >
-                        <ZoomOutIcon className="white-icon" />
-                      </Button>
-                      <Button
-                        onClick={() => zoomSvg(true)}
-                        style={{ marginLeft: "1px" }}
-                        className="btn-zoom"
-                        variant="secondary"
-                        disabled={zoom >= visualizationMaxZoom}
-                      >
-                        <ZoomInIcon className="white-icon" />
-                      </Button>
-                    </>
-                  )}
                 </div>
               ) : null}
               {loading ? (
@@ -256,7 +213,6 @@ function DataVisualizeGraphviz(props) {
                   data={visualization.data}
                   type={visualizationTypes.svgObject}
                   raw={false}
-                  zoom={zoom}
                   embedLink={embedLink}
                   disabledLinks={disabledLinks}
                 />

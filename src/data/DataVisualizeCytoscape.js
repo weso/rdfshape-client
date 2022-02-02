@@ -12,6 +12,9 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
+import {
+  breadthfirst, getLayoutByUIName
+} from "../utils/cytoscape/cytoUtils";
 import { mkError } from "../utils/ResponseError";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
@@ -21,61 +24,6 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
-
-// Common settings for cytoscape visualizations
-export const cytoscapeMinZoom = 0.05;
-export const cytoscapeMaxZoom = 3;
-export const cytoSpacingFactor = 1;
-
-// Cytoscape stylesheet for nodes and edges
-export const stylesheetCytoscape = [
-  {
-    selector: "node",
-    style: {
-      "background-color": "orange",
-      label: "data(label)",
-    },
-  },
-
-  {
-    selector: "edge",
-    style: {
-      width: 3,
-      "line-color": "#ccc",
-      "target-arrow-color": "#ccc",
-      "target-arrow-shape": "triangle",
-      label: "data(label)",
-      "curve-style": "bezier",
-      "control-point-step-size": 40,
-    },
-  },
-];
-
-// Cytoscape layouts available
-export const breadthfirst = {
-  name: "breadthfirst",
-  uiName: "tree",
-  fit: true,
-  nodeDimensionsIncludeLabels: true,
-  directed: false,
-  spacingFactor: 1,
-};
-export const circle = {
-  name: "circle",
-  uiName: "circle",
-  fit: true,
-  nodeDimensionsIncludeLabels: true,
-  directed: false,
-  grid: true,
-};
-export const layouts = [breadthfirst, circle];
-
-export const getLayoutByField = (fieldName, fieldValue) => {
-  return layouts.find((layout) => layout[fieldName] == fieldValue);
-};
-
-export const getLayoutByName = (name) => getLayoutByField("name", name);
-export const getLayoutByUIName = (name) => getLayoutByField("uiName", name);
 
 function DataVisualizeCytoscape(props) {
   const url = API.routes.server.dataConvert;
@@ -287,24 +235,6 @@ function DataVisualizeCytoscape(props) {
               {permalink && !error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>
                   <Permalink url={permalink} disabled={disabledLinks} />
-                  <div className="divider"></div>
-                  <Button
-                    onClick={() => setLayout(breadthfirst)}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={layout === breadthfirst}
-                  >
-                    {breadthfirst.uiName.toUpperCase()}
-                  </Button>
-                  <Button
-                    onClick={() => setLayout(circle)}
-                    style={{ marginLeft: "1px" }}
-                    className="btn-zoom"
-                    variant="secondary"
-                    disabled={layout === circle}
-                  >
-                    {circle.uiName.toUpperCase()}
-                  </Button>
                 </div>
               ) : null}
 

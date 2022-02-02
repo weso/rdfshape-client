@@ -11,7 +11,9 @@ function About() {
 
   useEffect(() => {
     const url = API.routes.server.health;
-    setStatus({ msg: `Requesting server status to ${API.routes.server.health}` });
+    setStatus({
+      msg: `Requesting server status to ${API.routes.server.health}`,
+    });
     axios
       .get(url)
       .then((response) => response.data)
@@ -20,7 +22,7 @@ function About() {
       })
       .catch((error) => {
         setStatus({
-          msg: `Server error: ${error}. Server address: ${API.routes.server.health}`,
+          msg: `${error}. Server address: ${API.routes.server.health}`,
           error: error,
         });
       });
@@ -67,44 +69,41 @@ function About() {
           </ul>
         </li>
         <li>
-          RDFShape Project{" "}
-          <a href="https://www.weso.es/rdfshape-api/">webpage</a>
-        </li>
-        <li>
-          RDFShape Project{" "}
+          Project <a href="https://www.weso.es/rdfshape-api/">webpage</a> and{" "}
           <a href="https://github.com/weso/rdfshape/">repository</a>
         </li>
         <li>
-          Info about the languages:{" "}
           <a href="http://book.validatingrdf.com">"Validating RDF Data" book</a>
         </li>
       </ul>
       <details>
-        <p>
-          Server: <code>{API.routes.server.root}</code>
-        </p>
-        <p>
-          Server status: <code>{status.msg}</code>
-          {status.error ? (
+        <summary>{API.texts.serverStatus}</summary>
+        <p style={{ marginLeft: "15px" }}>
+          {API.texts.misc.address}: <code>{API.routes.server.root}</code>
+          <br />
+          {API.texts.misc.status}: <code>{status.msg}</code>
+          {status.error && (
             <details>
+              <summary>{API.texts.errorDetails}</summary>
               <PrintJson json={status.error} />
             </details>
-          ) : null}
+          )}
         </p>
       </details>
-      <h2>Authors & contributors</h2>
+      <br />
+      <h2>{API.texts.misc.authors}</h2>
       <ul>
         <li>
           <a href="http://labra.weso.es">Jose Emilio Labra Gayo</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
         <li>
           <a href="https://github.com/ulitol97">Eduardo Ulibarri Toledo</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
         <li>
           <a href="https://github.com/mistermboy">Pablo Menéndez Suárez</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
       </ul>
     </Container>

@@ -224,10 +224,10 @@ class API {
 
   // Trigger modes
   static triggerModes = {
-    default: "shapeMap",
+    default: "ShapeMap",
 
-    shapeMap: "shapeMap",
-    targetDecls: "targetDecls",
+    shapeMap: "ShapeMap",
+    targetDecls: "TargetDecls",
   };
 
   // By text limitations
@@ -362,12 +362,19 @@ class API {
       umlDiagram: "UML Diagram",
       fullscreen: "Fullscreen",
       download: "Download",
+      address: "Address",
+      status: "Status",
+      authors: "Authors & Contributors",
+      weso: "WESO",
+      wesoGroup: "WESO Research Group",
 
       shaclValidationReportText: "Validation report",
       shaclValidationReportNodes: "Results per node",
     },
 
+    serverStatus: "Server status",
     networkError: "Network error",
+    errorDetails: "Error details",
     errorParsingUrl: "Could not parse URL information",
     noProvidedRdf: "No RDF data provided",
     noProvidedSchema: "No schema provided",

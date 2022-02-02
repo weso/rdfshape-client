@@ -3,7 +3,6 @@ import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
 import API from "../API";
-import { sortCaretGen } from "../shapeMap/ShowShapeMap";
 
 const { Module, render } = require("viz.js/full.render.js");
 
@@ -266,6 +265,10 @@ export function format2mode(format) {
 }
 const defaultMode = API.formats.turtle.toLowerCase();
 
+// Function generating the symbol for ordering data in a table
+export const sortCaretGen = (order) => (
+  <button className="discrete">{order === "desc" ? "↓" : "↑"}</button>
+);
 // Prefixes for prefix map tables
 export const prefixMapTableColumns = [
   {

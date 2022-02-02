@@ -7,7 +7,6 @@ function ResultDataVisualize({
   data,
   type,
   raw,
-  zoom,
   embedLink,
   disabledLinks,
 }) {
@@ -17,7 +16,7 @@ function ResultDataVisualize({
         data={data}
         type={type}
         raw={raw}
-        zoom={zoom || 1}
+        controls={true}
         embedLink={embedLink || false}
         disabledLinks={disabledLinks || false}
       />

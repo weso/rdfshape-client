@@ -1,5 +1,6 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
+import API from "./API.js";
 
 function Home() {
   return (
@@ -34,14 +35,18 @@ function Home() {
       </p>
       <ul>
         <li>
-          Data <a href="/dataInfo">validation</a> and{" "}
-          <a href="/dataConvert">conversion</a> between semantic formats
+          Data <a href={API.routes.client.dataInfoRoute}>validation</a> and{" "}
+          <a href={API.routes.client.dataConvertRoute}>conversion</a> between
+          semantic formats
         </li>
         <li>
-          Data <a href="/dataVisualize">visualization</a>
+          Data{" "}
+          <a href={API.routes.client.dataVisualizeCytoscapeRoute}>
+            visualization
+          </a>
         </li>
         <li>
-          Data <a href="/dataQuery">query</a> via SPARQL
+          Data <a href={API.routes.client.dataQueryRoute}>query</a> via SPARQL
         </li>
       </ul>
       <p>
@@ -50,15 +55,16 @@ function Home() {
       </p>
       <ul>
         <li>
-          <a href="/shexValidate">ShEx validation</a> and{" "}
-          <a href="/shaclValidate">SHACL validation</a>
+          <a href={API.routes.client.shexValidateRoute}>ShEx validation</a> and{" "}
+          <a href={API.routes.client.shaclValidateRoute}>SHACL validation</a>
         </li>
         <li>
-          ShEx schema <a href="/shExVisualize">visualization</a>
+          ShEx schema{" "}
+          <a href={API.routes.client.shexVisualizeUmlRoute}>visualization</a>
         </li>
         <li>
-          <a href="/shEx2Shacl">ShEx to SHACL</a> and{" "}
-          <a href="/shacl2ShEx">SHACL to ShEx</a>
+          <a href={API.routes.client.shex2ShaclRoute}>ShEx to SHACL</a> and{" "}
+          <a href={API.routes.client.shacl2ShExRoute}>SHACL to ShEx</a>
         </li>
       </ul>
       <p>
@@ -66,10 +72,10 @@ function Home() {
       </p>
       <ul>
         <li>
-          Endpoint <a href="/endpointInfo">information</a>
+          Endpoint <a href={API.routes.client.endpointInfoRoute}>information</a>
         </li>
         <li>
-          Endpoint <a href="/endpointQuery">query</a>
+          Endpoint <a href={API.routes.client.endpointQueryRoute}>query</a>
         </li>
       </ul>
     </Container>
