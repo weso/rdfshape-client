@@ -301,6 +301,11 @@ export const equalsIgnoreCase = (str1, str2, exact = false) => {
     : str1.toLowerCase() == str2.toLowerCase();
 };
 
+export const capitalize = (str) => {
+  if (!str?.length) return;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 // Zoom limits for non-cyto visualizations, whose zoom is controlled with CSS
 export const visualizationMinZoom = 0.2;
 export const visualizationMaxZoom = 1.9;

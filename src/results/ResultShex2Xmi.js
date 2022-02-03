@@ -32,7 +32,6 @@ function ResultShEx2XMI({
   const [svg, setSvg] = useState("");
 
   const mkSvgElement = () => {
-    console.info(resultRaw);
     // Create a dummy HTML element to put the SVG into
     const dummy = document.createElement("div");
     dummy.id = dummyId;

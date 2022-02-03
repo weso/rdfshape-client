@@ -14,6 +14,11 @@ import {
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
 import PrintXml from "../utils/PrintXml";
+import {
+  visualizationMaxZoom,
+  visualizationMinZoom,
+  visualizationStepZoom
+} from "../utils/Utils";
 import VisualizationLinks from "./VisualizationLinks";
 
 // "cytoscape-svg" package
@@ -49,6 +54,9 @@ function ShowVisualization({
   // Current layout of the visualization, used for cyto.
   const [layout, setLayout] = useState(data.layout || breadthfirst);
 
+  // Extra styles for the visualization, used for cyto.
+  const [additionalCytoStylesheet, setAdditionalCytoStylesheet] = useState([]);
+
   // React element with the visualization
   const [visualization, setVisualization] = useState(<></>);
   // Download link, may change when the visualization changes
@@ -77,14 +85,32 @@ function ShowVisualization({
     }
   }, [fullscreen]);
 
+  // Re-render the visualization if significant data changes
   useEffect(() => {
     setVisualization(generateVisualElement());
     setDownloadLink(generateDownloadLink());
-  }, [data, type, layout]);
+  }, [data, type, layout, additionalCytoStylesheet]);
 
   useEffect(() => {
     setDownloadLink(generateDownloadLink(data, type));
   }, [cytoObject]);
+
+  // Change zoom whilst keeping the globally defined boundaries
+  const setZoomControlled = (zoomIn) => {
+    if (zoomIn) {
+      const new_zoom = Math.min(
+        visualizationMaxZoom,
+        zoom + visualizationStepZoom
+      );
+      setZoom(new_zoom);
+    } else {
+      const new_zoom = Math.max(
+        visualizationMinZoom,
+        zoom - visualizationStepZoom
+      );
+      setZoom(new_zoom);
+    }
+  };
 
   const generateVisualElement = (vData = data, vType = type) => {
     switch (vType) {
@@ -98,7 +124,11 @@ function ShowVisualization({
         return (
           <CytoscapeComponent
             elements={vData.elements}
-            stylesheet={[...stylesheetCytoscape, ...(vData.stylesheet || [])]} // Overwrite default styles with user styles, if any
+            stylesheet={[
+              ...stylesheetCytoscape, // default styles
+              ...(data.stylesheet || []), // user styles
+              ...additionalCytoStylesheet, // runtime changed styles
+            ]}
             minZoom={cytoscapeMinZoom}
             maxZoom={cytoscapeMaxZoom}
             wheelSensitivity={0.4}
@@ -218,9 +248,10 @@ function ShowVisualization({
         embedLink={raw ? false : embedLink}
         disabled={raw ? true : disabledLinks}
         controls={controls}
-        zoomControls={[zoom, setZoom]}
+        zoomControls={[zoom, setZoomControlled]}
         fullscreenControls={[fullscreen, setFullscreen]}
         layoutControls={[layout, setLayout]}
+        styleControls={[additionalCytoStylesheet, setAdditionalCytoStylesheet]}
         type={type}
       />
     </div>

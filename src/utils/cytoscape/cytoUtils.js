@@ -4,11 +4,12 @@ export const cytoscapeMaxZoom = 3;
 export const cytoSpacingFactor = 1;
 
 // Cytoscape stylesheet for nodes and edges
+export const cytoscapeDefaultNodeColor = "#ff5722";
 export const stylesheetCytoscape = [
   {
     selector: "node",
     style: {
-      "background-color": "orange",
+      "background-color": cytoscapeDefaultNodeColor,
       label: "data(label)",
     },
   },

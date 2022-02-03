@@ -1,21 +1,27 @@
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import { CirclePicker } from "react-color";
 import {
   FullscreenEnterIcon,
   FullscreenExitIcon,
   ZoomInIcon,
   ZoomOutIcon
 } from "react-open-iconic-svg";
+import CogIcon from "react-open-iconic-svg/dist/CogIcon";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
 import ExternalLinkIcon from "react-open-iconic-svg/dist/ExternalLinkIcon";
 import ReactTooltip from "react-tooltip";
 import API from "../API";
-import { breadthfirst, circle } from "../utils/cytoscape/cytoUtils";
 import {
+  cytoscapeDefaultNodeColor,
+  layouts
+} from "../utils/cytoscape/cytoUtils";
+import {
+  capitalize,
   visualizationMaxZoom,
-  visualizationMinZoom,
-  visualizationStepZoom
+  visualizationMinZoom
 } from "../utils/Utils";
 import { visualizationTypes } from "./ShowVisualization";
 
@@ -30,10 +36,15 @@ function VisualizationLinks({
   zoomControls,
   fullscreenControls,
   layoutControls,
+  styleControls,
 }) {
   const [zoom, setZoom] = zoomControls;
   const [fullscreen, setFullscreen] = fullscreenControls;
   const [layout, setLayout] = layoutControls;
+  const [cytoStyle, setCytoStyle] = styleControls;
+
+  // Color used for cytoscape nodes, needed in state for UI
+  const [cytoNodeColor, setCytoNodeColor] = useState(cytoscapeDefaultNodeColor);
 
   const iconScaling = 2;
   const tooltipScaling = 1 / iconScaling;
@@ -43,33 +54,23 @@ function VisualizationLinks({
     type: null,
   });
 
-  // Change zoom whilst keeping the globally defined boundaries
-  function setZoomControlled(zoomIn) {
-    if (zoomIn) {
-      const new_zoom = Math.min(
-        visualizationMaxZoom,
-        zoom + visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    } else {
-      const new_zoom = Math.max(
-        visualizationMinZoom,
-        zoom - visualizationStepZoom
-      );
-      setZoom(new_zoom);
-    }
-  }
+  // Change the cyto graph style when a new node color is selected
+  useEffect(() => {
+    setCytoStyle([
+      {
+        selector: "node",
+        style: {
+          "background-color": cytoNodeColor,
+        },
+      },
+    ]);
+  }, [cytoNodeColor]);
 
   return (
     <div className={`visualization-links ${fullscreen && ""}`} style={styles}>
       <div id="download-controls" className="controls-group">
-        {
-          <div
-            data-tip
-            data-for="downloadLinkTip"
-            className="embedded-icon"
-            style={{ transform: `scale(${iconScaling})` }}
-          >
+        {downloadLink && (
+          <div data-tip data-for="downloadLinkTip" className="embedded-icon">
             <a
               id="downloadLink"
               href={downloadLink.link}
@@ -77,10 +78,16 @@ function VisualizationLinks({
                 "visualization" +
                 (downloadLink.type ? `.${downloadLink.type}` : "")
               }
-              onMouseEnter={() => setDownloadLink(generateDownloadLink())}
             >
-              <DataTransferDownloadIcon style={{ fill: "black" }} />
+              <Button
+                onMouseEnter={() => setDownloadLink(generateDownloadLink())}
+                className="btn-controls"
+                variant="secondary"
+              >
+                <DataTransferDownloadIcon className="white-icon" />
+              </Button>
             </a>
+
             {tooltips ?? (
               <div style={{ transform: `scale(${tooltipScaling})` }}>
                 <ReactTooltip id="downloadLinkTip" place="top" effect="solid">
@@ -89,22 +96,19 @@ function VisualizationLinks({
               </div>
             )}
           </div>
-        }
+        )}
         {embedLink && (
-          <div
-            data-tip
-            data-for="embedLinkTip"
-            className="embedded-icon"
-            style={{ transform: `scale(${iconScaling})` }}
-          >
+          <div data-tip data-for="embedLinkTip" className="embedded-icon">
             <a
               target="_blank"
               href={disabled ? null : embedLink}
               className={disabled ? "disabled" : ""}
-              style={{ transform: `scale(${iconScaling})` }}
             >
-              <ExternalLinkIcon style={{ fill: "black" }} />
+              <Button className="btn-controls" variant="secondary">
+                <ExternalLinkIcon className="white-icon" />
+              </Button>
             </a>
+
             {tooltips ?? (
               <div style={{ transform: `scale(${tooltipScaling})` }}>
                 <ReactTooltip id="embedLinkTip" place="top" effect="solid">
@@ -142,7 +146,7 @@ function VisualizationLinks({
           {zoomControls && type !== visualizationTypes.cytoscape && (
             <>
               <Button
-                onClick={() => setZoomControlled(false)}
+                onClick={() => setZoom(false)}
                 className="btn-controls"
                 variant="secondary"
                 disabled={zoom <= visualizationMinZoom}
@@ -150,7 +154,7 @@ function VisualizationLinks({
                 <ZoomOutIcon className="white-icon" />
               </Button>
               <Button
-                onClick={() => setZoomControlled(true)}
+                onClick={() => setZoom(true)}
                 style={{ marginLeft: "1px" }}
                 className="btn-controls"
                 variant="secondary"
@@ -162,27 +166,81 @@ function VisualizationLinks({
           )}
         </div>
       )}
-      {controls && (
-        <div id="layout-controls" className="controls-group">
-          {layoutControls && type === visualizationTypes.cytoscape && (
+      {controls && type === visualizationTypes.cytoscape && (
+        <div id="cytoscape-controls" className="controls-group">
+          {layoutControls && (
             <>
               <Button
-                onClick={() => setLayout(breadthfirst)}
-                className="btn-zoom"
+                className="btn-controls"
                 variant="secondary"
-                disabled={layout === breadthfirst}
+                data-tip
+                data-for="layout-picker-container"
               >
-                {breadthfirst.uiName.toUpperCase()}
+                <CogIcon className="white-icon" />
               </Button>
-              <Button
-                onClick={() => setLayout(circle)}
-                style={{ marginLeft: "1px" }}
-                className="btn-zoom"
-                variant="secondary"
-                disabled={layout === circle}
+              <ReactTooltip
+                clickable={true}
+                event="mouseenter click"
+                eventOff="mouseleave"
+                globalEventOff="click"
+                delayHide={150}
+                id="layout-picker-container"
+                place="left"
+                type="dark"
+                effect="solid"
               >
-                {circle.uiName.toUpperCase()}
-              </Button>
+                <Form>
+                  <Form.Group
+                    controlId="layout"
+                    className="layout-picker-container"
+                  >
+                    {/* Map through all available layouts */}
+                    {layouts.map((itLayout) => (
+                      <div key={itLayout.name}>
+                        <Form.Check
+                          type="radio"
+                          name="layout"
+                          value={itLayout}
+                          label={capitalize(itLayout.uiName || itLayout.name)}
+                          onChange={() => setLayout(itLayout)}
+                          checked={layout === itLayout}
+                        />
+                      </div>
+                    ))}
+                  </Form.Group>
+                </Form>
+              </ReactTooltip>
+            </>
+          )}
+          {styleControls && (
+            <>
+              <button
+                className="btn-controls btn-color-picker"
+                style={{
+                  backgroundColor: cytoNodeColor,
+                  boxShadow: `${cytoNodeColor} 0 0 5px`,
+                }}
+                data-tip
+                data-for="color-picker-container"
+              ></button>
+              {/* https://github.com/wwayne/react-tooltip */}
+              <ReactTooltip
+                clickable={true}
+                event="mouseenter click"
+                eventOff="mouseleave"
+                globalEventOff="click"
+                delayHide={150}
+                id="color-picker-container"
+                className="color-picker-container"
+                place="left"
+                type="dark"
+                effect="solid"
+              >
+                <CirclePicker
+                  className="color-picker"
+                  onChangeComplete={({ hex }) => setCytoNodeColor(hex)}
+                />
+              </ReactTooltip>
             </>
           )}
         </div>
@@ -201,6 +259,7 @@ VisualizationLinks.propTypes = {
   zoomControls: PropTypes.array,
   fullscreenControls: PropTypes.array,
   layoutControls: PropTypes.array,
+  styleControls: PropTypes.array,
 };
 
 VisualizationLinks.defaultProps = {

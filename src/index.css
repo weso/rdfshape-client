@@ -97,12 +97,6 @@ a.dropdown-item {
   padding: 5px;
 }
 
-.controls-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .visualization-links {
   display: flex;
   flex-direction: column;
@@ -137,10 +131,43 @@ change the controls location */
   z-index: 999;
 }
 
+.layout-picker-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: auto !important;
+}
+
+.color-picker span > div {
+  border-radius: 10% !important;
+}
+
+.controls-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+}
+
 .btn-controls {
   margin: 1px 0;
   display: inline-flex !important;
-  padding: 0.5em !important;
+  justify-content: center;
+  align-items: center;
+  padding: 0.6em !important;
+  width: 1.8em;
+  height: 1.8em;
+}
+
+.btn-color-picker {
+  border-radius: 10%;
+  border: none;
+  padding: 0.6em !important;
+  transition: all 150ms ease 0.15s;
+}
+
+.btn-controls > a {
+  display: contents;
 }
 
 .btn-with-icon > svg {
@@ -154,12 +181,12 @@ change the controls location */
 .white-icon {
   fill: white;
   transform: scale(1.5);
-  margin: auto 5px;
+  margin: auto;
 }
 
 .embedded-icon {
   fill: black;
-  margin: auto 8px;
+  margin: 0 8px;
 }
 
 .white-filler {
