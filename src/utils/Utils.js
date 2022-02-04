@@ -306,6 +306,17 @@ export const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+// Shorthand for scrolling items into view
+export const scrollToItem = (
+  element,
+  config = {
+    behavior: "smooth",
+    block: "start",
+  }
+) => {
+  element.scrollIntoView(config);
+};
+
 // Zoom limits for non-cyto visualizations, whose zoom is controlled with CSS
 export const visualizationMinZoom = 0.2;
 export const visualizationMaxZoom = 1.9;
@@ -343,3 +354,7 @@ export const yasheMinButtonsOptions = {
   showCopyButton: true,
   showFullScreenButton: true,
 };
+
+// Create a random int in range min (inclusive) to max (exclusive)
+export const randomInt = (min = 0, max = 1000) =>
+  Math.floor(Math.random() * (max - min)) + min;

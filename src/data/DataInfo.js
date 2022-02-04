@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
+import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
@@ -22,6 +23,7 @@ import {
 
 function DataInfo(props) {
   const [data, setData] = useState(InitialData);
+  const [dotVisualization, setDotVisualization] = useState(null);
 
   const [result, setResult] = useState(null);
 
@@ -35,7 +37,8 @@ function DataInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.dataInfo;
+  const urlInfo = API.routes.server.dataInfo;
+  const urlVisual = API.routes.server.dataConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -77,27 +80,53 @@ function DataInfo(props) {
     setParams(paramsFromStateData(data));
   }
 
-  function postDataInfo(cb) {
+  async function postDataInfo() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const infoForm = params2Form(params);
+      // First: get data info with the data summary and prefix map
+      const { data: resultInfo } = await axios.post(urlInfo, infoForm);
+      setProgressPercent(40);
+
+      // Second: get data visualizations...
+      // ...first graphviz
+      const graphvizForm = params2Form({
+        ...params,
+        [API.queryParameters.data.targetFormat]: API.formats.dot,
+      });
+
+      const { data: resultDot } = await axios.post(urlVisual, graphvizForm);
+      const dot = resultDot.result.data; // Get the DOT string from the axios data object
+      const dotVisualization = await processDotData(dot);
+      setProgressPercent(60);
+
+      // ...then cyto
+      const cytoscapeForm = params2Form({
+        ...params,
+        [API.queryParameters.data.targetFormat]: API.formats.json,
+      });
+      const { data: resultCyto } = await axios.post(urlVisual, cytoscapeForm);
+      const cytoElements = JSON.parse(resultCyto.result.data);
+
+      setProgressPercent(80);
+
+      // Set result with all collected data
+      setResult({
+        resultInfo,
+        resultDot: { ...resultDot, visualization: dotVisualization },
+        resultCyto: { ...resultCyto, elements: cytoElements },
+      });
+      // Set permalings and finish
+      setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
+      checkLinks();
+      setProgressPercent(100);
+    } catch (err) {
+      setError(mkError(error, urlInfo));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -180,10 +209,6 @@ function DataInfo(props) {
               ) : result ? (
                 <ResultDataInfo
                   result={result}
-                  fromParams={data.fromParams}
-                  resetFromParams={() =>
-                    setData({ ...data, fromParams: false })
-                  }
                   permalink={permalink}
                   disabled={disabledLinks}
                 />

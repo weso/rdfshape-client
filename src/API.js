@@ -155,10 +155,18 @@ class API {
   };
 
   static tabs = {
+    none: "none",
+    overview: "overview",
     xmi: "XMI",
     uml: "UML",
     shex: "ShEx",
+
+    prefixMap: "prefixMap",
+
     visualization: "visualization",
+    visualizations: "visualizations",
+    visualizationDot: "dot",
+    visualizationCyto: "cyto",
 
     shaclValidationReportText: "shaclReportText",
     shaclValidationReportNodes: "shaclReportNodes",
@@ -308,6 +316,14 @@ class API {
       umlHeader: "UML (XMI)",
 
       formatHeader: "Format",
+    },
+
+    resultTabs: {
+      overview: "Overview",
+      prefixMap: "Prefix Map",
+      visualizations: "Visualizations",
+      visualizationDot: "DOT",
+      visualizationCyto: "Cytoscape",
     },
 
     endpoints: {

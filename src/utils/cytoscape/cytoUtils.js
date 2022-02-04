@@ -2,6 +2,7 @@
 export const cytoscapeMinZoom = 0.05;
 export const cytoscapeMaxZoom = 3;
 export const cytoSpacingFactor = 1;
+export const cytoWheelSensitivity = 0.3;
 
 // Cytoscape stylesheet for nodes and edges
 export const cytoscapeDefaultNodeColor = "#ff5722";
@@ -15,6 +16,16 @@ export const stylesheetCytoscape = [
   },
 
   {
+    selector: "edge",
+    style: {
+      width: 3,
+
+      label: "data(label)",
+      "control-point-step-size": 40,
+    },
+  },
+
+    {
     selector: "edge",
     style: {
       width: 3,

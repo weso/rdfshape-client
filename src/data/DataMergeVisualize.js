@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import { ZoomInIcon, ZoomOutIcon } from "react-open-iconic-svg";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import {
   visualizationMaxZoom,
@@ -29,7 +30,6 @@ import {
   updateStateData
 } from "./Data";
 import { mkServerParams } from "./DataMerge";
-import { processDotData } from "./DataVisualizeGraphviz";
 
 function DataMergeVisualize(props) {
   const [data1, setData1] = useState(InitialData);

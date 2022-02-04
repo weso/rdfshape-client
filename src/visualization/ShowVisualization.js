@@ -2,23 +2,19 @@ import cytoscape from "cytoscape";
 import svg from "cytoscape-svg";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import CytoscapeComponent from "react-cytoscapejs";
 import format from "xml-formatter";
 import API from "../API";
-import {
-  breadthfirst,
-  cytoscapeMaxZoom,
-  cytoscapeMinZoom,
-  stylesheetCytoscape
-} from "../utils/cytoscape/cytoUtils";
+import { breadthfirst } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
 import PrintXml from "../utils/PrintXml";
 import {
+  randomInt,
   visualizationMaxZoom,
   visualizationMinZoom,
   visualizationStepZoom
 } from "../utils/Utils";
+import CytoscapeContainer from "./CytoscapeContainer";
 import VisualizationLinks from "./VisualizationLinks";
 
 // "cytoscape-svg" package
@@ -44,26 +40,29 @@ function ShowVisualization({
   embedLink,
   disabledLinks,
   controls,
+  tab,
 }) {
+  // Visualization ID and the ID of te html container of the visualization
+  const id = randomInt();
+  const htmlId = `visualization-container-${id}`;
+
   // CSS-applied zoom on the element (via transform scale). Not needed for cyto
   const [zoom, setZoom] = useState(defaultZoom || 1);
 
   // Current state of the visualization, fullscreen or not
   const [fullscreen, setFullscreen] = useState(false);
 
+  // Cyto object for controlled updates, used for Cyto
+  const [cytoObject, setCytoObject] = useState(null);
   // Current layout of the visualization, used for cyto.
-  const [layout, setLayout] = useState(data.layout || breadthfirst);
-
+  const [layout, setLayout] = useState(data?.layout || breadthfirst);
   // Extra styles for the visualization, used for cyto.
-  const [additionalCytoStylesheet, setAdditionalCytoStylesheet] = useState([]);
+  const [cytoStyles, setCytoStyles] = useState([]);
 
   // React element with the visualization
   const [visualization, setVisualization] = useState(<></>);
   // Download link, may change when the visualization changes
   const [downloadLink, setDownloadLink] = useState({});
-
-  // Cyto object for controlled updates if using cytoscape
-  const [cytoObject, setCytoObject] = useState(null);
 
   // Sync fullscreen state with the browser
   useEffect(() => {
@@ -77,10 +76,13 @@ function ShowVisualization({
 
   // Use the browser native API to enter fullscreen on visualizations
   useEffect(() => {
-    if (document.fullscreenElement) {
+    // If new value of fullscreen is false and there's a fullscreen element, exit
+    if (!fullscreen && document.fullscreenElement) {
       document.exitFullscreen();
-    } else if (fullscreen === true) {
-      const element = document.getElementById("visualization-container");
+    }
+    // Else if new value of fullscreen is true and there's no fullscreen element, request
+    else if (fullscreen && !document.fullscreenElement) {
+      const element = document.getElementById(htmlId);
       element.requestFullscreen();
     }
   }, [fullscreen]);
@@ -89,8 +91,9 @@ function ShowVisualization({
   useEffect(() => {
     setVisualization(generateVisualElement());
     setDownloadLink(generateDownloadLink());
-  }, [data, type, layout, additionalCytoStylesheet]);
+  }, [data, type, layout, cytoStyles]);
 
+  // Re-gen download link with update cyto object when it is manupulated by the user
   useEffect(() => {
     setDownloadLink(generateDownloadLink(data, type));
   }, [cytoObject]);
@@ -122,24 +125,11 @@ function ShowVisualization({
 
       case visualizationTypes.cytoscape:
         return (
-          <CytoscapeComponent
+          <CytoscapeContainer
             elements={vData.elements}
-            stylesheet={[
-              ...stylesheetCytoscape, // default styles
-              ...(data.stylesheet || []), // user styles
-              ...additionalCytoStylesheet, // runtime changed styles
-            ]}
-            minZoom={cytoscapeMinZoom}
-            maxZoom={cytoscapeMaxZoom}
-            wheelSensitivity={0.4}
-            className={"cyto-container"}
-            layout={layout}
-            cy={(cy) => {
-              cy.ready(() => {
-                vData.refCyto.current = cy;
-                setCytoObject(cy);
-              });
-            }}
+            cytoControls={[cytoObject, setCytoObject]}
+            layoutControls={[layout, setLayout]}
+            styles={cytoStyles}
           />
         );
 
@@ -219,11 +209,15 @@ function ShowVisualization({
   };
 
   return (
-    <div id="visualization-container" className={`width-100 height-100`}>
+    <div
+      id={htmlId}
+      className={`visualization-container width-100 height-100`}
+      style={{ height: "58vh" }}
+    >
       <div
         id="visualization-box"
         style={{ position: "relative" }}
-        className={`width-100 height-100 ${raw ? "" : "border"}`}
+        className={`width-100 height-100 ${!raw && "border"}`}
       >
         <div
           style={{ overflow: raw ? "inherit" : "auto" }}
@@ -251,7 +245,8 @@ function ShowVisualization({
         zoomControls={[zoom, setZoomControlled]}
         fullscreenControls={[fullscreen, setFullscreen]}
         layoutControls={[layout, setLayout]}
-        styleControls={[additionalCytoStylesheet, setAdditionalCytoStylesheet]}
+        cytoscape={cytoObject}
+        styleControls={[cytoStyles, setCytoStyles]}
         type={type}
       />
     </div>
@@ -264,11 +259,13 @@ ShowVisualization.propTypes = {
   raw: PropTypes.bool,
   embedLink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   disabledLinks: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  tab: PropTypes.string.isRequired,
 };
 
 ShowVisualization.defaultProps = {
   zoom: 1,
   raw: false,
   controls: false, // Show or hide zoom controls
+  tab: API.tabs.none,
 };
 export default ShowVisualization;

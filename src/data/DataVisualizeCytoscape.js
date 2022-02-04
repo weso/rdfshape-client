@@ -12,10 +12,9 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
-import {
-  breadthfirst, getLayoutByUIName
-} from "../utils/cytoscape/cytoUtils";
+import { breadthfirst, getLayoutByUIName } from "../utils/cytoscape/cytoUtils";
 import { mkError } from "../utils/ResponseError";
+import { scrollToItem } from "../utils/Utils";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
   getDataText,
@@ -27,6 +26,8 @@ import {
 
 function DataVisualizeCytoscape(props) {
   const url = API.routes.server.dataConvert;
+
+  const refResult = useRef(null);
 
   const [data, setData] = useState(InitialData);
   const [result, setResult] = useState({});
@@ -92,7 +93,6 @@ function DataVisualizeCytoscape(props) {
       } else {
         setError(API.texts.noProvidedRdf);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -159,7 +159,7 @@ function DataVisualizeCytoscape(props) {
       })
       .finally(() => {
         setLoading(false);
-        window.scrollTo(0, 0);
+        scrollToItem(refResult.current);
       });
   }
 
@@ -230,7 +230,7 @@ function DataVisualizeCytoscape(props) {
           </Form>
         </Col>
         {loading || elements || error ? (
-          <Col className="half-col visual-column">
+          <Col ref={refResult} className="half-col visual-column">
             <Fragment>
               {permalink && !error ? (
                 <div className={"d-flex"} style={{ flexWrap: "wrap" }}>

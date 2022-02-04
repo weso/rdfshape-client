@@ -1,11 +1,9 @@
-import React from "react";
 import Viz from "viz.js/viz.js";
-import API from "../API";
-import ResponseError from "../utils/ResponseError";
+import API from "../../API";
 const { Module, render } = require("viz.js/full.render.js");
 
 // https://github.com/mdaines/viz.js/wiki/API
-export function convertDot(dot, engine, format, setError, setVisualization) {
+async function convertDot(dot, engine, format) {
   let viz = new Viz({
     Module: () => Module({ TOTAL_MEMORY: 1 << 25 }),
     render,
@@ -52,20 +50,17 @@ export function convertDot(dot, engine, format, setError, setVisualization) {
       break;
   }
 
-  promise
-    .then((data) => {
-      setVisualization({
-        data,
-        textual,
-      });
-    })
-    .catch((error) => {
-      viz = new Viz({ Module, render });
-      setError(
-        <ResponseError
-          errorOrigin={API.routes.server.root}
-          errorMessage={`Could not convert to ${format}.\n ${error}\nDOT:\n${dot.toString()}`}
-        />
-      );
-    });
+  try {
+    const data = await promise;
+    return {
+      data,
+      textual,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function processDotData(dot) {
+  return await convertDot(dot, API.formats.dot.toLowerCase(), API.formats.svg);
 }

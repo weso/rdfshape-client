@@ -3,11 +3,11 @@ import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
+import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import ShowVisualization from "../visualization/ShowVisualization";
 import VisualizationLinks from "../visualization/VisualizationLinks";
 import { InitialData, updateStateData } from "./Data";
-import { processDotData } from "./DataVisualizeGraphviz";
 
 function DataMergeVisualizeRaw(props) {
   const [data1, setData1] = useState(InitialData);

@@ -12,6 +12,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
+import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import {
@@ -21,7 +22,7 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
-import { convertDot } from "./dotUtils";
+
 
 
 function DataVisualizeGraphviz(props) {
@@ -231,14 +232,5 @@ function DataVisualizeGraphviz(props) {
   );
 }
 
-export function processDotData(dot, setError, setVisualization) {
-  convertDot(
-    dot,
-    API.formats.dot.toLowerCase(),
-    API.formats.svg,
-    setError,
-    setVisualization
-  );
-}
 
 export default DataVisualizeGraphviz;

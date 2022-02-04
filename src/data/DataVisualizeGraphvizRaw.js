@@ -5,10 +5,10 @@ import React, { useEffect, useState } from "react";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import ResultDataVisualize from "../results/ResultDataVisualize";
+import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import { visualizationTypes } from "../visualization/ShowVisualization";
 import { InitialData, paramsFromStateData, updateStateData } from "./Data";
-import { processDotData } from "./DataVisualizeGraphviz";
 
 // Requests to this endpoint will redirect to the raw visualization of the data requested
 

@@ -37,6 +37,7 @@ function VisualizationLinks({
   fullscreenControls,
   layoutControls,
   styleControls,
+  cytoscape, // cytoscape object
 }) {
   const [zoom, setZoom] = zoomControls;
   const [fullscreen, setFullscreen] = fullscreenControls;

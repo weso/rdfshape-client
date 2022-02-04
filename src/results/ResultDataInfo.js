@@ -1,64 +1,141 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
-import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns } from "../utils/Utils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 
+// Compendium of data overview, prefix map and visualizations
 function ResultDataInfo({
-  result: dataInfoResponse, // Request successful response
+  result: { resultInfo, resultDot, resultCyto }, // Request successful response
   permalink,
   disabled,
 }) {
+  // Active tab control
+  const [resultTab, setResultTab] = useState(API.tabs.overview);
+  const [visualTab, setVisualTab] = useState(API.tabs.visualizationDot);
+
   // Destructure response items for later usage
   const {
-    message,
+    message: messageInfo,
     result: {
       numberOfStatements,
       prefixMap,
       format: { name: formatName },
     },
-  } = dataInfoResponse;
+  } = resultInfo;
 
-  if (dataInfoResponse) {
+  const { visualization: dotVisualization } = resultDot;
+  const { elements: cytoElements } = resultCyto;
+
+  const [cytoVisual, setCytoVisual] = useState(null);
+
+  function renderCytoVisual() {
+    setCytoVisual(
+      <ShowVisualization
+        data={{ elements: cytoElements }}
+        type={visualizationTypes.cytoscape}
+        raw={false}
+        controls={true}
+        embedLink={false} // TODO
+        disabledLinks={false} // TODO
+      />
+    );
+  }
+
+  if (resultInfo) {
     return (
-      <div>
-        <Alert variant="success">{message}</Alert>
-        <ul>
-          <li>{API.texts.numberOfStatements}: {numberOfStatements}</li>
-          <li>
-            {API.texts.dataFormat}: <span className="code">{formatName}</span>
-          </li>
-          {prefixMap?.length > 0 ? (
-            <li className="list-details">
-              <details>
-                <summary>{API.texts.misc.prefixMap}</summary>
-                {/* Table with prefix map */}
-                <div className="prefixMapTable">
+      <>
+        <div id="results-container">
+          <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+            {/* Data overview */}
+            <Tab
+              eventKey={API.tabs.overview}
+              title={API.texts.resultTabs.overview}
+            >
+              <div className="marginTop">
+                <ul>
+                  <li>{messageInfo}</li>
+                  <li>
+                    {API.texts.numberOfStatements}: {numberOfStatements}
+                  </li>
+                  <li>
+                    {API.texts.dataFormat}:{" "}
+                    <span className="code">{formatName}</span>
+                  </li>
+                </ul>
+              </div>
+            </Tab>
+
+            {/* Data prefix map */}
+            <Tab
+              eventKey={API.tabs.prefixMap}
+              title={API.texts.resultTabs.prefixMap}
+            >
+              <div className="marginTop">
+                {prefixMap?.length > 0 ? (
                   <BootstrapTable
                     keyField="prefixName"
                     data={prefixMap}
                     columns={prefixMapTableColumns}
                   ></BootstrapTable>
-                </div>
-              </details>
-            </li>
-          ) : (
-            <li>{API.texts.noPrefixes}</li>
-          )}
-        </ul>
+                ) : (
+                  <ul>
+                    <li>{API.texts.noPrefixes}</li>
+                  </ul>
+                )}
+              </div>
+            </Tab>
+
+            {/* Data visualizations */}
+            <Tab
+              eventKey={API.tabs.visualizations}
+              title={API.texts.resultTabs.visualizations}
+            >
+              <Tabs
+                activeKey={visualTab}
+                id="visualTabs"
+                onSelect={setVisualTab}
+              >
+                <Tab
+                  eventKey={API.tabs.visualizationDot}
+                  title={API.texts.resultTabs.visualizationDot}
+                >
+                  <ShowVisualization
+                    data={dotVisualization.data}
+                    type={visualizationTypes.svgObject}
+                    raw={false}
+                    controls={true}
+                    embedLink={false} // TODO
+                    disabledLinks={false} // TODO
+                  />
+                </Tab>
+                <Tab
+                  eventKey={API.tabs.visualizationCyto}
+                  title={API.texts.resultTabs.visualizationCyto}
+                  onEnter={renderCytoVisual}
+                >
+                  {cytoVisual}
+                </Tab>
+              </Tabs>
+            </Tab>
+          </Tabs>
+        </div>
+        <hr />
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={dataInfoResponse} />
+          <PrintJson json={resultInfo} />
         </details>
         {permalink && (
           <Fragment>
-            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
-      </div>
+      </>
     );
   }
 }
