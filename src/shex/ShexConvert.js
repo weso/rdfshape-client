@@ -10,8 +10,9 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
+import SelectShaclEngine from "../components/SelectShaclEngine";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultShExConvert from "../results/ResultShexConvert";
+import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
@@ -24,6 +25,10 @@ import {
 function ShexConvert(props) {
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
     API.formats.defaultShex
+  );
+
+  const [targetSchemaEngine, setTargetSchemaEngine] = useState(
+    API.engines.shex
   );
   const [shex, setShex] = useState(InitialShex);
 
@@ -39,11 +44,7 @@ function ShexConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.schemaConvert;
-
-  function handleTargetSchemaFormatChange(value) {
-    setTargetSchemaFormat(value);
-  }
+  const urlConvert = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -53,15 +54,20 @@ function ShexConvert(props) {
         const finalSchema = updateStateShex(queryParams, shex) || shex;
         setShex(finalSchema);
 
-        queryParams[API.queryParameters.schema.targetFormat] &&
-          setTargetSchemaFormat(
-            queryParams[API.queryParameters.schema.targetFormat]
-          );
+        const finalTargetFormat =
+          queryParams[API.queryParameters.schema.targetFormat] ||
+          targetSchemaFormat;
+        setTargetSchemaFormat(finalTargetFormat);
+
+        const finalTargetEngine =
+          queryParams[API.queryParameters.schema.targetEngine] ||
+          targetSchemaEngine;
+        setTargetSchemaEngine(finalTargetEngine);
 
         const params = mkParams(
           finalSchema,
-          queryParams[API.queryParameters.schema.targetFormat] ||
-            targetSchemaFormat
+          finalTargetFormat,
+          finalTargetEngine
         );
 
         setParams(params);
@@ -86,7 +92,6 @@ function ShexConvert(props) {
       } else {
         setError(API.texts.noProvidedSchema);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -95,37 +100,37 @@ function ShexConvert(props) {
     setParams(mkParams());
   }
 
-  function mkParams(shexData = shex, targetFormat = targetSchemaFormat) {
+  function mkParams(
+    pShex = shex,
+    pTargetFormat = targetSchemaFormat,
+    pTargetEngine = targetSchemaEngine
+  ) {
     return {
-      ...paramsFromStateShex(shexData),
-      [API.queryParameters.schema.targetFormat]: targetFormat,
-      [API.queryParameters.schema.targetEngine]: API.engines.shex, // Always use ShEx as target engine
+      ...paramsFromStateShex(pShex),
+      [API.queryParameters.schema.targetFormat]: pTargetFormat,
+      [API.queryParameters.schema.targetEngine]: pTargetEngine,
     };
   }
 
-  function postConvert(cb) {
+  async function postConvert() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.shexConvertRoute, params)
-        );
-        setProgressPercent(90);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const postData = params2Form(params);
+      const { data: convertResponse } = await axios.post(urlConvert, postData);
+      setProgressPercent(60);
+
+      setResult(convertResponse);
+      setProgressPercent(80);
+
+      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, urlConvert));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -182,11 +187,33 @@ function ShexConvert(props) {
           <Form onSubmit={handleSubmit}>
             {mkShexTabs(shex, setShex)}
             <hr />
+            {/* Choose target engine */}
+            <SelectShaclEngine
+              name={API.texts.selectors.targetEngine}
+              handleEngineChange={(newEngine) => {
+                newEngine && setTargetSchemaEngine(newEngine);
+              }}
+              selectedEngine={targetSchemaEngine}
+              fromParams={false}
+              resetFromParams={false}
+              extraOptions={[API.engines.shex]} // Allow to choose Shex engine too for this case
+            />
+            {/* Choose target format, depending on engine */}
             <SelectFormat
-              name="Target schema format"
+              name={API.texts.selectors.targetFormat}
               selectedFormat={targetSchemaFormat}
-              handleFormatChange={handleTargetSchemaFormatChange}
-              urlFormats={API.routes.server.shExFormats}
+              handleFormatChange={(newFormat) => {
+                if (!newFormat) {
+                  targetSchemaEngine === API.engines.shex
+                    ? setTargetSchemaFormat(API.formats.defaultShex)
+                    : setTargetSchemaFormat(API.formats.defaultShacl);
+                } else setTargetSchemaFormat(newFormat);
+              }}
+              urlFormats={
+                targetSchemaEngine === API.engines.shex
+                  ? API.routes.server.shExFormats
+                  : API.routes.server.shaclFormats
+              }
             />
             <hr />
             <Button
@@ -211,7 +238,7 @@ function ShexConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultShExConvert
+              <ResultSchemaConvert
                 result={result}
                 permalink={permalink}
                 disabled={disabledLinks}

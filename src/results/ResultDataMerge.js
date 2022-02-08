@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import Alert from "react-bootstrap/Alert";
+import React, { Fragment, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
@@ -24,6 +24,8 @@ function ResultDataMerge({
     },
   } = dataMergeResponse;
 
+  const [resultTab, setResultTab] = useState(API.tabs.result);
+
   const mkInputFormats = () =>
     inputDataItems.reduce((acc, it, idx, arr) => {
       const inputFormat = it.format.name || "Unknown";
@@ -35,19 +37,21 @@ function ResultDataMerge({
 
   if (dataMergeResponse) {
     return (
-      <div>
-        {/* Alert */}
-        <Alert variant="success">{message}</Alert>
-        {/* Output data */}
-        {dataRaw && outputFormatName && (
-          <Code
-            value={dataRaw}
-            mode={format2mode(outputFormatName)}
-            fromParams={fromParams}
-            resetFromParams={resetFromParams}
-            readOnly={true}
-          />
-        )}
+      <div id="results-summary">
+        <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
+          {/* Output data */}
+          {dataRaw && outputFormatName && (
+            <Tab eventKey={API.tabs.result} title={API.texts.resultTabs.result}>
+              <Code
+                value={dataRaw}
+                mode={format2mode(outputFormatName)}
+                fromParams={fromParams}
+                resetFromParams={resetFromParams}
+                readOnly={true}
+              />
+            </Tab>
+          )}
+        </Tabs>
         <br />
         <details>
           <summary>{API.texts.operationInformation}</summary>

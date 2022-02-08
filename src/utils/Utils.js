@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
@@ -143,13 +143,17 @@ export function showQualify(node, prefixMap) {
 }
 
 export function showQualified(qualified, prefixes) {
+  // Strip quotes for display
+  if (qualified.str)
+    qualified.str = qualified.str.replace(/^"/, "").replace(/"$/, "");
+
   switch (qualified.type) {
     case "RelativeIRI":
       return <span>{qualified.str}</span>;
     case "QualifiedName":
       if (prefixes.includes(qualified.prefix)) {
         return (
-          <Fragment>
+          <>
             <a
               href={
                 API.wikidataOutgoingRoute +
@@ -162,16 +166,16 @@ export function showQualified(qualified, prefixes) {
             <a href={qualified.uri}>
               <ExternalLinkIcon />
             </a>
-          </Fragment>
+          </>
         );
       } else {
         return (
-          <fragment>
+          <>
             {qualified.str}{" "}
             <a href={qualified.uri}>
               <ExternalLinkIcon />
             </a>
-          </fragment>
+          </>
         );
       }
     case "FullIRI":
@@ -190,30 +194,6 @@ export function showQualified(qualified, prefixes) {
     default:
       console.error(`Unknown type for qualified value`);
       return <span>{qualified.str}</span>;
-  }
-}
-
-/* Converts SPARQL representation to Turtle representation */
-export function cnvValueFromSPARQL(value) {
-  switch (value.type) {
-    case "uri":
-      return `<${value.value}>`;
-    case "literal":
-      if (value.datatype) {
-        switch (value.datatype) {
-          case "http://www.w3.org/2001/XMLSchema#integer":
-            return `${value.value}`;
-          case "http://www.w3.org/2001/XMLSchema#decimal":
-            return `${value.value}`;
-          default:
-            return `"${value.value}"^^${value.datatype}`;
-        }
-      }
-      if (value["xml:lang"]) return `"${value.value}"@${value["xml:lang"]}`;
-      return `"${value.value}"`;
-    default:
-      console.error(`cnvValueFromSPARQL: Unknown value type for ${value}`);
-      return value;
   }
 }
 

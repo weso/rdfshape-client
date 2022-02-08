@@ -29,12 +29,12 @@ export const stylesheetCytoscape = [
     selector: "edge",
     style: {
       width: 3,
-      "line-color": "#ccc",
-      "target-arrow-color": "#ccc",
+      "line-color": "#888",
+      "target-arrow-color": "#888",
       "target-arrow-shape": "triangle",
       label: "data(label)",
-      "curve-style": "bezier",
-      "control-point-step-size": 40,
+      "curve-style": "unbundled-bezier",
+      "control-point-step-size": 20,
     },
   },
 ];

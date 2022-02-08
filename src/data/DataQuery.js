@@ -10,7 +10,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
   getQueryText,
   InitialQuery,
@@ -97,7 +97,6 @@ function DataQuery(props) {
       } else if (!queryPresent) {
         setError(API.texts.noProvidedQuery);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -106,29 +105,22 @@ function DataQuery(props) {
     setParams({ ...paramsFromStateData(data), ...paramsFromStateQuery(query) });
   }
 
-  function postQuery(cb) {
+  async function postQuery() {
     setLoading(true);
     const formData = params2Form(params);
     setProgressPercent(20);
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setProgressPercent(80);
-        setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => {
-        setLoading(false);
-        window.scrollTo(0, 0);
-      });
+
+    try {
+      const { data: serverQueryResponse } = await axios.post(url, formData);
+      setProgressPercent(70);
+      setResult(serverQueryResponse);
+      setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));
+      checkLinks();
+    } catch (err) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -212,11 +204,12 @@ function DataQuery(props) {
                 ) : error ? (
                   <Alert variant="danger">{error}</Alert>
                 ) : result ? (
-                  <ResultEndpointQuery result={result} error={error} />
+                  <ResultEndpointQuery
+                    result={result}
+                    permalink={permalink}
+                    disabled={disabledLinks}
+                  />
                 ) : null}
-                {permalink && !error && (
-                  <Permalink url={permalink} disabled={disabledLinks} />
-                )}
               </Col>
             </Fragment>
           </Col>

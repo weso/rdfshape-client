@@ -72,56 +72,59 @@ function ResultDataInfo({
             </Tab>
 
             {/* Data prefix map */}
-            <Tab
-              eventKey={API.tabs.prefixMap}
-              title={API.texts.resultTabs.prefixMap}
-            >
-              <div className="marginTop">
-                {prefixMap?.length > 0 ? (
+            {prefixMap && (
+              <Tab
+                eventKey={API.tabs.prefixMap}
+                title={API.texts.resultTabs.prefixMap}
+              >
+                <div className="prefixMapTable marginTop">
                   <BootstrapTable
                     keyField="prefixName"
                     data={prefixMap}
                     columns={prefixMapTableColumns}
+                    noDataIndication={API.texts.noPrefixes}
                   ></BootstrapTable>
-                ) : (
-                  <ul>
-                    <li>{API.texts.noPrefixes}</li>
-                  </ul>
-                )}
-              </div>
-            </Tab>
+                </div>
+              </Tab>
+            )}
 
             {/* Data visualizations */}
             <Tab
               eventKey={API.tabs.visualizations}
               title={API.texts.resultTabs.visualizations}
             >
-              <Tabs
-                activeKey={visualTab}
-                id="visualTabs"
-                onSelect={setVisualTab}
-              >
-                <Tab
-                  eventKey={API.tabs.visualizationDot}
-                  title={API.texts.resultTabs.visualizationDot}
+              {(resultCyto || resultDot) && (
+                <Tabs
+                  activeKey={visualTab}
+                  id="visualTabs"
+                  onSelect={setVisualTab}
                 >
-                  <ShowVisualization
-                    data={dotVisualization.data}
-                    type={visualizationTypes.svgObject}
-                    raw={false}
-                    controls={true}
-                    embedLink={false} // TODO
-                    disabledLinks={false} // TODO
-                  />
-                </Tab>
-                <Tab
-                  eventKey={API.tabs.visualizationCyto}
-                  title={API.texts.resultTabs.visualizationCyto}
-                  onEnter={renderCytoVisual}
-                >
-                  {cytoVisual}
-                </Tab>
-              </Tabs>
+                  {resultDot && (
+                    <Tab
+                      eventKey={API.tabs.visualizationDot}
+                      title={API.texts.resultTabs.visualizationDot}
+                    >
+                      <ShowVisualization
+                        data={dotVisualization.data}
+                        type={visualizationTypes.svgObject}
+                        raw={false}
+                        controls={true}
+                        embedLink={false} // TODO
+                        disabledLinks={false} // TODO
+                      />
+                    </Tab>
+                  )}
+                  {resultCyto && (
+                    <Tab
+                      eventKey={API.tabs.visualizationCyto}
+                      title={API.texts.resultTabs.visualizationCyto}
+                      onEnter={renderCytoVisual}
+                    >
+                      {cytoVisual}
+                    </Tab>
+                  )}
+                </Tabs>
+              )}
             </Tab>
           </Tabs>
         </div>

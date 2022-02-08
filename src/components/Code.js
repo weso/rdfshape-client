@@ -58,11 +58,13 @@ Code.propTypes = {
   options: PropTypes.object,
   onChange: PropTypes.func,
   fromParams: PropTypes.bool,
+  resetFromParams: PropTypes.func,
 };
 
 Code.defaultProps = {
   value: "",
   fromParams: false,
+  resetFromParams: () => {},
 };
 
 export default Code;

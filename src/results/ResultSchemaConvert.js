@@ -1,12 +1,12 @@
-import React, { Fragment } from "react";
-import Alert from "react-bootstrap/Alert";
+import React, { Fragment, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
 import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { yasheNoButtonsOptions } from "../utils/Utils";
 
-function ResultShExConvert({
+function ResultSchemaConvert({
   result: shexConvertResponse,
   permalink,
   disabled,
@@ -26,20 +26,27 @@ function ResultShExConvert({
     },
   } = shexConvertResponse;
 
+  const [resultTab, setResultTab] = useState(API.tabs.result);
+
   if (shexConvertResponse) {
     return (
-      <div>
-        {/* Alert */}
-        <Alert variant="success">{message}</Alert>
-        {/* Output schema */}
-        {outputSchema && outputFormatName && (
-          <ByText
-            textAreaValue={outputSchema}
-            textFormat={outputFormatName}
-            fromParams={false}
-            options={{ ...yasheNoButtonsOptions }}
-          />
-        )}
+      <div id="results-container">
+        <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
+          {/* Output schema */}
+          {outputSchema && outputFormatName && (
+            <Tab eventKey={API.tabs.result} title={API.texts.resultTabs.result}>
+              <ByText
+                textAreaValue={outputSchema}
+                textFormat={outputFormatName}
+                fromParams={false}
+                options={{ ...yasheNoButtonsOptions }}
+              />
+            </Tab>
+          )}
+        </Tabs>
+
+        <hr />
+
         <details>
           <summary>{API.texts.operationInformation}</summary>
           <ul>
@@ -53,7 +60,6 @@ function ResultShExConvert({
         </details>
         {permalink && (
           <Fragment>
-            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
@@ -62,4 +68,4 @@ function ResultShExConvert({
   }
 }
 
-export default ResultShExConvert;
+export default ResultSchemaConvert;

@@ -35,7 +35,8 @@ function ShaclInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.schemaInfo;
+  const urlInfo = API.routes.server.schemaInfo;
+  const urlVisual = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -84,27 +85,41 @@ function ShaclInfo(props) {
     };
   }
 
-  function postRequest(cb) {
+  async function postRequest() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.shaclInfoRoute, params));
-        setProgressPercent(90);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      // Firstly: get the schema basic info and prefix map
+      const infoForm = params2Form(params);
+      const { data: resultSchemaInfo } = await axios.post(urlInfo, infoForm);
+      setProgressPercent(50);
+
+      // Secondly: get schema visualization
+      const visualizeForm = params2Form({
+        ...params,
+        [API.queryParameters.schema.targetFormat]: API.formats.svg,
+      });
+      const { data: resultSchemaVisualize } = await axios.post(
+        urlVisual,
+        visualizeForm
+      );
+      setProgressPercent(80);
+
+      // Set result with all data
+      setResult({
+        resultInfo: resultSchemaInfo,
+        resultVisualize: resultSchemaVisualize,
+      });
+
+      // Set permalinks and finish
+      setPermalink(mkPermalinkLong(API.routes.client.shexInfoRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, urlInfo));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file

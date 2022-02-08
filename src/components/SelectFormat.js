@@ -3,9 +3,10 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
+import API from "../API";
 
 function SelectFormat(props) {
-  const [formats, setFormats] = useState([]);
+  const [formats, setFormats] = useState(props.extraOptions);
   const [format, setFormat] = useState(props.selectedFormat);
 
   const handleFormatChange = (value) => {
@@ -14,14 +15,15 @@ function SelectFormat(props) {
   };
 
   useEffect(() => {
-    const url = props.urlFormats;
-    axios
-      .get(url)
-      .then((response) => response.data)
-      .then((data) => {
-        setFormats(data);
-      })
-      .catch(() => console.error("Could not load formats from server"));
+    const fetchFormats = async () => {
+      try {
+        const { data: serverFormats } = await axios.get(props.urlFormats);
+        setFormats([...serverFormats, ...props.extraOptions]);
+      } catch (err) {
+        console.error(`Could not load formats from server. ${err}`);
+      }
+    };
+    fetchFormats();
   }, [props.urlFormats]);
 
   useEffect(() => {
@@ -56,10 +58,12 @@ SelectFormat.propTypes = {
   selectedFormat: PropTypes.string.isRequired,
   handleFormatChange: PropTypes.func.isRequired,
   urlFormats: PropTypes.string.isRequired,
+  extraOptions: PropTypes.array,
 };
 
 SelectFormat.defaultProps = {
-  name: "Format",
+  name: API.texts.selectors.format,
+  extraOptions: [],
 };
 
 export default SelectFormat;

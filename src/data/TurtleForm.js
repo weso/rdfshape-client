@@ -21,7 +21,7 @@ function TurtleForm(props) {
 
       const y = YATE.fromTextArea(textAreaRef.current, options);
       y.on("change", (cm, change) => {
-        props.onChange(cm.getValue(), y);
+        props.onChange(cm.getValue(), cm, change);
       });
       y.setValue(props.value);
       y.refresh();
@@ -56,6 +56,24 @@ TurtleForm.propTypes = {
 
 TurtleForm.defaultProps = {
   value: "",
+  fromParams: false,
+  resetFromParams: () => {},
 };
 
 export default TurtleForm;
+
+// Return the raw string representing a node selector from a given
+// yashe form / codemirror
+export function getNodesFromForm(y) {
+  const text = y.getValue();
+  const prefixes = Object.keys(y.getPrefixesFromDocument());
+
+  // Reduce into a single array with node selectors
+  // e.g.: [:alice, :bob, :carol]
+  return prefixes.reduce((prev, curr) => {
+    const regex = new RegExp(`^(${curr}:\\w+)`, "gm");
+    const nodesWithPrefix = text.match(regex);
+
+    return nodesWithPrefix ? [...prev, ...nodesWithPrefix] : prev;
+  }, []);
+}

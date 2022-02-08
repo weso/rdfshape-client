@@ -118,10 +118,9 @@ function DataInfo(props) {
         resultDot: { ...resultDot, visualization: dotVisualization },
         resultCyto: { ...resultCyto, elements: cytoElements },
       });
-      // Set permalings and finish
+      // Set permalinks and finish
       setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
       checkLinks();
-      setProgressPercent(100);
     } catch (err) {
       setError(mkError(error, urlInfo));
     } finally {

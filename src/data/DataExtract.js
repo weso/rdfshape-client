@@ -21,6 +21,7 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
+import { getNodesFromForm } from "./TurtleForm";
 
 function DataExtract(props) {
   const [data, setData] = useState(InitialData);
@@ -30,38 +31,48 @@ function DataExtract(props) {
   const [error, setError] = useState(null);
   const [result, setResult] = useState("");
   const [permalink, setPermalink] = useState(null);
+
+  const [nodeSelectorList, setNodeSelectorList] = useState([]); // Pre-defined choices in the node selector
   const [nodeSelector, setNodeSelector] = useState("");
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.dataExtract;
+  const urlServerExtract = API.routes.server.dataExtract;
+  const urlServerVisualize = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.data.data]) {
-        setData(updateStateData(queryParams, data));
+        const finalData = updateStateData(queryParams, data);
+        setData(finalData);
 
-        if (queryParams[API.queryParameters.data.nodeSelector])
-          setNodeSelector(queryParams[API.queryParameters.data.nodeSelector]);
+        const finalNodeSelector =
+          queryParams[API.queryParameters.data.nodeSelector] || nodeSelector;
+        setNodeSelector(finalNodeSelector);
 
-        setParams(queryParams);
-        setLastParams(queryParams);
+        const newParams = mkParams(finalData, finalNodeSelector);
+
+        setParams(newParams);
+        setLastParams(newParams);
       } else setError(API.texts.errorParsingUrl);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
+      // Do not send request if missing data or node selector
       const dataPresent =
         params[API.queryParameters.data.data] &&
         (params[API.queryParameters.data.source] == API.sources.byFile
           ? params[API.queryParameters.data.data].name
           : true);
 
-      const nodeSelectorPresent =
-        nodeSelector && nodeSelector.trim().length > 0;
+      const nodeSelectorPresent = !!params[
+        API.queryParameters.extraction.nodeSelector
+      ]?.trim();
 
       if (dataPresent && nodeSelectorPresent) {
         resetState();
@@ -72,7 +83,6 @@ function DataExtract(props) {
       } else if (!nodeSelectorPresent) {
         setError("No node selector provided");
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -84,31 +94,55 @@ function DataExtract(props) {
     });
   }
 
-  function postExtract(cb) {
+  function mkParams(pData = data, pNodeSelector = nodeSelector) {
+    return {
+      ...paramsFromStateData(pData),
+      [API.queryParameters.extraction.nodeSelector]: pNodeSelector.trim(),
+    };
+  }
+
+  async function postExtract() {
     setLoading(true);
-    const formData = params2Form(params);
     setProgressPercent(20);
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(60);
-        setResult(data);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.dataExtractRoute, params)
-        );
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => {
-        setLoading(false);
-        window.scrollTo(0, 0);
+
+    try {
+      // First: extract schema
+      const schemaExtractParams = params2Form(params);
+      const { data: schemaExtractResponse } = await axios.post(
+        urlServerExtract,
+        schemaExtractParams
+      );
+      setProgressPercent(60);
+
+      // Then, get schema visualization for the extracted schema
+      const schemaVisualizeParams = params2Form({
+        [API.queryParameters.schema.schema]:
+          schemaExtractResponse.result.schema,
+        [API.queryParameters.schema.format]: API.formats.shexc,
+        [API.queryParameters.schema.engine]: API.engines.shex,
+        [API.queryParameters.schema.source]: API.sources.byText,
+        [API.queryParameters.schema.targetFormat]: API.formats.svg,
       });
+      const { data: schemaVisualizeResponse } = await axios.post(
+        urlServerVisualize,
+        schemaVisualizeParams
+      );
+      setProgressPercent(80);
+
+      // Set the result with the extracted and visual data
+      setResult({
+        extractResponse: schemaExtractResponse,
+        visualizeResponse: schemaVisualizeResponse,
+      });
+
+      // Set permalinks and finish
+      setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
+      checkLinks();
+    } catch (err) {
+      setError(mkError(error, urlServerExtract));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -163,10 +197,23 @@ function DataExtract(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData)}
+            {mkDataTabs(
+              data,
+              setData,
+              API.texts.dataTabs.dataHeader,
+              "",
+              (value, y, change) => setNodeSelectorList(getNodesFromForm(y))
+            )}
             <NodeSelector
-              value={nodeSelector}
-              handleChange={(value) => setNodeSelector(value.trim())}
+              // Clear node selector list if the new data source is not by text
+              options={
+                data.activeSource === API.sources.byText ? nodeSelectorList : []
+              }
+              selected={[nodeSelector]}
+              handleChange={([node]) =>
+                node && setNodeSelector(node?.customOption ? node.label : node)
+              }
+              handleInputChange={(value) => setNodeSelector(value)}
             />
             <hr />
             <Button

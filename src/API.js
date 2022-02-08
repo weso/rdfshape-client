@@ -65,7 +65,6 @@ class API {
       shexConvertRoute: "/shexConvert",
       shexVisualizeUmlRoute: "/shexVisualizeUml",
       shexVisualizeUmlRouteRaw: "/shexVisualizeUmlRaw",
-      shex2ShaclRoute: "/shex2Shacl",
       shexValidateRoute: "/shexValidate",
       shexValidateEndpointRoute: "/shexValidateEndpoint",
       shex2XmiRoute: "/shex2Xmi",
@@ -81,7 +80,7 @@ class API {
 
       wikidataQueryRoute: "/wikidataQuery",
       wikidataValidateRoute: "/wikidataValidate",
-      wikidataExtractRoute: "/wikTURTLEidataExtract",
+      wikidataExtractRoute: "/wikidataExtract",
 
       permalinkRoute: "/link/:urlCode",
 
@@ -91,7 +90,6 @@ class API {
     utils: {
       wikidataUrl: "https://query.wikidata.org/sparql",
       dbpediaUrl: "https://dbpedia.org/sparql",
-      testInputTabsWithFormatRoute: "/test/inputTabsWithFormat",
     },
   };
 
@@ -157,6 +155,7 @@ class API {
   static tabs = {
     none: "none",
     overview: "overview",
+    result: "result",
     xmi: "XMI",
     uml: "UML",
     shex: "ShEx",
@@ -255,14 +254,12 @@ class API {
       information: "Information",
       conversion: "Conversion",
       visualization: "Visualization",
-      validationUser: "Validation (user data)",
-      validationEndpoint: "Validation (endpoint data)",
+      validationUser: "Validation",
+      merge: "Merge",
       mergeAndConvert: "Merge & Convert",
       mergeAndVisualize: "Merge & Visualize",
       sparqlQuery: "Query (SPARQL)",
       shexExtract: "ShEx extraction",
-      shexToShacl: "ShEx → SHACL",
-      shaclToShex: "SHACL → ShEx",
       shexToForm: "ShEx → Form",
       shexToUml: "ShEx ⟷ UML",
       examples: "Examples",
@@ -277,12 +274,11 @@ class API {
       dataInfo: "Data analysis",
       dataConversion: "Data conversion",
       dataVisualization: "Data visualization",
-      dataMergeConvert: "Data merge & convert",
-      dataMergeVisualize: "Data merge & visualize",
+      dataMerge: "Data merge",
       dataQuery: "Data query",
       wikidataQuery: "Query Wikidata",
       wikidataValidate: "Validate Wikidata entities",
-      dataShexExtraction: "Extract ShEx from Data",
+      dataShexExtraction: "Extract ShEx from data",
       wikidataSchemaExtraction: "Extract schema from Wikidata entities",
       endpointSchemaExtraction: "Extract schema from Endpoint node",
 
@@ -291,10 +287,8 @@ class API {
 
       shexInfo: "ShEx analysis",
       shexConversion: "ShEx conversion",
-      shexValidation: "ShEx validate user data",
-      shexValidationEndpoint: "ShEx validate endpoint data",
+      shexValidation: "ShEx validate data",
       shexVisualization: "ShEx visualization",
-      shexToShacl: "ShEx conversion to Shacl",
       shexToForm: "Create form from ShEx",
       shexToUml: "ShEx conversion to UML",
       umlToShex: "UML conversion to ShEx",
@@ -316,11 +310,25 @@ class API {
       umlHeader: "UML (XMI)",
 
       formatHeader: "Format",
+      nodeSelectorHeader: "Node selector",
+    },
+
+    selectors: {
+      format: "Format",
+      targetFormat: "Target format",
+
+      engine: "Engine",
+      targetEngine: "Target engine",
+      shaclEngine: "SHACL engine",
     },
 
     resultTabs: {
+      schema: "Schema",
+      extracted: "Extracted",
       overview: "Overview",
+      result: "Result",
       prefixMap: "Prefix Map",
+      visualization: "Visualization",
       visualizations: "Visualizations",
       visualizationDot: "DOT",
       visualizationCyto: "Cytoscape",
@@ -344,6 +352,7 @@ class API {
       shacl: "SHACL...",
       shapeMap: "<node>@<Shape>...>",
       xmi: "XMI...",
+      nodeSelector: "prefix:Node",
     },
 
     actionButtons: {
@@ -367,6 +376,11 @@ class API {
       noneValid: "Invalid data: check the details of each node to learn more",
       noData:
         "Validation was completed but no results were obtained, check if the input data is coherent",
+    },
+
+    queryResults: {
+      noData:
+        "Query was executed but no results were obtained, check if the input data is coherent",
     },
 
     misc: {
@@ -432,6 +446,8 @@ class API {
 
     enableFullscreen: "Show at fullscreen",
     leaveFullscreen: "✖ Leave fullscreen",
+
+    useNodeSelector: "Use node selector",
   };
 }
 

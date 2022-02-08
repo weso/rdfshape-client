@@ -10,8 +10,9 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import SelectFormat from "../components/SelectFormat";
+import SelectShaclEngine from "../components/SelectShaclEngine";
 import { mkPermalinkLong, params2Form } from "../Permalink";
-import ResultSHACLConvert from "../results/ResultShaclConvert";
+import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
@@ -25,6 +26,11 @@ function ShaclConvert(props) {
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
     API.formats.defaultShacl
   );
+
+  const [targetSchemaEngine, setTargetSchemaEngine] = useState(
+    API.engines.shaclex
+  );
+
   const [shacl, setShacl] = useState(InitialShacl);
 
   const [result, setResult] = useState("");
@@ -39,11 +45,7 @@ function ShaclConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.schemaConvert;
-
-  function handleTargetSchemaFormatChange(value) {
-    setTargetSchemaFormat(value);
-  }
+  const urlConvert = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -53,16 +55,20 @@ function ShaclConvert(props) {
         const finalSchema = updateStateShacl(queryParams, shacl) || shacl;
         setShacl(finalSchema);
 
-        if (queryParams[API.queryParameters.schema.targetFormat]) {
-          setTargetSchemaFormat(
-            queryParams[API.queryParameters.schema.targetFormat]
-          );
-        }
+        const finalTargetFormat =
+          queryParams[API.queryParameters.schema.targetFormat] ||
+          targetSchemaFormat;
+        setTargetSchemaFormat(finalTargetFormat);
+
+        const finalTargetEngine =
+          queryParams[API.queryParameters.schema.targetEngine] ||
+          targetSchemaEngine;
+        setTargetSchemaEngine(finalTargetEngine);
 
         const params = mkParams(
           finalSchema,
-          queryParams[API.queryParameters.schema.targetFormat] ||
-            targetSchemaFormat
+          finalTargetFormat,
+          finalTargetEngine
         );
 
         setParams(params);
@@ -87,7 +93,6 @@ function ShaclConvert(props) {
       } else {
         setError(API.texts.noProvidedSchema);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -96,37 +101,39 @@ function ShaclConvert(props) {
     setParams(mkParams());
   }
 
-  function mkParams(paramsShacl = shacl, targetFormat = targetSchemaFormat) {
+  function mkParams(
+    pShacl = shacl,
+    pTargetFormat = targetSchemaFormat,
+    pTargetEngine = targetSchemaEngine
+  ) {
     return {
-      ...paramsFromStateShacl(paramsShacl),
-      [API.queryParameters.schema.targetFormat]: targetFormat,
-      [API.queryParameters.schema.targetEngine]: paramsShacl.engine, // The target engine is the one used in the input
+      ...paramsFromStateShacl(pShacl),
+      [API.queryParameters.schema.targetFormat]: pTargetFormat,
+      [API.queryParameters.schema.targetEngine]: pTargetEngine,
     };
   }
 
-  function postConvert(cb) {
+  async function postConvert() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.shaclConvertRoute, params)
-        );
-        checkLinks();
-        setProgressPercent(90);
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const postData = params2Form(params);
+      const { data: convertResponse } = await axios.post(urlConvert, postData);
+      setProgressPercent(60);
+
+      setResult(convertResponse);
+      setProgressPercent(80);
+
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shaclConvertRoute, params)
+      );
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, urlConvert));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -183,11 +190,33 @@ function ShaclConvert(props) {
           <Form onSubmit={handleSubmit}>
             {mkShaclTabs(shacl, setShacl)}
             <hr />
+            {/* Choose target engine */}
+            <SelectShaclEngine
+              name={API.texts.selectors.targetEngine}
+              handleEngineChange={(newEngine) => {
+                newEngine && setTargetSchemaEngine(newEngine);
+              }}
+              selectedEngine={targetSchemaEngine}
+              fromParams={false}
+              resetFromParams={false}
+              extraOptions={[API.engines.shex]} // Allow to choose Shex engine too for this case
+            />
+            {/* Choose target format, depending on engine */}
             <SelectFormat
-              name="Target schema format"
+              name={API.texts.selectors.targetFormat}
               selectedFormat={targetSchemaFormat}
-              handleFormatChange={handleTargetSchemaFormatChange}
-              urlFormats={API.routes.server.shaclFormats}
+              handleFormatChange={(newFormat) => {
+                if (!newFormat) {
+                  targetSchemaEngine === API.engines.shex
+                    ? setTargetSchemaFormat(API.formats.defaultShex)
+                    : setTargetSchemaFormat(API.formats.defaultShacl);
+                } else setTargetSchemaFormat(newFormat);
+              }}
+              urlFormats={
+                targetSchemaEngine === API.engines.shex
+                  ? API.routes.server.shExFormats
+                  : API.routes.server.shaclFormats
+              }
             />
             <hr />
             <Button
@@ -212,7 +241,7 @@ function ShaclConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultSHACLConvert
+              <ResultSchemaConvert
                 result={result}
                 permalink={permalink}
                 disabled={disabledLinks}

@@ -1,59 +1,93 @@
-import React, { Fragment } from "react";
-import Alert from "react-bootstrap/Alert";
+import PropTypes from "prop-types";
+import React, { Fragment, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 
 function ResultDataExtract({
-  result: extractResponse,
-  fromParams,
-  resetFromParams,
+  result: { extractResponse, visualizeResponse },
   permalink,
   disabled,
 }) {
   // De-structure the API response for later usage
   const {
-    message,
-    data: inputData,
     schemaFormat: resultSchemaFormat,
-    schemaEngine: resultSchemaEngine,
-    result: { schema: resultSchema, shapeMap: resultShapeMap },
+    result: { schema: resultSchema },
   } = extractResponse;
-  let msg;
+
+  const {
+    result: { schema: schemaSvg },
+  } = visualizeResponse;
+
+  // State to control the selected tab
+  const [resultTab, setResultTab] = useState(API.tabs.shex);
+
   if (extractResponse) {
     return (
-      <div>
-        {/* Alert */}
-        <Alert variant="success">{message}</Alert>
-        {/* Output schema */}
-        {resultSchema && (
-          <Code
-            value={resultSchema}
-            mode={resultSchemaFormat.name} // Presumably "ShExC"
-            readOnly={true}
-            fromParams={fromParams}
-            resetFromParams={resetFromParams}
-            linenumbers={true}
-            // theme="material"
-          />
-        )}
-        <br />
+      <div id="results-container">
+        <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+          {/* Schema text result */}
+          {resultSchema && (
+            <Tab
+              eventKey={API.tabs.shex}
+              title={API.texts.resultTabs.extracted}
+            >
+              <Code
+                value={resultSchema}
+                mode={resultSchemaFormat.name} // Presumably "ShExC"
+                readOnly={true}
+                linenumbers={true}
+              />
+            </Tab>
+          )}
+          {/* Schema visual result */}
+          {visualizeResponse && (
+            <Tab
+              eventKey={API.tabs.visualization}
+              title={API.texts.resultTabs.visualization}
+            >
+              <ShowVisualization
+                data={schemaSvg}
+                type={visualizationTypes.svgRaw}
+                raw={false}
+                controls={true}
+                embedLink={false}
+                disabledLinks={disabled}
+              />
+            </Tab>
+          )}
+        </Tabs>
+
+        <hr />
         {/* Full response */}
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={extractResponse} />
+          <PrintJson
+            json={{
+              extraction: extractResponse,
+              visualization: visualizeResponse,
+            }}
+          />
         </details>
         {/* Permalink */}
         {permalink && (
           <Fragment>
             <Permalink url={permalink} disabled={disabled} />
-            <hr />
           </Fragment>
         )}
       </div>
     );
   }
 }
+
+ResultDataExtract.propTypes = {
+  permalink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  disabled: PropTypes.bool,
+};
 
 export default ResultDataExtract;

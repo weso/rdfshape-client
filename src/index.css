@@ -36,6 +36,10 @@ a.dropdown-item {
   position: absolute !important;
 }
 
+.capitalize {
+  text-transform: capitalize !important;
+}
+
 .form-group {
   position: relative;
 }
@@ -465,10 +469,6 @@ table :is(tr, td).table-item.red.expanded-parent {
   background-color: rgba(235, 0, 0, 0.35);
 }
 
-table :is(tr, td).table-item.expanded-child {
-  /* outline: 1px solid black; */
-}
-
 li.size-per-page-dropdown {
   cursor: pointer;
 }
@@ -502,10 +502,8 @@ label.search-label {
   flex-grow: 1;
 }
 
-button .btn.btn-export-csv {
-  margin: 5px auto;
+button.btn.btn-export-csv {
   display: inline-flex !important;
-  padding: 5px;
 }
 
 p.alert-body {

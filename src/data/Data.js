@@ -60,11 +60,18 @@ export function paramsFromStateData(data) {
   return params;
 }
 
-export function mkDataTabs(data, setData, name, subname) {
+export function mkDataTabs(
+  data,
+  setData,
+  name,
+  subname,
+  onTextChange = () => {}
+) {
   function handleDataTabChange(value) {
     setData({ ...data, activeSource: value });
   }
-  function handleDataByTextChange(value) {
+  function handleDataByTextChange(value, y, change) {
+    onTextChange(value, y, change);
     setData({ ...data, textArea: value });
   }
   function handleDataUrlChange(value) {

@@ -1,16 +1,23 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
-import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns } from "../utils/Utils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 
 // Results of querying the API for information about a schema (either ShEx or SHACL)
-function ResultSchemaInfo({ result: shexInfoResponse, permalink, disabled }) {
+function ResultSchemaInfo({
+  result: { resultInfo, resultVisualize },
+  permalink,
+  disabled,
+}) {
   // Destructure request response items for later use
   const {
-    message,
+    message: messageInfo,
     schema,
     result: {
       format: { name: formatName },
@@ -18,53 +25,88 @@ function ResultSchemaInfo({ result: shexInfoResponse, permalink, disabled }) {
       shapes,
       prefixMap,
     },
-  } = shexInfoResponse;
+  } = resultInfo;
 
-  if (shexInfoResponse) {
+  const {
+    result: { schema: schemaSvg },
+  } = resultVisualize;
+
+  // Active tab control
+  const [resultTab, setResultTab] = useState(API.tabs.overview);
+
+  if (resultInfo) {
     return (
-      <div>
-        <Alert variant="success">{message}</Alert>
-        <br />
-        <ul>
-          <li>
-            {API.texts.numberOfShapes}: {shapes.length}
-          </li>
-          <li>
-            {API.texts.schemaFormat}: <span className="code">{formatName}</span>
-          </li>
-          <li>
-            {API.texts.schemaEngine}: <span className="code">{engine}</span>
-          </li>
-          {prefixMap?.length > 0 ? (
-            <li className="list-details">
-              <details>
-                <summary>Prefix map</summary>
-                {/* Table with prefix map */}
-                <div className="prefixMapTable">
+      <>
+        <div id="results-container">
+          <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+            {/* Schema overview */}
+            <Tab
+              eventKey={API.tabs.overview}
+              title={API.texts.resultTabs.overview}
+            >
+              <div className="marginTop">
+                <ul>
+                  <li>{messageInfo}</li>
+                  <li>
+                    {API.texts.numberOfShapes}: {shapes.length}
+                  </li>
+                  <li>
+                    {API.texts.schemaFormat}:{" "}
+                    <span className="code">{formatName}</span>
+                  </li>
+                  <li>
+                    {API.texts.schemaEngine}:{" "}
+                    <span className="code">{engine}</span>
+                  </li>
+                </ul>
+              </div>
+            </Tab>
+            {/* Schema prefix map */}
+            {prefixMap && (
+              <Tab
+                eventKey={API.tabs.prefixMap}
+                title={API.texts.resultTabs.prefixMap}
+              >
+                <div className="prefixMapTable marginTop">
                   <BootstrapTable
                     classes="results-table"
                     keyField="prefixName"
                     data={prefixMap}
                     columns={prefixMapTableColumns}
+                    noDataIndication={API.texts.noPrefixes}
                   ></BootstrapTable>
                 </div>
-              </details>
-            </li>
-          ) : (
-            <li>{API.texts.noPrefixes}</li>
+              </Tab>
+            )}
+            {/* SVG visualization */}
+            {resultVisualize && (
+              <Tab
+                eventKey={API.tabs.visualization}
+                title={API.texts.resultTabs.visualization}
+              >
+                <ShowVisualization
+                  data={schemaSvg}
+                  type={visualizationTypes.svgRaw}
+                  raw={false}
+                  controls={true}
+                  embedLink={false}
+                  disabledLinks={disabled}
+                />
+              </Tab>
+            )}
+          </Tabs>
+          <hr />
+          <details>
+            <summary>{API.texts.responseSummaryText}</summary>
+            <PrintJson json={resultInfo} />
+          </details>
+          {permalink && (
+            <Fragment>
+              <Permalink url={permalink} disabled={disabled} />
+            </Fragment>
           )}
-        </ul>
-        <details>
-          <summary>{API.texts.responseSummaryText}</summary>
-          <PrintJson json={shexInfoResponse} />
-        </details>
-        {permalink && (
-          <Fragment>
-            <hr />
-            <Permalink url={permalink} disabled={disabled} />
-          </Fragment>
-        )}
-      </div>
+        </div>
+      </>
     );
   }
 }

@@ -85,11 +85,6 @@ function EndpointQuery(props) {
     }
   }, [params]);
 
-  // Scroll after query
-  useEffect(() => {
-    setTimeout(showResults, 500);
-  }, [result]);
-
   function handleOnChange(value) {
     setEndpoint(value);
   }
@@ -118,36 +113,22 @@ function EndpointQuery(props) {
     });
   }
 
-  function postQuery(cb) {
+  async function postQuery() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult({ result: data });
-        setPermalink(
-          mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
-        );
-        setProgressPercent(90);
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
-  function showResults() {
-    const resultsDiv = document.getElementById(resultsElementId);
-    if (resultsDiv) {
-      window.scrollTo(0, resultsDiv.offsetTop - resultsDiv.scrollTop);
+    try {
+      const postData = params2Form(params);
+      const { data: serverQueryResponse } = await axios.post(url, postData);
+      setProgressPercent(70);
+      setResult({ result: serverQueryResponse });
+      setPermalink(
+        mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
+      );
+    } catch (err) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
     }
   }
 

@@ -210,7 +210,7 @@ function DataMerge(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.dataMergeConvert}</h1>
+        <h1>{API.texts.pageHeaders.dataMerge}</h1>
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

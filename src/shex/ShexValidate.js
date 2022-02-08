@@ -62,61 +62,54 @@ function ShexValidate(props) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsShex,
-        paramsShapeMap,
-        paramsEndpoint = {};
+        paramsShapeMap = {};
 
-      if (queryParams[API.queryParameters.data.data]) {
-        paramsData = updateStateData(queryParams, data) || data;
-        setData(paramsData);
-      }
+      // Data from URL or default
+      const finalData = updateStateData(queryParams, data) || data;
+      setData(finalData);
 
-      if (queryParams[API.queryParameters.schema.schema]) {
-        paramsShex = updateStateShex(queryParams, shex) || shex;
-        setShEx(paramsShex);
-      }
+      // Shex
+      const finalShex = updateStateShex(queryParams, shex) || shex;
+      setShEx(finalShex);
 
-      if (queryParams[API.queryParameters.shapeMap.shapeMap]) {
-        const finalShapeMap =
-          updateStateShapeMap(queryParams, shapeMap) || shapeMap;
-        paramsShapeMap = finalShapeMap;
-        setShapeMap(finalShapeMap);
-      }
+      // Shapemap
+      const finalShapeMap =
+        updateStateShapeMap(queryParams, shapeMap) || shapeMap;
+      setShapeMap(finalShapeMap);
 
-      // Endpoint State
-      if (queryParams[API.queryParameters.endpoint.endpoint]) {
-        paramsEndpoint = {
-          [API.queryParameters.endpoint.endpoint]:
-            queryParams[API.queryParameters.endpoint.endpoint],
-        };
-        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
-        setWithEndpoint(!!queryParams[API.queryParameters.endpoint.endpoint]);
-      }
+      // Endpoint
+      const finalEndpoint =
+        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+      setEndpoint(finalEndpoint);
+      setWithEndpoint(!!finalEndpoint);
 
-      const params = mkParams(
-        paramsData,
-        paramsShex,
-        paramsShapeMap,
-        paramsEndpoint
+      const newParams = mkParams(
+        finalData,
+        finalShex,
+        finalShapeMap,
+        finalEndpoint
       );
 
-      setParams(params);
-      setLastParams(params);
+      setParams(newParams);
+      setLastParams(newParams);
     }
   }, [props.location?.search]);
 
   function mkParams(
-    paramsData = data,
-    paramsShex = shex,
-    paramsShapeMap = shapeMap,
-    paramsEndpoint = {}
+    pData = data,
+    pShex = shex,
+    pShapeMap = shapeMap,
+    pEndpoint = endpoint
   ) {
-    return {
-      ...paramsFromStateData(paramsData),
-      ...paramsFromStateShex(paramsShex),
-      ...paramsFromStateShapemap(paramsShapeMap), // + trigger mode
-      ...paramsEndpoint,
+    const newParams = {
+      ...paramsFromStateData(pData),
+      ...paramsFromStateShex(pShex),
+      ...paramsFromStateShapemap(pShapeMap), // + trigger mode
       [API.queryParameters.schema.targetEngine]: API.engines.shex, // Target is always ShEx
     };
+
+    pEndpoint && (newParams[API.queryParameters.endpoint.endpoint] = pEndpoint);
+    return newParams;
   }
 
   useEffect(() => {
@@ -157,30 +150,27 @@ function ShexValidate(props) {
     setParams(mkParams());
   }
 
-  function postValidate(cb) {
+  async function postValidate() {
     setLoading(true);
-    setProgressPercent(15);
-    const formData = params2Form(params);
     setProgressPercent(30);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setResult(data);
-        setProgressPercent(70);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.shexValidateRoute, params)
-        );
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const postData = params2Form(params);
+      const { data: validateResponse } = await axios.post(url, postData);
+      setProgressPercent(60);
+
+      setResult(validateResponse);
+      setProgressPercent(80);
+
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shexValidateRoute, params)
+      );
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file

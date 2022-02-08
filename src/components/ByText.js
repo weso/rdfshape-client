@@ -8,15 +8,15 @@ import { format2mode } from "../utils/Utils";
 import Code from "./Code";
 
 function ByText(props) {
-  function handleChange(value) {
-    props.handleByTextChange && props.handleByTextChange(value);
+  function handleChange(value, y, change) {
+    props.handleByTextChange && props.handleByTextChange(value, y, change);
   }
 
   const textFormat = props.textFormat?.toLowerCase();
 
   return (
     <Form.Group>
-      <Form.Label>{props.name}</Form.Label>
+      {props.name && <Form.Label>{props.name}</Form.Label>}
       {/* Choose which input component to use regarding the format of the data.
       Use a generic <Code> element with text by default */}
       {textFormat == API.formats.turtle.toLowerCase() ? (
