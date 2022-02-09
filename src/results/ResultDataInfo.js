@@ -1,10 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { prefixMapTableColumns } from "../utils/Utils";
+import { prefixMapTableColumns, scrollToResults } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -34,6 +34,9 @@ function ResultDataInfo({
 
   const [cytoVisual, setCytoVisual] = useState(null);
 
+  useEffect(scrollToResults, []);
+
+  // Forcibly render the cyto when entering the tab for accurate dimensions
   function renderCytoVisual() {
     setCytoVisual(
       <ShowVisualization
@@ -50,7 +53,7 @@ function ResultDataInfo({
   if (resultInfo) {
     return (
       <>
-        <div id="results-container">
+        <div id={API.resultsId}>
           <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
             {/* Data overview */}
             <Tab
@@ -128,13 +131,14 @@ function ResultDataInfo({
             </Tab>
           </Tabs>
         </div>
-        <hr />
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={resultInfo} />
         </details>
         {permalink && (
           <Fragment>
+            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}

@@ -21,12 +21,11 @@ import ShaclConvert from "./shacl/ShaclConvert";
 import ShaclInfo from "./shacl/ShaclInfo";
 import ShaclValidate from "./shacl/ShaclValidate";
 import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
-import ShapeForm from "./shex/ShapeForm";
-import Shex2xmi from "./shex/Shex2xmi";
 import ShexConvert from "./shex/ShexConvert";
 import ShexInfo from "./shex/ShexInfo";
 import ShexValidate from "./shex/ShexValidate";
 import ShexVisualizeUmlRaw from "./shex/ShexVisualizeUmlRaw";
+import Xmi2Shex from "./shex/Xmi2Shex";
 
 function Routes() {
   const renderWithNavbar = (Component) => {
@@ -110,13 +109,8 @@ function Routes() {
           render={() => renderWithNavbar(ShexConvert)}
         />
         <Route
-          path={API.routes.client.shex2XmiRoute}
-          render={() => renderWithNavbar(Shex2xmi)}
-        />
-
-        <Route
-          path={API.routes.client.shapeFormRoute}
-          render={() => renderWithNavbar(ShapeForm)}
+          path={API.routes.client.xmi2ShexRoute}
+          render={() => renderWithNavbar(Xmi2Shex)}
         />
 
         <Route

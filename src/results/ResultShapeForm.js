@@ -1,17 +1,27 @@
-import React, { Fragment, useEffect } from "react";
-import Alert from "react-bootstrap/Alert";
+import React, { Fragment, useEffect, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
+import format from "xml-formatter";
 import API from "../API";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 
 function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
   // Destructure response items for later usage
   const { form, message } = shapeFormResult;
 
+  const [resultTab, setResultTab] = useState(API.tabs.html);
+  // TODO: adapt this results to show:
+  // TAB1: the HTML code in a <Code> of type XML(?)
+  // TAB2: the rendering of the form
+
   useEffect(
     setFormEvents,
     [] // Add the event handlers ONCE
   );
+
+  useEffect(scrollToResults, []);
 
   // Prepare the newly created form JS events
   function setFormEvents() {
@@ -52,18 +62,34 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
 
   if (shapeFormResult) {
     return (
-      <div>
-        <Alert variant="success">{message}</Alert>
-        {/* Insert the generated HTML-Form in a div */}
-        <div id="resultform" dangerouslySetInnerHTML={{ __html: form }} />
-        <br />
+      <div id={API.resultsId}>
+        <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
+          {/* HTML code for the generated form */}
+          <Tab eventKey={API.tabs.html} title={API.texts.resultTabs.result}>
+            <ByText
+              textAreaValue={format(form, {
+                indentation: "  ",
+              })} // Pretty print generated HTML
+              textFormat={API.formats.xml}
+              fromParams={false}
+              readonly={true}
+              options={{ ...yasheResultButtonsOptions }}
+            />
+          </Tab>
+          {/* Rendering of the generated HTML form */}
+          <Tab eventKey={API.tabs.render} title={API.texts.resultTabs.render}>
+            <div id="resultform" dangerouslySetInnerHTML={{ __html: form }} />
+          </Tab>
+        </Tabs>
+
+        <hr />
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={shapeFormResult} />
         </details>
         {permalink && (
           <Fragment>
-            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}

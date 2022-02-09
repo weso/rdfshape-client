@@ -11,7 +11,7 @@ function TurtleForm(props) {
   useEffect(() => {
     if (!yate) {
       const options = {
-        readOnly: "nocursor",
+        readOnly: true,
         autoCloseTags: true,
         start: { line: 0 },
         lineNumbers: true,

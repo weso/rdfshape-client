@@ -16,7 +16,7 @@ import {
   paramsFromStateQuery,
   updateStateQuery
 } from "../query/Query";
-import ResultEndpointQuery from "../results/ResultEndpointQuery";
+import ResultSparqlQuery from "../results/ResultSparqlQuery";
 import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
@@ -206,7 +206,7 @@ function EndpointQuery(props) {
                 {error}
               </Alert>
             ) : result ? (
-              <ResultEndpointQuery
+              <ResultSparqlQuery
                 result={result}
                 error={error}
                 permalink={permalink}

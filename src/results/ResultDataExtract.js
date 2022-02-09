@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
 import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
+import { scrollToResults } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -27,9 +28,11 @@ function ResultDataExtract({
   // State to control the selected tab
   const [resultTab, setResultTab] = useState(API.tabs.shex);
 
+  useEffect(scrollToResults, []);
+
   if (extractResponse) {
     return (
-      <div id="results-container">
+      <div id={API.resultsId}>
         <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
           {/* Schema text result */}
           {resultSchema && (

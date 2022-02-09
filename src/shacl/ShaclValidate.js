@@ -108,7 +108,6 @@ function ShaclValidate(props) {
         setUpHistory();
         postValidate();
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 

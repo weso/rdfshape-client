@@ -22,7 +22,7 @@ function Code(props) {
     mode: "turtle",
     theme: "default",
     lineNumbers: true,
-    readOnly: "nocursor",
+    readOnly: true,
     lineWrapping: true,
     autoCloseTags: true,
     ...props.options, // Override defaults with user settings when necessary

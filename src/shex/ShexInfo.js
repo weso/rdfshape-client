@@ -70,7 +70,6 @@ function ShexInfo(props) {
       } else {
         setError(API.texts.noProvidedSchema);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 

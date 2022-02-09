@@ -18,7 +18,7 @@ import {
   paramsFromStateQuery,
   updateStateQuery
 } from "../query/Query";
-import ResultEndpointQuery from "../results/ResultEndpointQuery";
+import ResultSparqlQuery from "../results/ResultSparqlQuery";
 import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
@@ -204,7 +204,7 @@ function DataQuery(props) {
                 ) : error ? (
                   <Alert variant="danger">{error}</Alert>
                 ) : result ? (
-                  <ResultEndpointQuery
+                  <ResultSparqlQuery
                     result={result}
                     permalink={permalink}
                     disabled={disabledLinks}

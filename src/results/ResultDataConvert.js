@@ -1,10 +1,14 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import {
+  format2mode,
+  scrollToResults,
+  yasheResultButtonsOptions
+} from "../utils/Utils";
 
 function ResultDataConvert({
   result: dataConvertResponse, // Request successful response
@@ -27,19 +31,21 @@ function ResultDataConvert({
 
   const [resultTab, setResultTab] = useState(API.tabs.result);
 
+  useEffect(scrollToResults, []);
+
   if (dataConvertResponse) {
     return (
-      <div id="results-summary">
+      <div id={API.resultsId}>
         <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
           {/* Output data */}
           {dataRaw && outputFormatName && (
             <Tab eventKey={API.tabs.result} title={API.texts.resultTabs.result}>
-              <Code
-                value={dataRaw}
-                mode={format2mode(outputFormatName)}
+              <ByText
+                textAreaValue={dataRaw}
+                textFormat={format2mode(outputFormatName)}
                 fromParams={fromParams}
-                resetFromParams={resetFromParams}
                 readOnly={true}
+                options={{ ...yasheResultButtonsOptions }}
               />
             </Tab>
           )}

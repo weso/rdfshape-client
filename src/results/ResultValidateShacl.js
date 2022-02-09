@@ -7,7 +7,7 @@ import Code from "../components/Code";
 import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
-import { equalsIgnoreCase, format2mode } from "../utils/Utils";
+import { equalsIgnoreCase, format2mode, scrollToResults } from "../utils/Utils";
 import { nonConformant } from "./ResultValidate";
 
 function ResultValidateShacl({
@@ -47,9 +47,11 @@ function ResultValidateShacl({
     setInvalidNodes(nonConformantNodes);
   }, [nodes]);
 
+  useEffect(scrollToResults, []);
+
   if (schemaValidateResponse)
     return (
-      <div>
+      <div id={API.resultsId}>
         {/* Place an alert depending on the validation errors and engine used */}
 
         {schemaEngine === API.engines.shaclex ? (

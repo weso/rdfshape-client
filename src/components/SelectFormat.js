@@ -17,14 +17,16 @@ function SelectFormat(props) {
   useEffect(() => {
     const fetchFormats = async () => {
       try {
-        const { data: serverFormats } = await axios.get(props.urlFormats);
+        const serverFormats = props.urlFormats
+          ? (await axios.get(props.urlFormats)).data
+          : [];
         setFormats([...serverFormats, ...props.extraOptions]);
       } catch (err) {
         console.error(`Could not load formats from server. ${err}`);
       }
     };
     fetchFormats();
-  }, [props.urlFormats]);
+  }, [props.urlFormats, props.extraOptions]);
 
   useEffect(() => {
     if (!props.selectedFormat || formats.length == 0) return;
@@ -57,7 +59,7 @@ SelectFormat.propTypes = {
   name: PropTypes.string.isRequired,
   selectedFormat: PropTypes.string.isRequired,
   handleFormatChange: PropTypes.func.isRequired,
-  urlFormats: PropTypes.string.isRequired,
+  urlFormats: PropTypes.string,
   extraOptions: PropTypes.array,
 };
 

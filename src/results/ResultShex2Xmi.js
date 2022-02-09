@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import shumlex from "shumlex";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import { format2mode, scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -19,17 +19,15 @@ function ResultShEx2XMI({
   permalink,
   disabled,
 }) {
-  const {
-    result: resultRaw,
-    graph: resultGraph,
-    msg: resultMessage,
-  } = conversionResult;
+  const { result: resultRaw } = conversionResult;
 
   const dummyId = "dummy-uml-placeholder";
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [svg, setSvg] = useState("");
+
+  useEffect(scrollToResults, []);
 
   const mkSvgElement = () => {
     // Create a dummy HTML element to put the SVG into
@@ -54,7 +52,7 @@ function ResultShEx2XMI({
 
   if (conversionResult)
     return (
-      <div>
+      <div id={API.resultsId}>
         <Tabs
           activeKey={activeTab}
           id="dataTabs"
@@ -62,12 +60,15 @@ function ResultShEx2XMI({
         >
           <Tab eventKey={API.tabs.xmi} title={API.texts.misc.xmi}>
             {resultRaw && (
-              <Code
-                value={resultRaw}
-                mode={format2mode(resultMode)}
-                onChange={function(val) {
+              <ByText
+                textAreaValue={resultRaw}
+                textFormat={format2mode(resultMode)}
+                fromParams={false}
+                handleByTextChange={function(val) {
                   return val;
                 }}
+                readonly={true}
+                options={{ ...yasheResultButtonsOptions }}
               />
             )}
           </Tab>
@@ -76,7 +77,7 @@ function ResultShEx2XMI({
             title={API.texts.misc.umlDiagram}
             onEnter={() => !svg && setSvg(mkSvgElement())}
           >
-            <div className="visual-column">
+            <div>
               <ShowVisualization
                 data={svg}
                 type={visualizationTypes.svgRaw}
@@ -84,17 +85,20 @@ function ResultShEx2XMI({
                 zoom={1}
                 embedLink={false}
                 disabledLinks={disabled}
+                controls={true}
               />
             </div>
           </Tab>
         </Tabs>
+
+        <hr />
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={conversionResult} />
         </details>
         {permalink && (
           <Fragment>
-            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}

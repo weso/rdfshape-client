@@ -10,13 +10,14 @@ function ShexForm(props) {
 
   useEffect(() => {
     const options = {
-      readOnly: "nocursor",
+      readOnly: true,
       autoCloseTags: true,
       start: { line: 0 },
       lineNumbers: true,
       lineWrapping: true,
       ...props.options,
     };
+
     if (!yashe) {
       const y = YASHE.fromTextArea(textAreaRef.current, options);
       if (props.setCodeMirror) props.setCodeMirror(y);

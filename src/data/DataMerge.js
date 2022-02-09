@@ -91,7 +91,6 @@ function DataMerge(props) {
       } else {
         setError(API.texts.noProvidedRdf);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -116,9 +115,9 @@ function DataMerge(props) {
     };
   }
 
-  async function postMerge(cb) {
+  async function postMerge() {
     setLoading(true);
-    setProgressPercent(15);
+    setProgressPercent(25);
 
     const serverParams = await mkServerParams(data1, data2, dataTargetFormat);
     if (!serverParams) {
@@ -126,30 +125,22 @@ function DataMerge(props) {
       setError(API.texts.noProvidedRdf);
       return;
     }
+    setProgressPercent(40);
 
-    const formData = params2Form(serverParams);
+    try {
+      const formData = params2Form(serverParams);
+      const { data: serverMergeResponse } = await axios.post(url, formData);
+      setProgressPercent(80);
 
-    setProgressPercent(35);
+      setResult(serverMergeResponse);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(75);
-        setResult(data);
-        setPermalink(mkPermalinkLong(API.routes.client.dataMergeRoute, params));
-        setProgressPercent(90);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => {
-        setLoading(false);
-        window.scrollTo(0, 0); // Scroll top to results
-      });
+      setPermalink(mkPermalinkLong(API.routes.client.dataMergeRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file

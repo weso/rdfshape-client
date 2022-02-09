@@ -83,7 +83,6 @@ function DataConvert(props) {
       } else {
         setError(API.texts.noProvidedRdf);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 

@@ -8,12 +8,22 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import shumlex from "shumlex";
 import API from "../API";
+import {
+  allEngines,
+  schemaEngines,
+  SelectEngine,
+  shaclEngines
+} from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
-import SelectShaclEngine from "../components/SelectShaclEngine";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
+import ResultShapeForm from "../results/ResultShapeForm";
+import ResultShex2Xmi from "../results/ResultShex2Xmi";
 import { mkError } from "../utils/ResponseError";
+import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
+import ShExParser from "./shapeform/ShExParser";
 import {
   getShexText,
   InitialShex,
@@ -45,6 +55,29 @@ function ShexConvert(props) {
   const [disabledLinks, setDisabledLinks] = useState(false);
 
   const urlConvert = API.routes.server.schemaConvert;
+
+  // Store the current result type as one of these to know which result component to render
+  const resultTypes = Object.freeze({
+    schema: "schema",
+    shumlex: "shumlex",
+    shapeForms: "shapeForms",
+  });
+
+  // Extra logic for handling the target format changes
+  const handleTargetFormatChange = (newFormat) => {
+    // If we are missing the format it is because the engine changed category,
+    // set default format for new category
+    if (!newFormat) {
+      if (targetSchemaEngine === API.engines.shex)
+        setTargetSchemaFormat(API.formats.defaultShex);
+      else if (shaclEngines.includes(targetSchemaEngine))
+        setTargetSchemaFormat(API.formats.defaultShacl);
+      else if (targetSchemaEngine === API.engines.shapeForms)
+        setTargetSchemaFormat(API.formats.htmlForm);
+      else if (targetSchemaEngine === API.engines.shumlex)
+        setTargetSchemaFormat(API.formats.xmi);
+    } else setTargetSchemaFormat(newFormat);
+  };
 
   useEffect(() => {
     if (props.location?.search) {
@@ -88,7 +121,8 @@ function ShexConvert(props) {
       ) {
         resetState();
         setUpHistory();
-        postConvert();
+        // Execute different logic depending on the target engine
+        convertSchema();
       } else {
         setError(API.texts.noProvidedSchema);
       }
@@ -112,7 +146,18 @@ function ShexConvert(props) {
     };
   }
 
-  async function postConvert() {
+  // Execute the necessary conversion logic depending on the target engine
+  const convertSchema = async () => {
+    if (schemaEngines.includes(targetSchemaEngine))
+      return await serverSchemaConvert();
+    else if (targetSchemaEngine === API.engines.shapeForms)
+      return await clientFormConvert();
+    else if (targetSchemaEngine === API.engines.shumlex)
+      return await clientUmlConvert();
+  };
+
+  // For schema-schema conversions done by server
+  async function serverSchemaConvert() {
     setLoading(true);
     setProgressPercent(20);
 
@@ -121,13 +166,66 @@ function ShexConvert(props) {
       const { data: convertResponse } = await axios.post(urlConvert, postData);
       setProgressPercent(60);
 
-      setResult(convertResponse);
-      setProgressPercent(80);
+      setResult({ ...convertResponse, renderType: resultTypes.schema });
 
       setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
       checkLinks();
     } catch (error) {
       setError(mkError(error, urlConvert));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // For schema-uml conversions done with client libraries
+  async function clientUmlConvert() {
+    setLoading(true);
+    setProgressPercent(20);
+    try {
+      // Get the raw data passed to the converter
+      const input = await getConverterInput(params);
+      const xmiResult = shumlex.shExToXMI(input);
+
+      setResult({ result: xmiResult, renderType: resultTypes.shumlex });
+      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(
+        mkError({
+          ...error,
+          message: `An error occurred creating the UML equivalent. Check your inputs.\n${error}`,
+        })
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // For schema-form conversions done with client libraries
+  async function clientFormConvert() {
+    setLoading(true);
+    setProgressPercent(20);
+    try {
+      // Get the raw data passed to the converter
+      const input = await getConverterInput(params);
+      // Parse the ShEx to form
+      const result = new ShExParser().parseShExToForm(input);
+      // Finish updating state, UI
+
+      setResult({
+        form: result,
+        message: "successMessage",
+        renderType: resultTypes.shapeForms,
+      });
+      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(
+        mkError({
+          ...error,
+          message: `An error has occurred while creating the Form equivalent:\n${error}`,
+        })
+      );
     } finally {
       setLoading(false);
     }
@@ -188,31 +286,46 @@ function ShexConvert(props) {
             {mkShexTabs(shex, setShex)}
             <hr />
             {/* Choose target engine */}
-            <SelectShaclEngine
+            <SelectEngine
               name={API.texts.selectors.targetEngine}
               handleEngineChange={(newEngine) => {
+                // Set new engine if present
                 newEngine && setTargetSchemaEngine(newEngine);
               }}
               selectedEngine={targetSchemaEngine}
               fromParams={false}
               resetFromParams={false}
-              extraOptions={[API.engines.shex]} // Allow to choose Shex engine too for this case
+              extraOptions={allEngines} // Allow to choose Shex engine too for this case
             />
+            {/* Warning to use shapestart if using shapeforms */}
+            {targetSchemaEngine === API.engines.shapeForms && (
+              <Alert variant="warning">
+                A <i>Shape Start</i> is required when using ShapeForms (
+                <a href={API.routes.utils.shapeFormHelpUrl} target="_blank">
+                  learn more
+                </a>
+                )
+              </Alert>
+            )}
             {/* Choose target format, depending on engine */}
             <SelectFormat
               name={API.texts.selectors.targetFormat}
               selectedFormat={targetSchemaFormat}
-              handleFormatChange={(newFormat) => {
-                if (!newFormat) {
-                  targetSchemaEngine === API.engines.shex
-                    ? setTargetSchemaFormat(API.formats.defaultShex)
-                    : setTargetSchemaFormat(API.formats.defaultShacl);
-                } else setTargetSchemaFormat(newFormat);
-              }}
+              handleFormatChange={handleTargetFormatChange}
               urlFormats={
                 targetSchemaEngine === API.engines.shex
                   ? API.routes.server.shExFormats
-                  : API.routes.server.shaclFormats
+                  : shaclEngines.includes(targetSchemaEngine)
+                  ? API.routes.server.shaclFormats
+                  : null
+              }
+              // Additional target options if a client engine (shapeForms or shumlex is used)
+              extraOptions={
+                targetSchemaEngine === API.engines.shapeForms
+                  ? [API.formats.htmlForm]
+                  : targetSchemaEngine === API.engines.shumlex
+                  ? [API.formats.xmi]
+                  : []
               }
             />
             <hr />
@@ -238,11 +351,26 @@ function ShexConvert(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : result ? (
-              <ResultSchemaConvert
-                result={result}
-                permalink={permalink}
-                disabled={disabledLinks}
-              />
+              // The target engine will decide the result component
+              result.renderType === resultTypes.schema ? (
+                <ResultSchemaConvert
+                  result={result}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              ) : result.renderType === resultTypes.shumlex ? (
+                <ResultShex2Xmi
+                  result={result}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              ) : result.renderType === resultTypes.shapeForms ? (
+                <ResultShapeForm
+                  result={result}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              ) : null
             ) : null}
           </Col>
         ) : (

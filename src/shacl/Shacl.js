@@ -1,6 +1,6 @@
 import React from "react";
 import API from "../API";
-import SelectShaclEngine from "../components/SelectShaclEngine";
+import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
 import ShaclTabs from "./ShaclTabs";
 
@@ -109,7 +109,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
         fromParams={shacl.fromParams}
         resetFromParams={resetParams}
       />
-      <SelectShaclEngine
+      <SelectSHACLEngine
         handleEngineChange={handleSHACLEngineChange}
         selectedEngine={shacl.engine}
         fromParams={shacl.fromParams}

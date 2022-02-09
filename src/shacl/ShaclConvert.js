@@ -9,8 +9,8 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
-import SelectShaclEngine from "../components/SelectShaclEngine";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import { mkError } from "../utils/ResponseError";
@@ -191,7 +191,7 @@ function ShaclConvert(props) {
             {mkShaclTabs(shacl, setShacl)}
             <hr />
             {/* Choose target engine */}
-            <SelectShaclEngine
+            <SelectSHACLEngine
               name={API.texts.selectors.targetEngine}
               handleEngineChange={(newEngine) => {
                 newEngine && setTargetSchemaEngine(newEngine);

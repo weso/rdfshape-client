@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import API from "../API";
 import { Permalink } from "../Permalink";
+import { scrollToResults } from "../utils/Utils";
 
 function ResultEndpointInfo(props) {
+
+  useEffect(scrollToResults, []);
+
   return (
-    <div className="width-100">
+    <div id={API.resultsId} className="width-100">
       <Permalink url={props.permalink} disabled={props.disabled} />
       {props.error ? <p>{props.error}</p> : null}
       {props.result ? (

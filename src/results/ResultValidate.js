@@ -4,7 +4,7 @@ import API from "../API";
 import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
-import { equalsIgnoreCase } from "../utils/Utils";
+import { equalsIgnoreCase, scrollToResults } from "../utils/Utils";
 
 export const conformant = "conformant"; // Status of conformant nodes
 export const nonConformant = "nonconformant"; // Status of non-conformant nodes
@@ -39,9 +39,11 @@ function ResultSchemaValidate({
     setInvalidNodes(nonConformantNodes);
   }, [nodes]);
 
+  useEffect(scrollToResults, []);
+
   if (schemaValidateResponse) {
     return (
-      <div>
+      <div id={API.resultsId}>
         {/* Place an alert depending on the validation errors */}
         {!nodes?.length ? ( // No results but the server returns a successful code
           <Alert variant="warning">{API.texts.validationResults.noData}</Alert>

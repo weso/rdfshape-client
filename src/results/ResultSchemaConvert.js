@@ -1,10 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
 import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { yasheNoButtonsOptions } from "../utils/Utils";
+import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 
 function ResultSchemaConvert({
   result: shexConvertResponse,
@@ -28,9 +28,11 @@ function ResultSchemaConvert({
 
   const [resultTab, setResultTab] = useState(API.tabs.result);
 
+  useEffect(scrollToResults, []);
+
   if (shexConvertResponse) {
     return (
-      <div id="results-container">
+      <div id={API.resultsId}>
         <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
           {/* Output schema */}
           {outputSchema && outputFormatName && (
@@ -39,13 +41,11 @@ function ResultSchemaConvert({
                 textAreaValue={outputSchema}
                 textFormat={outputFormatName}
                 fromParams={false}
-                options={{ ...yasheNoButtonsOptions }}
+                options={{ ...yasheResultButtonsOptions }}
               />
             </Tab>
           )}
         </Tabs>
-
-        <hr />
 
         <details>
           <summary>{API.texts.operationInformation}</summary>
@@ -60,6 +60,7 @@ function ResultSchemaConvert({
         </details>
         {permalink && (
           <Fragment>
+            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}

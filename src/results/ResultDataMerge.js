@@ -1,10 +1,14 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import {
+  format2mode,
+  scrollToResults,
+  yasheResultButtonsOptions
+} from "../utils/Utils";
 
 // Similar to the results of data conversion, but with a previous merge operation
 function ResultDataMerge({
@@ -26,6 +30,8 @@ function ResultDataMerge({
 
   const [resultTab, setResultTab] = useState(API.tabs.result);
 
+  useEffect(scrollToResults, []);
+
   const mkInputFormats = () =>
     inputDataItems.reduce((acc, it, idx, arr) => {
       const inputFormat = it.format.name || "Unknown";
@@ -37,17 +43,17 @@ function ResultDataMerge({
 
   if (dataMergeResponse) {
     return (
-      <div id="results-summary">
+      <div id={API.resultsId}>
         <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
           {/* Output data */}
           {dataRaw && outputFormatName && (
             <Tab eventKey={API.tabs.result} title={API.texts.resultTabs.result}>
-              <Code
-                value={dataRaw}
-                mode={format2mode(outputFormatName)}
+              <ByText
+                textAreaValue={dataRaw}
+                textFormat={format2mode(outputFormatName)}
                 fromParams={fromParams}
-                resetFromParams={resetFromParams}
                 readOnly={true}
+                options={{ ...yasheResultButtonsOptions }}
               />
             </Tab>
           )}
@@ -56,7 +62,10 @@ function ResultDataMerge({
         <details>
           <summary>{API.texts.operationInformation}</summary>
           <ul>
-            <li>{`Format conversion: ${mkInputFormats()} => ${outputFormatName}`}</li>
+            <li>
+              Format conversion:{" "}
+              <span className="code">{`${mkInputFormats()} => ${outputFormatName}`}</span>
+            </li>
           </ul>
         </details>
         <details>

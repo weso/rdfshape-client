@@ -1,11 +1,12 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Alert } from "react-bootstrap";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import ShowQueryItems from "../query/ShowQueryItems";
 import PrintJson from "../utils/PrintJson";
+import { scrollToResults } from "../utils/Utils";
 
-function ResultQuery({ result: serverResponse, permalink, disabled }) {
+function ResultSparqlQuery({ result: serverResponse, permalink, disabled }) {
   // De-structure results
   const { message, data, query, result: queryResult } = serverResponse;
 
@@ -14,22 +15,25 @@ function ResultQuery({ result: serverResponse, permalink, disabled }) {
     results: { bindings: resultRows },
   } = queryResult;
 
+  useEffect(scrollToResults, []);
+
   if (serverResponse) {
     return (
-      <div id="results-container">
+      <div id={API.resultsId}>
         {/* Warning if no results! */}
         {Array.isArray(resultRows) && resultRows.length === 0 ? (
           <Alert variant="warning">{API.texts.queryResults.noData}</Alert>
         ) : (
           <ShowQueryItems query={query} result={queryResult} />
         )}
-        <hr />
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={serverResponse} />
         </details>
         {permalink && (
           <Fragment>
+            <hr />
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
@@ -38,4 +42,4 @@ function ResultQuery({ result: serverResponse, permalink, disabled }) {
   }
 }
 
-export default ResultQuery;
+export default ResultSparqlQuery;

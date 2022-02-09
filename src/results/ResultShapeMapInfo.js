@@ -1,9 +1,9 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import BootstrapTable from "react-bootstrap-table-next";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
-import { associationTableColumns } from "../utils/Utils";
+import { associationTableColumns, scrollToResults } from "../utils/Utils";
 
 function ResultShapeMapInfo({
   result: shapeMapInfoResult,
@@ -21,9 +21,11 @@ function ResultShapeMapInfo({
     },
   } = shapeMapInfoResult;
 
+  useEffect(scrollToResults, []);
+
   if (shapeMapInfoResult) {
     return (
-      <div>
+      <div id={API.resultsId}>
         {/* Alert */}
         <Alert variant="success">{message}</Alert>
         {/* Results */}

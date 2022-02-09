@@ -73,11 +73,8 @@ class RDFShapeNavbar extends React.Component {
               <NavDropdown.Item href={API.routes.client.shexValidateRoute}>
                 {API.texts.navbarHeaders.validationUser}
               </NavDropdown.Item>
-              <NavDropdown.Item href={API.routes.client.shapeFormRoute}>
-                {API.texts.navbarHeaders.shexToForm}
-              </NavDropdown.Item>
-              <NavDropdown.Item href={API.routes.client.shex2XmiRoute}>
-                {API.texts.navbarHeaders.shexToUml}
+              <NavDropdown.Item href={API.routes.client.xmi2ShexRoute}>
+                {API.texts.navbarHeaders.umlToShEx}
               </NavDropdown.Item>
             </NavDropdown>
             <NavDropdown

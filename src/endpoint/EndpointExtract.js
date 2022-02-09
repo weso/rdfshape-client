@@ -26,7 +26,6 @@ function EndpointExtract() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    window.scrollTo(0, 0);
   }
 
   return (

@@ -67,7 +67,7 @@ class API {
       shexVisualizeUmlRouteRaw: "/shexVisualizeUmlRaw",
       shexValidateRoute: "/shexValidate",
       shexValidateEndpointRoute: "/shexValidateEndpoint",
-      shex2XmiRoute: "/shex2Xmi",
+      xmi2ShexRoute: "/xmi2shex",
       shapeFormRoute: "/shapeForm",
 
       shaclInfoRoute: "/shaclInfo",
@@ -90,6 +90,8 @@ class API {
     utils: {
       wikidataUrl: "https://query.wikidata.org/sparql",
       dbpediaUrl: "https://dbpedia.org/sparql",
+      shapeFormHelpUrl:
+        "https://github.com/weso/shapeForms#requirementslimitations",
     },
   };
 
@@ -157,6 +159,7 @@ class API {
     overview: "overview",
     result: "result",
     xmi: "XMI",
+    html: "HTML",
     uml: "UML",
     shex: "ShEx",
 
@@ -166,6 +169,8 @@ class API {
     visualizations: "visualizations",
     visualizationDot: "dot",
     visualizationCyto: "cyto",
+
+    render: "Render",
 
     shaclValidationReportText: "shaclReportText",
     shaclValidationReportNodes: "shaclReportNodes",
@@ -187,12 +192,15 @@ class API {
     html: "HTML",
     htmlMicrodata: "html-microdata",
     htmlRdf: "html-rdfa11",
+    htmlMixed: "htmlmixed",
     json: "JSON",
     jsonld: "JSON-LD",
+    javascript: "javascript",
     dot: "DOT",
     ps: "PS",
-    uml: "UML",
+    xmi: "UML/XMI",
     txt: "txt",
+    htmlForm: "HTML form",
 
     defaultData: "turtle",
     defaultShex: "ShExC",
@@ -226,7 +234,9 @@ class API {
     shaclex: "SHACLex",
     jenaShacl: "JenaSHACL",
     shacl_tq: "SHACL_TQ",
-    xml: "xml",
+
+    shumlex: "Shumlex",
+    shapeForms: "ShapeForms",
   };
 
   // Trigger modes
@@ -262,6 +272,7 @@ class API {
       shexExtract: "ShEx extraction",
       shexToForm: "ShEx → Form",
       shexToUml: "ShEx ⟷ UML",
+      umlToShEx: "UML → ShEx",
       examples: "Examples",
       help: "Help",
       wikishape: "Wikishape",
@@ -329,6 +340,7 @@ class API {
       result: "Result",
       prefixMap: "Prefix Map",
       visualization: "Visualization",
+      render: "Render",
       visualizations: "Visualizations",
       visualizationDot: "DOT",
       visualizationCyto: "Cytoscape",
@@ -442,13 +454,16 @@ class API {
       "Can't generate links for file-based inputs, try inserting data by URL",
     embeddedLink: "Embedded link",
     permalinkCopied: "Link copied to clipboard!",
-    shapeStartRequired: '"Shape Start" is required on input',
+    shapeStartRequired: '"Shape Start" is required when using ShapeForms',
 
     enableFullscreen: "Show at fullscreen",
     leaveFullscreen: "✖ Leave fullscreen",
 
     useNodeSelector: "Use node selector",
   };
+
+  // ID of the results container for any operation
+  static resultsId = "results-container";
 }
 
 export default API;

@@ -63,7 +63,6 @@ function ShapeMapInfo(props) {
       } else {
         setError(API.texts.noProvidedShapeMap);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -101,7 +100,6 @@ function ShapeMapInfo(props) {
       })
       .finally(() => {
         setLoading(false);
-        window.scrollTo(0, 0); // Scroll top to results
       });
   }
 

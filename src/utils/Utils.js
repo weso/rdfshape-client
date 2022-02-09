@@ -217,28 +217,24 @@ export const notificationSettings = {
 export function format2mode(format) {
   switch (format?.toLowerCase()) {
     case API.formats.turtle.toLowerCase():
-      return "turtle";
+      return API.formats.turtle;
     case API.formats.xml.toLowerCase():
     case API.formats.rdfXml.toLowerCase():
     case API.formats.triG.toLowerCase():
-      return "xml";
+      return API.formats.xml;
     case API.formats.sparql.toLowerCase():
-      return "sparql";
-    case API.formats.html.toLowerCase():
-      return "htmlmixed";
+      return API.formats.sparql;
     case API.formats.json.toLowerCase():
     case API.formats.jsonld.toLowerCase():
     case API.formats.rdfJson.toLowerCase():
     case API.formats.shexj.toLowerCase():
-      return "javascript";
-    case API.formats.triG.toLowerCase():
-      return "xml";
+      return API.formats.javascript;
     case API.formats.shexc.toLowerCase():
-      return "shex";
+      return API.formats.shexc;
     case API.formats.html.toLowerCase():
     case API.formats.htmlMicrodata.toLowerCase():
     case API.formats.htmlRdf.toLowerCase():
-      return "htmlmixed";
+      return API.formats.htmlMixed;
     default:
       return defaultMode;
   }
@@ -335,6 +331,34 @@ export const yasheMinButtonsOptions = {
   showFullScreenButton: true,
 };
 
+// Shortcut to all the settings that must be included in a Yashe object used for results: copy and download
+export const yasheResultButtonsOptions = {
+  showUploadButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+  showTooltip: false,
+
+  showDownloadButton: true,
+  showCopyButton: true,
+  showFullScreenButton: true,
+};
+
 // Create a random int in range min (inclusive) to max (exclusive)
 export const randomInt = (min = 0, max = 1000) =>
   Math.floor(Math.random() * (max - min)) + min;
+
+// Smoothly scroll to the element with the given id (if it exists)
+export const scrollToElementById = (
+  id = API.resultsId,
+  options = {
+    behavior: "smooth",
+    block: "start",
+  }
+) => {
+  const targetElement = document.getElementById(id);
+  targetElement && targetElement.scrollIntoView(options);
+};
+
+export const scrollToResults = (options) =>
+  scrollToElementById(API.resultsId, options || undefined);

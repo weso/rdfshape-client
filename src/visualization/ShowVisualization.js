@@ -124,12 +124,13 @@ function ShowVisualization({
         return <PrintSVG svg={vData} />;
 
       case visualizationTypes.cytoscape:
+        const userStyles = data?.stylesheet || [];
         return (
           <CytoscapeContainer
             elements={vData.elements}
             cytoControls={[cytoObject, setCytoObject]}
             layoutControls={[layout, setLayout]}
-            styles={cytoStyles}
+            styles={[...userStyles, ...cytoStyles]}
           />
         );
 

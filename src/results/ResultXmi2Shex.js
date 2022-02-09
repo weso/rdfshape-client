@@ -1,14 +1,13 @@
-import $ from "jquery";
 import PropTypes from "prop-types";
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
-import Code from "../components/Code";
+import ByText from "../components/ByText";
 import { Permalink } from "../Permalink";
-import { breadthfirst } from "../utils/cytoscape/cytoUtils";
+import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
-import { format2mode } from "../utils/Utils";
+import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -26,68 +25,58 @@ function ResultXMI2ShEx({
   permalink,
   disabled,
 }) {
-  const {
-    result: resultRaw,
-    graph: resultGraph,
-    msg: resultMessage,
-  } = conversionResult;
+  const { result: resultRaw, graph: resultGraph } = conversionResult;
 
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const refCyto = useRef(null);
+  const [cytoVisual, setCytoVisual] = useState(null);
+
+  useEffect(scrollToResults, []);
+
+  // Forcibly render the cyto when entering the tab for accurate dimensions
+  function renderCytoVisual() {
+    setCytoVisual(
+      <ShowVisualization
+        data={{
+          elements: resultGraph,
+          stylesheet: shumlexCytoscapeStyle,
+        }}
+        type={visualizationTypes.cytoscape}
+        raw={false}
+        controls={true}
+        embedLink={false}
+        disabledLinks={disabled}
+      />
+    );
+  }
 
   function handleTabChange(e) {
     setActiveTab(e);
   }
 
-  function fullscreen() {
-    if (!isFullscreen) {
-      $("#grafocontainer").attr("class", "fullscreen");
-      $("#fullscreen").text(API.texts.leaveFullscreen);
-      $("#grafoshex").css("max-height", "85%");
-      setIsFullscreen(true);
-    } else {
-      $("#grafocontainer").removeAttr("class");
-      $("#fullscreen").text(API.texts.enableFullscreen);
-      $("#grafoshex").css("max-height", "500px");
-      setIsFullscreen(false);
-    }
-  }
-
-
-
   if (conversionResult)
     return (
-      <>
+      <div id={API.resultsId}>
         <Tabs activeKey={activeTab} id="dataTabs" onSelect={handleTabChange}>
           <Tab eventKey={API.tabs.shex} title={API.texts.misc.shex}>
             {resultRaw && (
-              <Code
-                value={resultRaw}
-                mode={format2mode(resultMode)} // ShExC represent as Turtle
-                onChange={function(val) {
+              <ByText
+                textAreaValue={resultRaw}
+                textFormat={API.formats.shexc} // Force ShExC for the text results
+                fromParams={false}
+                handleByTextChange={function(val) {
                   return val;
                 }}
+                options={{ ...yasheResultButtonsOptions }}
               />
             )}
           </Tab>
-          <Tab eventKey={API.tabs.visualization} title={API.texts.misc.graph}>
-            <div className="visual-column">
-              <ShowVisualization
-                data={{
-                  layout: breadthfirst,
-                  elements: resultGraph,
-                  refCyto,
-                  stylesheet: visualizationStyle,
-                }}
-                type={visualizationTypes.cytoscape}
-                raw={false}
-                zoom={1}
-                embedLink={false}
-                disabledLinks={disabled}
-              />
-            </div>
+          <Tab
+            eventKey={API.tabs.visualization}
+            title={API.texts.misc.graph}
+            onEnter={renderCytoVisual}
+          >
+            {cytoVisual}
           </Tab>
         </Tabs>
         <details>
@@ -100,19 +89,9 @@ function ResultXMI2ShEx({
             <Permalink url={permalink} disabled={disabled} />
           </Fragment>
         )}
-      </>
+      </div>
     );
 }
-
-const visualizationStyle = [
-  // Additional styles and settings for the cytoscape graph
-  {
-    selector: "node",
-    style: {
-      label: "data(name)", // Use the "name" attribute of each element as its label
-    },
-  },
-];
 
 ResultXMI2ShEx.propTypes = {
   result: PropTypes.object,
