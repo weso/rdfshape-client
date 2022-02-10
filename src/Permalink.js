@@ -35,12 +35,25 @@ export async function mkPermalinkFromUrl(url) {
 }
 
 export function mkPermalinkLong(route, params) {
+  return getHost() + route + "?" + qs.stringify(params);
+}
+
+// Shorthand for creating embed links
+// Receive the params (with data, shex...) from used in the state of the component
+// and an object with the options, i.e.: the visualization type (data, uml...) and target (svg, cytoscape...)
+export function mkEmbedLink(
+  params,
+  { visualizationType, visualizationTarget }
+) {
   return (
     getHost() +
-    // "#" + // This one is added for HashBrowser
-    route +
+    API.routes.client.visualizeRawRoute +
     "?" +
-    qs.stringify(params)
+    qs.stringify({
+      ...params,
+      [API.queryParameters.visualization.type]: visualizationType,
+      [API.queryParameters.visualization.target]: visualizationTarget,
+    })
   );
 }
 

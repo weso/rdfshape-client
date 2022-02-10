@@ -40,14 +40,13 @@ function ShowVisualization({
   embedLink,
   disabledLinks,
   controls,
-  tab,
 }) {
   // Visualization ID and the ID of te html container of the visualization
   const id = randomInt();
   const htmlId = `visualization-container-${id}`;
 
   // CSS-applied zoom on the element (via transform scale). Not needed for cyto
-  const [zoom, setZoom] = useState(defaultZoom || 1);
+  const [zoom, setZoom] = useState(defaultZoom);
 
   // Current state of the visualization, fullscreen or not
   const [fullscreen, setFullscreen] = useState(false);
@@ -212,7 +211,7 @@ function ShowVisualization({
   return (
     <div
       id={htmlId}
-      className={`visualization-container width-100 height-100`}
+      className={`visualization-container width-100 height-100 ${raw && "raw"}`}
       style={{ height: "58vh" }}
     >
       <div
@@ -260,13 +259,13 @@ ShowVisualization.propTypes = {
   raw: PropTypes.bool,
   embedLink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   disabledLinks: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  tab: PropTypes.string.isRequired,
 };
 
 ShowVisualization.defaultProps = {
   zoom: 1,
   raw: false,
-  controls: false, // Show or hide zoom controls
-  tab: API.tabs.none,
+  controls: true, // Show or hide zoom controls
+  embedLink: false,
+  disabledLinks: false,
 };
 export default ShowVisualization;

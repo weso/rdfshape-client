@@ -199,6 +199,8 @@ function ShexInfo(props) {
             ) : result ? (
               <ResultSchemaInfo
                 result={result}
+                params={params}
+                schemaEngine={API.engines.shex}
                 permalink={permalink}
                 disabled={disabledLinks}
               />

@@ -2,12 +2,16 @@ import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import shumlex from "shumlex";
 import API from "../API";
 import ByText from "../components/ByText";
-import { Permalink } from "../Permalink";
+import { mkEmbedLink, Permalink } from "../Permalink";
+import { InitialUML, mkSvgElement, paramsFromStateUML } from "../uml/UML";
 import PrintJson from "../utils/PrintJson";
-import { format2mode, scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
+import {
+  format2mode,
+  scrollToResults,
+  yasheResultButtonsOptions
+} from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -21,34 +25,17 @@ function ResultShEx2XMI({
 }) {
   const { result: resultRaw } = conversionResult;
 
-  const dummyId = "dummy-uml-placeholder";
-
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [svg, setSvg] = useState("");
+  const [svg, setSvg] = useState();
+
+  // Params of the created uml, used to create the embed link
+  const umlParams = paramsFromStateUML({
+    ...InitialUML,
+    activeSource: API.sources.byText,
+    textArea: resultRaw,
+  });
 
   useEffect(scrollToResults, []);
-
-  const mkSvgElement = () => {
-    // Create a dummy HTML element to put the SVG into
-    const dummy = document.createElement("div");
-    dummy.id = dummyId;
-    document.body.appendChild(dummy);
-
-    // Use Shumlex to create the SVG data (binary)...
-    shumlex.crearDiagramaUML(dummyId, resultRaw);
-    let svg64 = shumlex.base64SVG(dummyId);
-    // ...and decode the binary to get the inline SVG element to be represented
-    const inlineSvg = Buffer.from(
-      svg64.replace("data:image/svg+xml;base64,", ""),
-      "base64"
-    ).toString();
-
-    // Remove dummy element and return
-    dummy.remove();
-
-    return inlineSvg;
-  };
 
   if (conversionResult)
     return (
@@ -75,17 +62,18 @@ function ResultShEx2XMI({
           <Tab
             eventKey={API.tabs.visualization}
             title={API.texts.misc.umlDiagram}
-            onEnter={() => !svg && setSvg(mkSvgElement())}
+            onEnter={() => !svg && setSvg(mkSvgElement(resultRaw))}
           >
             <div>
               <ShowVisualization
                 data={svg}
                 type={visualizationTypes.svgRaw}
-                raw={false}
-                zoom={1}
-                embedLink={false}
-                disabledLinks={disabled}
-                controls={true}
+                embedLink={mkEmbedLink(umlParams, {
+                  visualizationType:
+                    API.queryParameters.visualization.types.uml,
+                  visualizationTarget:
+                    API.queryParameters.visualization.targets.svg,
+                })}
               />
             </div>
           </Tab>

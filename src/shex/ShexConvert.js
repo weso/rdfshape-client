@@ -147,13 +147,10 @@ function ShexConvert(props) {
   }
 
   // Execute the necessary conversion logic depending on the target engine
-  const convertSchema = async () => {
-    if (schemaEngines.includes(targetSchemaEngine))
-      return await serverSchemaConvert();
-    else if (targetSchemaEngine === API.engines.shapeForms)
-      return await clientFormConvert();
-    else if (targetSchemaEngine === API.engines.shumlex)
-      return await clientUmlConvert();
+  const convertSchema = () => {
+    if (schemaEngines.includes(targetSchemaEngine)) serverSchemaConvert();
+    else if (targetSchemaEngine === API.engines.shapeForms) clientFormConvert();
+    else if (targetSchemaEngine === API.engines.shumlex) clientUmlConvert();
   };
 
   // For schema-schema conversions done by server

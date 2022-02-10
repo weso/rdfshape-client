@@ -99,7 +99,7 @@ class RDFShapeNavbar extends React.Component {
                 {API.texts.navbarHeaders.analysis}
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link target="_blank" href="http://wikishape.weso.es">
+            <Nav.Link target="_blank" href={API.routes.utils.wikishape}>
               {API.texts.navbarHeaders.wikishape}
             </Nav.Link>
           </Nav>

@@ -1,5 +1,12 @@
+import axios from "axios";
 import React from "react";
+import shumlex from "shumlex";
 import API from "../API";
+import { params2Form } from "../Permalink";
+import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import ShexTabs from "./ShexTabs";
 
 export const InitialShex = {
@@ -27,13 +34,14 @@ export function updateStateShex(params, shex) {
       ...shex,
       activeSource: schemaSource,
       // Fill in the data containers with the user data if necessary. Else leave them as they were.
-      textArea: schemaSource == API.sources.byText ? userSchema : shex.textArea,
-      url: schemaSource == API.sources.byUrl ? userSchema : shex.url,
-      file: schemaSource == API.sources.byFile ? userSchema : shex.file,
+      textArea:
+        schemaSource == API.sources.byText ? userSchema : shex?.textArea,
+      url: schemaSource == API.sources.byUrl ? userSchema : shex?.url,
+      file: schemaSource == API.sources.byFile ? userSchema : shex?.file,
       fromParams: true,
-      format: params[API.queryParameters.schema.format] || shex.format,
+      format: params[API.queryParameters.schema.format] || shex?.format,
       // Get the schema engine or leave it as is
-      engine: params[API.queryParameters.schema.engine] || shex.engine,
+      engine: params[API.queryParameters.schema.engine] || shex?.engine,
     };
   }
   return shex;
@@ -108,4 +116,49 @@ export function mkShexTabs(shex, setShex, name, subname) {
       resetFromParams={() => setShex({ ...shex, fromParams: false })}
     />
   );
+}
+
+export async function mkShexVisualization(
+  params,
+  visualizationTarget,
+  options = { controls: false }
+) {
+  const uplinkParams = params2Form(params);
+  switch (visualizationTarget) {
+    case API.queryParameters.visualization.targets.svg:
+      const { data: resultConvert } = await axios.post(
+        API.routes.server.schemaConvert,
+        uplinkParams
+      );
+
+      return (
+        <ShowVisualization
+          data={resultConvert?.result?.schema} // Extract SVG from response
+          type={visualizationTypes.svgRaw}
+          {...options}
+        />
+      );
+
+    case API.queryParameters.visualization.targets.cyto:
+      // Get the raw ShEx text via SchemaInfo
+      const { data: resultInfo } = await axios.post(
+        API.routes.server.schemaInfo,
+        uplinkParams
+      );
+      const schemaRaw = resultInfo?.schema?.schema;
+
+      // Make the cytoscape elements via Shumlex
+      const cytoElements = shumlex.crearGrafo(schemaRaw);
+
+      return (
+        <ShowVisualization
+          data={{
+            elements: cytoElements,
+            stylesheet: shumlexCytoscapeStyle,
+          }}
+          type={visualizationTypes.cytoscape}
+          {...options}
+        />
+      );
+  }
 }

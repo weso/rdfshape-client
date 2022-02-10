@@ -4,7 +4,8 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
 import ByText from "../components/ByText";
-import { Permalink } from "../Permalink";
+import { mkEmbedLink, Permalink } from "../Permalink";
+import { InitialShex, paramsFromStateShex } from "../shex/Shex";
 import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
@@ -25,6 +26,15 @@ function ResultXMI2ShEx({
 
   const [cytoVisual, setCytoVisual] = useState(null);
 
+  // Params of the created schema, used to create the embed link
+  const schemaParams = paramsFromStateShex({
+    ...InitialShex,
+    activeSource: API.sources.byText,
+    textArea: resultRaw,
+    format: API.formats.shexc,
+    engine: API.engines.shex,
+  });
+
   useEffect(scrollToResults, []);
 
   // Forcibly render the cyto when entering the tab for accurate dimensions
@@ -36,10 +46,10 @@ function ResultXMI2ShEx({
           stylesheet: shumlexCytoscapeStyle,
         }}
         type={visualizationTypes.cytoscape}
-        raw={false}
-        controls={true}
-        embedLink={false}
-        disabledLinks={disabled}
+        embedLink={mkEmbedLink(schemaParams, {
+          visualizationType: API.queryParameters.visualization.types.shex,
+          visualizationTarget: API.queryParameters.visualization.targets.cyto,
+        })}
       />
     );
   }

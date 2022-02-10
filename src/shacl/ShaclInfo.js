@@ -199,6 +199,8 @@ function ShaclInfo(props) {
             ) : result ? (
               <ResultSchemaInfo
                 result={result}
+                params={params}
+                schemaEngine={shacl.engine || API.engines.defaultShacl}
                 permalink={permalink}
                 disabled={disabledLinks}
               />

@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import API from "../API";
-import { Permalink } from "../Permalink";
+import { mkEmbedLink, Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns, scrollToResults } from "../utils/Utils";
 import ShowVisualization, {
@@ -12,6 +12,7 @@ import ShowVisualization, {
 // Compendium of data overview, prefix map and visualizations
 function ResultDataInfo({
   result: { resultInfo, resultDot, resultCyto }, // Request successful response
+  params: stateDataParams,
   permalink,
   disabled,
 }) {
@@ -44,7 +45,10 @@ function ResultDataInfo({
         type={visualizationTypes.cytoscape}
         raw={false}
         controls={true}
-        embedLink={false} // TODO
+        embedLink={mkEmbedLink(stateDataParams, {
+          visualizationType: API.queryParameters.visualization.types.data,
+          visualizationTarget: API.queryParameters.visualization.targets.cyto,
+        })}
         disabledLinks={false} // TODO
       />
     );
@@ -112,8 +116,12 @@ function ResultDataInfo({
                         type={visualizationTypes.svgObject}
                         raw={false}
                         controls={true}
-                        embedLink={false} // TODO
-                        disabledLinks={false} // TODO
+                        embedLink={mkEmbedLink(stateDataParams, {
+                          visualizationType:
+                            API.queryParameters.visualization.types.data,
+                          visualizationTarget:
+                            API.queryParameters.visualization.targets.svg,
+                        })}
                       />
                     </Tab>
                   )}

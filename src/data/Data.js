@@ -1,5 +1,11 @@
+import axios from "axios";
 import React from "react";
 import API from "../API";
+import { params2Form } from "../Permalink";
+import { processDotData } from "../utils/dot/dotUtils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
@@ -28,12 +34,12 @@ export function updateStateData(params, data) {
       ...data,
       activeSource: dataSource, // New data source (activates the corresponsing edit tab)
       // Fill in the data containers with the user data if necessary. Else leave them as they were.
-      textArea: dataSource == API.sources.byText ? userData : data.textArea,
-      url: dataSource == API.sources.byUrl ? userData : data.url,
-      file: dataSource == API.sources.byFile ? userData : data.file,
+      textArea: dataSource == API.sources.byText ? userData : data?.textArea,
+      url: dataSource == API.sources.byUrl ? userData : data?.url,
+      file: dataSource == API.sources.byFile ? userData : data?.file,
       fromParams: true,
-      format: params[API.queryParameters.data.format] || data.format,
-      inference: params[API.queryParameters.data.inference] || data.inference,
+      format: params[API.queryParameters.data.format] || data?.format,
+      inference: params[API.queryParameters.data.inference] || data?.inference,
     };
   }
   return data;
@@ -123,4 +129,43 @@ export function getDataText(data) {
     return encodeURI(data.url.trim());
   }
   return "";
+}
+
+export async function mkDataVisualization(
+  params,
+  visualizationTarget,
+  options = { controls: false }
+) {
+  const uplinkParams = params2Form(params);
+  switch (visualizationTarget) {
+    case API.queryParameters.visualization.targets.svg:
+      const { data: resultDot } = await axios.post(
+        API.routes.server.dataConvert,
+        uplinkParams
+      );
+      const dot = resultDot.result.data; // Get the DOT string from the axios data object
+      const dotVisualization = await processDotData(dot);
+
+      return (
+        <ShowVisualization
+          data={dotVisualization.data}
+          type={visualizationTypes.svgObject}
+          {...options}
+        />
+      );
+    case API.queryParameters.visualization.targets.cyto:
+      const { data: resultCyto } = await axios.post(
+        API.routes.server.dataConvert,
+        uplinkParams
+      );
+      const cytoElements = JSON.parse(resultCyto.result.data);
+
+      return (
+        <ShowVisualization
+          data={{ elements: cytoElements }}
+          type={visualizationTypes.cytoscape}
+          {...options}
+        />
+      );
+  }
 }

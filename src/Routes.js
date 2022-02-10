@@ -3,13 +3,12 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import About from "./About.js";
 import API from "./API.js";
 import "./App.css";
+import VisualizeRaw from "./components/VisualizeRaw.js";
 import DataConvert from "./data/DataConvert.js";
 import DataExtract from "./data/DataExtract.js";
 import DataInfo from "./data/DataInfo.js";
 import DataMerge from "./data/DataMerge";
 import DataQuery from "./data/DataQuery.js";
-import DataVisualizeCytoscapeRaw from "./data/DataVisualizeCytoscapeRaw";
-import DataVisualizeGraphvizRaw from "./data/DataVisualizeGraphvizRaw.js";
 import EndpointExtract from "./endpoint/EndpointExtract.js";
 import EndpointInfo from "./endpoint/EndpointInfo";
 import EndpointQuery from "./endpoint/EndpointQuery";
@@ -24,7 +23,6 @@ import ShapeMapInfo from "./shapeMap/ShapeMapInfo";
 import ShexConvert from "./shex/ShexConvert";
 import ShexInfo from "./shex/ShexInfo";
 import ShexValidate from "./shex/ShexValidate";
-import ShexVisualizeUmlRaw from "./shex/ShexVisualizeUmlRaw";
 import Xmi2Shex from "./shex/Xmi2Shex";
 
 function Routes() {
@@ -54,16 +52,6 @@ function Routes() {
         <Route
           path={API.routes.client.dataConvertRoute}
           render={() => renderWithNavbar(DataConvert)}
-        />
-        {/* RAW visualization */}
-        <Route
-          path={API.routes.client.dataVisualizeGraphvizRouteRaw}
-          render={() => renderWithoutNavbar(DataVisualizeGraphvizRaw)}
-        />
-        {/* RAW visualization */}
-        <Route
-          path={API.routes.client.dataVisualizeCytoscapeRouteRaw}
-          render={() => renderWithoutNavbar(DataVisualizeCytoscapeRaw)}
         />
         <Route
           path={API.routes.client.dataQueryRoute}
@@ -99,11 +87,7 @@ function Routes() {
           path={API.routes.client.shexInfoRoute}
           render={() => renderWithNavbar(ShexInfo)}
         />
-        {/* RAW visualization */}
-        <Route
-          path={API.routes.client.shexVisualizeUmlRouteRaw}
-          render={() => renderWithoutNavbar(ShexVisualizeUmlRaw)}
-        />
+
         <Route
           path={API.routes.client.shexConvertRoute}
           render={() => renderWithNavbar(ShexConvert)}
@@ -112,7 +96,6 @@ function Routes() {
           path={API.routes.client.xmi2ShexRoute}
           render={() => renderWithNavbar(Xmi2Shex)}
         />
-
         <Route
           path={API.routes.client.shaclInfoRoute}
           render={() => renderWithNavbar(ShaclInfo)}
@@ -133,6 +116,11 @@ function Routes() {
         <Route
           path={API.routes.client.aboutRoute}
           render={() => renderWithNavbar(About)}
+        />
+        {/* Raw visualizations for embeddings */}
+        <Route
+          path={API.routes.client.visualizeRawRoute}
+          render={() => renderWithoutNavbar(VisualizeRaw)}
         />
         {/* Route to be shown for processing permalinks */}
         <Route

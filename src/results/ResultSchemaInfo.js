@@ -1,9 +1,11 @@
+import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import shumlex from "shumlex";
 import API from "../API";
-import { Permalink } from "../Permalink";
+import { shaclEngines } from "../components/SelectEngine";
+import { mkEmbedLink, Permalink } from "../Permalink";
 import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import { prefixMapTableColumns, scrollToResults } from "../utils/Utils";
@@ -14,6 +16,8 @@ import ShowVisualization, {
 // Results of querying the API for information about a schema (either ShEx or SHACL)
 function ResultSchemaInfo({
   result: { resultInfo, resultVisualize },
+  params: stateSchemaParams,
+  schemaEngine,
   permalink,
   disabled,
 }) {
@@ -37,10 +41,19 @@ function ResultSchemaInfo({
   const [resultTab, setResultTab] = useState(API.tabs.overview);
   const [visualTab, setVisualTab] = useState(API.tabs.visualizationDot);
 
-  const [cytoElements] = useState(shumlex.crearGrafo(schemaRaw));
+  const [cytoElements, setCytoElements] = useState([]);
   const [cytoVisual, setCytoVisual] = useState(null);
 
+  const embedLinkType = shaclEngines.includes(schemaEngine)
+    ? API.queryParameters.visualization.types.shacl
+    : API.queryParameters.visualization.types.shex;
+
   useEffect(scrollToResults, []);
+
+  useEffect(() => {
+    if (schemaEngine === API.engines.shex)
+      setCytoElements(shumlex.crearGrafo(schemaRaw));
+  }, []);
 
   // Forcibly render the cyto when entering the tab for accurate dimensions
   function renderCytoVisual() {
@@ -53,7 +66,10 @@ function ResultSchemaInfo({
         type={visualizationTypes.cytoscape}
         raw={false}
         controls={true}
-        embedLink={false}
+        embedLink={mkEmbedLink(stateSchemaParams, {
+          visualizationType: embedLinkType,
+          visualizationTarget: API.queryParameters.visualization.targets.cyto,
+        })}
         disabledLinks={disabled}
       />
     );
@@ -122,15 +138,16 @@ function ResultSchemaInfo({
                     <ShowVisualization
                       data={schemaSvg}
                       type={visualizationTypes.svgRaw}
-                      raw={false}
-                      controls={true}
-                      embedLink={false}
-                      disabledLinks={disabled}
+                      embedLink={mkEmbedLink(stateSchemaParams, {
+                        visualizationType: embedLinkType,
+                        visualizationTarget:
+                          API.queryParameters.visualization.targets.svg,
+                      })}
                     />
                   </Tab>
                 )}
                 {/* Cytoscape visualization */}
-                {cytoElements && (
+                {cytoElements?.length > 0 && (
                   <Tab
                     eventKey={API.tabs.visualizationCyto}
                     title={API.texts.resultTabs.visualizationCyto}
@@ -160,6 +177,11 @@ function ResultSchemaInfo({
     );
   }
 }
+
+ResultSchemaInfo.propTypes = {
+  disabled: PropTypes.bool,
+  schemaEngine: PropTypes.string.isRequired,
+};
 
 ResultSchemaInfo.defaultProps = {
   disabled: false,

@@ -129,14 +129,15 @@ a.dropdown-item {
   margin-left: 5px;
 }
 
-/* When fullscreen, make the visualization cover the whole screen space and
-change the controls location */
+/* When fullscreen, make the visualization cover the whole screen space */
 .visualization-container[id^="visualization-container"]:fullscreen {
   width: 100vw;
   height: 100vh;
   background-color: white;
 }
-.visualization-container[id^="visualization-container"]:fullscreen
+
+/* When fullscreen or raw, change the controls location */
+.visualization-container[id^="visualization-container"]:where(:fullscreen, .raw)
   .visualization-links {
   position: fixed;
   bottom: 3em;

@@ -47,14 +47,8 @@ class API {
     client: {
       dataInfoRoute: "/dataInfo",
       dataConvertRoute: "/dataConvert",
-      dataVisualizeGraphvizRoute: "/dataVisualizeGraphviz",
-      dataVisualizeGraphvizRouteRaw: "/dataVisualizeGraphvizRaw",
-      dataVisualizeCytoscapeRoute: "/dataVisualizeCytoscape",
-      dataVisualizeCytoscapeRouteRaw: "/dataVisualizeCytoscapeRaw",
       dataExtractRoute: "/dataExtract",
       dataMergeRoute: "/dataMerge",
-      dataMergeVisualizeRoute: "/dataMergeVisualize",
-      dataMergeVisualizeRouteRaw: "/dataMergeVisualizeRaw",
       dataQueryRoute: "/dataQuery",
 
       endpointInfoRoute: "/endpointInfo",
@@ -63,8 +57,6 @@ class API {
 
       shexInfoRoute: "/shexInfo",
       shexConvertRoute: "/shexConvert",
-      shexVisualizeUmlRoute: "/shexVisualizeUml",
-      shexVisualizeUmlRouteRaw: "/shexVisualizeUmlRaw",
       shexValidateRoute: "/shexValidate",
       shexValidateEndpointRoute: "/shexValidateEndpoint",
       xmi2ShexRoute: "/xmi2shex",
@@ -72,9 +64,7 @@ class API {
 
       shaclInfoRoute: "/shaclInfo",
       shaclConvertRoute: "/shaclConvert",
-      shacl2ShExRoute: "/shacl2ShEx",
       shaclValidateRoute: "/shaclValidate",
-      jenaShaclValidateRoute: "/jenaShaclValidate",
 
       shapeMapInfoRoute: "/shapeMapInfo",
 
@@ -82,12 +72,15 @@ class API {
       wikidataValidateRoute: "/wikidataValidate",
       wikidataExtractRoute: "/wikidataExtract",
 
+      visualizeRawRoute: "/visualize",
+
       permalinkRoute: "/link/:urlCode",
 
       aboutRoute: "/about",
     },
     // Other useful routes
     utils: {
+      wikishape: "https://wikishape.weso.es",
       wikidataUrl: "https://query.wikidata.org/sparql",
       dbpediaUrl: "https://dbpedia.org/sparql",
       shapeFormHelpUrl:
@@ -138,9 +131,26 @@ class API {
       uml: "uml",
       source: "umlSource",
       format: "umlFormat",
+
+      targetFormat: "umlTargetFormat",
     },
     permalink: {
       code: "urlCode",
+    },
+    visualization: {
+      type: "vType",
+      target: "vTarget",
+
+      types: {
+        data: "data",
+        shex: "shex",
+        shacl: "shacl",
+        uml: "uml",
+      },
+      targets: {
+        svg: "svg",
+        cyto: "cyto",
+      },
     },
   };
 
@@ -305,7 +315,7 @@ class API {
       umlToShex: "UML conversion to ShEx",
 
       shaclInfo: "SHACL analysis",
-      shaclValidation: "SHACL validate user data",
+      shaclValidation: "SHACL validate data",
       shaclConversion: "SHACL conversion",
       shaclToShex: "SHACL conversion to ShEx",
 
@@ -418,6 +428,7 @@ class API {
     networkError: "Network error",
     errorDetails: "Error details",
     errorParsingUrl: "Could not parse URL information",
+    emptyDataUrl: "No URL data to process",
     noProvidedRdf: "No RDF data provided",
     noProvidedSchema: "No schema provided",
     invalidXmiSchema: "Invalid XMI schema",
@@ -452,7 +463,12 @@ class API {
       "Can't generate links for long manual inputs, try inserting data by URL",
     noPermalinkFile:
       "Can't generate links for file-based inputs, try inserting data by URL",
+
     embeddedLink: "Embedded link",
+    noEmbeddedFile:
+      "Can't generate direct links to visualizations for file-based inputs, try inserting data by URL",
+    invalidVisualizationType: "Invalid data type to be visualized",
+    invalidVisualizationTarget: "Invalid visualization target format",
     permalinkCopied: "Link copied to clipboard!",
     shapeStartRequired: '"Shape Start" is required when using ShapeForms',
 

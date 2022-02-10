@@ -1,5 +1,10 @@
 import React from "react";
+import shumlex from "shumlex";
 import API from "../API";
+import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import UMLTabs from "./UMLTabs";
 
 // UML data representation (XMI)
@@ -21,11 +26,11 @@ export function updateStateUml(params, uml) {
     return {
       ...uml,
       activeSource: umlSource,
-      textArea: umlSource == API.sources.byText ? userUml : uml.textArea,
-      url: umlSource == API.sources.byUrl ? userUml : uml.url,
-      file: umlSource == API.sources.byFile ? userUml : uml.file,
+      textArea: umlSource == API.sources.byText ? userUml : uml?.textArea,
+      url: umlSource == API.sources.byUrl ? userUml : uml?.url,
+      file: umlSource == API.sources.byFile ? userUml : uml?.file,
       fromParams: true,
-      format: params[API.queryParameters.uml.format] || uml.format,
+      format: params[API.queryParameters.uml.format] || uml?.format,
     };
   }
 
@@ -99,4 +104,45 @@ export function getUmlText(uml) {
     return uml.url;
   }
   return "";
+}
+
+export const mkSvgElement = (umlRaw) => {
+  const dummyId = "dummy-uml-placeholder";
+  // Create a dummy HTML element to put the SVG into
+  const dummy = document.createElement("div");
+  dummy.id = dummyId;
+  document.body.appendChild(dummy);
+
+  // Use Shumlex to create the SVG data (binary)...
+  shumlex.crearDiagramaUML(dummyId, umlRaw);
+  let svg64 = shumlex.base64SVG(dummyId);
+  // ...and decode the binary to get the inline SVG element to be represented
+  const inlineSvg = Buffer.from(
+    svg64.replace("data:image/svg+xml;base64,", ""),
+    "base64"
+  ).toString();
+
+  // Remove dummy element and return
+  dummy.remove();
+
+  return inlineSvg;
+};
+
+export async function mkUmlVisualization(
+  params,
+  visualizationTarget,
+  options = { controls: false }
+) {
+  switch (visualizationTarget) {
+    case API.queryParameters.visualization.targets.svg:
+      // Recover raw UML data
+      const raw = await getConverterInput(params, false);
+      return (
+        <ShowVisualization
+          data={mkSvgElement(raw)}
+          type={visualizationTypes.svgRaw}
+          {...options}
+        />
+      );
+  }
 }

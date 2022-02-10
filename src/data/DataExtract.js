@@ -242,6 +242,7 @@ function DataExtract(props) {
               ) : result ? (
                 <ResultDataExtract
                   result={result}
+                  params={params}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />

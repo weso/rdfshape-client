@@ -2,10 +2,11 @@ import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import API from "../API";
-import Code from "../components/Code";
-import { Permalink } from "../Permalink";
+import ByText from "../components/ByText";
+import { mkEmbedLink, Permalink } from "../Permalink";
+import { InitialShex, paramsFromStateShex } from "../shex/Shex";
 import PrintJson from "../utils/PrintJson";
-import { scrollToResults } from "../utils/Utils";
+import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -25,6 +26,15 @@ function ResultDataExtract({
     result: { schema: schemaSvg },
   } = visualizeResponse;
 
+  // Params of the extracted schema, used to create the embed link
+  const schemaParams = paramsFromStateShex({
+    ...InitialShex,
+    activeSource: API.sources.byText,
+    textArea: resultSchema,
+    format: resultSchemaFormat.name,
+    engine: API.engines.shex,
+  });
+
   // State to control the selected tab
   const [resultTab, setResultTab] = useState(API.tabs.shex);
 
@@ -40,11 +50,11 @@ function ResultDataExtract({
               eventKey={API.tabs.shex}
               title={API.texts.resultTabs.extracted}
             >
-              <Code
-                value={resultSchema}
-                mode={resultSchemaFormat.name} // Presumably "ShExC"
+              <ByText
+                textAreaValue={resultSchema}
+                textFormat={resultSchemaFormat.name} // Presumably "ShExC"
                 readOnly={true}
-                linenumbers={true}
+                options={{ ...yasheResultButtonsOptions }}
               />
             </Tab>
           )}
@@ -57,10 +67,12 @@ function ResultDataExtract({
               <ShowVisualization
                 data={schemaSvg}
                 type={visualizationTypes.svgRaw}
-                raw={false}
-                controls={true}
-                embedLink={false}
-                disabledLinks={disabled}
+                embedLink={mkEmbedLink(schemaParams, {
+                  visualizationType:
+                    API.queryParameters.visualization.types.shex,
+                  visualizationTarget:
+                    API.queryParameters.visualization.targets.svg,
+                })}
               />
             </Tab>
           )}

@@ -207,6 +207,7 @@ function DataInfo(props) {
               ) : result ? (
                 <ResultDataInfo
                   result={result}
+                  params={params}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />

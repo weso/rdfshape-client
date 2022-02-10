@@ -1,7 +1,12 @@
+import axios from "axios";
 import React from "react";
 import API from "../API";
 import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectInferenceEngine from "../data/SelectInferenceEngine";
+import { params2Form } from "../Permalink";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import ShaclTabs from "./ShaclTabs";
 
 export const InitialShacl = {
@@ -27,14 +32,14 @@ export function updateStateShacl(params, shacl) {
       ...shacl,
       activeSource: schemaSource,
       textArea:
-        schemaSource == API.sources.byText ? userSchema : shacl.textArea,
-      url: schemaSource == API.sources.byUrl ? userSchema : shacl.url,
-      file: schemaSource == API.sources.byFile ? userSchema : shacl.file,
+        schemaSource == API.sources.byText ? userSchema : shacl?.textArea,
+      url: schemaSource == API.sources.byUrl ? userSchema : shacl?.url,
+      file: schemaSource == API.sources.byFile ? userSchema : shacl?.file,
       fromParams: true,
-      format: params[API.queryParameters.schema.format] || shacl.format,
-      engine: params[API.queryParameters.schema.engine] || shacl.engine,
+      format: params[API.queryParameters.schema.format] || shacl?.format,
+      engine: params[API.queryParameters.schema.engine] || shacl?.engine,
       inference:
-        params[API.queryParameters.schema.inference] || shacl.inference,
+        params[API.queryParameters.schema.inference] || shacl?.inference,
     };
   }
   return shacl;
@@ -133,4 +138,27 @@ export function getShaclText(shacl) {
     return encodeURI(shacl.url.trim());
   }
   return "";
+}
+
+export async function mkShaclVisualization(
+  params,
+  visualizationTarget,
+  options = { controls: false }
+) {
+  const uplinkParams = params2Form(params);
+  switch (visualizationTarget) {
+    case API.queryParameters.visualization.targets.svg:
+      const { data: resultConvert } = await axios.post(
+        API.routes.server.schemaConvert,
+        uplinkParams
+      );
+
+      return (
+        <ShowVisualization
+          data={resultConvert?.result?.schema} // Extract SVG from response
+          type={visualizationTypes.svgRaw}
+          {...options}
+        />
+      );
+  }
 }

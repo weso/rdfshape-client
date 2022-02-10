@@ -143,15 +143,18 @@ function VisualizationLinks({
                   <FullscreenEnterIcon className="white-icon" />
                 )}
               </Button>
-              <Button
-                onClick={() => {
-                  cytoscape.fit();
-                }}
-                className="btn-controls"
-                variant="secondary"
-              >
-                <TargetIcon className="white-icon" />
-              </Button>
+              {/* Extra button to fit the cyto */}
+              {type === visualizationTypes.cytoscape && (
+                <Button
+                  onClick={() => {
+                    cytoscape.fit();
+                  }}
+                  className="btn-controls"
+                  variant="secondary"
+                >
+                  <TargetIcon className="white-icon" />
+                </Button>
+              )}
             </>
           )}
           {zoomControls && type !== visualizationTypes.cytoscape && (
