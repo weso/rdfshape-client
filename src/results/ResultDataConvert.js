@@ -51,7 +51,6 @@ function ResultDataConvert({
           )}
         </Tabs>
 
-        <br />
         <details>
           <summary>{API.texts.operationInformation}</summary>
           <ul>

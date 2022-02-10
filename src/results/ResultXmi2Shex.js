@@ -11,12 +11,6 @@ import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
-const cyto = require("cytoscape");
-let dagre = require("cytoscape-dagre");
-let svg = require("cytoscape-svg");
-let panzoom = require("cytoscape-panzoom");
-
-let cy = null;
 
 function ResultXMI2ShEx({
   result: conversionResult,

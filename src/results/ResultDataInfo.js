@@ -132,6 +132,8 @@ function ResultDataInfo({
           </Tabs>
         </div>
 
+        <br />
+
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
           <PrintJson json={resultInfo} />

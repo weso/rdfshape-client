@@ -12,6 +12,7 @@ import {
 import CogIcon from "react-open-iconic-svg/dist/CogIcon";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
 import ExternalLinkIcon from "react-open-iconic-svg/dist/ExternalLinkIcon";
+import TargetIcon from "react-open-iconic-svg/dist/TargetIcon";
 import ReactTooltip from "react-tooltip";
 import API from "../API";
 import {
@@ -141,6 +142,15 @@ function VisualizationLinks({
                 ) : (
                   <FullscreenEnterIcon className="white-icon" />
                 )}
+              </Button>
+              <Button
+                onClick={() => {
+                  cytoscape.fit();
+                }}
+                className="btn-controls"
+                variant="secondary"
+              >
+                <TargetIcon className="white-icon" />
               </Button>
             </>
           )}
