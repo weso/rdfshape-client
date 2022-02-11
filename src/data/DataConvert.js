@@ -9,10 +9,11 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
@@ -29,39 +30,42 @@ function DataConvert(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(InitialData);
-  const [targetDataFormat, setTargetDataFormat] = useState(
-    API.defaultDataFormat
+  const [dataTargetFormat, setDataTargetFormat] = useState(
+    API.formats.defaultData
   );
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataConvert;
+  const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
-    setTargetDataFormat(value);
+    value && setDataTargetFormat(value);
   }
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         setData(finalData);
 
-        if (queryParams.targetDataFormat) {
-          setTargetDataFormat(queryParams.targetDataFormat);
+        if (queryParams[API.queryParameters.data.targetFormat]) {
+          setDataTargetFormat(
+            queryParams[API.queryParameters.data.targetFormat]
+          );
         }
         const params = {
           ...paramsFromStateData(finalData),
-          targetDataFormat: queryParams.targetDataFormat || undefined,
+          [API.queryParameters.data.targetFormat]:
+            queryParams[API.queryParameters.data.targetFormat] ||
+            dataTargetFormat,
         };
 
         setParams(params);
         setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
@@ -69,23 +73,26 @@ function DataConvert(props) {
   useEffect(() => {
     if (params) {
       if (
-        params.data ||
-        params.dataURL ||
-        (params.dataFile && params.dataFile.name)
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postConvert();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateData(data), targetDataFormat });
+    setParams({
+      ...paramsFromStateData(data),
+      [API.queryParameters.data.targetFormat]: dataTargetFormat,
+    });
   }
 
   function postConvert(cb) {
@@ -99,14 +106,16 @@ function DataConvert(props) {
       .then(async (data) => {
         setProgressPercent(70);
         setResult(data);
-        setPermalink(mkPermalinkLong(API.dataConvertRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.dataConvertRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
       .catch(function(error) {
-        setError("Error response from " + url + ": " + error.toString());
+        setError(mkError(error, url));
       })
       .finally(() => setLoading(false));
   }
@@ -114,10 +123,10 @@ function DataConvert(props) {
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -134,7 +143,7 @@ function DataConvert(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataConvertRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -142,7 +151,7 @@ function DataConvert(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataConvertRoute, params)
+      mkPermalinkLong(API.routes.client.dataConvertRoute, params)
     );
 
     setLastParams(params);
@@ -158,18 +167,21 @@ function DataConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Convert RDF data</h1>
+      <PageHeader
+          title={API.texts.pageHeaders.dataConversion}
+          details={API.texts.pageExplanations.dataConversion}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <hr />
             <SelectFormat
               name="Target data format"
-              selectedFormat={targetDataFormat}
+              selectedFormat={dataTargetFormat}
               handleFormatChange={handleTargetDataFormatChange}
-              urlFormats={API.dataFormatsOutput}
+              urlFormats={API.routes.server.dataFormatsOutput}
             />
             <Button
               variant="primary"
@@ -177,7 +189,7 @@ function DataConvert(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Convert data
+              {API.texts.actionButtons.convert}
             </Button>
           </Form>
         </Col>
@@ -204,7 +216,9 @@ function DataConvert(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Conversion results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.conversionResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

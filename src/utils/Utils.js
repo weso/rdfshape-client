@@ -1,21 +1,10 @@
-// import React from 'react';
-import React, { Fragment } from "react";
+import React from "react";
 import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
 import API from "../API";
 
 const { Module, render } = require("viz.js/full.render.js");
-
-/*
-function *intersperse(a, delim) {
-    let first = true;
-    for (const x of a) {
-        if (!first) yield delim;
-        first = false;
-        yield x;
-    }
-}*/
 
 export function dot2svg(dot, cb) {
   const digraph = "digraph { a -> b; }";
@@ -24,23 +13,6 @@ export function dot2svg(dot, cb) {
   viz.renderSVGElement(digraph, opts).then(function(svg) {
     cb(svg);
   });
-}
-
-/*export function maybeAdd(maybe,name,obj) {
-    if (maybe) obj[name] = maybe ;
-    return obj;
-}*/
-
-export function dataParamsFromQueryParams(params) {
-  // This code is redundant, it could be just return params
-  // We keep it because we could do some error checking
-  let newParams = {};
-  if (params.data) newParams["data"] = params.data;
-  if (params.dataFormat) newParams["dataFormat"] = params.dataFormat;
-  if (params.dataURL) newParams["dataURL"] = params.dataURL;
-  if (params.dataFile) newParams["dataFile"] = params.dataFile;
-  if (params.inference) newParams["inference"] = params.inference;
-  return newParams;
 }
 
 /**
@@ -147,7 +119,7 @@ export function showQualify(node, prefixMap) {
           str: `_:${node.value}`,
           node: node,
         };
-      console.log(
+      console.warn(
         `ShowQualify: Unknown format for node: ${JSON.stringify(node)}`
       );
       return {
@@ -171,13 +143,17 @@ export function showQualify(node, prefixMap) {
 }
 
 export function showQualified(qualified, prefixes) {
+  // Strip quotes for display
+  if (qualified.str)
+    qualified.str = qualified.str.replace(/^"/, "").replace(/"$/, "");
+
   switch (qualified.type) {
     case "RelativeIRI":
       return <span>{qualified.str}</span>;
     case "QualifiedName":
       if (prefixes.includes(qualified.prefix)) {
         return (
-          <Fragment>
+          <>
             <a
               href={
                 API.wikidataOutgoingRoute +
@@ -190,16 +166,16 @@ export function showQualified(qualified, prefixes) {
             <a href={qualified.uri}>
               <ExternalLinkIcon />
             </a>
-          </Fragment>
+          </>
         );
       } else {
         return (
-          <fragment>
+          <>
             {qualified.str}{" "}
             <a href={qualified.uri}>
               <ExternalLinkIcon />
             </a>
-          </fragment>
+          </>
         );
       }
     case "FullIRI":
@@ -221,84 +197,14 @@ export function showQualified(qualified, prefixes) {
   }
 }
 
-/* Converts SPARQL representation to Turtle representation */
-export function cnvValueFromSPARQL(value) {
-  switch (value.type) {
-    case "uri":
-      return `<${value.value}>`;
-    case "literal":
-      if (value.datatype) {
-        switch (value.datatype) {
-          case "http://www.w3.org/2001/XMLSchema#integer":
-            return `${value.value}`;
-          case "http://www.w3.org/2001/XMLSchema#decimal":
-            return `${value.value}`;
-          default:
-            return `"${value.value}"^^${value.datatype}`;
-        }
-      }
-      if (value["xml:lang"]) return `"${value.value}"@${value["xml:lang"]}`;
-      return `"${value.value}"`;
-    default:
-      console.error(`cnvValueFromSPARQL: Unknown value type for ${value}`);
-      return value;
-  }
-}
-
 export function paramsFromStateEndpoint(state) {
-  let params = {};
-  params["endpoint"] = state.endpoint;
-  return params;
+  return { [API.queryParameters.endpoint.endpoint]: state.endpoint };
 }
-
-export function format2mode(format) {
-  if (format) {
-    switch (format.toLowerCase()) {
-      case "turtle":
-        return "turtle";
-      case "rdf/xml":
-        return "xml";
-      case "sparql":
-        return "sparql";
-      case "html":
-        return "htmlmixed";
-      case "json-ld":
-        return "javascript";
-      case "rdf/json":
-        return "javascript";
-      case "trig":
-        return "xml";
-      case "shexc":
-        return "shex";
-      case "html-microdata":
-        return "htmlmixed";
-      case "html-rdfa11":
-        return "htmlmixed";
-      default:
-        return "turtle";
-    }
-  } else return "turtle";
-}
-const formatModes = {
-  html: "htmlmixed",
-  json: "javascript",
-  "rdf/json": "javascript",
-  "rdf/xml": "xml",
-  shexc: "shex",
-  shexj: "javascript",
-  trig: "xml",
-  turtle: "turtle",
-  sparql: "sparql",
-  "html-microdata": "htmlmixed",
-  "html-rdfa11": "htmlmixed",
-};
-
-const defaultMode = "turtle";
 
 export const notificationSettings = {
-  permalinkText: "Link copied to clipboard!",
+  permalinkText: API.texts.permalinkCopied,
   position: "bottom-right",
-  autoClose: 2500,
+  autoCCytoscapeComponentlose: 2500,
   hideProgressBar: true,
   closeOnClick: true,
   pauseOnFocusLoss: false,
@@ -308,36 +214,151 @@ export const notificationSettings = {
   limit: 1,
 };
 
-// TODO: replace format2mode by mkMode ?
-export function mkMode(format) {
-  let mode = format
-    ? formatModes[format.toLowerCase()] || defaultMode
-    : defaultMode;
-  return mode;
+export function format2mode(format) {
+  switch (format?.toLowerCase()) {
+    case API.formats.turtle.toLowerCase():
+      return API.formats.turtle;
+    case API.formats.xml.toLowerCase():
+    case API.formats.rdfXml.toLowerCase():
+    case API.formats.triG.toLowerCase():
+      return API.formats.xml;
+    case API.formats.sparql.toLowerCase():
+      return API.formats.sparql;
+    case API.formats.json.toLowerCase():
+    case API.formats.jsonld.toLowerCase():
+    case API.formats.rdfJson.toLowerCase():
+    case API.formats.shexj.toLowerCase():
+      return API.formats.javascript;
+    case API.formats.shexc.toLowerCase():
+      return API.formats.shexc;
+    case API.formats.html.toLowerCase():
+    case API.formats.htmlMicrodata.toLowerCase():
+    case API.formats.htmlRdf.toLowerCase():
+      return API.formats.htmlMixed;
+    default:
+      return defaultMode;
+  }
 }
+const defaultMode = API.formats.turtle.toLowerCase();
 
-export function copyToClipboard(text) {
-  // Create a dummy input to copy the link from it
-  const dummy = document.createElement("input");
+// Function generating the symbol for ordering data in a table
+export const sortCaretGen = (order) => (
+  <button className="discrete">{order === "desc" ? "↓" : "↑"}</button>
+);
+// Prefixes for prefix map tables
+export const prefixMapTableColumns = [
+  {
+    dataField: "prefixName",
+    text: "Name",
+    sort: true,
+    sortCaret: sortCaretGen,
+  },
+  {
+    dataField: "prefixIRI",
+    text: "IRI",
+  },
+];
 
-  // Add to document
-  document.body.appendChild(dummy);
-  dummy.setAttribute("id", "dummy_id");
+// Prefixes for association tables (shapeMaps)
+export const associationTableColumns = [
+  {
+    dataField: "node",
+    text: "Node",
+  },
+  {
+    dataField: "shape",
+    text: "Shape",
+  },
+];
 
-  // Output the link into it
-  document.getElementById("dummy_id").value = text;
+export const equalsIgnoreCase = (str1, str2, exact = false) => {
+  return exact
+    ? str1.toLowerCase() === str2.toLowerCase()
+    : str1.toLowerCase() == str2.toLowerCase();
+};
 
-  // Select it
-  dummy.select();
+export const capitalize = (str) => {
+  if (!str?.length) return;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
-  // Copy its contents
-  document.execCommand("copy");
+// Zoom limits for non-cyto visualizations, whose zoom is controlled with CSS
+export const visualizationMinZoom = 0.2;
+export const visualizationMaxZoom = 1.9;
+export const visualizationStepZoom = 0.1;
 
-  // Remove it as its not needed anymore
-  document.body.removeChild(dummy);
-}
+// Function for reading Files from the client and extracting their text contents
+export const getFileContents = async (file) =>
+  await new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = () => res(reader.result);
+    reader.readAsText(file);
+  });
 
-// Scaling limits for visualizations
-export const minZoom = 0.2;
-export const maxZoom = 1.9;
-export const stepZoom = 0.1;
+// Shortcut to all the settings that must be included in a Yashe object to prevent buttons
+export const yasheNoButtonsOptions = {
+  showTooltip: false,
+  showUploadButton: false,
+  showDownloadButton: false,
+  showCopyButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+  showFullScreenButton: false,
+};
+
+// Shortcut to all the settings that must be included in a Yashe object to show minimal buttons
+export const yasheMinButtonsOptions = {
+  showUploadButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+
+  showTooltip: true,
+  showDownloadButton: true,
+  showCopyButton: true,
+  showFullScreenButton: true,
+};
+
+// Shortcut to all the settings that must be included in a Yashe object used for results: copy and download
+export const yasheResultButtonsOptions = {
+  showUploadButton: false,
+  showDeleteButton: false,
+  showShareButton: false,
+  showThemeButton: false,
+  showTooltip: false,
+
+  showDownloadButton: true,
+  showCopyButton: true,
+  showFullScreenButton: true,
+};
+
+// Create a random int in range min (inclusive) to max (exclusive)
+export const randomInt = (min = 0, max = 1000) =>
+  Math.floor(Math.random() * (max - min)) + min;
+
+// Smoothly scroll to the element with the given id (if it exists)
+export const scrollToElementById = (
+  id = API.resultsId,
+  options = {
+    behavior: "smooth",
+    block: "start",
+  }
+) => {
+  const targetElement = document.getElementById(id);
+  targetElement && targetElement.scrollIntoView(options);
+};
+
+export const scrollToResults = (options) =>
+  scrollToElementById(API.resultsId, options);
+
+// Shorthand for scrolling items into view
+export const scrollToItem = (
+  element,
+  config = {
+    behavior: "smooth",
+    block: "start",
+  }
+) => {
+  element.scrollIntoView(config);
+};

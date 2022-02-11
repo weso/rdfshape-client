@@ -10,10 +10,11 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
@@ -21,6 +22,7 @@ import {
   paramsFromStateData,
   updateStateData
 } from "./Data";
+import { getNodesFromForm } from "./TurtleForm";
 
 function DataExtract(props) {
   const [data, setData] = useState(InitialData);
@@ -30,87 +32,127 @@ function DataExtract(props) {
   const [error, setError] = useState(null);
   const [result, setResult] = useState("");
   const [permalink, setPermalink] = useState(null);
+
+  const [nodeSelectorList, setNodeSelectorList] = useState([]); // Pre-defined choices in the node selector
   const [nodeSelector, setNodeSelector] = useState("");
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataExtract;
+  const urlServerExtract = API.routes.server.dataExtract;
+  const urlServerVisualize = API.routes.server.schemaConvert;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = {
-          ...dataParamsFromQueryParams(queryParams),
-          nodeSelector: queryParams.nodeSelector || nodeSelector,
-        };
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data);
+        setData(finalData);
 
-        setData(updateStateData(dataParams, data));
-        if (dataParams["nodeSelector"])
-          setNodeSelector(dataParams.nodeSelector);
+        const finalNodeSelector =
+          queryParams[API.queryParameters.data.nodeSelector] || nodeSelector;
+        setNodeSelector(finalNodeSelector);
 
-        setParams(queryParams);
-        setLastParams(queryParams);
-      } else setError("Could not parse URL data");
+        const newParams = mkParams(finalData, finalNodeSelector);
+
+        setParams(newParams);
+        setLastParams(newParams);
+      } else setError(API.texts.errorParsingUrl);
     }
   }, [props.location?.search]);
 
   useEffect(() => {
     if (params) {
-      if (params.data || params.dataURL || params.dataFile) {
+      // Do not send request if missing data or node selector
+      const dataPresent =
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true);
+
+      const nodeSelectorPresent = !!params[
+        API.queryParameters.extraction.nodeSelector
+      ]?.trim();
+
+      if (dataPresent && nodeSelectorPresent) {
         resetState();
         setUpHistory();
         postExtract();
-      } else {
-        setError("No RDF data provided");
+      } else if (!dataPresent) {
+        setError(API.texts.noProvidedRdf);
+      } else if (!nodeSelectorPresent) {
+        setError("No node selector provided");
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateData(data), nodeSelector });
+    setParams({
+      ...paramsFromStateData(data),
+      [API.queryParameters.data.nodeSelector]: nodeSelector,
+    });
   }
 
-  function postExtract(cb) {
-    setLoading(true);
-    const formData = params2Form(params);
-    setProgressPercent(20);
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
+  function mkParams(pData = data, pNodeSelector = nodeSelector) {
+    return {
+      ...paramsFromStateData(pData),
+      [API.queryParameters.extraction.nodeSelector]: pNodeSelector.trim(),
+    };
+  }
 
-        // TODO better error checking in server
-        if (data.msg && data.msg.toLowerCase().startsWith("error")) {
-          setError(data.msg);
-          setResult({ error: data.msg });
-        } else setResult(data);
-        setPermalink(mkPermalinkLong(API.dataExtractRoute, params));
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(`Error in request: ${url}: ${error.message}`);
-      })
-      .finally(() => {
-        setLoading(false);
-        window.scrollTo(0, 0);
+  async function postExtract() {
+    setLoading(true);
+    setProgressPercent(20);
+
+    try {
+      // First: extract schema
+      const schemaExtractParams = params2Form(params);
+      const { data: schemaExtractResponse } = await axios.post(
+        urlServerExtract,
+        schemaExtractParams
+      );
+      setProgressPercent(60);
+
+      // Then, get schema visualization for the extracted schema
+      const schemaVisualizeParams = params2Form({
+        [API.queryParameters.schema.schema]:
+          schemaExtractResponse.result.schema,
+        [API.queryParameters.schema.format]: API.formats.shexc,
+        [API.queryParameters.schema.engine]: API.engines.shex,
+        [API.queryParameters.schema.source]: API.sources.byText,
+        [API.queryParameters.schema.targetFormat]: API.formats.svg,
       });
+      const { data: schemaVisualizeResponse } = await axios.post(
+        urlServerVisualize,
+        schemaVisualizeParams
+      );
+      setProgressPercent(80);
+
+      // Set the result with the extracted and visual data
+      setResult({
+        extractResponse: schemaExtractResponse,
+        visualizeResponse: schemaVisualizeResponse,
+      });
+
+      // Set permalinks and finish
+      setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
+      checkLinks();
+    } catch (err) {
+      setError(mkError(error, urlServerExtract));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -127,7 +169,7 @@ function DataExtract(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataExtractRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataExtractRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -135,7 +177,7 @@ function DataExtract(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataExtractRoute, params)
+      mkPermalinkLong(API.routes.client.dataExtractRoute, params)
     );
 
     setLastParams(params);
@@ -151,15 +193,31 @@ function DataExtract(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Extract schema from data</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.dataShexExtraction}
+          details={API.texts.pageExplanations.dataShexExtraction}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(
+              data,
+              setData,
+              API.texts.dataTabs.dataHeader,
+              "",
+              (value, y, change) => setNodeSelectorList(getNodesFromForm(y))
+            )}
             <NodeSelector
-              value={nodeSelector}
-              handleChange={(value) => setNodeSelector(value)}
+              // Clear node selector list if the new data source is not by text
+              options={
+                data.activeSource === API.sources.byText ? nodeSelectorList : []
+              }
+              selected={[nodeSelector]}
+              handleChange={([node]) =>
+                node && setNodeSelector(node?.customOption ? node.label : node)
+              }
+              handleInputChange={(value) => setNodeSelector(value)}
             />
             <hr />
             <Button
@@ -168,7 +226,7 @@ function DataExtract(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Extract schema
+              {API.texts.actionButtons.extract}
             </Button>
           </Form>
         </Col>
@@ -188,6 +246,7 @@ function DataExtract(props) {
               ) : result ? (
                 <ResultDataExtract
                   result={result}
+                  params={params}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />
@@ -196,7 +255,9 @@ function DataExtract(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Extraction results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.extractionResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

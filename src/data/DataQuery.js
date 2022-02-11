@@ -10,17 +10,17 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
-import { mkPermalinkLong, params2Form, Permalink } from "../Permalink";
+import PageHeader from "../components/PageHeader";
+import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
   getQueryText,
   InitialQuery,
   mkQueryTabs,
   paramsFromStateQuery,
-  queryParamsFromQueryParams,
   updateStateQuery
 } from "../query/Query";
-import ResultEndpointQuery from "../results/ResultEndpointQuery";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+import ResultSparqlQuery from "../results/ResultSparqlQuery";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
@@ -31,34 +31,36 @@ import {
 
 function DataQuery(props) {
   const [data, setData] = useState(InitialData);
+  const [query, setQuery] = useState(InitialQuery);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [result, setResult] = useState(null);
-  const [query, setQuery] = useState(InitialQuery);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState("");
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataQuery;
+  const url = API.routes.server.dataQuery;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       let paramsData,
         paramsQuery = {};
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         paramsData = finalData;
         setData(finalData);
       }
 
-      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
-        const queryDataParams = queryParamsFromQueryParams(queryParams);
-        const finalQuery = updateStateQuery(queryDataParams, query) || query;
+      if (queryParams[API.queryParameters.query.query]) {
+        const finalQuery = updateStateQuery(queryParams, query) || query;
         paramsQuery = finalQuery;
         setQuery(finalQuery);
       }
@@ -75,35 +77,27 @@ function DataQuery(props) {
 
   useEffect(() => {
     if (params) {
-      if (
-        (params.data ||
-          params.dataURL ||
-          (params.dataFile && params.dataFile.name)) &&
-        (params.query ||
-          params.queryURL ||
-          (params.queryFile && params.queryFile.name))
-      ) {
+      const rdfDataPresent =
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true);
+
+      const queryPresent =
+        params[API.queryParameters.query.query] &&
+        (params[API.queryParameters.query.source] == API.sources.byFile
+          ? params[API.queryParameters.query.query].name
+          : true);
+
+      if (rdfDataPresent && queryPresent) {
         resetState();
         setUpHistory();
         postQuery();
-      } else if (
-        !(
-          params.data ||
-          params.dataURL ||
-          (params.dataFile && params.dataFile.name)
-        )
-      ) {
-        setError("No RDF data provided");
-      } else if (
-        !(
-          params.query ||
-          params.queryURL ||
-          (params.queryFile && params.queryFile.name)
-        )
-      ) {
-        setError("No query provided");
+      } else if (!rdfDataPresent) {
+        setError(API.texts.noProvidedRdf);
+      } else if (!queryPresent) {
+        setError(API.texts.noProvidedQuery);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -112,42 +106,33 @@ function DataQuery(props) {
     setParams({ ...paramsFromStateData(data), ...paramsFromStateQuery(query) });
   }
 
-  function postQuery(cb) {
+  async function postQuery() {
     setLoading(true);
     const formData = params2Form(params);
     setProgressPercent(20);
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        if (data.error) setError(data.error);
-        setResult({ result: data });
-        setProgressPercent(80);
-        setPermalink(mkPermalinkLong(API.dataQueryRoute, params));
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error.message.toString()}.\n Check your input or try again later`
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-        window.scrollTo(0, 0);
-      });
+
+    try {
+      const { data: serverQueryResponse } = await axios.post(url, formData);
+      setProgressPercent(70);
+      setResult(serverQueryResponse);
+      setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));
+      checkLinks();
+    } catch (err) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
       getDataText(data).length + getQueryText(query).length >
-      API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab || query.activeTab === API.byFileTab
-        ? API.byFileTab
+      API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile ||
+          query.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -164,7 +149,7 @@ function DataQuery(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataQueryRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataQueryRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -172,7 +157,7 @@ function DataQuery(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataQueryRoute, params)
+      mkPermalinkLong(API.routes.client.dataQueryRoute, params)
     );
 
     setLastParams(params);
@@ -188,13 +173,16 @@ function DataQuery(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>Data Query</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.dataQuery}
+          details={API.texts.pageExplanations.dataQuery}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
-            {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
+            {mkDataTabs(data, setData)}
+            {mkQueryTabs(query, setQuery)}
             <hr />
             <Button
               variant="primary"
@@ -202,7 +190,7 @@ function DataQuery(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Query
+              {API.texts.actionButtons.query}
             </Button>
           </Form>
         </Col>
@@ -220,17 +208,18 @@ function DataQuery(props) {
                 ) : error ? (
                   <Alert variant="danger">{error}</Alert>
                 ) : result ? (
-                  <ResultEndpointQuery result={result} error={error} />
+                  <ResultSparqlQuery
+                    result={result}
+                    permalink={permalink}
+                    disabled={disabledLinks}
+                  />
                 ) : null}
-                {permalink && !error && (
-                  <Permalink url={permalink} disabled={disabledLinks} />
-                )}
               </Col>
             </Fragment>
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Query results will appear here</Alert>
+            <Alert variant="info">{API.texts.queryResultsWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

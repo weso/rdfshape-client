@@ -1,6 +1,5 @@
 import "codemirror/addon/display/placeholder";
-// import ShExForm from "../shex/ShExForm";
-// import TurtleForm from "../data/TurtleForm";
+import "codemirror/addon/edit/closetag";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/mode/javascript/javascript.js";
@@ -17,89 +16,55 @@ const ThemeList = ["default", "material", "midnight"];
 const DefaultTheme = "default";
 
 function Code(props) {
-  const [theme, setTheme] = useState(props.theme);
   const [editor, setEditor] = useState(null);
+
   const options = {
-    mode: props.mode,
-    theme: theme,
-    lineNumbers: props.linenumbers,
+    mode: "turtle",
+    theme: "default",
+    lineNumbers: true,
+    readOnly: true,
     lineWrapping: true,
-    readOnly: props.readOnly,
-    placeholder: props.placeholder,
+    autoCloseTags: true,
+    ...props.options, // Override defaults with user settings when necessary
   };
 
   useEffect(() => {
     if (editor) {
       if (props.fromParams) {
         editor.setValue(props.value);
-        props.resetFromParams();
+        props.resetFromParams && props.resetFromParams();
       }
     }
   }, [props.value, props.fromParams, props.resetFromParams]);
 
-  let code = null;
-  switch (props.mode.toLowerCase()) {
-    /* case 'shexc': code = <ShExForm value={props.value}
-                                       theme={props.theme}
-                                       onChange={()=> null}
-                                       options={options}
-                                       fromParams={props.fromParams}
-                                       resetFromParams={props.resetFromParams}
-        />;
-        break;
-        case 'turtle': code = <TurtleForm value={props.value}
-                                       theme={props.theme}
-                                       onChange={()=> null}
-                                       options={options}
-                                       fromParams={props.fromParams}
-                                       resetFromParams={props.resetFromParams}
-        />;
-        break; */
-    default:
-      code = (
-        <React.Fragment>
-          <CodeMirror
-            value={props.value}
-            options={options}
-            onBeforeChange={(_editor, _data, val) => {
-              props.onChange(val);
-            }}
-            editorDidMount={(editor) => {
-              setEditor(editor);
-            }}
-          />
-          {/*<DropdownButton id="dropdown-basic-button" title="Theme" variant="secondary">*/}
-          {/*    { ThemeList.map((t) =>*/}
-          {/*        <Dropdown.Item onSelect={() => setTheme(t)}*/}
-          {/*            // href={setTheme(t)}*/}
-          {/*        >*/}
-          {/*        {t}*/}
-          {/*       </Dropdown.Item>*/}
-          {/*    )}*/}
-          {/*</DropdownButton>*/}
-        </React.Fragment>
-      );
-  }
-
-  return code;
+  return (
+    <React.Fragment>
+      <CodeMirror
+        value={props.value}
+        options={options}
+        onBeforeChange={(_editor, _data, val) => {
+          props.onChange(val);
+        }}
+        editorDidMount={(editor) => {
+          setEditor(editor);
+        }}
+      />
+    </React.Fragment>
+  );
 }
 
 Code.propTypes = {
   value: PropTypes.string,
-  mode: PropTypes.string,
-  linenumbers: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  theme: PropTypes.string,
+  options: PropTypes.object,
   onChange: PropTypes.func,
-  placeholder: PropTypes.string,
+  fromParams: PropTypes.bool,
+  resetFromParams: PropTypes.func,
 };
 
 Code.defaultProps = {
-  mode: "turtle",
   value: "",
-  theme: "default",
-  linenumbers: true,
-  readonly: true,
+  fromParams: false,
+  resetFromParams: () => {},
 };
 
 export default Code;

@@ -4,35 +4,26 @@ import API from "../API";
 import InputTabs from "../components/InputTabs";
 
 function UMLTabs(props) {
-  const umlForm = null; /**<UMLForm // id="textAreaShEx"
-                               onChange={props.handleByTextChange}
-                               setCodeMirror={props.setCodeMirror}
-                               fromParams={props.fromParams}
-                               resetFromParams={props.resetFromParams}
-                               value={props.textAreaValue} />;**/
-
+  const umlForm = null;
   return (
     <div>
       <InputTabs
-        name={"UML Input (XMI)"}
-        activeTab={props.activeTab}
+        name={props.name}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
-        byTextName={props.subname || ""}
+        byTextName={props.subname}
         textAreaValue={props.textAreaValue}
-        byTextPlaceholder="XMI..."
+        byTextPlaceholder={API.texts.placeholders.xmi}
         handleByTextChange={props.handleByTextChange}
         setCodeMirror={props.setCodeMirror}
         inputForm={umlForm}
-        byUrlName="XMI URL"
         handleUrlChange={props.handleXmiUrlChange}
         urlValue={props.urlValue}
-        byURLPlaceholder="http://..."
-        byFileName="XMI File"
+        byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        nameFormat="XMI format"
         mode={props.selectedFormat}
         handleFormatChange={props.handleFormatChange}
-        urlFormats={API.shExFormats}
+        urlFormats={API.routes.server.shExFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
       />
@@ -41,7 +32,7 @@ function UMLTabs(props) {
 }
 
 UMLTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -52,7 +43,7 @@ UMLTabs.propTypes = {
 
   handleFileUpload: PropTypes.func.isRequired,
   selectedFormat: PropTypes.string.isRequired,
-//   handleShExFormatChange: PropTypes.func.isRequired,
+  //   handleShExFormatChange: PropTypes.func.isRequired,
 
   /** Flag to signal if values come from Params */
   fromParams: PropTypes.bool.isRequired,
@@ -62,7 +53,9 @@ UMLTabs.propTypes = {
 };
 
 UMLTabs.defaultProps = {
-  activeTab: "ByText",
+  name: API.texts.dataTabs.umlHeader,
+  subname: "",
+  activeSource: API.sources.default,
 };
 
 export default UMLTabs;

@@ -10,8 +10,10 @@ function About() {
   const [status, setStatus] = useState({ msg: `Asking info to server` });
 
   useEffect(() => {
-    const url = API.healthServer;
-    setStatus({ msg: `Requesting server status to ${API.healthServer}` });
+    const url = API.routes.server.health;
+    setStatus({
+      msg: `Requesting server status to ${API.routes.server.health}`,
+    });
     axios
       .get(url)
       .then((response) => response.data)
@@ -20,7 +22,7 @@ function About() {
       })
       .catch((error) => {
         setStatus({
-          msg: `Server error: ${error}. Server address: ${API.healthServer}`,
+          msg: `${error}. Server address: ${API.routes.server.health}`,
           error: error,
         });
       });
@@ -47,7 +49,7 @@ function About() {
       </p>
       <ul>
         <li>
-          RDFShape Version {environmentConfiguration.appVersion} [
+          RDFShape Client {environmentConfiguration.appVersion} [
           {process.env.NODE_ENV}]
         </li>
         <li>Server host: {environmentConfiguration.apiHost}</li>
@@ -56,55 +58,52 @@ function About() {
           Source code:
           <ul>
             <li>
-              <a href="https://github.com/labra/rdfshape-client">Client</a>
+              <a href="https://github.com/weso/rdfshape-client">Client</a>
             </li>
             <li>
-              <a href="https://github.com/labra/rdfshape">Server</a>
+              <a href="https://github.com/weso/rdfshape">Server</a>
             </li>
             <li>
-              <a href="https://github.com/labra/shaclex">
-                validation libraries
-              </a>
+              <a href="https://github.com/weso/shaclex">Validation libraries</a>
             </li>
           </ul>
         </li>
         <li>
-          <a href="https://github.com/labra/shaclex/issues/4">SHEX Features</a>
+          Project <a href="https://www.weso.es/rdfshape-api/">webpage</a> and{" "}
+          <a href="https://github.com/weso/rdfshape/">repository</a>
         </li>
         <li>
-          <a href="https://github.com/labra/shaclex/issues/2">SHACL Features</a>
-        </li>
-        <li>
-          Info about the languages:{" "}
-          <a href="http://book.validatingrdf.com">Validating RDF data book</a>
+          <a href="http://book.validatingrdf.com">"Validating RDF Data" book</a>
         </li>
       </ul>
       <details>
-        <p>
-          Server: <code>{API.rootApi}</code>
-        </p>
-        <p>
-          Server status: <code>{status.msg}</code>
-          {status.error ? (
+        <summary>{API.texts.serverStatus}</summary>
+        <p style={{ marginLeft: "15px" }}>
+          {API.texts.misc.address}: <code>{API.routes.server.root}</code>
+          <br />
+          {API.texts.misc.status}: <code>{status.msg}</code>
+          {status.error && (
             <details>
+              <summary>{API.texts.errorDetails}</summary>
               <PrintJson json={status.error} />
             </details>
-          ) : null}
+          )}
         </p>
       </details>
-      <h2>Authors & contributors</h2>
+      <br />
+      <h2>{API.texts.misc.authors}</h2>
       <ul>
         <li>
           <a href="http://labra.weso.es">Jose Emilio Labra Gayo</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
         <li>
           <a href="https://github.com/ulitol97">Eduardo Ulibarri Toledo</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
         <li>
           <a href="https://github.com/mistermboy">Pablo Menéndez Suárez</a> (
-          <a href="http://www.weso.es">WESO research group</a>)
+          <a href="http://www.weso.es">{API.texts.misc.wesoGroup}</a>)
         </li>
       </ul>
     </Container>

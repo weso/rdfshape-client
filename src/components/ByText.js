@@ -3,65 +3,53 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 import API from "../API";
 import TurtleForm from "../data/TurtleForm";
-import ShExForm from "../shex/ShExForm";
+import ShexForm from "../shex/ShexForm";
 import { format2mode } from "../utils/Utils";
 import Code from "./Code";
 
 function ByText(props) {
-  function handleChange(value) {
-    props.handleByTextChange(value);
+  // Pre-process the text sent down to the text container
+  const textContent = props.textAreaValue?.trim();
+
+  function handleChange(value, y, change) {
+    props.handleByTextChange && props.handleByTextChange(value, y, change);
   }
 
-  // Choose which input component to use regarding the format of the data.
-  // Use a generic <Code> element with text by default
-  let inputText;
-
-  switch (props.textFormat?.toUpperCase()) {
-    case API.turtleDataFormat:
-      inputText = (
-        <TurtleForm
-          onChange={props.handleByTextChange}
-          fromParams={props.fromParams}
-          resetFromParams={props.resetFromParams}
-          value={props.textAreaValue}
-        />
-      );
-      break;
-
-    case API.shexcDataFormat:
-      inputText = (
-        <ShExForm
-          onChange={props.handleByTextChange}
-          setCodeMirror={props.setCodeMirror}
-          fromParams={props.fromParams}
-          resetFromParams={props.resetFromParams}
-          value={props.textAreaValue}
-        />
-      );
-      break;
-
-    default:
-      // no special format, default to <Code> item.
-      const mode = format2mode(props.textFormat);
-      inputText = (
-        <Code
-          value={props.textAreaValue}
-          mode={mode}
-          onChange={handleChange}
-          setCodeMirror={props.setCodeMirror}
-          placeholder={props.placeholder}
-          readonly="false"
-          fromParams={props.fromParams}
-          resetFromParams={props.resetFromParams}
-        />
-      );
-      break;
-  }
+  const textFormat = props.textFormat?.toLowerCase();
 
   return (
     <Form.Group>
-      <Form.Label>{props.name}</Form.Label>
-      {inputText}
+      {props.name && <Form.Label>{props.name}</Form.Label>}
+      {/* Choose which input component to use regarding the format of the data.
+      Use a generic <Code> element with text by default */}
+      {textFormat == API.formats.turtle.toLowerCase() ? (
+        <TurtleForm
+          onChange={handleChange}
+          engine={props.textEngine}
+          fromParams={props.fromParams}
+          resetFromParams={props.resetFromParams}
+          value={textContent}
+          options={{ placeholder: props.placeholder, ...props.options }}
+        />
+      ) : textFormat == API.formats.shexc.toLowerCase() ? (
+        <ShexForm
+          onChange={handleChange}
+          setCodeMirror={props.setCodeMirror}
+          fromParams={props.fromParams}
+          resetFromParams={props.resetFromParams}
+          value={textContent}
+          options={{ placeholder: props.placeholder, ...props.options }}
+        />
+      ) : (
+        <Code
+          value={textContent}
+          mode={format2mode(props.textFormat)}
+          onChange={handleChange}
+          fromParams={props.fromParams}
+          resetFromParams={props.resetFromParams}
+          options={{ placeholder: props.placeholder, ...props.options }}
+        />
+      )}
     </Form.Group>
   );
 }
@@ -69,17 +57,22 @@ function ByText(props) {
 ByText.propTypes = {
   name: PropTypes.string,
   textAreaValue: PropTypes.string,
-  handleByTextChange: PropTypes.func.isRequired,
+  handleByTextChange: PropTypes.func,
   setCodeMirror: PropTypes.func,
   placeholder: PropTypes.string,
   textFormat: PropTypes.string,
   importForm: PropTypes.element,
-  resetFromParams: PropTypes.func.isRequired,
+  resetFromParams: PropTypes.func,
   fromParams: PropTypes.bool.isRequired,
+  readonly: PropTypes.bool,
+  options: PropTypes.object,
 };
 
 ByText.defaultProps = {
-  placeholder: "",
+  placeholder: "...",
+  readonly: false,
+  fromParams: false,
+  options: {},
 };
 
 export default ByText;

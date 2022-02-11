@@ -10,7 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactTooltip from "react-tooltip";
 import API from "./API";
-import { copyToClipboard, notificationSettings } from "./utils/Utils";
+import { notificationSettings } from "./utils/Utils";
 
 // Returns a promise that will return a shortened permalink generated on the server
 // or the full-length permalink if the server response fails
@@ -21,26 +21,43 @@ export async function mkPermalink(route, params) {
 
 export async function mkPermalinkFromUrl(url) {
   try {
-    const res = await axios.get(API.serverPermalinkEndpoint, {
-      params: { url },
-    });
+    const { data: permalinkCode } = await axios.get(
+      API.routes.server.serverPermalinkEndpoint,
+      {
+        params: { url },
+      }
+    );
     // The server only returns the permalink code. The full link is: current host + code
-    return `${getHost()}/link/${res.data}`;
+    return `${getHost()}/link/${permalinkCode}`;
   } catch (err) {
     console.error(
       `Error processing shortened permalink request for ${url}: ${err.message}`
     );
+    // Return the original URL in case of error
     return url;
   }
 }
 
 export function mkPermalinkLong(route, params) {
+  return getHost() + route + "?" + qs.stringify(params);
+}
+
+// Shorthand for creating embed links
+// Receive the params (with data, shex...) from used in the state of the component
+// and an object with the options, i.e.: the visualization type (data, uml...) and target (svg, cytoscape...)
+export function mkEmbedLink(
+  params,
+  { visualizationType, visualizationTarget }
+) {
   return (
     getHost() +
-    // "#" + // This one is added for HashBrowser
-    route +
+    API.routes.client.visualizeRawRoute +
     "?" +
-    qs.stringify(params)
+    qs.stringify({
+      ...params,
+      [API.queryParameters.visualization.type]: visualizationType,
+      [API.queryParameters.visualization.target]: visualizationTarget,
+    })
   );
 }
 
@@ -65,7 +82,7 @@ function getHost() {
 // Returns a tuple [status, message], the message being the target link or an error in case of failure
 export async function getOriginalLink(code) {
   try {
-    const res = await axios.get(API.serverOriginalLinkEndpoint, {
+    const res = await axios.get(API.routes.server.serverOriginalLinkEndpoint, {
       params: { urlCode: code },
     });
     return [true, `${getHost()}${res.data}`];
@@ -94,7 +111,7 @@ export function Permalink(props) {
 
     // If a permalink has been generated already, copy to clipboard and notify
     if (permalink) {
-      copyToClipboard(permalink);
+      navigator.clipboard.writeText(permalink);
       toast.info(notificationSettings.permalinkText);
       return;
     }
@@ -102,13 +119,13 @@ export function Permalink(props) {
     // Set to loading
     setLoading(true);
 
-    // Generate short URL / return the og link in case of error
+    // Generate short URL / return the long link in case of error
     const newPermalink = props.shorten
       ? await mkPermalinkFromUrl(props.url)
       : props.url;
 
     // Copy results and update state
-    copyToClipboard(newPermalink);
+    navigator.clipboard.writeText(newPermalink);
     setPermalink(newPermalink);
     setLoading(false);
 
@@ -143,9 +160,9 @@ export function Permalink(props) {
         </Button>
         {props.disabled && (
           <ReactTooltip id="permalinkTip" place="top" effect="solid">
-            {props.disabled === API.byTextTab
-              ? "Can't generate links for long manual inputs, try inserting data by URL"
-              : "Can't generate links for file-based inputs, try inserting data by URL"}
+            {props.disabled === API.sources.byText
+              ? API.texts.noPermalinkManual
+              : API.texts.noPermalinkFile}
           </ReactTooltip>
         )}
         <ToastContainer

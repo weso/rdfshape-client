@@ -8,7 +8,7 @@ function SelectInferenceEngine(props) {
     <SelectFormat
       handleFormatChange={props.handleInferenceChange}
       selectedFormat={props.selectedInference}
-      urlFormats={API.inferenceEngines}
+      urlFormats={API.routes.server.inferenceEngines}
       name={props.name}
     />
   );

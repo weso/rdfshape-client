@@ -7,24 +7,21 @@ function ShapeMapTabs(props) {
   return (
     <div>
       <InputTabsWithFormat
-        defaultFormat={"Compact"}
-        nameInputTab={props.name || ""}
-        activeTab={props.activeTab}
+        defaultFormat={API.formats.defaultShapeMap}
+        nameInputTab={props.name}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
-        byTextName={props.subname || ""}
+        byTextName={props.subname}
         textAreaValue={props.textAreaValue}
-        byTextPlaceholder="<node>@<Shape>...>"
+        byTextPlaceholder={API.texts.placeholders.shapeMap}
         handleByTextChange={props.handleByTextChange}
-        byUrlName="URL shapeMap"
         handleUrlChange={props.handleUrlChange}
         urlValue={props.urlValue}
-        byURLPlaceholder="http://..."
-        byFileName="ShapeMap File"
+        byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        nameFormat="ShapeMap format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleFormatChange}
-        urlFormats={API.shapeMapFormats}
+        urlFormats={API.routes.server.shapeMapFormats}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
         setCodeMirror={props.setCodeMirror}
@@ -34,8 +31,8 @@ function ShapeMapTabs(props) {
 }
 
 ShapeMapTabs.propTypes = {
-  /** Active tab */
-  activeTab: PropTypes.string,
+  /** Active source */
+  activeSource: PropTypes.string,
 
   /** Textarea value */
   textAreaValue: PropTypes.string,
@@ -63,8 +60,10 @@ ShapeMapTabs.propTypes = {
 };
 
 ShapeMapTabs.defaultProps = {
-  activeTab: "ByText",
-  shapeMapFormat: "TURTLE",
+  name: API.texts.dataTabs.shapeMapHeader,
+  subname: "",
+  activeSource: API.sources.default,
+  selectedFormat: API.formats.defaultShapeMap,
 };
 
 export default ShapeMapTabs;

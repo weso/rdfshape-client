@@ -1,11 +1,15 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
+import API from "./API.js";
 
 function Home() {
   return (
     <Container>
       <h1>RDFShape</h1>
-      <p>RDFShape is an RDF service where you can play:</p>
+      <p>
+        RDFShape is a playground for RDF data conversion, validation and
+        visualization, among other features. Here are some ideas:
+      </p>
       <ul>
         <li>
           <a href="https://www.w3.org/TR/rdf11-concepts/">RDF</a> conversion
@@ -27,6 +31,9 @@ function Home() {
           <a href="https://www.w3.org/TR/owl2-primer/">OWL</a> inference
         </li>
       </ul>
+      <p>
+        You may jump straight in or check the examples in the navbar yourself :)
+      </p>
 
       <h2>Main tools</h2>
       <p>
@@ -34,14 +41,15 @@ function Home() {
       </p>
       <ul>
         <li>
-          Data <a href="/dataInfo">validation</a> and{" "}
-          <a href="/dataConvert">conversion</a> between semantic formats
+          Data <a href={API.routes.client.dataInfoRoute}>analyis</a> and
+          visualization
         </li>
         <li>
-          Data <a href="/dataVisualize">visualization</a>
+          Data <a href={API.routes.client.dataConvertRoute}>conversion</a>{" "}
+          between semantic formats
         </li>
         <li>
-          Data <a href="/dataQuery">query</a> via SPARQL
+          Data <a href={API.routes.client.dataQueryRoute}>query</a> via SPARQL
         </li>
       </ul>
       <p>
@@ -50,15 +58,19 @@ function Home() {
       </p>
       <ul>
         <li>
-          <a href="/shexValidate">ShEx validation</a> and{" "}
-          <a href="/shaclValidate">SHACL validation</a>
+          <a href={API.routes.client.shexInfoRoute}>ShEx</a> and{" "}
+          <a href={API.routes.client.shaclInfoRoute}>SHACL</a> analysis and
+          visualization
         </li>
         <li>
-          ShEx schema <a href="/shExVisualize">visualization</a>
+          <a href={API.routes.client.shexValidateRoute}>ShEx</a> and{" "}
+          <a href={API.routes.client.shaclValidateRoute}>SHACL</a> data
+          validation
         </li>
         <li>
-          <a href="/shEx2Shacl">ShEx to SHACL</a> and{" "}
-          <a href="/shacl2ShEx">SHACL to ShEx</a>
+          <a href={API.routes.client.shexConvertRoute}>ShEx</a> and{" "}
+          <a href={API.routes.client.shaclConvertRoute}>SHACL</a> schema
+          conversions
         </li>
       </ul>
       <p>
@@ -66,10 +78,13 @@ function Home() {
       </p>
       <ul>
         <li>
-          Endpoint <a href="/endpointInfo">information</a>
+          Endpoint <a href={API.routes.client.endpointInfoRoute}>information</a>
         </li>
         <li>
-          Endpoint <a href="/endpointQuery">query</a>
+          Endpoint <a href={API.routes.client.endpointQueryRoute}>query</a>
+        </li>
+        <li>
+          Check out <a href={API.routes.utils.wikishape}>WikiShape</a> for more
         </li>
       </ul>
     </Container>

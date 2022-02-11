@@ -1,58 +1,159 @@
-import React, { Fragment } from "react";
-import Alert from "react-bootstrap/Alert";
-import Code from "../components/Code";
-import { Permalink } from "../Permalink";
+import React, { Fragment, useEffect, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
+import BootstrapTable from "react-bootstrap-table-next";
+import API from "../API";
+import { mkEmbedLink, Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
-import { mkMode } from "../utils/Utils";
+import { prefixMapTableColumns, scrollToResults } from "../utils/Utils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 
+// Compendium of data overview, prefix map and visualizations
 function ResultDataInfo({
-  result,
+  result: { resultInfo, resultDot, resultCyto }, // Request successful response
+  params: stateDataParams,
   permalink,
   disabled,
-  fromParams,
-  resetFromParams,
 }) {
-  let msg = null;
-  if (result) {
-    const mode = mkMode(result.dataFormat);
-    if (result.error) {
-      msg = <Alert variant="danger">{result.error}</Alert>;
-    } else if (result.msg && result.msg.toLowerCase().startsWith("error")) {
-      msg = <Alert variant="danger">{result.msg}</Alert>;
-    } else {
-      msg = (
-        <div>
-          <Alert variant="success">{result.msg}</Alert>
-          {result.data && result.dataFormat && (
-            <Code
-              value={result.data}
-              mode={mode}
-              readOnly={true}
-              onChange={() => {}}
-              fromParams={fromParams}
-              resetFromParams={resetFromParams}
-            />
-          )}
-          <br />
-          <ul>
-            <li>Number of statements: {result.numberStatements}</li>
-            <li>
-              DataFormat: <span>{result.dataFormat}</span>
-            </li>
-          </ul>
-          <details>
-            <PrintJson json={result} />
-          </details>
-          {permalink && (
-            <Fragment>
-              <hr />
-              <Permalink url={permalink} disabled={disabled} />
-            </Fragment>
-          )}
+  // Active tab control
+  const [resultTab, setResultTab] = useState(API.tabs.overview);
+  const [visualTab, setVisualTab] = useState(API.tabs.visualizationDot);
+
+  // Destructure response items for later usage
+  const {
+    message: messageInfo,
+    result: {
+      numberOfStatements,
+      prefixMap,
+      format: { name: formatName },
+    },
+  } = resultInfo;
+
+  const { visualization: dotVisualization } = resultDot;
+  const { elements: cytoElements } = resultCyto;
+
+  const [cytoVisual, setCytoVisual] = useState(null);
+
+  useEffect(scrollToResults, []);
+
+  // Forcibly render the cyto when entering the tab for accurate dimensions
+  function renderCytoVisual() {
+    setCytoVisual(
+      <ShowVisualization
+        data={{ elements: cytoElements }}
+        type={visualizationTypes.cytoscape}
+        raw={false}
+        controls={true}
+        embedLink={mkEmbedLink(stateDataParams, {
+          visualizationType: API.queryParameters.visualization.types.data,
+          visualizationTarget: API.queryParameters.visualization.targets.cyto,
+        })}
+      />
+    );
+  }
+
+  if (resultInfo) {
+    return (
+      <>
+        <div id={API.resultsId}>
+          <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+            {/* Data overview */}
+            <Tab
+              eventKey={API.tabs.overview}
+              title={API.texts.resultTabs.overview}
+            >
+              <div className="marginTop">
+                <ul>
+                  <li>{messageInfo}</li>
+                  <li>
+                    {API.texts.numberOfStatements}: {numberOfStatements}
+                  </li>
+                  <li>
+                    {API.texts.dataFormat}:{" "}
+                    <span className="code">{formatName}</span>
+                  </li>
+                </ul>
+              </div>
+            </Tab>
+
+            {/* Data prefix map */}
+            {prefixMap && (
+              <Tab
+                eventKey={API.tabs.prefixMap}
+                title={API.texts.resultTabs.prefixMap}
+              >
+                <div className="prefixMapTable marginTop">
+                  <BootstrapTable
+                    keyField="prefixName"
+                    data={prefixMap}
+                    columns={prefixMapTableColumns}
+                    noDataIndication={API.texts.noPrefixes}
+                  ></BootstrapTable>
+                </div>
+              </Tab>
+            )}
+
+            {/* Data visualizations */}
+            <Tab
+              eventKey={API.tabs.visualizations}
+              title={API.texts.resultTabs.visualizations}
+              mountOnEnter={true}
+            >
+              {(resultCyto || resultDot) && (
+                <Tabs
+                  activeKey={visualTab}
+                  id="visualTabs"
+                  onSelect={setVisualTab}
+                >
+                  {resultDot && (
+                    <Tab
+                      eventKey={API.tabs.visualizationDot}
+                      title={API.texts.resultTabs.visualizationDot}
+                    >
+                      <ShowVisualization
+                        data={dotVisualization.data}
+                        type={visualizationTypes.svgObject}
+                        raw={false}
+                        controls={true}
+                        embedLink={mkEmbedLink(stateDataParams, {
+                          visualizationType:
+                            API.queryParameters.visualization.types.data,
+                          visualizationTarget:
+                            API.queryParameters.visualization.targets.svg,
+                        })}
+                      />
+                    </Tab>
+                  )}
+                  {resultCyto && (
+                    <Tab
+                      eventKey={API.tabs.visualizationCyto}
+                      title={API.texts.resultTabs.visualizationCyto}
+                      onEnter={renderCytoVisual}
+                    >
+                      {cytoVisual}
+                    </Tab>
+                  )}
+                </Tabs>
+              )}
+            </Tab>
+          </Tabs>
         </div>
-      );
-    }
-    return <div>{msg}</div>;
+
+        <br />
+
+        <details>
+          <summary>{API.texts.responseSummaryText}</summary>
+          <PrintJson json={resultInfo} />
+        </details>
+        {permalink && (
+          <Fragment>
+            <hr />
+            <Permalink url={permalink} disabled={disabled} />
+          </Fragment>
+        )}
+      </>
+    );
   }
 }
 

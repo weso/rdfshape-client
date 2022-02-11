@@ -1,4 +1,5 @@
-import Yate from "perfectkb-yate";
+import "codemirror/addon/display/placeholder";
+import YATE from "perfectkb-yate";
 import "perfectkb-yate/dist/yate.css";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState } from "react";
@@ -10,35 +11,28 @@ function TurtleForm(props) {
   useEffect(() => {
     if (!yate) {
       const options = {
-        ...props.options,
-        placeholder: props.placeholder,
+        readOnly: true,
+        autoCloseTags: true,
         start: { line: 0 },
+        lineNumbers: true,
+        lineWrapping: true,
+        ...props.options,
       };
-      const y = Yate.fromTextArea(textAreaRef.current, options);
+
+      const y = YATE.fromTextArea(textAreaRef.current, options);
       y.on("change", (cm, change) => {
-        // setQuery(cm.getValue())
-        props.onChange(cm.getValue(), y);
+        props.onChange(cm.getValue(), cm, change);
       });
       y.setValue(props.value);
       y.refresh();
       setYate(y);
-    } else {
-      if (props.options) {
-        yate.setOption("readOnly", props.options.readOnly);
-      }
-      if (props.fromParams) {
-        yate.setValue(props.value);
-        if (props.resetFromParams) {
-          props.resetFromParams();
-        } else {
-          console.error(`resetFromParams is not a function...`);
-        }
-      }
+    } else if (props.fromParams) {
+      yate.setValue(props.value);
+      props.resetFromParams && props.resetFromParams();
     }
   }, [
     yate,
     props.onChange,
-    props.placeholder,
     props.fromParams,
     props.resetFromParams,
     props.options,
@@ -47,23 +41,39 @@ function TurtleForm(props) {
 
   return (
     <div>
-      <textarea id={"Turtle-TextArea"} ref={textAreaRef} />
+      <textarea ref={textAreaRef} />
     </div>
   );
 }
 
 TurtleForm.propTypes = {
-  //    id: PropTypes.string.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  //    options: PropTypes.object ,
   resetFromParams: PropTypes.func.isRequired,
   fromParams: PropTypes.bool.isRequired,
 };
 
 TurtleForm.defaultProps = {
   value: "",
+  fromParams: false,
+  resetFromParams: () => {},
 };
 
 export default TurtleForm;
+
+// Return the raw string representing a node selector from a given
+// yashe form / codemirror
+export function getNodesFromForm(y) {
+  const text = y.getValue();
+  const prefixes = Object.keys(y.getPrefixesFromDocument());
+
+  // Reduce into a single array with node selectors
+  // e.g.: [:alice, :bob, :carol]
+  return prefixes.reduce((prev, curr) => {
+    const regex = new RegExp(`^(${curr}:\\w+)`, "gm");
+    const nodesWithPrefix = text.match(regex);
+
+    return nodesWithPrefix ? [...prev, ...nodesWithPrefix] : prev;
+  }, []);
+}

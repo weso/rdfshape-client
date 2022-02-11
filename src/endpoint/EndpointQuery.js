@@ -1,24 +1,25 @@
 import axios from "axios";
 import qs from "query-string";
 import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
-    getQueryText,
-    InitialQuery,
-    mkQueryTabs,
-    paramsFromStateQuery,
-    queryParamsFromQueryParams,
-    updateStateQuery
+  getQueryRaw,
+  getQueryText,
+  InitialQuery,
+  mkQueryTabs,
+  paramsFromStateQuery,
+  updateStateQuery
 } from "../query/Query";
-import ResultEndpointQuery from "../results/ResultEndpointQuery";
-import { endpointParamsFromQueryParams } from "./Endpoint";
+import ResultSparqlQuery from "../results/ResultSparqlQuery";
+import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
 function EndpointQuery(props) {
@@ -33,8 +34,7 @@ function EndpointQuery(props) {
   const [progressPercent, setProgressPercent] = useState(0);
   const [controlPressed, setControlPressed] = useState(false);
 
-  const url = API.endpointQuery;
-  const resultsElementId = "results";
+  const url = API.routes.server.wikibaseQuery;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -43,21 +43,24 @@ function EndpointQuery(props) {
         paramsEndpoint = {};
 
       // Query State
-      if (queryParams.query || queryParams.queryURL || queryParams.queryFile) {
-        paramsQuery = queryParamsFromQueryParams(queryParams);
-        setQuery(updateStateQuery(paramsQuery, query) || query);
+      if (queryParams[API.queryParameters.query.query]) {
+        paramsQuery = updateStateQuery(queryParams, query) || query;
+        setQuery(paramsQuery);
       }
 
       // Endpoint State
-      if (queryParams.endpoint) {
-        paramsEndpoint = endpointParamsFromQueryParams(queryParams);
-        setEndpoint(paramsEndpoint.endpoint);
+      if (queryParams[API.queryParameters.endpoint.endpoint]) {
+        paramsEndpoint = {
+          [API.queryParameters.endpoint.endpoint]:
+            queryParams[API.queryParameters.endpoint.endpoint],
+        };
+        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
       }
 
       // Params to be used in first query
       let params = {
-        ...paramsFromStateQuery(updateStateQuery(paramsQuery, query) || query),
-        endpoint: paramsEndpoint.endpoint || endpoint,
+        ...paramsFromStateQuery(paramsQuery),
+        ...paramsEndpoint,
       };
 
       setParams(params);
@@ -68,21 +71,20 @@ function EndpointQuery(props) {
   // Perform query on params change (normally on submit)
   useEffect(() => {
     if (params && !loading) {
-      if (!params.endpoint) setError("No endpoint provided");
-      else if (!(params.query || params.queryURL || (params.queryFile && params.queryFile.name)))
-        setError("No query provided");
-      else {
+      if (!params[API.queryParameters.endpoint.endpoint])
+        setError(API.texts.noProvidedEndpoint);
+      else if (
+        params[API.queryParameters.query.query] &&
+        (params[API.queryParameters.query.source] == API.sources.byFile
+          ? params[API.queryParameters.query.query].name
+          : true) // Extra check for files
+      ) {
         resetState();
         setUpHistory();
         postQuery();
-      }
+      } else setError(API.texts.noProvidedQuery);
     }
   }, [params]);
-
-  // Scroll after query
-  useEffect(() => {
-    setTimeout(showResults, 500);
-  }, [result]);
 
   function handleOnChange(value) {
     setEndpoint(value);
@@ -106,44 +108,36 @@ function EndpointQuery(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateQuery(query), endpoint });
+    setParams({
+      ...paramsFromStateQuery(query),
+      [API.queryParameters.endpoint.endpoint]: endpoint,
+    });
   }
 
-  function postQuery(cb) {
+  async function postQuery() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult({ result: data });
-        setPermalink(mkPermalinkLong(API.endpointQueryRoute, params));
-        setProgressPercent(90);
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(
-          `Error calling server at ${url}: ${error}.\n Did you input a valid SPARQL endpoint and query?`
-        );
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      // Get the query text to be sent as payload
+      const queryRaw = await getQueryRaw(query);
+      if (!queryRaw) throw "Could not fetch the query data";
+
+      const postData = params2Form({
+        [API.queryParameters.wbQuery.endpoint]: endpoint,
+        [API.queryParameters.wbQuery.payload]: queryRaw,
       });
-  }
+      const { data: serverQueryResponse } = await axios.post(url, postData);
+      setProgressPercent(70);
 
-  function showResults() {
-    const resultsDiv = document.getElementById(resultsElementId);
-    if (resultsDiv) {
-      window.scrollTo(0, resultsDiv.offsetTop - resultsDiv.scrollTop);
+      setResult(serverQueryResponse);
+      setPermalink(
+        mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
+      );
+    } catch (err) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -158,7 +152,7 @@ function EndpointQuery(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.endpointQueryRoute, lastParams)
+        mkPermalinkLong(API.routes.client.endpointQueryRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -166,7 +160,7 @@ function EndpointQuery(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.endpointQueryRoute, params)
+      mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
     );
 
     setLastParams(params);
@@ -181,7 +175,10 @@ function EndpointQuery(props) {
 
   return (
     <Container fluid={true}>
-      <h1>Endpoint query</h1>
+      <PageHeader
+        title={API.texts.pageHeaders.endpointQuery}
+        details={API.texts.pageExplanations.endpointQuery}
+      />
       <Form
         id="common-endpoints"
         onSubmit={handleSubmit}
@@ -193,51 +190,53 @@ function EndpointQuery(props) {
           handleOnChange={handleOnChange}
           handleOnSelect={handleOnSelect}
         />
-        {mkQueryTabs(query, setQuery, "Query (SPARQL)")}
+        {mkQueryTabs(query, setQuery)}
         <hr />
-        <Button
-          variant="primary"
-          type="submit"
-          className={"btn-with-icon " + (loading ? "disabled" : "")}
-          disabled={loading}
-        >
-          Query endpoint (Ctrl+Enter)
-        </Button>
+        <div className="btn-spinner-container">
+          <Button
+            variant="primary"
+            type="submit"
+            className={loading ? "disabled" : ""}
+            disabled={loading}
+          >
+            {API.texts.actionButtons.query}
+          </Button>
+          {loading && (
+            <Spinner
+              className="loading-spinner"
+              animation="border"
+              variant="primary"
+            />
+          )}
+        </div>
       </Form>
 
-      <div id={resultsElementId}>
-        {loading || result || error || permalink ? (
-          <Row style={{ margin: "10px auto 10% auto" }}>
-            {loading ? (
-              <ProgressBar
-                className="width-100"
-                striped
-                animated
-                variant="info"
-                now={progressPercent}
-              />
-            ) : error ? (
-              <Alert className="width-100" variant="danger">
-                {error}
-              </Alert>
-            ) : result ? (
-              <ResultEndpointQuery
-                result={result}
-                error={error}
-                permalink={permalink}
-                disabled={
-                  getQueryText(query).length + endpoint.length >
-                    API.byTextCharacterLimit
-                    ? API.byTextTab
-                    : query.activeTab === API.byFileTab
-                    ? API.byFileTab
-                    : false
-                }
-              />
-            ) : null}
-          </Row>
-        ) : null}
-      </div>
+      {!loading && (
+        <div>
+          {result || error || permalink ? (
+            <Row style={{ margin: "10px auto 10% auto" }}>
+              {error ? (
+                <Alert className="width-100" variant="danger">
+                  {error}
+                </Alert>
+              ) : result ? (
+                <ResultSparqlQuery
+                  result={result}
+                  permalink={permalink}
+                  disabled={
+                    getQueryText(query).length + endpoint.length >
+                    API.limits.byTextCharacterLimit
+                      ? API.sources.byText
+                      : query.activeSource === API.sources.byFile
+                      ? API.sources.byFile
+                      : false
+                  }
+                />
+              ) : null}
+            </Row>
+          ) : null}
+        </div>
+      )}
     </Container>
   );
 }

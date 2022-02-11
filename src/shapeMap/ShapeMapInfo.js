@@ -9,18 +9,19 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
+import { mkError } from "../utils/ResponseError";
 import {
   InitialShapeMap,
   mkShapeMapTabs,
-  paramsFromStateShapeMap,
-  shapeMapParamsFromQueryParams,
+  paramsFromStateShapemap,
   updateStateShapeMap
 } from "./ShapeMap";
 
 function ShapeMapInfo(props) {
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  const [shapemap, setShapemap] = useState(InitialShapeMap);
   const [result, setResult] = useState(null);
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -31,48 +32,48 @@ function ShapeMapInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.shapeMapInfo;
+  const url = API.routes.server.shapeMapInfo;
 
   useEffect(() => {
     if (props.location?.search) {
-      let paramsShapeMap = {};
       const queryParams = qs.parse(props.location.search);
-      if (
-        queryParams.shapeMap ||
-        queryParams.shapeMapURL ||
-        queryParams.shapeMapFile
-      ) {
-        const shapeMapParams = shapeMapParamsFromQueryParams(queryParams);
-        const finalShapeMap =
-          updateStateShapeMap(shapeMapParams, shapeMap) || shapeMap;
-        paramsShapeMap = finalShapeMap;
-        setShapeMap(finalShapeMap);
+      if (queryParams[API.queryParameters.shapeMap.shapeMap]) {
+        const finalShapemap =
+          updateStateShapeMap(queryParams, shapemap) || shapemap;
+        setShapemap(finalShapemap);
 
-        const params = paramsFromStateShapeMap(paramsShapeMap);
-
+        const params = mkParams(finalShapemap);
         setParams(params);
         setLastParams(params);
-      } else setError("Could not parse URL data");
+      } else setError(API.texts.errorParsingUrl);
     }
   }, [props.location?.search]);
 
   // Call API on params change
   useEffect(() => {
     if (params) {
-      if (params.shapeMap || params.shapeMapURL || params.shapeMapFile) {
+      if (
+        params[API.queryParameters.shapeMap.shapeMap] &&
+        (params[API.queryParameters.shapeMap.source] == API.sources.byFile
+          ? params[API.queryParameters.shapeMap.shapeMap].name
+          : true) // Extra check for files
+      ) {
         resetState();
         setUpHistory();
         postShapeMapInfo();
       } else {
-        setError("No ShapeMap provided");
+        setError(API.texts.noProvidedShapeMap);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams(paramsFromStateShapeMap(shapeMap));
+    setParams(mkParams());
+  }
+
+  function mkParams(paramsShapeMap = shapemap) {
+    return { ...paramsFromStateShapemap(paramsShapeMap) };
   }
 
   function postShapeMapInfo(cb) {
@@ -84,32 +85,33 @@ function ShapeMapInfo(props) {
       .post(url, formData)
       .then((response) => response.data)
       .then(async (data) => {
-        setError(null);
         setResult(data);
         setProgressPercent(70);
-        setPermalink(mkPermalinkLong(API.shapeMapInfoRoute, params));
+        setPermalink(
+          mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
+        );
         setProgressPercent(80);
         checkLinks();
         if (cb) cb();
         setProgressPercent(100);
       })
-      .catch(function(error) {
-        setError(`Error calling server at ${url}: ${error}.\n Try again later`);
+      .catch((error) => {
+        console.error(error);
+        setError(mkError(error, url));
       })
       .finally(() => {
         setLoading(false);
-        window.scrollTo(0, 0); // Scroll top to results
       });
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      shapeMap.activeTab === API.byTextTab &&
-      shapeMap.textArea.length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : shapeMap.activeTab === API.byFileTab
-        ? API.byFileTab
+      shapemap.activeSource === API.sources.byText &&
+      shapemap.textArea.length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : shapemap.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -126,7 +128,7 @@ function ShapeMapInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.shapeMapInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.shapeMapInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -134,7 +136,7 @@ function ShapeMapInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.shapeMapInfoRoute, params)
+      mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
     );
 
     setLastParams(params);
@@ -150,12 +152,15 @@ function ShapeMapInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>ShapeMap Information</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shapeMapInfo}
+          details={API.texts.pageExplanations.shapeMapInfo}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkShapeMapTabs(shapeMap, setShapeMap, "Input ShapeMap")}
+            {mkShapeMapTabs(shapemap, setShapemap)}
             <hr />
             <Button
               variant="primary"
@@ -163,7 +168,7 @@ function ShapeMapInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Info about shape map
+              {API.texts.actionButtons.analyze}
             </Button>
           </Form>
         </Col>
@@ -181,10 +186,6 @@ function ShapeMapInfo(props) {
             ) : result ? (
               <ResultShapeMapInfo
                 result={result}
-                fromParams={shapeMap.fromParamsShapeMap}
-                resetFromParams={() =>
-                  setShapeMap({ ...shapeMap, fromParamsShapeMap: false })
-                }
                 permalink={permalink}
                 disabled={disabledLinks}
               />
@@ -193,7 +194,9 @@ function ShapeMapInfo(props) {
           </Col>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">
+              {API.texts.validationResultsWillAppearHere}
+            </Alert>
           </Col>
         )}
       </Row>

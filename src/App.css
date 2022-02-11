@@ -27,7 +27,7 @@ html {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
+@keyframes Appdisplay-logo-spin {
   from {
     transform: rotate(0deg);
   }
@@ -50,4 +50,8 @@ html {
 
 .jumbotron {
   background-color: white !important;
+}
+
+.code {
+  font-family: monospace !important;
 }

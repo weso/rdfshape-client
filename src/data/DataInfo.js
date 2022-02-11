@@ -9,9 +9,11 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
-import { dataParamsFromQueryParams } from "../utils/Utils";
+import { processDotData } from "../utils/dot/dotUtils";
+import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
   InitialData,
@@ -22,6 +24,7 @@ import {
 
 function DataInfo(props) {
   const [data, setData] = useState(InitialData);
+  const [dotVisualization, setDotVisualization] = useState(null);
 
   const [result, setResult] = useState(null);
 
@@ -35,14 +38,14 @@ function DataInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.dataInfo;
+  const urlInfo = API.routes.server.dataInfo;
+  const urlVisual = API.routes.server.dataConvert;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams.data || queryParams.dataURL || queryParams.dataFile) {
-        const dataParams = dataParamsFromQueryParams(queryParams);
-        const finalData = updateStateData(dataParams, data) || data;
+      if (queryParams[API.queryParameters.data.data]) {
+        const finalData = updateStateData(queryParams, data) || data;
         setData(finalData);
 
         const params = paramsFromStateData(finalData);
@@ -50,7 +53,7 @@ function DataInfo(props) {
         setParams(params);
         setLastParams(params);
       } else {
-        setError("Could not parse URL data");
+        setError(API.texts.errorParsingUrl);
       }
     }
   }, [props.location?.search]);
@@ -58,17 +61,17 @@ function DataInfo(props) {
   useEffect(() => {
     if (params && !loading) {
       if (
-        params.data ||
-        params.dataURL ||
-        (params.dataFile && params.dataFile.name)
+        params[API.queryParameters.data.data] &&
+        (params[API.queryParameters.data.source] == API.sources.byFile
+          ? params[API.queryParameters.data.data].name
+          : true) // Extra check for files
       ) {
         resetState();
         setUpHistory();
         postDataInfo();
       } else {
-        setError("No RDF data provided");
+        setError(API.texts.noProvidedRdf);
       }
-      window.scrollTo(0, 0);
     }
   }, [params]);
 
@@ -77,36 +80,61 @@ function DataInfo(props) {
     setParams(paramsFromStateData(data));
   }
 
-  function postDataInfo(cb) {
+  async function postDataInfo() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(mkPermalinkLong(API.dataInfoRoute, params));
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError("Error response from " + url + ": " + error.toString());
-      })
-      .finally(() => setLoading(false));
+    try {
+      const infoForm = params2Form(params);
+      // First: get data info with the data summary and prefix map
+      const { data: resultInfo } = await axios.post(urlInfo, infoForm);
+      setProgressPercent(40);
+
+      // Second: get data visualizations...
+      // ...first graphviz
+      const graphvizForm = params2Form({
+        ...params,
+        [API.queryParameters.data.targetFormat]: API.formats.dot,
+      });
+
+      const { data: resultDot } = await axios.post(urlVisual, graphvizForm);
+      const dot = resultDot.result.data; // Get the DOT string from the axios data object
+      const dotVisualization = await processDotData(dot);
+      setProgressPercent(60);
+
+      // ...then cyto
+      const cytoscapeForm = params2Form({
+        ...params,
+        [API.queryParameters.data.targetFormat]: API.formats.json,
+      });
+      const { data: resultCyto } = await axios.post(urlVisual, cytoscapeForm);
+      const cytoElements = JSON.parse(resultCyto.result.data);
+
+      setProgressPercent(80);
+
+      // Set result with all collected data
+      setResult({
+        resultInfo,
+        resultDot: { ...resultDot, visualization: dotVisualization },
+        resultCyto: { ...resultCyto, elements: cytoElements },
+      });
+      // Set permalinks and finish
+      setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
+      checkLinks();
+    } catch (err) {
+      setError(mkError(error, urlInfo));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
     const disabled =
-      getDataText(data).length > API.byTextCharacterLimit
-        ? API.byTextTab
-        : data.activeTab === API.byFileTab
-        ? API.byFileTab
+      getDataText(data).length > API.limits.byTextCharacterLimit
+        ? API.sources.byText
+        : data.activeSource === API.sources.byFile
+        ? API.sources.byFile
         : false;
 
     setDisabledLinks(disabled);
@@ -123,7 +151,7 @@ function DataInfo(props) {
       history.pushState(
         null,
         document.title,
-        mkPermalinkLong(API.dataInfoRoute, lastParams)
+        mkPermalinkLong(API.routes.client.dataInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
@@ -131,7 +159,7 @@ function DataInfo(props) {
     history.replaceState(
       null,
       document.title,
-      mkPermalinkLong(API.dataInfoRoute, params)
+      mkPermalinkLong(API.routes.client.dataInfoRoute, params)
     );
 
     setLastParams(params);
@@ -147,12 +175,15 @@ function DataInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>RDF Data info</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.dataInfo}
+          details={API.texts.pageExplanations.dataInfo}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData, "RDF input")}
+            {mkDataTabs(data, setData)}
             <hr />
             <Button
               id="submit"
@@ -161,7 +192,7 @@ function DataInfo(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Info about data
+              {API.texts.actionButtons.analyze}
             </Button>
           </Form>
         </Col>
@@ -180,10 +211,7 @@ function DataInfo(props) {
               ) : result ? (
                 <ResultDataInfo
                   result={result}
-                  fromParams={data.fromParams}
-                  resetFromParams={() =>
-                    setData({ ...data, fromParams: false })
-                  }
+                  params={params}
                   permalink={permalink}
                   disabled={disabledLinks}
                 />
@@ -192,7 +220,7 @@ function DataInfo(props) {
           </Fragment>
         ) : (
           <Col className={"half-col"}>
-            <Alert variant="info">Validation results will appear here</Alert>
+            <Alert variant="info">{API.texts.dataInfoWillAppearHere}</Alert>
           </Col>
         )}
       </Row>

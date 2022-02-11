@@ -3,106 +3,63 @@ import API from "../API";
 import ShapeMapTabs from "./ShapeMapTabs";
 
 export const InitialShapeMap = {
-  activeTab: API.defaultTab,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultShapeMapFormat,
+  format: API.formats.defaultShapeMap,
+  triggerMode: API.triggerModes.shapeMap,
   fromParams: false,
   codeMirror: null,
 };
 
-export function convertTabShapeMap(key) {
-  switch (key) {
-    case API.byTextTab:
-      return "#shapeMapTextArea";
-    case API.byFileTab:
-      return "#shapeMapFile";
-    case API.byUrlTab:
-      return "#shapeMapUrl";
-    default:
-      console.info("Unknown shapeMapTab: " + key);
-      return key;
+export function updateStateShapeMap(params, shapeMap) {
+  // Only update state if there is data
+  if (params[API.queryParameters.shapeMap.shapeMap]) {
+    // Get the raw data string introduced by the user
+    const userData = params[API.queryParameters.shapeMap.shapeMap];
+    // Get the data source to be used: take it from params or resort to default
+    const shapeMapSource =
+      params[API.queryParameters.shapeMap.source] || API.sources.default;
+
+    // Compose new Shapemap State building from the old one
+    return {
+      ...shapeMap,
+      activeSource: shapeMapSource,
+      textArea:
+        shapeMapSource == API.sources.byText ? userData : shapeMap.textArea, // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      url: shapeMapSource == API.sources.byUrl ? userData : shapeMap.url,
+      file: shapeMapSource == API.sources.byFile ? userData : shapeMap.file,
+      fromParams: true,
+      format: params[API.queryParameters.shapeMap.format] || shapeMap.format,
+    };
   }
+  return shapeMap;
 }
 
-export function paramsFromStateShapeMap(state) {
-  const activeTab = state.activeTab;
-  const textArea = state.textArea;
-  const format = state.format;
-  const url = state.url;
-  const file = state.file;
+export function paramsFromStateShapemap(shapeMap) {
   let params = {};
-  params["shapeMapActiveTab"] = convertTabShapeMap(activeTab);
-  params["shapeMapFormat"] = format;
-  switch (activeTab) {
-    case "byText":
-      params["shapeMap"] = textArea.trim();
-      params["shapeMapFormatTextArea"] = format;
+  params[API.queryParameters.shapeMap.source] = shapeMap.activeSource;
+  params[API.queryParameters.shapeMap.format] = shapeMap.format;
+  params[API.queryParameters.schema.triggerMode] = shapeMap.triggerMode;
+  switch (shapeMap.activeSource) {
+    case API.sources.byText:
+      params[API.queryParameters.shapeMap.shapeMap] = shapeMap.textArea.trim();
       break;
-    case "byUrl":
-      params["shapeMapURL"] = url.trim();
-      params["shapeMapFormatURL"] = format;
+    case API.sources.byUrl:
+      params[API.queryParameters.shapeMap.shapeMap] = shapeMap.url.trim();
       break;
-    case "byFile":
-      params["shapeMapFile"] = file;
-      params["shapeMapFormatFile"] = format;
+    case API.sources.byFile:
+      params[API.queryParameters.shapeMap.shapeMap] = shapeMap.file;
       break;
     default:
   }
   return params;
 }
 
-export function updateStateShapeMap(params, shapeMap) {
-  if (params["shapeMap"]) {
-    return {
-      ...shapeMap,
-      activeTab: API.byTextTab,
-      textArea: params["shapeMap"],
-      fromParams: true,
-      format: params["shapeMapFormat"]
-        ? params["shapeMapFormat"]
-        : API.defaultShapeMapFormat,
-    };
-  }
-  if (params["shapeMapURL"]) {
-    return {
-      ...shapeMap,
-      activeTab: API.byUrlTab,
-      url: params["shapeMapURL"],
-      fromParams: false,
-      format: params["shapeMapFormat"]
-        ? params["shapeMapFormat"]
-        : API.defaultShapeMapFormat,
-    };
-  }
-  if (params["shapeMapFile"]) {
-    return {
-      ...shapeMap,
-      activeTab: API.byFileTab,
-      file: params["shapeMapFile"],
-      fromParams: false,
-      format: params["shapeMapFormat"]
-        ? params["shapeMapFormat"]
-        : API.defaultShapeMapFormat,
-    };
-  }
-  return shapeMap;
-}
-
-export function shapeMapParamsFromQueryParams(params) {
-  let newParams = {};
-  if (params.shapeMap) newParams["shapeMap"] = params.shapeMap;
-  if (params.shapeMapFormat)
-    newParams["shapeMapFormat"] = params.shapeMapFormat;
-  if (params.shapeMapURL) newParams["shapeMapURL"] = params.shapeMapURL;
-  if (params.shapeMapFile) newParams["shapeMapFile"] = params.shapeMapFile;
-  return newParams;
-}
-
 export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
   function handleShapeMapTabChange(value) {
-    setShapeMap({ ...shapeMap, activeTab: value });
+    setShapeMap({ ...shapeMap, activeSource: value });
   }
 
   function handleShapeMapFormatChange(value) {
@@ -125,7 +82,7 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
     <ShapeMapTabs
       name={name}
       subname={subname}
-      activeTab={shapeMap.activeTab}
+      activeSource={shapeMap.activeSource}
       handleTabChange={handleShapeMapTabChange}
       textAreaValue={shapeMap.textArea}
       handleByTextChange={handleShapeMapByTextChange}
@@ -142,9 +99,9 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
 }
 
 export function getShapeMapText(shapeMap) {
-  if (shapeMap.activeTab === API.byTextTab) {
+  if (shapeMap.activeSource === API.sources.byText) {
     return encodeURI(shapeMap.textArea.trim());
-  } else if (shapeMap.activeTab === API.byUrlTab) {
+  } else if (shapeMap.activeSource === API.sources.byUrl) {
     return encodeURI(shapeMap.url.trim());
   }
   return "";

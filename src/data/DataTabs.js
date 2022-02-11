@@ -4,27 +4,23 @@ import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
 
 function DataTabs(props) {
-
   return (
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
-        byTextName={props.subname || ""}
+        byTextName={props.subname}
         textAreaValue={props.textAreaValue}
-        byTextPlaceholder="RDF data..."
+        byTextPlaceholder={API.texts.placeholders.rdf}
         handleByTextChange={props.handleByTextChange}
-        byUrlName="URL data"
         handleUrlChange={props.handleDataUrlChange}
         urlValue={props.urlValue}
-        byURLPlaceholder="http://..."
-        byFileName="RDF File"
+        byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        nameFormat="Data format"
         selectedFormat={props.selectedFormat}
         handleFormatChange={props.handleDataFormatChange}
-        urlFormats={API.dataFormatsInput}
+        urlFormats={API.routes.server.dataFormatsInput}
         setCodeMirror={props.setCodeMirror}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
@@ -34,7 +30,7 @@ function DataTabs(props) {
 }
 
 DataTabs.propTypes = {
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
   handleByTextChange: PropTypes.func.isRequired,
@@ -50,9 +46,10 @@ DataTabs.propTypes = {
 };
 
 DataTabs.defaultProps = {
-  name: "",
-  activeTab: "ByText",
-  // dataFormat: 'TURTLE'
+  name: API.texts.dataTabs.dataHeader,
+  subname: "",
+  selectedFormat: API.formats.defaultData,
+  activeSource: API.sources.default,
 };
 
 export default DataTabs;

@@ -1,110 +1,83 @@
+import axios from "axios";
 import React from "react";
 import API from "../API";
+import { params2Form } from "../Permalink";
+import { processDotData } from "../utils/dot/dotUtils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
 export const InitialData = {
-  activeTab: API.defaultTab,
+  activeSource: API.sources.default,
   textArea: "",
   url: "",
   file: null,
-  format: API.defaultDataFormat,
-  inference: API.defaultInference,
+  format: API.formats.defaultData,
+  inference: API.inferences.default,
   fromParams: false,
   codeMirror: null,
 };
 
 export function updateStateData(params, data) {
-  if (params["data"]) {
+  // Only update state if there is data
+  if (params[API.queryParameters.data.data]) {
+    // Get the raw data string introduced by the user
+    const userData = params[API.queryParameters.data.data];
+    // Get the data source to be used: take it from params or resort to default
+    const dataSource =
+      params[API.queryParameters.data.source] || API.sources.default;
+
+    // Compose new Data State building from the old one
     return {
       ...data,
-      activeTab: API.byTextTab,
-      textArea: params["data"],
+      activeSource: dataSource, // New data source (activates the corresponsing edit tab)
+      // Fill in the data containers with the user data if necessary. Else leave them as they were.
+      textArea: dataSource == API.sources.byText ? userData : data?.textArea,
+      url: dataSource == API.sources.byUrl ? userData : data?.url,
+      file: dataSource == API.sources.byFile ? userData : data?.file,
       fromParams: true,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
-    };
-  }
-  if (params["dataURL"]) {
-    return {
-      ...data,
-      activeTab: API.byUrlTab,
-      url: params["dataURL"],
-      fromParams: false,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
-    };
-  }
-  if (params["dataFile"]) {
-    return {
-      ...data,
-      activeTab: API.byFileTab,
-      file: params["dataFile"],
-      fromParams: false,
-      format: params["dataFormat"]
-        ? params["dataFormat"]
-        : API.defaultDataFormat,
-      inference: params["inference"]
-        ? params["inference"]
-        : API.defaultInference,
+      format: params[API.queryParameters.data.format] || data?.format,
+      inference: params[API.queryParameters.data.inference] || data?.inference,
     };
   }
   return data;
 }
 
-export function convertTabData(key) {
-  switch (key) {
-    case API.byTextTab:
-      return "#dataTextArea";
-    case API.byFileTab:
-      return "#dataFile";
-    case API.byUrlTab:
-      return "#dataUrl";
-    default:
-      console.info("Unknown schemaTab: " + key);
-      return key;
-  }
-}
-
 export function paramsFromStateData(data) {
   let params = {};
-  params["activeTab"] = convertTabData(data.activeTab);
-  params["dataFormat"] = data.format;
-  params["inference"] = data.inference;
-  switch (data.activeTab) {
-    case API.byTextTab:
-      params["data"] = data.textArea.trim();
-      params["dataFormatTextArea"] = data.format;
+  params[API.queryParameters.data.source] = data.activeSource;
+  params[API.queryParameters.data.format] = data.format;
+  params[API.queryParameters.data.inference] = data.inference;
+
+  // Send the "data" param to the server, that will use the "dataSource" to know hot to treat the data (raw, URL, file...)
+  switch (data.activeSource) {
+    case API.sources.byText:
+      params[API.queryParameters.data.data] = data.textArea.trim();
       break;
-    case API.byUrlTab:
-      params["dataURL"] = data.url.trim();
-      params["dataFormatUrl"] = data.format;
+    case API.sources.byUrl:
+      params[API.queryParameters.data.data] = data.url.trim();
       break;
-    case API.byFileTab:
-      params["dataFile"] = data.file;
-      params["dataFormatFile"] = data.format;
+    case API.sources.byFile:
+      params[API.queryParameters.data.data] = data.file;
       break;
-    default:
   }
   return params;
 }
 
-export function mkDataTabs(data, setData, name, subname) {
+export function mkDataTabs(
+  data,
+  setData,
+  name,
+  subname,
+  onTextChange = () => {}
+) {
   function handleDataTabChange(value) {
-    setData({ ...data, activeTab: value });
+    setData({ ...data, activeSource: value });
   }
-  function handleDataFormatChange(value) {
-    setData({ ...data, format: value });
-  }
-  function handleDataByTextChange(value) {
+  function handleDataByTextChange(value, y, change) {
+    onTextChange(value, y, change);
     setData({ ...data, textArea: value });
   }
   function handleDataUrlChange(value) {
@@ -112,6 +85,9 @@ export function mkDataTabs(data, setData, name, subname) {
   }
   function handleDataFileUpload(value) {
     setData({ ...data, file: value });
+  }
+  function handleDataFormatChange(value) {
+    setData({ ...data, format: value });
   }
   function handleInferenceChange(value) {
     setData({ ...data, inference: value });
@@ -123,7 +99,7 @@ export function mkDataTabs(data, setData, name, subname) {
       <DataTabs
         name={name}
         subname={subname}
-        activeTab={data.activeTab}
+        activeSource={data.activeSource}
         handleTabChange={handleDataTabChange}
         textAreaValue={data.textArea}
         handleByTextChange={handleDataByTextChange}
@@ -147,10 +123,49 @@ export function mkDataTabs(data, setData, name, subname) {
 }
 
 export function getDataText(data) {
-  if (data.activeTab === API.byTextTab) {
+  if (data.activeSource === API.sources.byText) {
     return encodeURI(data.textArea.trim());
-  } else if (data.activeTab === API.byUrlTab) {
+  } else if (data.activeSource === API.sources.byUrl) {
     return encodeURI(data.url.trim());
   }
   return "";
+}
+
+export async function mkDataVisualization(
+  params,
+  visualizationTarget,
+  options = { controls: false }
+) {
+  const uplinkParams = params2Form(params);
+  switch (visualizationTarget) {
+    case API.queryParameters.visualization.targets.svg:
+      const { data: resultDot } = await axios.post(
+        API.routes.server.dataConvert,
+        uplinkParams
+      );
+      const dot = resultDot.result.data; // Get the DOT string from the axios data object
+      const dotVisualization = await processDotData(dot);
+
+      return (
+        <ShowVisualization
+          data={dotVisualization.data}
+          type={visualizationTypes.svgObject}
+          {...options}
+        />
+      );
+    case API.queryParameters.visualization.targets.cyto:
+      const { data: resultCyto } = await axios.post(
+        API.routes.server.dataConvert,
+        uplinkParams
+      );
+      const cytoElements = JSON.parse(resultCyto.result.data);
+
+      return (
+        <ShowVisualization
+          data={{ elements: cytoElements }}
+          type={visualizationTypes.cytoscape}
+          {...options}
+        />
+      );
+  }
 }

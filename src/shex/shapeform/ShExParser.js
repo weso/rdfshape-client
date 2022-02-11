@@ -22,7 +22,6 @@ class ShExParser {
     let form = '<form id="shexgform" class="wikidata">';
 
     let source = this.parseShEx(shex);
-    console.log(source);
 
     //Guardar prefijos
     this.prefixes.set(source.base, "base");
@@ -61,7 +60,7 @@ class ShExParser {
     try {
       this.source = this.shexparser.parse(shex);
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
       return null;
     }
     return this.source;

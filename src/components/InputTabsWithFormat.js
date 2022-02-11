@@ -1,23 +1,21 @@
 import PropTypes from "prop-types";
 import React from "react";
+import API from "../API";
 import InputTabs from "./InputTabs";
 import SelectFormat from "./SelectFormat";
 
 function InputTabsWithFormat(props) {
-  function handleTextChange(value) {
-    props.handleByTextChange(value);
-  }
-
   return (
     <div>
       <InputTabs
         name={props.nameInputTab}
-        activeTab={props.activeTab}
+        activeSource={props.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.byTextName}
         textAreaValue={props.textAreaValue}
         textFormat={props.selectedFormat}
-        handleByTextChange={handleTextChange}
+        textEngine={props.selectedEngine}
+        handleByTextChange={props.handleByTextChange}
         byTextPlaceholder={props.byTextPlaceholder}
         setCodeMirror={props.setCodeMirror}
         byUrlName={props.byUrlName}
@@ -86,7 +84,7 @@ InputTabsWithFormat.propTypes = {
 
   // Non-required props
 
-  activeTab: PropTypes.string,
+  activeSource: PropTypes.string,
   byTextName: PropTypes.string,
   byTextPlaceholder: PropTypes.string,
   byUrlName: PropTypes.string,
@@ -95,12 +93,13 @@ InputTabsWithFormat.propTypes = {
 };
 
 InputTabsWithFormat.defaultProps = {
-  activeTab: "ByText",
+  activeSource: API.sources.default,
   byTextName: "",
   byTextPlaceholder: "",
   byUrlName: "",
   byUrlPlaceholder: "",
   byFileName: "",
+  nameFormat: API.texts.dataTabs.formatHeader,
 };
 
 export default InputTabsWithFormat;
