@@ -10,6 +10,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
   getQueryText,
@@ -172,7 +173,10 @@ function DataQuery(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.dataQuery}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.dataQuery}
+          details={API.texts.pageExplanations.dataQuery}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

@@ -282,17 +282,6 @@ export const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-// Shorthand for scrolling items into view
-export const scrollToItem = (
-  element,
-  config = {
-    behavior: "smooth",
-    block: "start",
-  }
-) => {
-  element.scrollIntoView(config);
-};
-
 // Zoom limits for non-cyto visualizations, whose zoom is controlled with CSS
 export const visualizationMinZoom = 0.2;
 export const visualizationMaxZoom = 1.9;
@@ -361,4 +350,15 @@ export const scrollToElementById = (
 };
 
 export const scrollToResults = (options) =>
-  scrollToElementById(API.resultsId, options || undefined);
+  scrollToElementById(API.resultsId, options);
+
+// Shorthand for scrolling items into view
+export const scrollToItem = (
+  element,
+  config = {
+    behavior: "smooth",
+    block: "start",
+  }
+) => {
+  element.scrollIntoView(config);
+};

@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { processDotData } from "../utils/dot/dotUtils";
@@ -174,7 +175,10 @@ function DataInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.dataInfo}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.dataInfo}
+          details={API.texts.pageExplanations.dataInfo}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

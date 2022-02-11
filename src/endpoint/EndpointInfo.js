@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultEndpointInfo from "../results/ResultEndpointInfo";
 import { mkError } from "../utils/ResponseError";
@@ -126,7 +127,10 @@ function EndpointInfo(props) {
 
   return (
     <Container fluid={true}>
-      <h1>{API.texts.pageHeaders.endpointInfo}</h1>
+      <PageHeader
+        title={API.texts.pageHeaders.endpointInfo}
+        details={API.texts.pageExplanations.endpointInfo}
+      />
       <Form id="common-endpoints" onSubmit={handleSubmit}>
         <EndpointInput
           value={endpoint}

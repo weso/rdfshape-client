@@ -49,7 +49,6 @@ function ResultDataInfo({
           visualizationType: API.queryParameters.visualization.types.data,
           visualizationTarget: API.queryParameters.visualization.targets.cyto,
         })}
-        disabledLinks={false} // TODO
       />
     );
   }
@@ -99,6 +98,7 @@ function ResultDataInfo({
             <Tab
               eventKey={API.tabs.visualizations}
               title={API.texts.resultTabs.visualizations}
+              mountOnEnter={true}
             >
               {(resultCyto || resultDot) && (
                 <Tabs

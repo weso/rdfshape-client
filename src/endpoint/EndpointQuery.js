@@ -1,15 +1,17 @@
 import axios from "axios";
 import qs from "query-string";
 import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
+  getQueryRaw,
   getQueryText,
   InitialQuery,
   mkQueryTabs,
@@ -32,8 +34,7 @@ function EndpointQuery(props) {
   const [progressPercent, setProgressPercent] = useState(0);
   const [controlPressed, setControlPressed] = useState(false);
 
-  const url = API.routes.server.endpointQuery;
-  const resultsElementId = "results";
+  const url = API.routes.server.wikibaseQuery;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -118,10 +119,18 @@ function EndpointQuery(props) {
     setProgressPercent(20);
 
     try {
-      const postData = params2Form(params);
+      // Get the query text to be sent as payload
+      const queryRaw = await getQueryRaw(query);
+      if (!queryRaw) throw "Could not fetch the query data";
+
+      const postData = params2Form({
+        [API.queryParameters.wbQuery.endpoint]: endpoint,
+        [API.queryParameters.wbQuery.payload]: queryRaw,
+      });
       const { data: serverQueryResponse } = await axios.post(url, postData);
       setProgressPercent(70);
-      setResult({ result: serverQueryResponse });
+
+      setResult(serverQueryResponse);
       setPermalink(
         mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
       );
@@ -166,7 +175,10 @@ function EndpointQuery(props) {
 
   return (
     <Container fluid={true}>
-      <h1>{API.texts.pageHeaders.endpointQuery}</h1>
+      <PageHeader
+        title={API.texts.pageHeaders.endpointQuery}
+        details={API.texts.pageExplanations.endpointQuery}
+      />
       <Form
         id="common-endpoints"
         onSubmit={handleSubmit}
@@ -180,49 +192,51 @@ function EndpointQuery(props) {
         />
         {mkQueryTabs(query, setQuery)}
         <hr />
-        <Button
-          variant="primary"
-          type="submit"
-          className={"btn-with-icon " + (loading ? "disabled" : "")}
-          disabled={loading}
-        >
-          {API.texts.actionButtons.query}
-        </Button>
+        <div className="btn-spinner-container">
+          <Button
+            variant="primary"
+            type="submit"
+            className={loading ? "disabled" : ""}
+            disabled={loading}
+          >
+            {API.texts.actionButtons.query}
+          </Button>
+          {loading && (
+            <Spinner
+              className="loading-spinner"
+              animation="border"
+              variant="primary"
+            />
+          )}
+        </div>
       </Form>
 
-      <div id={resultsElementId}>
-        {loading || result || error || permalink ? (
-          <Row style={{ margin: "10px auto 10% auto" }}>
-            {loading ? (
-              <ProgressBar
-                className="width-100"
-                striped
-                animated
-                variant="info"
-                now={progressPercent}
-              />
-            ) : error ? (
-              <Alert className="width-100" variant="danger">
-                {error}
-              </Alert>
-            ) : result ? (
-              <ResultSparqlQuery
-                result={result}
-                error={error}
-                permalink={permalink}
-                disabled={
-                  getQueryText(query).length + endpoint.length >
-                  API.limits.byTextCharacterLimit
-                    ? API.sources.byText
-                    : query.activeSource === API.sources.byFile
-                    ? API.sources.byFile
-                    : false
-                }
-              />
-            ) : null}
-          </Row>
-        ) : null}
-      </div>
+      {!loading && (
+        <div>
+          {result || error || permalink ? (
+            <Row style={{ margin: "10px auto 10% auto" }}>
+              {error ? (
+                <Alert className="width-100" variant="danger">
+                  {error}
+                </Alert>
+              ) : result ? (
+                <ResultSparqlQuery
+                  result={result}
+                  permalink={permalink}
+                  disabled={
+                    getQueryText(query).length + endpoint.length >
+                    API.limits.byTextCharacterLimit
+                      ? API.sources.byText
+                      : query.activeSource === API.sources.byFile
+                      ? API.sources.byFile
+                      : false
+                  }
+                />
+              ) : null}
+            </Row>
+          ) : null}
+        </div>
+      )}
     </Container>
   );
 }

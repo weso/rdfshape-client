@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import format from "xml-formatter";
 import API from "../API";
+import CytoscapeContainer from "../utils/cytoscape/CytoscapeContainer";
 import { breadthfirst } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
@@ -14,7 +15,6 @@ import {
   visualizationMinZoom,
   visualizationStepZoom
 } from "../utils/Utils";
-import CytoscapeContainer from "./CytoscapeContainer";
 import VisualizationLinks from "./VisualizationLinks";
 
 // "cytoscape-svg" package

@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import shumlex from "shumlex";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong } from "../Permalink";
 import ResultXmi2Shex from "../results/ResultXmi2Shex";
 import {
@@ -159,7 +160,10 @@ export default function Xmi2Shex(props) {
     <Container fluid={true}>
       <>
         <Row>
-          <h1>{API.texts.pageHeaders.umlToShex}</h1>
+          <PageHeader
+            title={API.texts.pageHeaders.umlToShex}
+            details={API.texts.pageExplanations.umlToShex}
+          />
         </Row>
         <Row>
           <Col className="half-col border-right">

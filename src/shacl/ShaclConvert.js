@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
@@ -84,7 +85,7 @@ function ShaclConvert(props) {
       if (
         params[API.queryParameters.schema.schema] &&
         (params[API.queryParameters.schema.source] == API.sources.byFile
-          ? params[API.queryParameters.schema.data].name
+          ? params[API.queryParameters.schema.schema].name
           : true) // Extra check for files
       ) {
         resetState();
@@ -183,7 +184,10 @@ function ShaclConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.shaclConversion}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shaclConversion}
+          details={API.texts.pageExplanations.shaclConversion}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

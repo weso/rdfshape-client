@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaInfo from "../results/ResultSchemaInfo";
 import { mkError } from "../utils/ResponseError";
@@ -168,7 +169,10 @@ function ShexInfo(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.shexInfo}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shexInfo}
+          details={API.texts.pageExplanations.shexInfo}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

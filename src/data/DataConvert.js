@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
@@ -166,7 +167,10 @@ function DataConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.dataConversion}</h1>
+      <PageHeader
+          title={API.texts.pageHeaders.dataConversion}
+          details={API.texts.pageExplanations.dataConversion}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

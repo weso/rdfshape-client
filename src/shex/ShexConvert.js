@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import shumlex from "shumlex";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import {
   allEngines,
   schemaEngines,
@@ -275,7 +276,10 @@ function ShexConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.shexConversion}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shexConversion}
+          details={API.texts.pageExplanations.shexConversion}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

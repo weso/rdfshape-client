@@ -13,7 +13,7 @@ export const InitialUML = {
   textArea: "",
   url: "",
   file: null,
-  format: API.formats.xml,
+  format: API.formats.xmi,
   fromParams: false,
   codeMirror: null,
 };

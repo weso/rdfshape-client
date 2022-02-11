@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import {
   getDataText,
   InitialData,
@@ -218,7 +219,10 @@ function ShaclValidate(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.shaclValidation}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shaclValidation}
+          details={API.texts.pageExplanations.shaclValidation}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

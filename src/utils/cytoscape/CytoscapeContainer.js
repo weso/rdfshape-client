@@ -5,7 +5,7 @@ import {
   cytoscapeMinZoom,
   cytoWheelSensitivity,
   stylesheetCytoscape
-} from "../utils/cytoscape/cytoUtils";
+} from "./cytoUtils";
 
 // Custom component for rendering cytoscape items
 

@@ -1,5 +1,7 @@
+import axios from "axios";
 import React from "react";
 import API from "../API";
+import { getFileContents } from "../utils/Utils";
 import QueryTabs from "./QueryTabs";
 // import ShExTabs from "../shex/ShExTabs";
 
@@ -85,11 +87,27 @@ export function mkQueryTabs(query, setQuery, name, subname) {
   );
 }
 
+// Get the text input by the user that forms the query
 export function getQueryText(query) {
   if (query.activeSource === API.sources.byText) {
     return encodeURI(query.textArea.trim());
   } else if (query.activeSource === API.sources.byUrl) {
     return encodeURI(query.textArea.trim());
+  }
+  return "";
+}
+
+// Given the query in state, extract the text contained in it
+// (manual input => return text)
+// (url => fetch url and return result)
+// (file => read file and return its contents)
+export async function getQueryRaw(query) {
+  if (query.activeSource === API.sources.byText) {
+    return query.textArea.trim();
+  } else if (query.activeSource === API.sources.byUrl) {
+    return (await axios.get(query.url.trim())).data;
+  } else if (query.activeSource === API.sources.byFile) {
+    return await getFileContents(query.file);
   }
   return "";
 }

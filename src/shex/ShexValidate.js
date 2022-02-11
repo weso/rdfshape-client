@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
+import PageHeader from "../components/PageHeader";
 import {
   getDataText,
   InitialData,
@@ -224,7 +225,10 @@ function ShexValidate(props) {
   return (
     <Container fluid={true}>
       <Row>
-        <h1>{API.texts.pageHeaders.shexValidation}</h1>
+        <PageHeader
+          title={API.texts.pageHeaders.shexValidation}
+          details={API.texts.pageExplanations.shexValidation}
+        />
       </Row>
       <Row>
         <Col className={"half-col border-right"}>

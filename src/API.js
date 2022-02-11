@@ -1,5 +1,6 @@
 /** This class contains global definitions */
 
+import React from "react";
 import environmentConfiguration from "./EnvironmentConfig";
 
 class API {
@@ -30,18 +31,13 @@ class API {
       shapeMapFormats: this.rootApi + "shapemap/formats",
 
       endpointInfo: this.rootApi + "endpoint/info",
-      endpointQuery: this.rootApi + "endpoint/query",
+      wikibaseQuery: this.rootApi + "wikibase/query",
 
       inferenceEngines: this.rootApi + "data/inferenceEngines",
 
       serverPermalinkEndpoint: this.rootApi + "permalink/generate",
       serverOriginalLinkEndpoint: this.rootApi + "permalink/get",
       fetchUrl: this.rootApi + "fetch",
-
-      wikidataEntityLabel: this.rootApi + "wikidata/entityLabel",
-      wikidataSearchEntity: this.rootApi + "wikidata/searchEntity",
-      wikidataLanguages: this.rootApi + "wikidata/languages",
-      wikidataSchemaContent: this.rootApi + "wikidata/schemaContent",
     },
     // Routes in client
     client: {
@@ -80,11 +76,15 @@ class API {
     },
     // Other useful routes
     utils: {
+      apiDocs: "https://app.swaggerhub.com/apis/weso/RDFShape",
+      projectSite: "https://www.weso.es/rdfshape-api/",
       wikishape: "https://wikishape.weso.es",
       wikidataUrl: "https://query.wikidata.org/sparql",
       dbpediaUrl: "https://dbpedia.org/sparql",
       shapeFormHelpUrl:
         "https://github.com/weso/shapeForms#requirementslimitations",
+      shumlexRepo: "https://github.com/weso/shumlex",
+      shapeFormsRepo: "https://github.com/weso/shapeForms",
     },
   };
 
@@ -151,6 +151,11 @@ class API {
         svg: "svg",
         cyto: "cyto",
       },
+    },
+
+    wbQuery: {
+      endpoint: "endpoint",
+      payload: "payload",
     },
   };
 
@@ -241,6 +246,7 @@ class API {
     defaultShacl: "SHACLex",
 
     shex: "ShEx",
+    shacl: "SHACL", // For general purpose, don't use in API requests
     shaclex: "SHACLex",
     jenaShacl: "JenaSHACL",
     shacl_tq: "SHACL_TQ",
@@ -289,12 +295,12 @@ class API {
       wiki: "Wiki",
       apiDocs: "API Docs",
       about: "About",
+      projectSite: "Project site",
     },
 
     pageHeaders: {
       dataInfo: "Data analysis",
       dataConversion: "Data conversion",
-      dataVisualization: "Data visualization",
       dataMerge: "Data merge",
       dataQuery: "Data query",
       wikidataQuery: "Query Wikidata",
@@ -309,17 +315,158 @@ class API {
       shexInfo: "ShEx analysis",
       shexConversion: "ShEx conversion",
       shexValidation: "ShEx validate data",
-      shexVisualization: "ShEx visualization",
-      shexToForm: "Create form from ShEx",
-      shexToUml: "ShEx conversion to UML",
       umlToShex: "UML conversion to ShEx",
 
       shaclInfo: "SHACL analysis",
       shaclValidation: "SHACL validate data",
       shaclConversion: "SHACL conversion",
-      shaclToShex: "SHACL conversion to ShEx",
 
       shapeMapInfo: "ShapeMap analysis",
+    },
+
+    pageExplanations: {
+      dataInfo:
+        "Input some RDF data (by text, by pointing to a URL with the contents or by file) and select its format and inference to validate its contents and see additional information, including: prefix map, SVG and Cytoscape visuals",
+      dataConversion:
+        "Input some RDF data (by text, by pointing to a URL with the contents or by file) and select a target format to have your input converted",
+
+      dataMerge:
+        "Input two sources of RDF data (by text, by pointing to a URL with the contents or by file) and select a target format to have your inputs merged and converted",
+      dataQuery:
+        "Input some RDF data (by text, by pointing to a URL with the contents or by file) and a valid SPARQL query to execute the query against the data and examine the results",
+
+      wikidataQuery: "Query Wikidata",
+      wikidataValidate: "Validate Wikidata entities",
+      dataShexExtraction:
+        "Input some RDF data (by text, by pointing to a URL with the contents or by file) and try to extract a validation schema (ShEx) that suits the input",
+
+      wikidataSchemaExtraction: "Extract schema from Wikidata entities",
+      endpointSchemaExtraction: "Extract schema from Endpoint node",
+
+      endpointInfo:
+        "Input a the URL of an existing SPARQL endpoint to check its current status. Some common endpoints are given as examples.",
+      endpointQuery: (
+        <span>
+          <p>
+            Input a SPARQL query (by text, by pointing to a URL with the
+            contents or by file) and execute it against the selected SPARQL
+            endpoint. Some common endpoints are given as examples.
+          </p>
+          <p>Results are searchable, sortable and downloadable.</p>
+        </span>
+      ),
+      shexInfo:
+        "Input some Shape Expression (ShEx) (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents and see additional information, including: prefix map, SVG and Cytoscape visuals",
+
+      shexConversion: (
+        <>
+          <p>
+            Input some Shape Expression (ShEx) and select its format, as well as
+            a target validation engine and format to have your schema converted
+          </p>
+          <p>
+            Several target engines are supported, including:
+            <ul>
+              <li>ShEx and SHACL for schema to schema conversions</li>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={this.routes.utils.shumlexRepo}
+                >
+                  Shumlex
+                </a>{" "}
+                for schema to UML conversions
+              </li>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={this.routes.utils.shapeFormsRepo}
+                >
+                  ShapeForms
+                </a>{" "}
+                for schema to forms conversions
+              </li>
+            </ul>
+          </p>
+          <p>
+            {API.engines.shex} to {API.engines.shacl} is still unsupported
+          </p>
+        </>
+      ),
+      shexValidation: (
+        <>
+          <p>
+            Input some RDF data and ShEx schema (by text, by pointing to a URL
+            with the contents or by file) to validate the data against the
+            schema and see the validation results in per-node detail
+          </p>
+          <p>Results are searchable, sortable and downloadable</p>
+        </>
+      ),
+      umlToShex:
+        "Input some XMI data (by text, by pointing to a URL with the contents or by file) to try to extract a ShEx schema compliant with the input",
+
+      shaclInfo:
+        "Input some SHACL (by text, by pointing to a URL with the contents or by file) and select its format and engine to validate its contents and see additional information, including: prefix map and visuals",
+
+      shaclValidation: "SHACL validate data",
+      shaclConversion: (
+        <>
+          <p>
+            Input a SHACL schema and select its format/engine, as well as a
+            target validation engine and format to have your schema converted
+          </p>
+          <p>
+            Several target engines are supported, including:
+            <ul>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={"https://shex.io/"}
+                >
+                  {this.engines.shex}
+                </a>{" "}
+              </li>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={"https://jena.apache.org/"}
+                >
+                  {this.engines.jenaShacl}
+                </a>{" "}
+                for Apache Jena
+              </li>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={"https://github.com/TopQuadrant/shacl"}
+                >
+                  {this.engines.shacl_tq}
+                </a>{" "}
+                for Top Braid SHACL API
+              </li>
+              <li>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={"https://github.com/weso/shaclex"}
+                >
+                  {this.engines.shaclex}
+                </a>{" "}
+                for WESO's ShEx/SHACL API
+              </li>
+            </ul>
+          </p>
+        </>
+      ),
+
+      shapeMapInfo:
+        "Input a ShapeMap (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents. Note that whole URIs must be used as there is no data/schema from which a prefix map can be retrieved",
     },
 
     dataTabs: {
@@ -389,6 +536,15 @@ class API {
       createForm: "Create form",
     },
 
+    visualizationSettings: {
+      download: "Download",
+      embedLink: "Embed link",
+      fullscreen: "Toggle fullscreen",
+      fullscreenIn: "Enter fullscreen",
+      fullscreenOut: "Exit fullscreen",
+      center: "Center visualization",
+    },
+
     validationResults: {
       allValid: "Validation successful",
       nodeValid: "Valid",
@@ -407,6 +563,7 @@ class API {
 
     misc: {
       shex: "ShEx",
+      shacl: "SHACL",
       xmi: "XMI",
       graph: "Graph",
       prefixMap: "Prefix map",

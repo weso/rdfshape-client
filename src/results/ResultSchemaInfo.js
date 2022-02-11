@@ -64,13 +64,10 @@ function ResultSchemaInfo({
           stylesheet: shumlexCytoscapeStyle,
         }}
         type={visualizationTypes.cytoscape}
-        raw={false}
-        controls={true}
         embedLink={mkEmbedLink(stateSchemaParams, {
           visualizationType: embedLinkType,
           visualizationTarget: API.queryParameters.visualization.targets.cyto,
         })}
-        disabledLinks={disabled}
       />
     );
   }

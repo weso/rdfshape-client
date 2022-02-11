@@ -21,15 +21,19 @@ export async function mkPermalink(route, params) {
 
 export async function mkPermalinkFromUrl(url) {
   try {
-    const res = await axios.get(API.routes.server.serverPermalinkEndpoint, {
-      params: { url },
-    });
+    const { data: permalinkCode } = await axios.get(
+      API.routes.server.serverPermalinkEndpoint,
+      {
+        params: { url },
+      }
+    );
     // The server only returns the permalink code. The full link is: current host + code
-    return `${getHost()}/link/${res.data}`;
+    return `${getHost()}/link/${permalinkCode}`;
   } catch (err) {
     console.error(
       `Error processing shortened permalink request for ${url}: ${err.message}`
     );
+    // Return the original URL in case of error
     return url;
   }
 }
@@ -115,7 +119,7 @@ export function Permalink(props) {
     // Set to loading
     setLoading(true);
 
-    // Generate short URL / return the og link in case of error
+    // Generate short URL / return the long link in case of error
     const newPermalink = props.shorten
       ? await mkPermalinkFromUrl(props.url)
       : props.url;

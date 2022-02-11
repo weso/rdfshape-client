@@ -15,10 +15,7 @@ import ExternalLinkIcon from "react-open-iconic-svg/dist/ExternalLinkIcon";
 import TargetIcon from "react-open-iconic-svg/dist/TargetIcon";
 import ReactTooltip from "react-tooltip";
 import API from "../API";
-import {
-  cytoscapeDefaultNodeColor,
-  layouts
-} from "../utils/cytoscape/cytoUtils";
+import { cytoscapeDefaultNodeColor, layouts } from "../utils/cytoscape/cytoUtils";
 import {
   capitalize,
   visualizationMaxZoom,
@@ -48,9 +45,6 @@ function VisualizationLinks({
   // Color used for cytoscape nodes, needed in state for UI
   const [cytoNodeColor, setCytoNodeColor] = useState(cytoscapeDefaultNodeColor);
 
-  const iconScaling = 2;
-  const tooltipScaling = 1 / iconScaling;
-
   const [downloadLink, setDownloadLink] = useState({
     link: "#",
     type: null,
@@ -68,11 +62,18 @@ function VisualizationLinks({
     ]);
   }, [cytoNodeColor]);
 
+  // Custom settings for the links tooltips
+  const tooltipSettings = {
+    delayShow: 1000,
+    place: "left",
+    effect: "solid",
+  };
+
   return (
     <div className={`visualization-links ${fullscreen && ""}`} style={styles}>
       <div id="download-controls" className="controls-group">
         {downloadLink && (
-          <div data-tip data-for="downloadLinkTip" className="embedded-icon">
+          <div className="embedded-icon">
             <a
               id="downloadLink"
               href={downloadLink.link}
@@ -85,17 +86,17 @@ function VisualizationLinks({
                 onMouseEnter={() => setDownloadLink(generateDownloadLink())}
                 className="btn-controls"
                 variant="secondary"
+                data-tip
+                data-for="downloadLinkTip"
               >
                 <DataTransferDownloadIcon className="white-icon" />
               </Button>
             </a>
 
-            {tooltips ?? (
-              <div style={{ transform: `scale(${tooltipScaling})` }}>
-                <ReactTooltip id="downloadLinkTip" place="top" effect="solid">
-                  {"Download"}
-                </ReactTooltip>
-              </div>
+            {tooltips && (
+              <ReactTooltip id="downloadLinkTip" {...tooltipSettings}>
+                {API.texts.visualizationSettings.download}
+              </ReactTooltip>
             )}
           </div>
         )}
@@ -111,16 +112,14 @@ function VisualizationLinks({
               </Button>
             </a>
 
-            {tooltips ?? (
-              <div style={{ transform: `scale(${tooltipScaling})` }}>
-                <ReactTooltip id="embedLinkTip" place="top" effect="solid">
-                  {disabled == API.sources.byText
-                    ? API.texts.noPermalinkManual
-                    : disabled == API.sources.byFile
-                    ? API.texts.noPermalinkFile
-                    : API.texts.embeddedLink}
-                </ReactTooltip>
-              </div>
+            {tooltips && (
+              <ReactTooltip id="embedLinkTip" {...tooltipSettings}>
+                {disabled == API.sources.byText
+                  ? API.texts.noPermalinkManual
+                  : disabled == API.sources.byFile
+                  ? API.texts.noPermalinkFile
+                  : API.texts.visualizationSettings.embedLink}
+              </ReactTooltip>
             )}
           </div>
         )}
@@ -136,6 +135,8 @@ function VisualizationLinks({
                 }}
                 className="btn-controls"
                 variant="secondary"
+                data-tip
+                data-for="fullscreenTip"
               >
                 {fullscreen ? (
                   <FullscreenExitIcon className="white-icon" />
@@ -143,17 +144,33 @@ function VisualizationLinks({
                   <FullscreenEnterIcon className="white-icon" />
                 )}
               </Button>
+              {tooltips && (
+                <ReactTooltip id="fullscreenTip" {...tooltipSettings}>
+                  {fullscreen
+                    ? API.texts.visualizationSettings.fullscreenOut
+                    : API.texts.visualizationSettings.fullscreenIn}
+                </ReactTooltip>
+              )}
               {/* Extra button to fit the cyto */}
               {type === visualizationTypes.cytoscape && (
-                <Button
-                  onClick={() => {
-                    cytoscape.fit();
-                  }}
-                  className="btn-controls"
-                  variant="secondary"
-                >
-                  <TargetIcon className="white-icon" />
-                </Button>
+                <>
+                  <Button
+                    onClick={() => {
+                      cytoscape.fit();
+                    }}
+                    className="btn-controls"
+                    variant="secondary"
+                    data-tip
+                    data-for="centerTip"
+                  >
+                    <TargetIcon className="white-icon" />
+                  </Button>
+                  {tooltips && (
+                    <ReactTooltip id="centerTip" {...tooltipSettings}>
+                      {API.texts.visualizationSettings.center}
+                    </ReactTooltip>
+                  )}
+                </>
               )}
             </>
           )}
