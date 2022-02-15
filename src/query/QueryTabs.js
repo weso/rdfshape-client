@@ -1,10 +1,19 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
 import InputTabs from "../components/InputTabs";
+import { ApplicationContext } from "../context/ApplicationContext";
 import QueryForm from "./QueryForm";
 
 function QueryTabs(props) {
+  // Get query and its setter from context
+  const { sparqlQuery, setSparqlQuery } = useContext(ApplicationContext);
+
+  // Change context when the contained query changes
+  useEffect(() => {
+    setSparqlQuery(props.query);
+  }, [props.query]);
+
   const queryForm = (
     <QueryForm
       onChange={props.handleByTextChange}
@@ -20,18 +29,18 @@ function QueryTabs(props) {
     <div>
       <InputTabs
         name={props.name}
-        activeSource={props.activeSource}
+        activeSource={props.activeSource || sparqlQuery.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
-        textAreaValue={props.textAreaValue}
+        textAreaValue={props.textAreaValue || sparqlQuery.textArea}
         handleByTextChange={props.handleByTextChange}
         byTextPlaceholder={API.texts.placeholders.sparqlQuery}
         inputForm={queryForm}
-        urlValue={props.urlValue}
+        urlValue={props.urlValue || sparqlQuery.url}
         handleUrlChange={props.handleUrlChange}
         byUrlPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        fromParams={props.fromParams}
+        fromParams={props.fromParams || sparqlQuery.fromParams}
         resetFromParams={props.resetFromParams}
       />
     </div>

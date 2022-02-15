@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
+import { ApplicationContext } from "../context/ApplicationContext";
 import SelectFormat from "./SelectFormat";
 
 export const allEngines = [
@@ -59,9 +60,20 @@ SelectEngine.defaultProps = {
 
 // Shorthand for SelectEngine preconfigured with Shacl engines
 export function SelectSHACLEngine(props) {
+  // Get schema and its setter from context
+  const { shaclSchema: ctxShacl, setShaclSchema: setCtxShacl } = useContext(
+    ApplicationContext
+  );
+
+  // Change context when the contained schema changes
+  useEffect(() => {
+    setCtxShacl(props.shacl);
+  }, [props.shacl]);
+
   return (
     <SelectEngine
       {...props}
+      selectedEngine={props.selectedEngine || ctxShacl.engine}
       urlEngines={API.routes.server.schemaShaclEngines}
     />
   );

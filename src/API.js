@@ -364,7 +364,7 @@ class API {
             Input some Shape Expression (ShEx) and select its format, as well as
             a target validation engine and format to have your schema converted
           </p>
-          <p>
+          <span>
             Several target engines are supported, including:
             <ul>
               <li>ShEx and SHACL for schema to schema conversions</li>
@@ -389,7 +389,7 @@ class API {
                 for schema to forms conversions
               </li>
             </ul>
-          </p>
+          </span>
           <p>
             {API.engines.shex} to {API.engines.shacl} is still unsupported
           </p>
@@ -418,7 +418,7 @@ class API {
             Input a SHACL schema and select its format/engine, as well as a
             target validation engine and format to have your schema converted
           </p>
-          <p>
+          <span>
             Several target engines are supported, including:
             <ul>
               <li>
@@ -461,12 +461,12 @@ class API {
                 for WESO's ShEx/SHACL API
               </li>
             </ul>
-          </p>
+          </span>
         </>
       ),
 
       shapeMapInfo:
-        "Input a ShapeMap (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents. Note that whole URIs must be used as there is no data/schema from which a prefix map can be retrieved",
+        "Input a ShapeMap (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents. Whole URIs must be used since there is no data/schema from which a prefix map can be retrieved",
     },
 
     dataTabs: {
@@ -637,6 +637,8 @@ class API {
 
   // ID of the results container for any operation
   static resultsId = "results-container";
+  // Key for storing session temporary data in session storage
+  static sessionStorageDataKey = "applicationData";
 }
 
 export default API;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import {
   getDataText,
   InitialData,
@@ -48,39 +49,43 @@ function ShaclValidate(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  // Get all required data from state: data, schema, shapemap
+  const {
+    rdfData: [ctxData],
+    shaclSchema: ctxShacl,
+    validationEndpoint: ctxValidationEndpoint,
+  } = useContext(ApplicationContext);
+
   const url = API.routes.server.schemaValidate;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsData,
-        paramsShacl,
-        paramsEndpoint = {};
 
-      if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data) || data;
-        paramsData = finalData;
-        setData(finalData);
-      }
-      if (queryParams[API.queryParameters.schema.schema]) {
-        const finalSchema = updateStateShacl(queryParams, shacl) || shacl;
-        paramsShacl = finalSchema;
-        setShacl(finalSchema);
-      }
+      const finalData = {
+        index: 0,
+        ...(updateStateData(queryParams, data) || data),
+      };
+      setData(finalData);
 
-      // Endpoint State
-      if (queryParams[API.queryParameters.endpoint.endpoint]) {
-        paramsEndpoint = {
-          [API.queryParameters.endpoint.endpoint]:
-            queryParams[API.queryParameters.endpoint.endpoint],
-        };
-        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
-        setWithEndpoint(!!queryParams[API.queryParameters.endpoint.endpoint]);
-      }
+      const finalShacl = updateStateShacl(queryParams, shacl) || shacl;
+      setShacl(finalShacl);
 
-      const params = mkParams(paramsData, paramsShacl, paramsEndpoint);
-      setParams(params);
-      setLastParams(params);
+      const finalEndpoint =
+        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+      setEndpoint(finalEndpoint);
+      setWithEndpoint(!!finalEndpoint);
+
+      const newParams = mkParams(finalData, finalShacl, finalEndpoint);
+      setParams(newParams);
+      setLastParams(newParams);
+    } else {
+      if (ctxData && typeof ctxData === "object") setData(ctxData);
+      if (ctxShacl && typeof ctxShacl === "object") setShacl(ctxShacl);
+      if (ctxValidationEndpoint && typeof ctxValidationEndpoint === "string") {
+        setEndpoint(ctxValidationEndpoint);
+        setWithEndpoint(!!ctxValidationEndpoint);
+      }
     }
   }, [props.location?.search]);
 
@@ -127,19 +132,14 @@ function ShaclValidate(props) {
     setParams(mkParams());
   }
 
-  function mkParams(
-    paramsData = data,
-    paramsShacl = shacl,
-    paramsEndpoint = {}
-  ) {
+  function mkParams(pData = data, pShacl = shacl, pEndpoint = endpoint) {
     const params = {
-      ...paramsFromStateData(paramsData),
-      ...paramsFromStateShacl(paramsShacl),
-      ...paramsEndpoint,
+      ...paramsFromStateData(pData),
+      ...paramsFromStateShacl(pShacl),
       [API.queryParameters.schema.triggerMode]: API.triggerModes.targetDecls, // SHACL Validation
     };
-    if (endpoint !== "") {
-      params[API.queryParameters.endpoint.endpoint] = endpoint.trim();
+    if (pEndpoint) {
+      params[API.queryParameters.endpoint.endpoint] = pEndpoint.trim();
     }
     return params;
   }

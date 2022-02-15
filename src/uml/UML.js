@@ -79,6 +79,7 @@ export function mkUMLTabs(uml, setUml, name, subname) {
 
   return (
     <UMLTabs
+      uml={uml}
       name={name}
       subname={subname}
       activeSource={uml.activeSource}

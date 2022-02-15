@@ -98,6 +98,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
   return (
     <React.Fragment>
       <ShaclTabs
+        shacl={shacl}
         name={name}
         subname={subname}
         activeSource={shacl.activeSource}
@@ -115,6 +116,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
         resetFromParams={resetParams}
       />
       <SelectSHACLEngine
+        shacl={shacl}
         handleEngineChange={handleSHACLEngineChange}
         selectedEngine={shacl.engine}
         fromParams={shacl.fromParams}
@@ -122,6 +124,7 @@ export function mkShaclTabs(shacl, setShacl, name, subname) {
       />
 
       <SelectInferenceEngine
+        shacl={shacl}
         handleInferenceChange={handleInferenceChange}
         selectedInference={shacl.inference}
         fromParams={shacl.fromParams}

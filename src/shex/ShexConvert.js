@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -18,6 +18,7 @@ import {
   shaclEngines
 } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
@@ -54,6 +55,8 @@ function ShexConvert(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
+
+  const { shexSchema: ctxShex } = useContext(ApplicationContext);
 
   const urlConvert = API.routes.server.schemaConvert;
 
@@ -109,6 +112,8 @@ function ShexConvert(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
+    } else {
+      if (ctxShex && typeof ctxShex === "object") setShex(ctxShex);
     }
   }, [props.location?.search]);
 

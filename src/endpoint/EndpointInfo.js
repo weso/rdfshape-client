@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -9,6 +9,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultEndpointInfo from "../results/ResultEndpointInfo";
 import { mkError } from "../utils/ResponseError";
@@ -24,25 +25,27 @@ function EndpointInfo(props) {
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const { sparqlEndpoint: ctxEndpoint } = useContext(ApplicationContext);
+
   const url = API.routes.server.endpointInfo;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.endpoint.endpoint]) {
-        // Update form input with queried endpoint
-        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
+        const finalEndpoint =
+          queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+        setEndpoint(finalEndpoint);
 
-        // Update inner state and perform query
-        const params = {
-          [API.queryParameters.endpoint.endpoint]:
-            queryParams[API.queryParameters.endpoint.endpoint],
-        };
-        setParams(params);
-        setLastParams(params);
+        const newParams = mkParams(finalEndpoint);
+        setParams(newParams);
+        setLastParams(newParams);
       } else {
         setError(API.texts.errorParsingUrl);
       }
+    } else {
+      if (ctxEndpoint && typeof ctxEndpoint === "string")
+        setEndpoint(ctxEndpoint);
     }
   }, [props.location?.search]);
 
@@ -68,7 +71,13 @@ function EndpointInfo(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ [API.queryParameters.endpoint.endpoint]: endpoint.trim() });
+    setParams(mkParams());
+  }
+
+  function mkParams(pEndpoint = endpoint) {
+    return {
+      [API.queryParameters.endpoint.endpoint]: pEndpoint.trim(),
+    };
   }
 
   function postEndpointInfo() {
@@ -133,7 +142,7 @@ function EndpointInfo(props) {
       />
       <Form id="common-endpoints" onSubmit={handleSubmit}>
         <EndpointInput
-          value={endpoint}
+          endpoint={endpoint}
           handleOnChange={handleOnChange}
           handleOnSelect={handleOnSelect}
         />

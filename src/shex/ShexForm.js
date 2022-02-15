@@ -22,9 +22,9 @@ function ShexForm(props) {
       const y = YASHE.fromTextArea(textAreaRef.current, options);
       if (props.setCodeMirror) props.setCodeMirror(y);
       y.on("change", (cm, change) => {
-        props.onChange && props.onChange(cm.getValue(), y);
+        props.onChange && props.onChange(cm.getValue(), cm, change);
       });
-      y.setValue(props.value);
+      props.value && y.setValue(props.value);
       y.refresh();
       setYashe(y);
     } else if (props.fromParams) {

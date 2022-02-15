@@ -1,9 +1,20 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
 import InputTabs from "../components/InputTabs";
+import { ApplicationContext } from "../context/ApplicationContext";
 
 function UMLTabs(props) {
+  // Get UML and its setter from context
+  const { umlData: ctxUml, setUmlData: setCtxUml } = useContext(
+    ApplicationContext
+  );
+
+  // Change context when the contained UML changes
+  useEffect(() => {
+    setCtxUml(props.uml);
+  }, [props.uml]);
+
   const umlForm = null;
   return (
     <div>
@@ -32,6 +43,7 @@ function UMLTabs(props) {
 }
 
 UMLTabs.propTypes = {
+  uml: PropTypes.object.isRequired,
   activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,
@@ -43,7 +55,6 @@ UMLTabs.propTypes = {
 
   handleFileUpload: PropTypes.func.isRequired,
   selectedFormat: PropTypes.string.isRequired,
-  //   handleShExFormatChange: PropTypes.func.isRequired,
 
   /** Flag to signal if values come from Params */
   fromParams: PropTypes.bool.isRequired,

@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataMerge from "../results/ResultDataMerge";
 import { mkError } from "../utils/ResponseError";
@@ -39,6 +40,9 @@ function DataMerge(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  // Recover user input data from context, if any. Use 2 items of the data array
+  const { rdfData: ctxData1, addRdfData } = useContext(ApplicationContext);
+
   const url = API.routes.server.dataConvert;
 
   function handleTargetDataFormatChange(value) {
@@ -58,8 +62,14 @@ function DataMerge(props) {
           const contents = JSON.parse(
             queryParams[API.queryParameters.data.compound]
           );
-          const newData1 = updateStateData(contents[0], data1) || data1;
-          const newData2 = updateStateData(contents[1], data2) || data2;
+          const newData1 = {
+            index: 0,
+            ...(updateStateData(contents[0], data1) || data1),
+          };
+          const newData2 = {
+            index: 1,
+            ...(updateStateData(contents[1], data2) || data2),
+          };
 
           setData1(newData1);
           setData2(newData2);
@@ -78,6 +88,13 @@ function DataMerge(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
+    } else if (ctxData1 && typeof ctxData1 === "object") {
+      // Set the data in context so that UI changes
+      setData1(ctxData1);
+      // If there's no "data2" because it is the first time in the page, add a new data element
+      // to the data array in context
+      // setData2(ctxData2 || addRdfData());
+      setData2(InitialData);
     }
   }, [props.location?.search]);
 

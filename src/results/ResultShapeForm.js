@@ -71,7 +71,7 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
                 indentation: "  ",
               })} // Pretty print generated HTML
               textFormat={API.formats.xml}
-              fromParams={false}
+              fromParams={true}
               readonly={true}
               options={{ ...yasheResultButtonsOptions }}
             />

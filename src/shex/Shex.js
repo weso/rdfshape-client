@@ -100,6 +100,7 @@ export function mkShexTabs(shex, setShex, name, subname) {
 
   return (
     <ShexTabs
+      shex={shex}
       name={name}
       subname={subname}
       activeSource={shex.activeSource}

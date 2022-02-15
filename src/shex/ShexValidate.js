@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import {
   getDataText,
   InitialData,
@@ -56,17 +57,24 @@ function ShexValidate(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  // Get all required data from state: data, schema, shapemap
+  const {
+    rdfData: [ctxData],
+    shexSchema: ctxShex,
+    shapeMap: ctxShapeMap,
+  } = useContext(ApplicationContext);
+
   const url = API.routes.server.schemaValidate;
 
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsData,
-        paramsShex,
-        paramsShapeMap = {};
 
       // Data from URL or default
-      const finalData = updateStateData(queryParams, data) || data;
+      const finalData = {
+        index: 0,
+        ...(updateStateData(queryParams, data) || data),
+      };
       setData(finalData);
 
       // Shex
@@ -93,6 +101,11 @@ function ShexValidate(props) {
 
       setParams(newParams);
       setLastParams(newParams);
+    } else {
+      if (ctxData && typeof ctxData === "object") setData(ctxData);
+      if (ctxShex && typeof ctxShex === "object") setShEx(ctxShex);
+      if (ctxShapeMap && typeof ctxShapeMap === "object")
+        setShapeMap(ctxShapeMap);
     }
   }, [props.location?.search]);
 

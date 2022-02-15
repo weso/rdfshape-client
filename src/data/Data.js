@@ -92,11 +92,16 @@ export function mkDataTabs(
   function handleInferenceChange(value) {
     setData({ ...data, inference: value });
   }
+
+  function handleCodeMirrorChange(value) {
+    setData({ ...data, codeMirror: value });
+  }
   const resetParams = () => setData({ ...data, fromParams: false });
 
   return (
     <React.Fragment>
       <DataTabs
+        data={data}
         name={name}
         subname={subname}
         activeSource={data.activeSource}
@@ -108,11 +113,12 @@ export function mkDataTabs(
         handleFileUpload={handleDataFileUpload}
         selectedFormat={data.format}
         handleDataFormatChange={handleDataFormatChange}
-        setCodeMirror={(cm) => setData({ ...data, codeMirror: cm })}
+        setCodeMirror={handleCodeMirrorChange}
         fromParams={data.fromParams}
         resetFromParams={resetParams}
       />
       <SelectInferenceEngine
+        data={data}
         handleInferenceChange={handleInferenceChange}
         selectedInference={data.inference || InitialData.inference}
         fromParams={data.fromParams}

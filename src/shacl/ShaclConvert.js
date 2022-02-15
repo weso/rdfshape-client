@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -12,6 +12,7 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import { mkError } from "../utils/ResponseError";
@@ -46,6 +47,8 @@ function ShaclConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  const { shaclSchema: ctxShacl } = useContext(ApplicationContext);
+
   const urlConvert = API.routes.server.schemaConvert;
 
   useEffect(() => {
@@ -66,17 +69,19 @@ function ShaclConvert(props) {
           targetSchemaEngine;
         setTargetSchemaEngine(finalTargetEngine);
 
-        const params = mkParams(
+        const newParams = mkParams(
           finalSchema,
           finalTargetFormat,
           finalTargetEngine
         );
 
-        setParams(params);
-        setLastParams(params);
+        setParams(newParams);
+        setLastParams(newParams);
       } else {
         setError(API.texts.errorParsingUrl);
       }
+    } else {
+      if (ctxShacl && typeof ctxShacl === "object") setShacl(ctxShacl);
     }
   }, [props.location?.search]);
 

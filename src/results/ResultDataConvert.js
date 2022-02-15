@@ -43,7 +43,7 @@ function ResultDataConvert({
               <ByText
                 textAreaValue={dataRaw}
                 textFormat={format2mode(outputFormatName)}
-                fromParams={fromParams}
+                fromParams={true}
                 readOnly={true}
                 options={{ ...yasheResultButtonsOptions }}
               />

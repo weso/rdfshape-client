@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaInfo from "../results/ResultSchemaInfo";
 import { mkError } from "../utils/ResponseError";
@@ -36,6 +37,8 @@ function ShaclInfo(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  const { shaclSchema: ctxShacl } = useContext(ApplicationContext);
+
   const urlInfo = API.routes.server.schemaInfo;
   const urlVisual = API.routes.server.schemaConvert;
 
@@ -47,13 +50,15 @@ function ShaclInfo(props) {
         const finalSchema = updateStateShacl(queryParams, shacl) || shacl;
         setShacl(finalSchema);
 
-        const params = mkParams(finalSchema);
+        const newParams = mkParams(finalSchema);
 
-        setParams(params);
-        setLastParams(params);
+        setParams(newParams);
+        setLastParams(newParams);
       } else {
         setError(API.texts.errorParsingUrl);
       }
+    } else {
+      if (ctxShacl && typeof ctxShacl === "object") setShacl(ctxShacl);
     }
   }, [props.location?.search]);
 

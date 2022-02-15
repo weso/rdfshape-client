@@ -1,7 +1,7 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
@@ -40,6 +41,11 @@ function DataExtract(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  // Recover user input data and query from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+  } = useContext(ApplicationContext);
+
   const urlServerExtract = API.routes.server.dataExtract;
   const urlServerVisualize = API.routes.server.schemaConvert;
 
@@ -47,7 +53,7 @@ function DataExtract(props) {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data);
+        const finalData = { index: 0, ...updateStateData(queryParams, data) };
         setData(finalData);
 
         const finalNodeSelector =
@@ -59,6 +65,8 @@ function DataExtract(props) {
         setParams(newParams);
         setLastParams(newParams);
       } else setError(API.texts.errorParsingUrl);
+    } else {
+      if (ctxData && typeof ctxData === "object") setData(ctxData);
     }
   }, [props.location?.search]);
 
