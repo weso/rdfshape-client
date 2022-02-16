@@ -1,6 +1,6 @@
 //import SelectFormat from "../components/SelectFormat"
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 import shumlex from "shumlex";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong } from "../Permalink";
 import ResultXmi2Shex from "../results/ResultXmi2Shex";
 import {
@@ -24,7 +25,10 @@ import { mkError } from "../utils/ResponseError";
 import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
 
 export default function Xmi2Shex(props) {
-  const [uml, setUml] = useState(InitialUML);
+  // Recover user input data from context, if any. Use first item of the data array
+  const { umlData: ctxUml } = useContext(ApplicationContext);
+
+  const [uml, setUml] = useState(ctxUml || InitialUML);
 
   const [result, setResult] = useState(null);
 

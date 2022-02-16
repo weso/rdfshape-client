@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -18,6 +18,7 @@ import {
   shaclEngines
 } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
@@ -34,6 +35,10 @@ import {
 } from "./Shex";
 
 function ShexConvert(props) {
+  const { shexSchema: ctxShex } = useContext(ApplicationContext);
+
+  const [shex, setShex] = useState(ctxShex || InitialShex);
+
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
     API.formats.defaultShex
   );
@@ -41,7 +46,6 @@ function ShexConvert(props) {
   const [targetSchemaEngine, setTargetSchemaEngine] = useState(
     API.engines.shex
   );
-  const [shex, setShex] = useState(InitialShex);
 
   const [result, setResult] = useState("");
 

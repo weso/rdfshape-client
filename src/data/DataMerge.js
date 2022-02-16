@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,21 +11,26 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataMerge from "../results/ResultDataMerge";
 import { mkError } from "../utils/ResponseError";
 import { getFileContents } from "../utils/Utils";
 import {
   getDataText,
-  InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataMerge(props) {
-  const [data1, setData1] = useState(InitialData);
-  const [data2, setData2] = useState(InitialData);
+  // Recover user input data from context, if any. Use 2 items of the data array
+  const { rdfData: rdfDataSet, addRdfData } = useContext(ApplicationContext);
+  const [ctxData1, ctxData2] = rdfDataSet;
+
+  const [data1, setData1] = useState(ctxData1 || addRdfData());
+  const [data2, setData2] = useState(ctxData2 || addRdfData());
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [dataTargetFormat, setDataTargetFormat] = useState(
@@ -58,8 +63,14 @@ function DataMerge(props) {
           const contents = JSON.parse(
             queryParams[API.queryParameters.data.compound]
           );
-          const newData1 = updateStateData(contents[0], data1) || data1;
-          const newData2 = updateStateData(contents[1], data2) || data2;
+          const newData1 = {
+            index: 0,
+            ...(updateStateData(contents[0], data1) || data1),
+          };
+          const newData2 = {
+            index: 1,
+            ...(updateStateData(contents[1], data2) || data2),
+          };
 
           setData1(newData1);
           setData2(newData2);

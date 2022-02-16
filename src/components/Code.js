@@ -31,7 +31,7 @@ function Code(props) {
   useEffect(() => {
     if (editor) {
       if (props.fromParams) {
-        editor.setValue(props.value);
+        props.value && editor.setValue(props.value);
         props.resetFromParams && props.resetFromParams();
       }
     }

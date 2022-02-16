@@ -99,7 +99,11 @@ InputTabsWithFormat.defaultProps = {
   byUrlName: "",
   byUrlPlaceholder: "",
   byFileName: "",
+  fromParams: false,
   nameFormat: API.texts.dataTabs.formatHeader,
+
+  textAreaValue: "",
+  urlValue: "",
 };
 
 export default InputTabsWithFormat;

@@ -1,28 +1,39 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 
 function ShapeMapTabs(props) {
+  // Get shapeMap and its setter from context
+  const { shapeMap: ctxShapeMap, setShapeMap: setCtxShapeMap } = useContext(
+    ApplicationContext
+  );
+
+  // Change context when the contained shapeMap changes
+  useEffect(() => {
+    setCtxShapeMap(props.shapeMap);
+  }, [props.shapeMap]);
+
   return (
     <div>
       <InputTabsWithFormat
         defaultFormat={API.formats.defaultShapeMap}
         nameInputTab={props.name}
-        activeSource={props.activeSource}
+        activeSource={props.activeSource || ctxShapeMap.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
-        textAreaValue={props.textAreaValue}
+        textAreaValue={props.textAreaValue || ctxShapeMap.textArea}
         byTextPlaceholder={API.texts.placeholders.shapeMap}
         handleByTextChange={props.handleByTextChange}
         handleUrlChange={props.handleUrlChange}
-        urlValue={props.urlValue}
+        urlValue={props.urlValue || ctxShapeMap.url}
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        selectedFormat={props.selectedFormat}
+        selectedFormat={props.selectedFormat || ctxShapeMap.format}
         handleFormatChange={props.handleFormatChange}
         urlFormats={API.routes.server.shapeMapFormats}
-        fromParams={props.fromParams}
+        fromParams={props.fromParams || ctxShapeMap.fromParams}
         resetFromParams={props.resetFromParams}
         setCodeMirror={props.setCodeMirror}
       />
@@ -31,6 +42,9 @@ function ShapeMapTabs(props) {
 }
 
 ShapeMapTabs.propTypes = {
+  /** Application shapeMap data */
+  shapeMap: PropTypes.object.isRequired,
+
   /** Active source */
   activeSource: PropTypes.string,
 

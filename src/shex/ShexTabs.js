@@ -1,28 +1,39 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 
 function ShexTabs(props) {
+  // Get schema and its setter from context
+  const { shexSchema: ctxShex, setShexSchema: setCtxShex } = useContext(
+    ApplicationContext
+  );
+
+  // Change context when the contained schema changes
+  useEffect(() => {
+    setCtxShex(props.shex);
+  }, [props.shex]);
+
   return (
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name}
-        activeSource={props.activeSource}
+        activeSource={props.activeSource || ctxShex.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
-        textAreaValue={props.textAreaValue}
+        textAreaValue={props.textAreaValue || ctxShex.textArea}
         byTextPlaceholder={API.texts.placeholders.shex}
         handleByTextChange={props.handleByTextChange}
         setCodeMirror={props.setCodeMirror}
         handleUrlChange={props.handleShExUrlChange}
-        urlValue={props.urlValue}
+        urlValue={props.urlValue || ctxShex.url}
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        selectedFormat={props.selectedFormat}
+        selectedFormat={props.selectedFormat || ctxShex.format}
         handleFormatChange={props.handleShExFormatChange}
         urlFormats={API.routes.server.shExFormats}
-        fromParams={props.fromParams}
+        fromParams={props.fromParams || ctxShex.fromParams}
         resetFromParams={props.resetFromParams}
       />
     </div>
@@ -30,6 +41,7 @@ function ShexTabs(props) {
 }
 
 ShexTabs.propTypes = {
+  shex: PropTypes.object.isRequired,
   activeSource: PropTypes.string,
   handleTabChange: PropTypes.func.isRequired,
   textAreaValue: PropTypes.string,

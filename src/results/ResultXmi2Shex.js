@@ -67,7 +67,7 @@ function ResultXMI2ShEx({
               <ByText
                 textAreaValue={resultRaw}
                 textFormat={API.formats.shexc} // Force ShExC for the text results
-                fromParams={false}
+                fromParams={true}
                 handleByTextChange={function(val) {
                   return val;
                 }}

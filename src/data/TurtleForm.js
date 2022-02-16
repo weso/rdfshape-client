@@ -9,26 +9,30 @@ function TurtleForm(props) {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    if (!yate) {
-      const options = {
-        readOnly: true,
-        autoCloseTags: true,
-        start: { line: 0 },
-        lineNumbers: true,
-        lineWrapping: true,
-        ...props.options,
-      };
+    const options = {
+      readOnly: true,
+      autoCloseTags: true,
+      start: { line: 0 },
+      lineNumbers: true,
+      lineWrapping: true,
+      ...props.options,
+    };
 
+    if (!yate) {
       const y = YATE.fromTextArea(textAreaRef.current, options);
       y.on("change", (cm, change) => {
-        props.onChange(cm.getValue(), cm, change);
+        props.onChange && props.onChange(cm.getValue(), cm, change);
       });
-      y.setValue(props.value);
+      // If a non-empty value is passed from parent, use it
+
+      props.value && y.setValue(props.value);
       y.refresh();
       setYate(y);
-    } else if (props.fromParams) {
-      yate.setValue(props.value);
-      props.resetFromParams && props.resetFromParams();
+    } else {
+      if (props.fromParams) {
+        yate.setValue(props.value);
+        props.resetFromParams && props.resetFromParams();
+      }
     }
   }, [
     yate,

@@ -40,7 +40,7 @@ function ResultSchemaConvert({
               <ByText
                 textAreaValue={outputSchema}
                 textFormat={outputFormatName}
-                fromParams={false}
+                fromParams={true}
                 options={{ ...yasheResultButtonsOptions }}
               />
             </Tab>

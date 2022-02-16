@@ -32,7 +32,7 @@ const PageHeader = ({ title, details }) => {
 
 PageHeader.propTypes = {
   title: PropTypes.string.isRequired,
-  details: PropTypes.string,
+  details: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 };
 
 export default PageHeader;

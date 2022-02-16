@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -10,6 +10,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
 import { mkError } from "../utils/ResponseError";
@@ -21,13 +22,20 @@ import {
 } from "./ShapeMap";
 
 function ShapeMapInfo(props) {
-  const [shapemap, setShapemap] = useState(InitialShapeMap);
+  // Recover user shapeMap from context, if any
+  const { shapeMap: ctxShapeMap } = useContext(ApplicationContext);
+
+  const [shapemap, setShapemap] = useState(ctxShapeMap || InitialShapeMap);
+
   const [result, setResult] = useState(null);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);

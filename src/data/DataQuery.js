@@ -1,7 +1,7 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,6 +11,7 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
   getQueryText,
@@ -22,16 +23,21 @@ import {
 import ResultSparqlQuery from "../results/ResultSparqlQuery";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataQuery(props) {
-  const [data, setData] = useState(InitialData);
-  const [query, setQuery] = useState(InitialQuery);
+  // Recover user input data and query from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    sparqlQuery: ctxQuery,
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
+  const [query, setQuery] = useState(ctxQuery || InitialQuery);
 
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -50,24 +56,19 @@ function DataQuery(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsData,
-        paramsQuery = {};
 
-      if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data) || data;
-        paramsData = finalData;
-        setData(finalData);
-      }
+      const finalData = {
+        index: 0,
+        ...(updateStateData(queryParams, data) || data),
+      };
+      setData(finalData);
 
-      if (queryParams[API.queryParameters.query.query]) {
-        const finalQuery = updateStateQuery(queryParams, query) || query;
-        paramsQuery = finalQuery;
-        setQuery(finalQuery);
-      }
+      const finalQuery = updateStateQuery(queryParams, query) || query;
+      setQuery(finalQuery);
 
       const params = {
-        ...paramsFromStateData(paramsData),
-        ...paramsFromStateQuery(paramsQuery),
+        ...paramsFromStateData(finalData),
+        ...paramsFromStateQuery(finalQuery),
       };
 
       setParams(params);

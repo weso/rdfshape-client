@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -10,21 +10,26 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataInfo from "../results/ResultDataInfo";
 import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataInfo(props) {
-  const [data, setData] = useState(InitialData);
-  const [dotVisualization, setDotVisualization] = useState(null);
+  // Recover user input data from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  // Set initial data from context, if possible
+  const [data, setData] = useState(ctxData || addRdfData());
 
   const [result, setResult] = useState(null);
 
@@ -41,15 +46,18 @@ function DataInfo(props) {
   const urlInfo = API.routes.server.dataInfo;
   const urlVisual = API.routes.server.dataConvert;
 
+  // Try to autofill user data, first from the query string then from context
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data) || data;
+        const finalData = {
+          index: 0,
+          ...(updateStateData(queryParams, data) || data),
+        };
         setData(finalData);
 
         const params = paramsFromStateData(finalData);
-
         setParams(params);
         setLastParams(params);
       } else {

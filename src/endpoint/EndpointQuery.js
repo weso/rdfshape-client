@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import {
   getQueryRaw,
@@ -23,14 +24,23 @@ import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
 function EndpointQuery(props) {
-  const [endpoint, setEndpoint] = useState("");
+  // Recover user endpoint and query from context, if any
+  const { sparqlEndpoint: ctxEndpoint, sparqlQuery: ctxQuery } = useContext(
+    ApplicationContext
+  );
+
+  const [endpoint, setEndpoint] = useState(ctxEndpoint || "");
+  const [query, setQuery] = useState(ctxQuery || InitialQuery);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
-  const [query, setQuery] = useState(InitialQuery);
+
   const [permalink, setPermalink] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const [progressPercent, setProgressPercent] = useState(0);
   const [controlPressed, setControlPressed] = useState(false);
 
@@ -39,32 +49,19 @@ function EndpointQuery(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      let paramsQuery,
-        paramsEndpoint = {};
 
-      // Query State
-      if (queryParams[API.queryParameters.query.query]) {
-        paramsQuery = updateStateQuery(queryParams, query) || query;
-        setQuery(paramsQuery);
-      }
+      const finalQuery = updateStateQuery(queryParams, query) || query;
+      setQuery(finalQuery);
 
-      // Endpoint State
-      if (queryParams[API.queryParameters.endpoint.endpoint]) {
-        paramsEndpoint = {
-          [API.queryParameters.endpoint.endpoint]:
-            queryParams[API.queryParameters.endpoint.endpoint],
-        };
-        setEndpoint(queryParams[API.queryParameters.endpoint.endpoint]);
-      }
+      const finalEndpoint =
+        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+      setEndpoint(finalEndpoint);
 
       // Params to be used in first query
-      let params = {
-        ...paramsFromStateQuery(paramsQuery),
-        ...paramsEndpoint,
-      };
+      const newParams = mkParams(finalEndpoint, finalQuery);
 
-      setParams(params);
-      setLastParams(params);
+      setParams(newParams);
+      setLastParams(newParams);
     }
   }, [props.location?.search]);
 
@@ -108,10 +105,14 @@ function EndpointQuery(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      ...paramsFromStateQuery(query),
-      [API.queryParameters.endpoint.endpoint]: endpoint,
-    });
+    setParams(mkParams());
+  }
+
+  function mkParams(pEndpoint = endpoint, pQuery = query) {
+    return {
+      [API.queryParameters.endpoint.endpoint]: pEndpoint,
+      ...paramsFromStateQuery(pQuery),
+    };
   }
 
   async function postQuery() {
@@ -186,7 +187,7 @@ function EndpointQuery(props) {
         onKeyUp={onKeyUp}
       >
         <EndpointInput
-          value={endpoint}
+          endpoint={endpoint}
           handleOnChange={handleOnChange}
           handleOnSelect={handleOnSelect}
         />

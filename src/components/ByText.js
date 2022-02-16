@@ -9,7 +9,9 @@ import Code from "./Code";
 
 function ByText(props) {
   // Pre-process the text sent down to the text container
-  const textContent = props.textAreaValue?.trim();
+  const textContent = props.fromParams
+    ? props.textAreaValue?.trim()
+    : props.textAreaValue;
 
   function handleChange(value, y, change) {
     props.handleByTextChange && props.handleByTextChange(value, y, change);
@@ -24,20 +26,20 @@ function ByText(props) {
       Use a generic <Code> element with text by default */}
       {textFormat == API.formats.turtle.toLowerCase() ? (
         <TurtleForm
-          onChange={handleChange}
-          engine={props.textEngine}
-          fromParams={props.fromParams}
-          resetFromParams={props.resetFromParams}
           value={textContent}
-          options={{ placeholder: props.placeholder, ...props.options }}
-        />
-      ) : textFormat == API.formats.shexc.toLowerCase() ? (
-        <ShexForm
           onChange={handleChange}
           setCodeMirror={props.setCodeMirror}
           fromParams={props.fromParams}
           resetFromParams={props.resetFromParams}
+          options={{ placeholder: props.placeholder, ...props.options }}
+        />
+      ) : textFormat == API.formats.shexc.toLowerCase() ? (
+        <ShexForm
           value={textContent}
+          onChange={handleChange}
+          setCodeMirror={props.setCodeMirror}
+          fromParams={props.fromParams}
+          resetFromParams={props.resetFromParams}
           options={{ placeholder: props.placeholder, ...props.options }}
         />
       ) : (

@@ -71,6 +71,7 @@ export function mkQueryTabs(query, setQuery, name, subname) {
 
   return (
     <QueryTabs
+      query={query}
       name={name}
       subname={subname}
       activeSource={query.activeSource}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,21 +11,26 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 import { getNodesFromForm } from "./TurtleForm";
 
 function DataExtract(props) {
-  const [data, setData] = useState(InitialData);
+  // Recover user input data and query from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -47,7 +52,7 @@ function DataExtract(props) {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data);
+        const finalData = { index: 0, ...updateStateData(queryParams, data) };
         setData(finalData);
 
         const finalNodeSelector =

@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "query-string";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -11,28 +11,36 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong, params2Form } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
 import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
-  InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataConvert(props) {
-  const [result, setResult] = useState("");
-  const [params, setParams] = useState(null);
-  const [lastParams, setLastParams] = useState(null);
-  const [permalink, setPermalink] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(InitialData);
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
   const [dataTargetFormat, setDataTargetFormat] = useState(
     API.formats.defaultData
   );
+  const [result, setResult] = useState("");
+
+  const [params, setParams] = useState(null);
+  const [lastParams, setLastParams] = useState(null);
+
+  const [permalink, setPermalink] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
@@ -47,7 +55,10 @@ function DataConvert(props) {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
       if (queryParams[API.queryParameters.data.data]) {
-        const finalData = updateStateData(queryParams, data) || data;
+        const finalData = {
+          index: 0,
+          ...(updateStateData(queryParams, data) || data),
+        };
         setData(finalData);
 
         if (queryParams[API.queryParameters.data.targetFormat]) {
@@ -167,7 +178,7 @@ function DataConvert(props) {
   return (
     <Container fluid={true}>
       <Row>
-      <PageHeader
+        <PageHeader
           title={API.texts.pageHeaders.dataConversion}
           details={API.texts.pageExplanations.dataConversion}
         />

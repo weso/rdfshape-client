@@ -80,6 +80,7 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
 
   return (
     <ShapeMapTabs
+      shapeMap={shapeMap}
       name={name}
       subname={subname}
       activeSource={shapeMap.activeSource}
