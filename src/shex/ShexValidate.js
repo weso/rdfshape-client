@@ -12,9 +12,7 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "../data/Data";
@@ -38,9 +36,17 @@ import {
 } from "./Shex";
 
 function ShexValidate(props) {
-  const [data, setData] = useState(InitialData);
-  const [shex, setShEx] = useState(InitialShex);
-  const [shapeMap, setShapeMap] = useState(InitialShapeMap);
+  // Get all required data from state: data, schema, shapemap
+  const {
+    rdfData: [ctxData],
+    shexSchema: ctxShex,
+    shapeMap: ctxShapeMap,
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
+  const [shex, setShEx] = useState(ctxShex || InitialShex);
+  const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
 
   const [endpoint, setEndpoint] = useState("");
   const [withEndpoint, setWithEndpoint] = useState(false); // UI reference
@@ -56,13 +62,6 @@ function ShexValidate(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Get all required data from state: data, schema, shapemap
-  const {
-    rdfData: [ctxData],
-    shexSchema: ctxShex,
-    shapeMap: ctxShapeMap,
-  } = useContext(ApplicationContext);
 
   const url = API.routes.server.schemaValidate;
 
@@ -101,11 +100,6 @@ function ShexValidate(props) {
 
       setParams(newParams);
       setLastParams(newParams);
-    } else {
-      if (ctxData && typeof ctxData === "object") setData(ctxData);
-      if (ctxShex && typeof ctxShex === "object") setShEx(ctxShex);
-      if (ctxShapeMap && typeof ctxShapeMap === "object")
-        setShapeMap(ctxShapeMap);
     }
   }, [props.location?.search]);
 

@@ -22,19 +22,23 @@ import {
 } from "./ShapeMap";
 
 function ShapeMapInfo(props) {
-  const [shapemap, setShapemap] = useState(InitialShapeMap);
+  // Recover user shapeMap from context, if any
+  const { shapeMap: ctxShapeMap } = useContext(ApplicationContext);
+
+  const [shapemap, setShapemap] = useState(ctxShapeMap || InitialShapeMap);
+
   const [result, setResult] = useState(null);
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user shapeMap from context, if any
-  const { shapeMap: ctxShapeMap } = useContext(ApplicationContext);
 
   const url = API.routes.server.shapeMapInfo;
 
@@ -50,9 +54,6 @@ function ShapeMapInfo(props) {
         setParams(params);
         setLastParams(params);
       } else setError(API.texts.errorParsingUrl);
-    } else {
-      if (ctxShapeMap && typeof ctxShapeMap === "object")
-        setShapemap(ctxShapeMap);
     }
   }, [props.location?.search]);
 

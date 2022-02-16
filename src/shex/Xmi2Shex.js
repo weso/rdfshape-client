@@ -25,7 +25,10 @@ import { mkError } from "../utils/ResponseError";
 import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
 
 export default function Xmi2Shex(props) {
-  const [uml, setUml] = useState(InitialUML);
+  // Recover user input data from context, if any. Use first item of the data array
+  const { umlData: ctxUml } = useContext(ApplicationContext);
+
+  const [uml, setUml] = useState(ctxUml || InitialUML);
 
   const [result, setResult] = useState(null);
 
@@ -38,9 +41,6 @@ export default function Xmi2Shex(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user input data from context, if any. Use first item of the data array
-  const { umlData: ctxUml } = useContext(ApplicationContext);
 
   useEffect(() => {
     if (props.location?.search) {
@@ -72,8 +72,6 @@ export default function Xmi2Shex(props) {
         setUpHistory();
         doRequest();
       }
-    } else {
-      if (ctxUml && typeof ctxUml === "object") setUml(ctxUml);
     }
   }, [params]);
 

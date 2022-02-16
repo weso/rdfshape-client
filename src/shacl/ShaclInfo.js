@@ -23,7 +23,9 @@ import {
 } from "./Shacl";
 
 function ShaclInfo(props) {
-  const [shacl, setShacl] = useState(InitialShacl);
+  const { shaclSchema: ctxShacl } = useContext(ApplicationContext);
+
+  const [shacl, setShacl] = useState(ctxShacl || InitialShacl);
 
   const [result, setResult] = useState("");
 
@@ -36,8 +38,6 @@ function ShaclInfo(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  const { shaclSchema: ctxShacl } = useContext(ApplicationContext);
 
   const urlInfo = API.routes.server.schemaInfo;
   const urlVisual = API.routes.server.schemaConvert;
@@ -57,8 +57,6 @@ function ShaclInfo(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else {
-      if (ctxShacl && typeof ctxShacl === "object") setShacl(ctxShacl);
     }
   }, [props.location?.search]);
 

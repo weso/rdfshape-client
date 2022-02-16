@@ -24,21 +24,25 @@ import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
 function EndpointQuery(props) {
-  const [endpoint, setEndpoint] = useState("");
-  const [params, setParams] = useState(null);
-  const [lastParams, setLastParams] = useState(null);
-  const [result, setResult] = useState("");
-  const [error, setError] = useState("");
-  const [query, setQuery] = useState(InitialQuery);
-  const [permalink, setPermalink] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [progressPercent, setProgressPercent] = useState(0);
-  const [controlPressed, setControlPressed] = useState(false);
-
   // Recover user endpoint and query from context, if any
   const { sparqlEndpoint: ctxEndpoint, sparqlQuery: ctxQuery } = useContext(
     ApplicationContext
   );
+
+  const [endpoint, setEndpoint] = useState(ctxEndpoint || "");
+  const [query, setQuery] = useState(ctxQuery || InitialQuery);
+
+  const [params, setParams] = useState(null);
+  const [lastParams, setLastParams] = useState(null);
+
+  const [result, setResult] = useState("");
+  const [error, setError] = useState("");
+
+  const [permalink, setPermalink] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [controlPressed, setControlPressed] = useState(false);
 
   const url = API.routes.server.wikibaseQuery;
 
@@ -58,10 +62,6 @@ function EndpointQuery(props) {
 
       setParams(newParams);
       setLastParams(newParams);
-    } else {
-      if (ctxEndpoint && typeof ctxEndpoint === "string")
-        setEndpoint(ctxEndpoint);
-      if (ctxQuery && typeof ctxQuery === "object") setQuery(ctxQuery);
     }
   }, [props.location?.search]);
 

@@ -16,7 +16,9 @@ import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
 function EndpointInfo(props) {
-  const [endpoint, setEndpoint] = useState("");
+  const { sparqlEndpoint: ctxEndpoint } = useContext(ApplicationContext);
+
+  const [endpoint, setEndpoint] = useState(ctxEndpoint || "");
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [result, setResult] = useState(null);
@@ -24,8 +26,6 @@ function EndpointInfo(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
-
-  const { sparqlEndpoint: ctxEndpoint } = useContext(ApplicationContext);
 
   const url = API.routes.server.endpointInfo;
 
@@ -43,9 +43,6 @@ function EndpointInfo(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else {
-      if (ctxEndpoint && typeof ctxEndpoint === "string")
-        setEndpoint(ctxEndpoint);
     }
   }, [props.location?.search]);
 

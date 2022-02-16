@@ -35,6 +35,10 @@ import {
 } from "./Shex";
 
 function ShexConvert(props) {
+  const { shexSchema: ctxShex } = useContext(ApplicationContext);
+
+  const [shex, setShex] = useState(ctxShex || InitialShex);
+
   const [targetSchemaFormat, setTargetSchemaFormat] = useState(
     API.formats.defaultShex
   );
@@ -42,7 +46,6 @@ function ShexConvert(props) {
   const [targetSchemaEngine, setTargetSchemaEngine] = useState(
     API.engines.shex
   );
-  const [shex, setShex] = useState(InitialShex);
 
   const [result, setResult] = useState("");
 
@@ -55,8 +58,6 @@ function ShexConvert(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  const { shexSchema: ctxShex } = useContext(ApplicationContext);
 
   const urlConvert = API.routes.server.schemaConvert;
 
@@ -112,8 +113,6 @@ function ShexConvert(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else {
-      if (ctxShex && typeof ctxShex === "object") setShex(ctxShex);
     }
   }, [props.location?.search]);
 

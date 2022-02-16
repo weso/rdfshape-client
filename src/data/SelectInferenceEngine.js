@@ -14,6 +14,9 @@ function SelectInferenceEngine(props) {
     ? inferenceTargets.shacl
     : inferenceTargets.rdf;
 
+  // In case we are manipulating data, the index in the data array that we are manipulating
+  const dataIndex = props?.data?.index;
+
   // Get potentially necessary data from context
   const {
     rdfData: ctxDataSet,
@@ -25,23 +28,21 @@ function SelectInferenceEngine(props) {
   useEffect(() => {
     switch (inferenceTarget) {
       case inferenceTargets.rdf:
-        setCtxDataSet(props.data);
-      // setCtxDataSet(
-      //   ctxDataSet.reduce(
-      //     (acc, curr, idx) =>
-      //       props.data.index === idx ? [...acc, props.data] : [...acc, curr],
-      //     []
-      //   )
-      // );
+        // setCtxDataSet(props.data);
+        // setCtxDataSet([props.data]);
+        setCtxDataSet(
+          ctxDataSet.reduce(
+            (acc, curr) =>
+              dataIndex === curr.index ? [...acc, props.data] : [...acc, curr],
+            []
+          )
+        );
       case inferenceTargets.shacl:
         setCtxShacl(props.shacl);
       default:
         return;
     }
   }, [props.data, props.shacl]);
-
-  // In case we are manipulating data, the index in the data array that we are manipulating
-  const dataIndex = props?.data?.index || 0;
 
   return (
     <SelectFormat
@@ -50,7 +51,7 @@ function SelectInferenceEngine(props) {
         props.selectedInference ||
         (inferenceTarget === inferenceTargets.shacl
           ? ctxShacl.inference
-          : ctxDataSet.inference)
+          : ctxDataSet[dataIndex]?.inference)
       }
       urlFormats={API.routes.server.inferenceEngines}
       name={props.name}

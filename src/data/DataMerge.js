@@ -18,15 +18,19 @@ import { mkError } from "../utils/ResponseError";
 import { getFileContents } from "../utils/Utils";
 import {
   getDataText,
-  InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataMerge(props) {
-  const [data1, setData1] = useState(InitialData);
-  const [data2, setData2] = useState(InitialData);
+  // Recover user input data from context, if any. Use 2 items of the data array
+  const { rdfData: rdfDataSet, addRdfData } = useContext(ApplicationContext);
+  const [ctxData1, ctxData2] = rdfDataSet;
+
+  const [data1, setData1] = useState(ctxData1 || addRdfData());
+  const [data2, setData2] = useState(ctxData2 || addRdfData());
+
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [dataTargetFormat, setDataTargetFormat] = useState(
@@ -39,9 +43,6 @@ function DataMerge(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user input data from context, if any. Use 2 items of the data array
-  const { rdfData: ctxData1, addRdfData } = useContext(ApplicationContext);
 
   const url = API.routes.server.dataConvert;
 
@@ -88,13 +89,6 @@ function DataMerge(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else if (ctxData1 && typeof ctxData1 === "object") {
-      // Set the data in context so that UI changes
-      setData1(ctxData1);
-      // If there's no "data2" because it is the first time in the page, add a new data element
-      // to the data array in context
-      // setData2(ctxData2 || addRdfData());
-      setData2(InitialData);
     }
   }, [props.location?.search]);
 

@@ -23,16 +23,21 @@ import {
 import ResultSparqlQuery from "../results/ResultSparqlQuery";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataQuery(props) {
-  const [data, setData] = useState(InitialData);
-  const [query, setQuery] = useState(InitialQuery);
+  // Recover user input data and query from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    sparqlQuery: ctxQuery,
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
+  const [query, setQuery] = useState(ctxQuery || InitialQuery);
 
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
@@ -45,12 +50,6 @@ function DataQuery(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user input data and query from context, if any. Use first item of the data array
-  const {
-    rdfData: [ctxData],
-    sparqlQuery: ctxQuery,
-  } = useContext(ApplicationContext);
 
   const url = API.routes.server.dataQuery;
 
@@ -74,9 +73,6 @@ function DataQuery(props) {
 
       setParams(params);
       setLastParams(params);
-    } else {
-      if (ctxData && typeof ctxData === "object") setData(ctxData);
-      if (ctxQuery && typeof ctxQuery === "object") setQuery(ctxQuery);
     }
   }, [props.location?.search]);
 

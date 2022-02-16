@@ -23,7 +23,9 @@ import {
 } from "./Shex";
 
 function ShexInfo(props) {
-  const [shex, setShEx] = useState(InitialShex);
+  const { shexSchema: ctxShex } = useContext(ApplicationContext);
+
+  const [shex, setShEx] = useState(ctxShex || InitialShex);
 
   const [result, setResult] = useState("");
 
@@ -36,8 +38,6 @@ function ShexInfo(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  const { shexSchema: ctxShex } = useContext(ApplicationContext);
 
   const urlInfo = API.routes.server.schemaInfo;
   const urlVisual = API.routes.server.schemaConvert;
@@ -57,8 +57,6 @@ function ShexInfo(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else {
-      if (ctxShex && typeof ctxShex === "object") setShEx(ctxShex);
     }
   }, [props.location?.search]);
 

@@ -16,15 +16,20 @@ import ResultDataInfo from "../results/ResultDataInfo";
 import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataInfo(props) {
-  const [data, setData] = useState(InitialData);
+  // Recover user input data from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  // Set initial data from context, if possible
+  const [data, setData] = useState(ctxData || addRdfData());
 
   const [result, setResult] = useState(null);
 
@@ -40,9 +45,6 @@ function DataInfo(props) {
 
   const urlInfo = API.routes.server.dataInfo;
   const urlVisual = API.routes.server.dataConvert;
-
-  // Recover user input data from context, if any. Use first item of the data array
-  const { rdfData: ctxData } = useContext(ApplicationContext);
 
   // Try to autofill user data, first from the query string then from context
   useEffect(() => {
@@ -61,8 +63,6 @@ function DataInfo(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else if (ctxData && typeof ctxData === "object") {
-      setData(ctxData); // Set the data in context so that UI changes
     }
   }, [props.location?.search]);
 

@@ -20,22 +20,22 @@ function UMLTabs(props) {
     <div>
       <InputTabs
         name={props.name}
-        activeSource={props.activeSource}
+        activeSource={props.activeSource || ctxUml.activeSource}
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
-        textAreaValue={props.textAreaValue}
+        textAreaValue={props.textAreaValue || ctxUml.textArea}
         byTextPlaceholder={API.texts.placeholders.xmi}
         handleByTextChange={props.handleByTextChange}
         setCodeMirror={props.setCodeMirror}
         inputForm={umlForm}
         handleUrlChange={props.handleXmiUrlChange}
-        urlValue={props.urlValue}
+        urlValue={props.urlValue || ctxUml.url}
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        mode={props.selectedFormat}
+        mode={props.selectedFormat || ctxUml.format}
         handleFormatChange={props.handleFormatChange}
         urlFormats={API.routes.server.shExFormats}
-        fromParams={props.fromParams}
+        fromParams={props.fromParams || ctxUml.fromParams}
         resetFromParams={props.resetFromParams}
       />
     </div>

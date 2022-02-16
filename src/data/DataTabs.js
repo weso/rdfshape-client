@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import API from "../API";
 import InputTabsWithFormat from "../components/InputTabsWithFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -10,37 +10,40 @@ function DataTabs(props) {
     ApplicationContext
   );
 
-  const [dataIndex] = useState(props?.data?.index);
+  const dataIndex = props?.data?.index;
 
   // Change context when the contained data changes
   useEffect(() => {
-    // const newDataset = ctxDataSet.reduce(
-    //   (acc, curr, idx) =>
-    //     dataIndex === idx ? [...acc, props.data] : [...acc, curr],
-    //   []
-    // );
-    setCtxDataSet(props.data);
+    if (props.data) {
+      // Reducer, insert the modified data in the corresponding index
+      const newDataset = ctxDataSet.reduce(
+        (acc, curr) =>
+          dataIndex === curr.index ? [...acc, props.data] : [...acc, curr],
+        []
+      );
+      setCtxDataSet(newDataset);
+    }
   }, [props.data]);
 
   return (
     <div>
       <InputTabsWithFormat
         nameInputTab={props.name}
-        activeSource={props.activeSource || ctxDataSet.activeSource} // Change according to data in context when needed
+        activeSource={props.activeSource || ctxDataSet[dataIndex]?.activeSource} // Change according to data in context when needed
         handleTabChange={props.handleTabChange}
         byTextName={props.subname}
-        textAreaValue={props.textAreaValue || ctxDataSet.textArea}
+        textAreaValue={props.textAreaValue || ctxDataSet[dataIndex]?.textArea}
         byTextPlaceholder={API.texts.placeholders.rdf}
         handleByTextChange={props.handleByTextChange}
         handleUrlChange={props.handleDataUrlChange}
         urlValue={props.urlValue || ctxDataSet[dataIndex]?.url}
         byURLPlaceholder={API.texts.placeholders.url}
         handleFileUpload={props.handleFileUpload}
-        selectedFormat={props.selectedFormat || ctxDataSet.format}
+        selectedFormat={props.selectedFormat || ctxDataSet[dataIndex]?.format}
         handleFormatChange={props.handleDataFormatChange}
         urlFormats={API.routes.server.dataFormatsInput}
         setCodeMirror={props.setCodeMirror}
-        fromParams={props.fromParams || ctxDataSet.fromParams}
+        fromParams={props.fromParams || ctxDataSet[dataIndex]?.fromParams}
         resetFromParams={props.resetFromParams}
       />
     </div>

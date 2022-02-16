@@ -12,9 +12,7 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "../data/Data";
@@ -31,11 +29,19 @@ import {
 } from "./Shacl";
 
 function ShaclValidate(props) {
-  const [shacl, setShacl] = useState(InitialShacl);
-  const [data, setData] = useState(InitialData);
+  // Get all required data from state: data, schema
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+    shaclSchema: ctxShacl,
+    validationEndpoint: ctxValidationEndpoint,
+  } = useContext(ApplicationContext);
 
-  const [endpoint, setEndpoint] = useState("");
-  const [withEndpoint, setWithEndpoint] = useState(false);
+  const [data, setData] = useState(ctxData || addRdfData());
+  const [shacl, setShacl] = useState(ctxShacl || InitialShacl);
+
+  const [endpoint, setEndpoint] = useState(ctxValidationEndpoint || "");
+  const [withEndpoint, setWithEndpoint] = useState(!!ctxValidationEndpoint);
 
   const [result, setResult] = useState("");
 
@@ -48,13 +54,6 @@ function ShaclValidate(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Get all required data from state: data, schema, shapemap
-  const {
-    rdfData: [ctxData],
-    shaclSchema: ctxShacl,
-    validationEndpoint: ctxValidationEndpoint,
-  } = useContext(ApplicationContext);
 
   const url = API.routes.server.schemaValidate;
 
@@ -79,13 +78,6 @@ function ShaclValidate(props) {
       const newParams = mkParams(finalData, finalShacl, finalEndpoint);
       setParams(newParams);
       setLastParams(newParams);
-    } else {
-      if (ctxData && typeof ctxData === "object") setData(ctxData);
-      if (ctxShacl && typeof ctxShacl === "object") setShacl(ctxShacl);
-      if (ctxValidationEndpoint && typeof ctxValidationEndpoint === "string") {
-        setEndpoint(ctxValidationEndpoint);
-        setWithEndpoint(!!ctxValidationEndpoint);
-      }
     }
   }, [props.location?.search]);
 

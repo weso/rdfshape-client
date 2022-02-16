@@ -17,29 +17,33 @@ import ResultDataConvert from "../results/ResultDataConvert";
 import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
-  InitialData,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 
 function DataConvert(props) {
-  const [result, setResult] = useState("");
-  const [params, setParams] = useState(null);
-  const [lastParams, setLastParams] = useState(null);
-  const [permalink, setPermalink] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(InitialData);
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
   const [dataTargetFormat, setDataTargetFormat] = useState(
     API.formats.defaultData
   );
+  const [result, setResult] = useState("");
+
+  const [params, setParams] = useState(null);
+  const [lastParams, setLastParams] = useState(null);
+
+  const [permalink, setPermalink] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user input data from context, if any. Use first item of the data array
-  const { rdfData: ctxData } = useContext(ApplicationContext);
 
   const url = API.routes.server.dataConvert;
 
@@ -74,8 +78,6 @@ function DataConvert(props) {
       } else {
         setError(API.texts.errorParsingUrl);
       }
-    } else if (ctxData && typeof ctxData === "object") {
-      setData(ctxData);
     }
   }, [props.location?.search]);
 

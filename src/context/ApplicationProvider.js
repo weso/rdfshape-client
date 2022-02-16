@@ -109,12 +109,11 @@ const ApplicationProvider = ({ children }) => {
           dispatch({ type: reducerTypes.rdf, value: rdfData }),
         addRdfData: (rdfData) => {
           const newIndex = applicationData.rdfData.length; // new Data index based on current context data
-          const newData = rdfData // New data object, use InitialData if no data was provided
-            ? { index: newIndex, ...rdfData }
-            : {
-                index: newIndex,
-                ...InitialData,
-              };
+          // New data object, use InitialData if no data was provided
+          const newData = {
+            index: newIndex,
+            ...(rdfData || InitialData),
+          };
           dispatch({ type: reducerTypes.addRdf, value: newData }); // Update state and return new data
           return newData;
         },

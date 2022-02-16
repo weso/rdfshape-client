@@ -77,7 +77,7 @@ export function mkDataTabs(
     setData({ ...data, activeSource: value });
   }
   function handleDataByTextChange(value, y, change) {
-    onTextChange(value, y, change);
+    // onTextChange(value, y, change);
     setData({ ...data, textArea: value });
   }
   function handleDataUrlChange(value) {

@@ -17,16 +17,20 @@ import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText,
-  InitialData,
-  mkDataTabs,
+  getDataText, mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
 import { getNodesFromForm } from "./TurtleForm";
 
 function DataExtract(props) {
-  const [data, setData] = useState(InitialData);
+  // Recover user input data and query from context, if any. Use first item of the data array
+  const {
+    rdfData: [ctxData],
+    addRdfData,
+  } = useContext(ApplicationContext);
+
+  const [data, setData] = useState(ctxData || addRdfData());
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -40,11 +44,6 @@ function DataExtract(props) {
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
-
-  // Recover user input data and query from context, if any. Use first item of the data array
-  const {
-    rdfData: [ctxData],
-  } = useContext(ApplicationContext);
 
   const urlServerExtract = API.routes.server.dataExtract;
   const urlServerVisualize = API.routes.server.schemaConvert;
@@ -65,8 +64,6 @@ function DataExtract(props) {
         setParams(newParams);
         setLastParams(newParams);
       } else setError(API.texts.errorParsingUrl);
-    } else {
-      if (ctxData && typeof ctxData === "object") setData(ctxData);
     }
   }, [props.location?.search]);
 
