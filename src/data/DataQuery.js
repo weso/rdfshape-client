@@ -119,7 +119,7 @@ function DataQuery(props) {
       setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));
       checkLinks();
     } catch (err) {
-      setError(mkError(error, url));
+      setError(mkError(err, url));
     } finally {
       setLoading(false);
     }

@@ -16,7 +16,8 @@ import ResultDataInfo from "../results/ResultDataInfo";
 import { processDotData } from "../utils/dot/dotUtils";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText, mkDataTabs,
+  getDataText,
+  mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
@@ -129,7 +130,7 @@ function DataInfo(props) {
       // Set permalinks and finish
       setPermalink(mkPermalinkLong(API.routes.client.dataInfoRoute, params));
       checkLinks();
-    } catch (err) {
+    } catch (error) {
       setError(mkError(error, urlInfo));
     } finally {
       setLoading(false);

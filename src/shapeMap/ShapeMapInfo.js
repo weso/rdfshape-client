@@ -104,7 +104,6 @@ function ShapeMapInfo(props) {
         setProgressPercent(100);
       })
       .catch((error) => {
-        console.error(error);
         setError(mkError(error, url));
       })
       .finally(() => {

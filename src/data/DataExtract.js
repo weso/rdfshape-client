@@ -145,7 +145,7 @@ function DataExtract(props) {
       setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
       checkLinks();
     } catch (err) {
-      setError(mkError(error, urlServerExtract));
+      setError(mkError(err, urlServerExtract));
     } finally {
       setLoading(false);
     }

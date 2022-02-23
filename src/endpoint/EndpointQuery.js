@@ -136,7 +136,7 @@ function EndpointQuery(props) {
         mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
       );
     } catch (err) {
-      setError(mkError(error, url));
+      setError(mkError(err, url));
     } finally {
       setLoading(false);
     }
