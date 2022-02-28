@@ -14,7 +14,6 @@ export const initialApplicationContext = {
   sparqlEndpoint: "",
   shexSchema: InitialShex,
   shaclSchema: InitialShacl,
-  validationEndpoint: "", // Optional endpoint shown in ShaclValidate
   shapeMap: InitialShapeMap,
   umlData: InitialUML,
 };

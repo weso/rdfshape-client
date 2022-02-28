@@ -1,5 +1,6 @@
 import React from "react";
 import API from "../API";
+import { getItemRaw } from "../utils/Utils";
 import ShapeMapTabs from "./ShapeMapTabs";
 
 export const InitialShapeMap = {
@@ -37,7 +38,7 @@ export function updateStateShapeMap(params, shapeMap) {
   return shapeMap;
 }
 
-export function paramsFromStateShapemap(shapeMap) {
+export function paramsFromStateShapeMap(shapeMap) {
   let params = {};
   params[API.queryParameters.shapeMap.source] = shapeMap.activeSource;
   params[API.queryParameters.shapeMap.format] = shapeMap.format;
@@ -97,6 +98,23 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
       resetFromParams={() => setShapeMap({ ...shapeMap, fromParams: false })}
     />
   );
+}
+
+// Prepare basic server params for when shapeMap is sent to server
+export async function mkShapeMapServerParams(shapeMap) {
+  return {
+    // Send trigger mode for validations
+    [API.queryParameters.type]: API.triggerModes.shapeMap,
+    // If by file, parse contents in client before sending
+    [API.queryParameters.content]:
+      shapeMap.activeSource === API.sources.byFile
+        ? await getItemRaw(shapeMap)
+        : shapeMap.activeSource === API.sources.byUrl
+        ? shapeMap.url
+        : shapeMap.textArea,
+    [API.queryParameters.source]: shapeMap.activeSource,
+    [API.queryParameters.format]: shapeMap.format,
+  };
 }
 
 export function getShapeMapText(shapeMap) {

@@ -1,9 +1,10 @@
-import axios from "axios";
 import React from "react";
 import shumlex from "shumlex";
 import API from "../API";
 import { params2Form } from "../Permalink";
 import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
+import axios from "../utils/networking/axiosConfig";
+import { getItemRaw } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -16,6 +17,7 @@ export const InitialShex = {
   file: null,
   format: API.formats.defaultShex,
   engine: API.engines.defaultShex,
+  triggerMode: API.triggerModes.shapeMap,
   fromParams: false,
   codeMirror: null,
 };
@@ -52,6 +54,7 @@ export function paramsFromStateShex(shex) {
   params[API.queryParameters.schema.source] = shex.activeSource;
   params[API.queryParameters.schema.format] = shex.format;
   params[API.queryParameters.schema.engine] = shex.engine;
+  params[API.queryParameters.schema.triggerMode] = API.triggerModes.shapeMap;
 
   // Send the "schema" param to the server, that will use the "schemaSource" to know hot to treat the schema (raw, URL, file...)
   switch (shex.activeSource) {
@@ -117,6 +120,22 @@ export function mkShexTabs(shex, setShex, name, subname) {
       resetFromParams={() => setShex({ ...shex, fromParams: false })}
     />
   );
+}
+
+// Prepare basic server params for when shex is sent to server
+export async function mkShexServerParams(shex) {
+  return {
+    // If by file, parse contents in client before sending
+    [API.queryParameters.content]:
+      shex.activeSource === API.sources.byFile
+        ? await getItemRaw(shex)
+        : shex.activeSource === API.sources.byUrl
+        ? shex.url
+        : shex.textArea,
+    [API.queryParameters.source]: shex.activeSource,
+    [API.queryParameters.format]: shex.format,
+    [API.queryParameters.engine]: shex.engine,
+  };
 }
 
 export async function mkShexVisualization(

@@ -3,6 +3,7 @@ import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
 import API from "../API";
+import axios from "./networking/axiosConfig";
 
 const { Module, render } = require("viz.js/full.render.js");
 
@@ -197,10 +198,6 @@ export function showQualified(qualified, prefixes) {
   }
 }
 
-export function paramsFromStateEndpoint(state) {
-  return { [API.queryParameters.endpoint.endpoint]: state.endpoint };
-}
-
 export const notificationSettings = {
   permalinkText: API.texts.permalinkCopied,
   position: "bottom-right",
@@ -294,6 +291,26 @@ export const getFileContents = async (file) =>
     reader.onload = () => res(reader.result);
     reader.readAsText(file);
   });
+
+// Given the item in state, extract the text contained in it
+// (manual input => return text)
+// (url => fetch url and return result)
+// (file => read file and return its contents)
+export async function getItemRaw(item) {
+  if (item.activeSource === API.sources.byText) {
+    return item.textArea.trim();
+  } else if (item.activeSource === API.sources.byUrl) {
+    // Ask the RDFShape server to fetch the contents for us (prevent CORS)
+    return (
+      await axios.get(API.routes.server.fetchUrl, {
+        params: { url: item.url.trim() },
+      })
+    ).data;
+  } else if (item.activeSource === API.sources.byFile) {
+    return await getFileContents(item.file);
+  }
+  return "";
+}
 
 // Shortcut to all the settings that must be included in a Yashe object to prevent buttons
 export const yasheNoButtonsOptions = {

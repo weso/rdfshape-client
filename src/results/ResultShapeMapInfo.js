@@ -1,6 +1,6 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
-import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import { associationTableColumns, scrollToResults } from "../utils/Utils";
@@ -21,27 +21,40 @@ function ResultShapeMapInfo({
     },
   } = shapeMapInfoResult;
 
+  // Active tab control
+  const [resultTab, setResultTab] = useState(API.tabs.overview);
+
   useEffect(scrollToResults, []);
 
   if (shapeMapInfoResult) {
     return (
       <div id={API.resultsId}>
-        {/* Alert */}
-        <Alert variant="success">{message}</Alert>
-        {/* Results */}
-        <ul>
-          <li>
-            {API.texts.numberOfAssociations}: {numberOfAssociations}
-          </li>
-          <li>
-            {API.texts.shapeMapFormat}:{" "}
-            <span className="code">{shapeMapFormatName}</span>
-          </li>
-          {shapeMapModel?.length > 0 ? (
-            <li className="list-details">
-              <details>
-                <summary>{API.texts.misc.associations}</summary>
-                {/* Table with prefix map */}
+        <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+          {/* ShapeMap Overview */}
+          <Tab
+            eventKey={API.tabs.overview}
+            title={API.texts.resultTabs.overview}
+          >
+            <div className="marginTop">
+              <ul>
+                <li>{message}</li>
+                <li>
+                  {API.texts.numberOfAssociations}: {numberOfAssociations}
+                </li>
+                <li>
+                  {API.texts.shapeMapFormat}:{" "}
+                  <span className="code">{shapeMapFormatName}</span>
+                </li>
+              </ul>
+            </div>
+          </Tab>
+          {/* ShapeMap Associations */}
+          <Tab
+            eventKey={API.tabs.associations}
+            title={API.texts.resultTabs.associations}
+          >
+            <div className="marginTop">
+              {shapeMapModel?.length > 0 ? (
                 <div className="prefixMapTable">
                   <BootstrapTable
                     keyField="node"
@@ -49,12 +62,16 @@ function ResultShapeMapInfo({
                     columns={associationTableColumns}
                   ></BootstrapTable>
                 </div>
-              </details>
-            </li>
-          ) : (
-            <li>{API.texts.noAssociations}</li>
-          )}
-        </ul>
+              ) : (
+                <ul>
+                  <li>{API.texts.noAssociations}</li>
+                </ul>
+              )}
+            </div>
+          </Tab>
+        </Tabs>
+
+        <br />
 
         <details>
           <summary>{API.texts.responseSummaryText}</summary>

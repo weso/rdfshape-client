@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -12,17 +11,20 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
-  getDataText, mkDataTabs,
+  getDataText,
+  mkDataServerParams,
+  mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "../data/Data";
-import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultValidateShacl from "../results/ResultValidateShacl";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
+  mkShaclServerParams,
   mkShaclTabs,
   paramsFromStateShacl,
   updateStateShacl
@@ -34,14 +36,10 @@ function ShaclValidate(props) {
     rdfData: [ctxData],
     addRdfData,
     shaclSchema: ctxShacl,
-    validationEndpoint: ctxValidationEndpoint,
   } = useContext(ApplicationContext);
 
   const [data, setData] = useState(ctxData || addRdfData());
   const [shacl, setShacl] = useState(ctxShacl || InitialShacl);
-
-  const [endpoint, setEndpoint] = useState(ctxValidationEndpoint || "");
-  const [withEndpoint, setWithEndpoint] = useState(!!ctxValidationEndpoint);
 
   const [result, setResult] = useState("");
 
@@ -70,12 +68,7 @@ function ShaclValidate(props) {
       const finalShacl = updateStateShacl(queryParams, shacl) || shacl;
       setShacl(finalShacl);
 
-      const finalEndpoint =
-        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
-      setEndpoint(finalEndpoint);
-      setWithEndpoint(!!finalEndpoint);
-
-      const newParams = mkParams(finalData, finalShacl, finalEndpoint);
+      const newParams = mkParams(finalData, finalShacl);
       setParams(newParams);
       setLastParams(newParams);
     }
@@ -109,57 +102,51 @@ function ShaclValidate(props) {
     }
   }, [params]);
 
-  function handleEndpointChange(value) {
-    setEndpoint(value.trim());
-  }
-
   async function handleSubmit(event) {
     event.preventDefault();
-
-    const paramsEndpoint = {};
-    if (endpoint !== "") {
-      paramsEndpoint[API.queryParameters.endpoint.endpoint] = endpoint.trim();
-    }
-
     setParams(mkParams());
   }
 
-  function mkParams(pData = data, pShacl = shacl, pEndpoint = endpoint) {
-    const params = {
+  function mkParams(pData = data, pShacl = shacl) {
+    return {
       ...paramsFromStateData(pData),
       ...paramsFromStateShacl(pShacl),
       [API.queryParameters.schema.triggerMode]: API.triggerModes.targetDecls, // SHACL Validation
     };
-    if (pEndpoint) {
-      params[API.queryParameters.endpoint.endpoint] = pEndpoint.trim();
-    }
-    return params;
   }
 
-  function postValidate(cb) {
+  async function mkServerParams(pData = data, pShacl = shacl) {
+    return {
+      [API.queryParameters.data.data]: await mkDataServerParams(pData),
+      [API.queryParameters.schema.schema]: await mkShaclServerParams(pShacl),
+      // Trigger mode is just target declarations
+      [API.queryParameters.schema.triggerMode]: {
+        [API.queryParameters.type]: API.triggerModes.targetDecls,
+      },
+    };
+  }
+
+  async function postValidate() {
     setLoading(true);
     setProgressPercent(15);
-    const formData = params2Form(params);
-    setProgressPercent(30);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setResult(data);
-        setProgressPercent(70);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.shaclValidateRoute, params)
-        );
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const paramsData = await mkServerParams();
+      setProgressPercent(30);
+
+      const { data: validateResponse } = await axios.post(url, paramsData);
+      setResult(validateResponse);
+      setProgressPercent(70);
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shaclValidateRoute, params)
+      );
+      setProgressPercent(80);
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -220,23 +207,6 @@ function ShaclValidate(props) {
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
             {mkDataTabs(data, setData)}
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setWithEndpoint(!withEndpoint);
-                if (!withEndpoint === false) {
-                  setEndpoint("");
-                }
-              }}
-            >
-              {withEndpoint ? "Remove" : "Add"} endpoint
-            </Button>
-            {withEndpoint ? (
-              <EndpointInput
-                value={endpoint}
-                handleOnChange={handleEndpointChange}
-              />
-            ) : null}
             <hr />
             {mkShaclTabs(shacl, setShacl)}
             <hr />

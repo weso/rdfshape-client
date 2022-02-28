@@ -15,12 +15,12 @@ function ResultSchemaConvert({
   const {
     message,
     schema: {
-      schema: inputSchema,
+      content: inputSchema,
       format: { name: inputFormatName },
       engine: inputEngine,
     },
     result: {
-      schema: outputSchema,
+      content: outputSchema,
       format: { name: outputFormatName },
       engine: outputEngine,
     },

@@ -1,6 +1,5 @@
-import axios from "axios";
 import qs from "query-string";
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -10,8 +9,9 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultEndpointInfo from "../results/ResultEndpointInfo";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import EndpointInput from "./EndpointInput";
 
@@ -32,9 +32,9 @@ function EndpointInfo(props) {
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);
-      if (queryParams[API.queryParameters.endpoint.endpoint]) {
+      if (queryParams[API.queryParameters.wbQuery.endpoint]) {
         const finalEndpoint =
-          queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+          queryParams[API.queryParameters.wbQuery.endpoint] || endpoint;
         setEndpoint(finalEndpoint);
 
         const newParams = mkParams(finalEndpoint);
@@ -48,7 +48,7 @@ function EndpointInfo(props) {
 
   useEffect(() => {
     if (params && !loading) {
-      if (params[API.queryParameters.endpoint.endpoint]) {
+      if (params[API.queryParameters.wbQuery.endpoint]) {
         resetState();
         setUpHistory();
         postEndpointInfo();
@@ -73,30 +73,32 @@ function EndpointInfo(props) {
 
   function mkParams(pEndpoint = endpoint) {
     return {
-      [API.queryParameters.endpoint.endpoint]: pEndpoint.trim(),
+      [API.queryParameters.wbQuery.endpoint]: pEndpoint.trim(),
     };
   }
 
-  function postEndpointInfo() {
+  function mkServerParams(pEndpoint = endpoint) {
+    return {
+      [API.queryParameters.wbQuery.endpoint]: pEndpoint.trim(),
+    };
+  }
+
+  async function postEndpointInfo() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
-        );
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const { data } = await axios.get(url, { params: mkServerParams() });
+      setProgressPercent(70);
+      setResult(data);
+      setPermalink(
+        mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
+      );
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   function setUpHistory() {
@@ -169,21 +171,16 @@ function EndpointInfo(props) {
               {error}
             </Alert>
           ) : result ? (
-            <Fragment>
-              <Alert className="width-100" variant="success">
-                {API.texts.endpoints.online}
-              </Alert>
-              <ResultEndpointInfo
-                result={result}
-                error={error}
-                permalink={permalink}
-                disabled={
-                  endpoint && endpoint.length > API.limits.byTextCharacterLimit
-                    ? API.sources.byText
-                    : false
-                }
-              />
-            </Fragment>
+            <ResultEndpointInfo
+              result={result}
+              error={error}
+              permalink={permalink}
+              disabled={
+                endpoint && endpoint.length > API.limits.byTextCharacterLimit
+                  ? API.sources.byText
+                  : false
+              }
+            />
           ) : null}
         </Row>
       ) : null}

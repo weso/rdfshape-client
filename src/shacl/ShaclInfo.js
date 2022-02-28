@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -11,12 +10,14 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaInfo from "../results/ResultSchemaInfo";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
+  mkShaclServerParams,
   mkShaclTabs,
   paramsFromStateShacl,
   updateStateShacl
@@ -82,9 +83,15 @@ function ShaclInfo(props) {
     setParams(mkParams());
   }
 
-  function mkParams(shaclParams = shacl) {
+  function mkParams(pShacl = shacl) {
     return {
-      ...paramsFromStateShacl(shaclParams),
+      ...paramsFromStateShacl(pShacl),
+    };
+  }
+
+  async function mkServerParams(pShacl = shacl) {
+    return {
+      [API.queryParameters.schema.schema]: await mkShaclServerParams(pShacl),
     };
   }
 
@@ -93,19 +100,21 @@ function ShaclInfo(props) {
     setProgressPercent(20);
 
     try {
+      const baseParams = await mkServerParams();
+      setProgressPercent(40);
       // Firstly: get the schema basic info and prefix map
-      const infoForm = params2Form(params);
-      const { data: resultSchemaInfo } = await axios.post(urlInfo, infoForm);
+      const { data: resultSchemaInfo } = await axios.post(urlInfo, baseParams);
       setProgressPercent(50);
 
       // Secondly: get schema visualization
-      const visualizeForm = params2Form({
-        ...params,
-        [API.queryParameters.schema.targetFormat]: API.formats.svg,
-      });
+      const visualizeParams = {
+        ...baseParams,
+        [API.queryParameters.targetFormat]: API.formats.svg,
+        [API.queryParameters.targetEngine]: shacl.engine,
+      };
       const { data: resultSchemaVisualize } = await axios.post(
         urlVisual,
-        visualizeForm
+        visualizeParams
       );
       setProgressPercent(80);
 

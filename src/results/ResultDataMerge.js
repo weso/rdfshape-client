@@ -23,7 +23,7 @@ function ResultDataMerge({
     message,
     data: inputDataItems, // Array of input data elements that were merged
     result: {
-      data: dataRaw,
+      content: dataRaw,
       format: { name: outputFormatName },
     },
   } = dataMergeResponse;

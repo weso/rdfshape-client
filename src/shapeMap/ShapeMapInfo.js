@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -11,13 +10,15 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultShapeMapInfo from "../results/ResultShapeMapInfo";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   InitialShapeMap,
+  mkShapeMapServerParams,
   mkShapeMapTabs,
-  paramsFromStateShapemap,
+  paramsFromStateShapeMap,
   updateStateShapeMap
 } from "./ShapeMap";
 
@@ -80,35 +81,38 @@ function ShapeMapInfo(props) {
     setParams(mkParams());
   }
 
-  function mkParams(paramsShapeMap = shapemap) {
-    return { ...paramsFromStateShapemap(paramsShapeMap) };
+  function mkParams(pShapeMap = shapemap) {
+    return { ...paramsFromStateShapeMap(pShapeMap) };
   }
 
-  function postShapeMapInfo(cb) {
+  // Make request params from state params
+  async function mkServerParams(pShapeMap = shapemap) {
+    const source = pShapeMap[API.queryParameters.shapeMap.source];
+    return {
+      [API.queryParameters.shapeMap.shapeMap]: await mkShapeMapServerParams(
+        pShapeMap
+      ),
+    };
+  }
+
+  async function postShapeMapInfo() {
     setLoading(true);
     setProgressPercent(20);
-    const formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setResult(data);
-        setProgressPercent(70);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
-        );
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch((error) => {
-        setError(mkError(error, url));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const { data } = await axios.post(url, await mkServerParams());
+      setResult(data);
+      setProgressPercent(70);
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
+      );
+      setProgressPercent(80);
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file

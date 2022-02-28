@@ -34,7 +34,9 @@ export const mkError = (error, url = environmentConfiguration.apiHost) => {
     error?.response?.data?.error ||
     error?.response?.data ||
     error?.message ||
-    error?.toString() ||
+    error ||
     API.texts.networkError;
-  return <ResponseError errorOrigin={url} errorMessage={errorMessage} />;
+  return (
+    <ResponseError errorOrigin={url} errorMessage={errorMessage.toString()} />
+  );
 };

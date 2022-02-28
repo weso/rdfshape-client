@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -12,11 +11,13 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultDataConvert from "../results/ResultDataConvert";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getDataText,
+  mkDataServerParams,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
@@ -66,12 +67,11 @@ function DataConvert(props) {
             queryParams[API.queryParameters.data.targetFormat]
           );
         }
-        const params = {
-          ...paramsFromStateData(finalData),
-          [API.queryParameters.data.targetFormat]:
-            queryParams[API.queryParameters.data.targetFormat] ||
-            dataTargetFormat,
-        };
+
+        const params = mkParams(
+          finalData,
+          queryParams[API.queryParameters.data.targetFormat] || dataTargetFormat
+        );
 
         setParams(params);
         setLastParams(params);
@@ -100,35 +100,44 @@ function DataConvert(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setParams({
-      ...paramsFromStateData(data),
-      [API.queryParameters.data.targetFormat]: dataTargetFormat,
-    });
+    setParams(mkParams());
   }
 
-  function postConvert(cb) {
+  function mkParams(pData = data, pTargetFormat = dataTargetFormat) {
+    return {
+      ...paramsFromStateData(pData),
+      [API.queryParameters.data.targetFormat]: pTargetFormat,
+    };
+  }
+
+  async function mkServerParams(
+    pData = data,
+    pTargetFormat = dataTargetFormat
+  ) {
+    return {
+      [API.queryParameters.data.data]: await mkDataServerParams(pData),
+      [API.queryParameters.targetFormat]: pTargetFormat,
+    };
+  }
+
+  async function postConvert() {
     setLoading(true);
     setProgressPercent(20);
-    let formData = params2Form(params);
 
-    axios
-      .post(url, formData)
-      .then((response) => response.data)
-      .then(async (data) => {
-        setProgressPercent(70);
-        setResult(data);
-        setPermalink(
-          mkPermalinkLong(API.routes.client.dataConvertRoute, params)
-        );
-        setProgressPercent(80);
-        checkLinks();
-        if (cb) cb();
-        setProgressPercent(100);
-      })
-      .catch(function(error) {
-        setError(mkError(error, url));
-      })
-      .finally(() => setLoading(false));
+    try {
+      const postParams = await mkServerParams();
+      const { data: convertResponse } = await axios.post(url, postParams);
+
+      setProgressPercent(70);
+      setResult(convertResponse);
+
+      setPermalink(mkPermalinkLong(API.routes.client.dataConvertRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(mkError(error, url));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Disabled permalinks, etc. if the user input is too long or a file
@@ -219,8 +228,6 @@ function DataConvert(props) {
               <ResultDataConvert
                 result={result}
                 permalink={permalink}
-                fromParams={data.fromParams}
-                resetFromParams={() => setData({ ...data, fromParams: false })}
                 disabled={disabledLinks}
               />
             ) : null}

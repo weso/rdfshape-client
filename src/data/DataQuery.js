@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
 import React, { Fragment, useContext, useEffect, useState } from "react";
@@ -12,18 +11,22 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import {
   getQueryText,
   InitialQuery,
+  mkQueryServerParams,
   mkQueryTabs,
   paramsFromStateQuery,
   updateStateQuery
 } from "../query/Query";
 import ResultSparqlQuery from "../results/ResultSparqlQuery";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText, mkDataTabs,
+  getDataText,
+  mkDataServerParams,
+  mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
@@ -66,10 +69,7 @@ function DataQuery(props) {
       const finalQuery = updateStateQuery(queryParams, query) || query;
       setQuery(finalQuery);
 
-      const params = {
-        ...paramsFromStateData(finalData),
-        ...paramsFromStateQuery(finalQuery),
-      };
+      const params = mkParams(finalData, finalQuery);
 
       setParams(params);
       setLastParams(params);
@@ -104,16 +104,32 @@ function DataQuery(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setParams({ ...paramsFromStateData(data), ...paramsFromStateQuery(query) });
+    setParams(mkParams());
+  }
+
+  function mkParams(pData = data, pQuery = query) {
+    return {
+      ...paramsFromStateData(pData),
+      ...paramsFromStateQuery(pQuery),
+    };
+  }
+
+  async function mkServerParams(pData = data, pQuery = query) {
+    return {
+      [API.queryParameters.data.data]: await mkDataServerParams(pData),
+      [API.queryParameters.query.query]: await mkQueryServerParams(pQuery),
+    };
   }
 
   async function postQuery() {
     setLoading(true);
-    const formData = params2Form(params);
     setProgressPercent(20);
 
     try {
-      const { data: serverQueryResponse } = await axios.post(url, formData);
+      const { data: serverQueryResponse } = await axios.post(
+        url,
+        await mkServerParams()
+      );
       setProgressPercent(70);
       setResult(serverQueryResponse);
       setPermalink(mkPermalinkLong(API.routes.client.dataQueryRoute, params));

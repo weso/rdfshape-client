@@ -13,8 +13,6 @@ import {
 function ResultDataConvert({
   result: dataConvertResponse, // Request successful response
   permalink,
-  fromParams,
-  resetFromParams,
   disabled,
 }) {
   // Destructure request response items for later usage
@@ -24,7 +22,7 @@ function ResultDataConvert({
       format: { name: inputFormatName },
     },
     result: {
-      data: dataRaw,
+      content: dataRaw,
       format: { name: outputFormatName },
     },
   } = dataConvertResponse;

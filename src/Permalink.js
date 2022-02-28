@@ -1,4 +1,3 @@
-import axios from "axios";
 import FormData from "form-data";
 import PropTypes from "prop-types";
 import qs from "query-string";
@@ -10,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactTooltip from "react-tooltip";
 import API from "./API";
+import axios from "./utils/networking/axiosConfig";
 import { notificationSettings } from "./utils/Utils";
 
 // Returns a promise that will return a shortened permalink generated on the server
@@ -106,7 +106,7 @@ export function Permalink(props) {
   const [loading, setLoading] = useState(false);
   const [permalink, setPermalink] = useState();
 
-  async function handleClick(e) {
+  async function requestPermalink(e) {
     e.preventDefault();
 
     // If a permalink has been generated already, copy to clipboard and notify
@@ -116,21 +116,25 @@ export function Permalink(props) {
       return;
     }
 
-    // Set to loading
-    setLoading(true);
+    // Get permalink from server
+    try {
+      // Set to loading
+      setLoading(true);
+      // Generate short URL / return the long link in case of error
+      const newPermalink = props.shorten
+        ? await mkPermalinkFromUrl(props.url)
+        : props.url;
 
-    // Generate short URL / return the long link in case of error
-    const newPermalink = props.shorten
-      ? await mkPermalinkFromUrl(props.url)
-      : props.url;
-
-    // Copy results and update state
-    navigator.clipboard.writeText(newPermalink);
-    setPermalink(newPermalink);
-    setLoading(false);
-
-    // Notify
-    toast.info(notificationSettings.permalinkText);
+      // Copy results and update state
+      navigator.clipboard.writeText(newPermalink);
+      setPermalink(newPermalink);
+      // Notify
+      toast.info(notificationSettings.permalinkText);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (props.url)
@@ -143,7 +147,7 @@ export function Permalink(props) {
         <Button
           disabled={!!props.disabled}
           className={"btn-with-icon " + (loading ? "disabled" : "")}
-          onClick={handleClick}
+          onClick={requestPermalink}
           variant="secondary"
           href={permalink || props.url}
         >

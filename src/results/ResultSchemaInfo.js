@@ -24,7 +24,7 @@ function ResultSchemaInfo({
   // Destructure request response items for later use
   const {
     message: messageInfo,
-    schema: { schema: schemaRaw },
+    schema: { content: schemaRaw },
     result: {
       format: { name: formatName },
       engine,
@@ -34,7 +34,7 @@ function ResultSchemaInfo({
   } = resultInfo;
 
   const {
-    result: { schema: schemaSvg },
+    result: { content: schemaSvg },
   } = resultVisualize;
 
   // Active tab control
@@ -116,46 +116,48 @@ function ResultSchemaInfo({
             </Tab>
           )}
           {/* Schema visualizations */}
-          <Tab
-            eventKey={API.tabs.visualizations}
-            title={API.texts.resultTabs.visualizations}
-          >
-            {(schemaSvg || cytoElements) && (
-              <Tabs
-                activeKey={visualTab}
-                id="visualTabs"
-                onSelect={setVisualTab}
-              >
-                {/* SVG visualization */}
-                {schemaSvg && (
-                  <Tab
-                    eventKey={API.tabs.visualizationDot}
-                    title={API.texts.resultTabs.visualizationDot}
-                  >
-                    <ShowVisualization
-                      data={schemaSvg}
-                      type={visualizationTypes.svgRaw}
-                      embedLink={mkEmbedLink(stateSchemaParams, {
-                        visualizationType: embedLinkType,
-                        visualizationTarget:
-                          API.queryParameters.visualization.targets.svg,
-                      })}
-                    />
-                  </Tab>
-                )}
-                {/* Cytoscape visualization */}
-                {cytoElements?.length > 0 && (
-                  <Tab
-                    eventKey={API.tabs.visualizationCyto}
-                    title={API.texts.resultTabs.visualizationCyto}
-                    onEnter={renderCytoVisual}
-                  >
-                    {cytoVisual}
-                  </Tab>
-                )}
-              </Tabs>
-            )}
-          </Tab>
+          {resultVisualize && (
+            <Tab
+              eventKey={API.tabs.visualizations}
+              title={API.texts.resultTabs.visualizations}
+            >
+              {(schemaSvg || cytoElements) && (
+                <Tabs
+                  activeKey={visualTab}
+                  id="visualTabs"
+                  onSelect={setVisualTab}
+                >
+                  {/* SVG visualization */}
+                  {schemaSvg && (
+                    <Tab
+                      eventKey={API.tabs.visualizationDot}
+                      title={API.texts.resultTabs.visualizationDot}
+                    >
+                      <ShowVisualization
+                        data={schemaSvg}
+                        type={visualizationTypes.svgRaw}
+                        embedLink={mkEmbedLink(stateSchemaParams, {
+                          visualizationType: embedLinkType,
+                          visualizationTarget:
+                            API.queryParameters.visualization.targets.svg,
+                        })}
+                      />
+                    </Tab>
+                  )}
+                  {/* Cytoscape visualization */}
+                  {cytoElements?.length > 0 && (
+                    <Tab
+                      eventKey={API.tabs.visualizationCyto}
+                      title={API.texts.resultTabs.visualizationCyto}
+                      onEnter={renderCytoVisual}
+                    >
+                      {cytoVisual}
+                    </Tab>
+                  )}
+                </Tabs>
+              )}
+            </Tab>
+          )}
         </Tabs>
 
         <br />
