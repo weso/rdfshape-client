@@ -117,6 +117,25 @@ export async function mkShapeMapServerParams(shapeMap) {
   };
 }
 
+// Prepare basic server params for when shapeMap is sent to server
+export async function mkTriggerModeServerParams(shapeMap) {
+  return {
+    // Send trigger mode for validations
+    [API.queryParameters.type]: API.triggerModes.shapeMap,
+    [API.queryParameters.shapeMap.shapeMap]: {
+      // If by file, parse contents in client before sending
+      [API.queryParameters.content]:
+        shapeMap.activeSource === API.sources.byFile
+          ? await getItemRaw(shapeMap)
+          : shapeMap.activeSource === API.sources.byUrl
+          ? shapeMap.url
+          : shapeMap.textArea,
+      [API.queryParameters.source]: shapeMap.activeSource,
+      [API.queryParameters.format]: shapeMap.format,
+    },
+  };
+}
+
 export function getShapeMapText(shapeMap) {
   if (shapeMap.activeSource === API.sources.byText) {
     return encodeURI(shapeMap.textArea.trim());

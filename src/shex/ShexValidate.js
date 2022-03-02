@@ -21,9 +21,8 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaValidate from "../results/ResultValidate";
 import {
   getShapeMapText,
-  InitialShapeMap,
-  mkShapeMapServerParams,
-  mkShapeMapTabs,
+  InitialShapeMap, mkShapeMapTabs,
+  mkTriggerModeServerParams,
   paramsFromStateShapeMap,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
@@ -144,7 +143,7 @@ function ShexValidate(props) {
     return {
       [API.queryParameters.data.data]: await mkDataServerParams(pData),
       [API.queryParameters.schema.schema]: await mkShexServerParams(pShex),
-      [API.queryParameters.schema.triggerMode]: await mkShapeMapServerParams(
+      [API.queryParameters.schema.triggerMode]: await mkTriggerModeServerParams(
         pShapeMap
       ),
     };

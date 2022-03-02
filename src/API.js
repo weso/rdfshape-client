@@ -26,7 +26,7 @@ class API {
     javascript: "javascript",
     dot: "DOT",
     ps: "PS",
-    xmi: "UML/XMI",
+    xmi: "XMI",
     txt: "txt",
     htmlForm: "HTML form",
 
