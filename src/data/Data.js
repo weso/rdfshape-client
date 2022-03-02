@@ -158,7 +158,6 @@ export async function mkDataVisualization(
   visualizationTarget,
   options = { controls: false }
 ) {
-  console.info(params);
   switch (visualizationTarget) {
     case API.queryParameters.visualization.targets.svg:
       const { data: resultDot } = await axios.post(

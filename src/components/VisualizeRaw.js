@@ -39,8 +39,6 @@ function VisualizeRaw(props) {
   const [loading, setLoading] = useState(false);
   const [message] = useState("Processing...");
 
-  const url = API.routes.server.dataConvert;
-
   useEffect(() => {
     if (props.location?.search) {
       const queryParams = qs.parse(props.location.search);

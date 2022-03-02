@@ -1,7 +1,6 @@
 import React from "react";
 import shumlex from "shumlex";
 import API from "../API";
-import { params2Form } from "../Permalink";
 import { shumlexCytoscapeStyle } from "../utils/cytoscape/cytoUtils";
 import axios from "../utils/networking/axiosConfig";
 import { getItemRaw } from "../utils/Utils";
@@ -143,17 +142,16 @@ export async function mkShexVisualization(
   visualizationTarget,
   options = { controls: false }
 ) {
-  const uplinkParams = params2Form(params);
   switch (visualizationTarget) {
     case API.queryParameters.visualization.targets.svg:
       const { data: resultConvert } = await axios.post(
         API.routes.server.schemaConvert,
-        uplinkParams
+        params
       );
 
       return (
         <ShowVisualization
-          data={resultConvert?.result?.schema} // Extract SVG from response
+          data={resultConvert?.result?.content} // Extract SVG from response
           type={visualizationTypes.svgRaw}
           {...options}
         />
@@ -163,9 +161,9 @@ export async function mkShexVisualization(
       // Get the raw ShEx text via SchemaInfo
       const { data: resultInfo } = await axios.post(
         API.routes.server.schemaInfo,
-        uplinkParams
+        params
       );
-      const schemaRaw = resultInfo?.schema?.schema;
+      const schemaRaw = resultInfo?.schema?.content;
 
       // Make the cytoscape elements via Shumlex
       const cytoElements = shumlex.crearGrafo(schemaRaw);

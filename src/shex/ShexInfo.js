@@ -110,7 +110,6 @@ function ShexInfo(props) {
       const visualizeParams = {
         ...baseParams,
         [API.queryParameters.targetFormat]: API.formats.svg,
-        [API.queryParameters.targetEngine]: shex.engine,
       };
       const { data: resultSchemaVisualize } = await axios.post(
         urlVisual,
