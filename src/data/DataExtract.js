@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import qs from "query-string";
 import React, { Fragment, useContext, useEffect, useState } from "react";
@@ -12,12 +11,15 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultDataExtract from "../results/ResultDataExtract";
 import NodeSelector from "../shex/NodeSelector";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
-  getDataText, mkDataTabs,
+  getDataText,
+  mkDataServerParams,
+  mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "./Data";
@@ -107,28 +109,37 @@ function DataExtract(props) {
     };
   }
 
+  async function mkServerParams(pData = data, pNodeSelector = nodeSelector) {
+    return {
+      [API.queryParameters.data.data]: await mkDataServerParams(pData),
+      [API.queryParameters.extraction.nodeSelector]: pNodeSelector,
+    };
+  }
+
   async function postExtract() {
     setLoading(true);
     setProgressPercent(20);
 
     try {
+      const baseParams = await mkServerParams();
       // First: extract schema
-      const schemaExtractParams = params2Form(params);
       const { data: schemaExtractResponse } = await axios.post(
         urlServerExtract,
-        schemaExtractParams
+        baseParams
       );
       setProgressPercent(60);
 
       // Then, get schema visualization for the extracted schema
-      const schemaVisualizeParams = params2Form({
-        [API.queryParameters.schema.schema]:
-          schemaExtractResponse.result.schema,
-        [API.queryParameters.schema.format]: API.formats.shexc,
-        [API.queryParameters.schema.engine]: API.engines.shex,
-        [API.queryParameters.schema.source]: API.sources.byText,
-        [API.queryParameters.schema.targetFormat]: API.formats.svg,
-      });
+      const schemaVisualizeParams = {
+        [API.queryParameters.schema.schema]: {
+          [API.queryParameters.source]: API.sources.byText,
+          [API.queryParameters.content]: schemaExtractResponse.result.schema,
+          [API.queryParameters.format]: API.formats.shexc,
+          [API.queryParameters.engine]: API.engines.shex,
+        },
+        [API.queryParameters.targetFormat]: API.formats.svg,
+        [API.queryParameters.targetEngine]: API.engines.shex,
+      };
       const { data: schemaVisualizeResponse } = await axios.post(
         urlServerVisualize,
         schemaVisualizeParams
@@ -145,7 +156,7 @@ function DataExtract(props) {
       setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
       checkLinks();
     } catch (err) {
-      setError(mkError(error, urlServerExtract));
+      setError(mkError(err, urlServerExtract));
     } finally {
       setLoading(false);
     }

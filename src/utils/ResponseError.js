@@ -31,6 +31,12 @@ export default ResponseError;
 export const mkError = (error, url = environmentConfiguration.apiHost) => {
   // Parse the server response for a custom error message, else use axios error message
   const errorMessage =
-    error?.response?.data?.error || error?.message || API.texts.networkError;
-  return <ResponseError errorOrigin={url} errorMessage={errorMessage} />;
+    error?.response?.data?.error ||
+    error?.response?.data ||
+    error?.message ||
+    error ||
+    API.texts.networkError;
+  return (
+    <ResponseError errorOrigin={url} errorMessage={errorMessage.toString()} />
+  );
 };

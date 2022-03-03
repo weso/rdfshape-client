@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -12,12 +11,14 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultDataMerge from "../results/ResultDataMerge";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import { getFileContents } from "../utils/Utils";
 import {
   getDataText,
+  mkDataServerParams,
   mkDataTabs,
   paramsFromStateData,
   updateStateData
@@ -95,7 +96,7 @@ function DataMerge(props) {
   useEffect(() => {
     if (params && params[API.queryParameters.data.compound]) {
       const parameters = JSON.parse(params[API.queryParameters.data.compound]);
-      if (parameters.some((p) => p[API.queryParameters.data.data])) {
+      if (parameters.every((p) => p[API.queryParameters.data.data])) {
         // Check if some data was uploaded
         resetState();
         setUpHistory();
@@ -112,18 +113,44 @@ function DataMerge(props) {
   }
 
   function mkParams(
-    data1Params = data1,
-    data2Params = data2,
-    targetFormat = dataTargetFormat
+    pData1 = data1,
+    pData2 = data2,
+    pTargetFormat = dataTargetFormat
   ) {
     const finalDataParams = [
-      paramsFromStateData(data1Params),
-      paramsFromStateData(data2Params),
+      paramsFromStateData(pData1),
+      paramsFromStateData(pData2),
     ];
 
     return {
       [API.queryParameters.data.compound]: JSON.stringify(finalDataParams),
-      [API.queryParameters.data.targetFormat]: targetFormat,
+      [API.queryParameters.data.targetFormat]: pTargetFormat,
+    };
+  }
+
+  async function mkServerParams(
+    pData1 = data1,
+    pData2 = data2,
+    pTargetFormat = dataTargetFormat
+  ) {
+    const dataItems = [pData1, pData2];
+    // Check for invalid files first
+    if (
+      dataItems.some(
+        (it) => it.activeSource === API.sources.byFile && !it.file?.name
+      )
+    )
+      return;
+
+    return {
+      [API.queryParameters.data.data]: {
+        [API.queryParameters.content]: [
+          await mkDataServerParams(pData1),
+          await mkDataServerParams(pData2),
+        ],
+        [API.queryParameters.source]: API.sources.byCompound,
+      },
+      [API.queryParameters.targetFormat]: pTargetFormat,
     };
   }
 
@@ -131,17 +158,17 @@ function DataMerge(props) {
     setLoading(true);
     setProgressPercent(25);
 
-    const serverParams = await mkServerParams(data1, data2, dataTargetFormat);
-    if (!serverParams) {
-      resetState();
-      setError(API.texts.noProvidedRdf);
-      return;
-    }
-    setProgressPercent(40);
-
     try {
-      const formData = params2Form(serverParams);
-      const { data: serverMergeResponse } = await axios.post(url, formData);
+      const postParams = await mkServerParams();
+      // Early detection of invalid files
+      if (!postParams) {
+        resetState();
+        setError(API.texts.noProvidedRdf);
+        return;
+      }
+
+      setProgressPercent(40);
+      const { data: serverMergeResponse } = await axios.post(url, postParams);
       setProgressPercent(80);
 
       setResult(serverMergeResponse);
@@ -279,7 +306,7 @@ function DataMerge(props) {
 export default DataMerge;
 
 // Make the "fake" params used to implement File uploads. More info below.
-export async function mkServerParams(data1Params, data2Params, targetFormat) {
+export async function mkCompoundParams(data1Params, data2Params, targetFormat) {
   const dataItems = [data1Params, data2Params];
   // Check for invalid file parameters first
   if (

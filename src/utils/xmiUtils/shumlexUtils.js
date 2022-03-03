@@ -1,5 +1,5 @@
-import axios from "axios";
 import API from "../../API";
+import axios from "../networking/axiosConfig";
 import { getFileContents } from "../Utils";
 
 // Some validations (shunlex, shapeforms) are done in the client, so the client must parse the input,
@@ -8,13 +8,17 @@ import { getFileContents } from "../Utils";
 // isShEx2Uml: specifies the direction of the conversion
 // params: object with the data managed by the user
 export async function getConverterInput(params, isShEx2Uml = true) {
-  const userData = isShEx2Uml
-    ? params[API.queryParameters.schema.schema]
-    : params[API.queryParameters.uml.uml];
+  const userData =
+    params[API.queryParameters.content] ||
+    (isShEx2Uml
+      ? params[API.queryParameters.schema.schema]
+      : params[API.queryParameters.uml.uml]);
 
-  const userDataSource = isShEx2Uml
-    ? params[API.queryParameters.schema.source]
-    : params[API.queryParameters.uml.source];
+  const userDataSource =
+    params[API.queryParameters.source] ||
+    (isShEx2Uml
+      ? params[API.queryParameters.schema.source]
+      : params[API.queryParameters.uml.source]);
 
   switch (userDataSource) {
     // Plain text, do nothing

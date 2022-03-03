@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
@@ -10,17 +9,17 @@ import Row from "react-bootstrap/Row";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import {
-  getQueryRaw,
   getQueryText,
-  InitialQuery,
-  mkQueryTabs,
+  InitialQuery, mkQueryTabs,
   paramsFromStateQuery,
   updateStateQuery
 } from "../query/Query";
 import ResultSparqlQuery from "../results/ResultSparqlQuery";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
+import { getItemRaw } from "../utils/Utils";
 import EndpointInput from "./EndpointInput";
 
 function EndpointQuery(props) {
@@ -54,7 +53,7 @@ function EndpointQuery(props) {
       setQuery(finalQuery);
 
       const finalEndpoint =
-        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
+        queryParams[API.queryParameters.wbQuery.endpoint] || endpoint;
       setEndpoint(finalEndpoint);
 
       // Params to be used in first query
@@ -68,7 +67,7 @@ function EndpointQuery(props) {
   // Perform query on params change (normally on submit)
   useEffect(() => {
     if (params && !loading) {
-      if (!params[API.queryParameters.endpoint.endpoint])
+      if (!params[API.queryParameters.wbQuery.endpoint])
         setError(API.texts.noProvidedEndpoint);
       else if (
         params[API.queryParameters.query.query] &&
@@ -110,8 +109,15 @@ function EndpointQuery(props) {
 
   function mkParams(pEndpoint = endpoint, pQuery = query) {
     return {
-      [API.queryParameters.endpoint.endpoint]: pEndpoint,
+      [API.queryParameters.wbQuery.endpoint]: pEndpoint,
       ...paramsFromStateQuery(pQuery),
+    };
+  }
+
+  async function mkServerParams(pEndpoint = endpoint, pQuery = query) {
+    return {
+      [API.queryParameters.wbQuery.endpoint]: pEndpoint,
+      [API.queryParameters.wbQuery.payload]: await getItemRaw(pQuery),
     };
   }
 
@@ -121,13 +127,9 @@ function EndpointQuery(props) {
 
     try {
       // Get the query text to be sent as payload
-      const queryRaw = await getQueryRaw(query);
-      if (!queryRaw) throw "Could not fetch the query data";
+      const postData = await mkServerParams();
+      if (!postData) throw API.texts.errorFetchingQuery;
 
-      const postData = params2Form({
-        [API.queryParameters.wbQuery.endpoint]: endpoint,
-        [API.queryParameters.wbQuery.payload]: queryRaw,
-      });
       const { data: serverQueryResponse } = await axios.post(url, postData);
       setProgressPercent(70);
 
@@ -136,7 +138,7 @@ function EndpointQuery(props) {
         mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
       );
     } catch (err) {
-      setError(mkError(error, url));
+      setError(mkError(err, url));
     } finally {
       setLoading(false);
     }

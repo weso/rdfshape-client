@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -19,16 +18,18 @@ import {
 } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ResultShex2Xmi from "../results/ResultShex2Xmi";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
 import ShExParser from "./shapeform/ShExParser";
 import {
   getShexText,
   InitialShex,
+  mkShexServerParams,
   mkShexTabs,
   paramsFromStateShex,
   updateStateShex
@@ -151,6 +152,18 @@ function ShexConvert(props) {
     };
   }
 
+  async function mkServerParams(
+    pShex = shex,
+    pTargetFormat = targetSchemaFormat,
+    pTargetEngine = targetSchemaEngine
+  ) {
+    return {
+      [API.queryParameters.schema.schema]: await mkShexServerParams(pShex),
+      [API.queryParameters.targetFormat]: pTargetFormat,
+      [API.queryParameters.targetEngine]: pTargetEngine,
+    };
+  }
+
   // Execute the necessary conversion logic depending on the target engine
   const convertSchema = () => {
     if (schemaEngines.includes(targetSchemaEngine)) serverSchemaConvert();
@@ -164,8 +177,11 @@ function ShexConvert(props) {
     setProgressPercent(20);
 
     try {
-      const postData = params2Form(params);
-      const { data: convertResponse } = await axios.post(urlConvert, postData);
+      const postParams = await mkServerParams();
+      const { data: convertResponse } = await axios.post(
+        urlConvert,
+        postParams
+      );
       setProgressPercent(60);
 
       setResult({ ...convertResponse, renderType: resultTypes.schema });

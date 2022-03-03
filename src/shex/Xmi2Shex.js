@@ -106,10 +106,9 @@ export default function Xmi2Shex(props) {
       checkLinks();
     } catch (error) {
       setError(
-        mkError({
-          ...error,
-          message: `An error has occurred while creating the ShEx equivalent. Check your inputs.\n${error}`,
-        })
+        mkError(
+          `An error has occurred while creating the ShEx equivalent. Check your inputs.`
+        )
       );
     } finally {
       setLoading(false);

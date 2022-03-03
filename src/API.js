@@ -1,43 +1,113 @@
 /** This class contains global definitions */
 
 import React from "react";
-import environmentConfiguration from "./EnvironmentConfig";
+import { rootApi } from "./utils/networking/axiosConfig";
 
 class API {
+  // Formats (most formats come from server but we need defaults for data initialization)
+  static formats = {
+    turtle: "turtle",
+    triG: "TriG",
+    compact: "Compact",
+    shexc: "ShExC",
+    shexj: "ShExJ",
+    sparql: "SPARQL",
+    xml: "XML",
+    rdfXml: "RDF/XML",
+    rdfJson: "RDF/JSON",
+    svg: "SVG",
+    png: "PNG",
+    html: "HTML",
+    htmlMicrodata: "html-microdata",
+    htmlRdf: "html-rdfa11",
+    htmlMixed: "htmlmixed",
+    json: "JSON",
+    jsonld: "JSON-LD",
+    javascript: "javascript",
+    dot: "DOT",
+    ps: "PS",
+    xmi: "XMI",
+    txt: "txt",
+    htmlForm: "HTML form",
+
+    defaultData: "turtle",
+    defaultShex: "ShExC",
+    defaultShacl: "turtle",
+    defaultShapeMap: "Compact",
+    defaultQuery: "SPARQL",
+    defaultGraphical: "SVG",
+  };
+
+  // Mime types
+  static mimeTypes = {
+    shex: "text/shex",
+    svg: "image/svg+xml",
+    png: "image/png",
+  };
+
+  // Inferences
+  static inferences = {
+    default: "None",
+
+    none: "None",
+  };
+
+  // Engines
+  static engines = {
+    default: "ShEx",
+    defaultShex: "ShEx",
+    defaultShacl: "SHACLex",
+
+    shex: "ShEx",
+    shacl: "SHACL", // For general purpose, don't use in API requests
+    shaclex: "SHACLex",
+    jenaShacl: "JenaSHACL",
+    shacl_tq: "SHACL_TQ",
+
+    shumlex: "Shumlex",
+    shapeForms: "ShapeForms",
+  };
+
+  // Trigger modes
+  static triggerModes = {
+    default: "ShapeMap",
+
+    shapeMap: "ShapeMap",
+    targetDecls: "TargetDecls",
+  };
   // Routes
-  static rootApi = environmentConfiguration.apiHost + "/api/";
   static routes = {
     // Routes in server
     server: {
-      root: this.rootApi,
-      health: this.rootApi + "health",
+      root: rootApi,
+      health: "health",
 
-      dataInfo: this.rootApi + "data/info",
-      dataConvert: this.rootApi + "data/convert",
-      dataQuery: this.rootApi + "data/query",
-      dataExtract: this.rootApi + "data/extract",
-      dataFormatsInput: this.rootApi + "data/formats/input",
-      dataFormatsOutput: this.rootApi + "data/formats/output",
-      dataVisualFormats: this.rootApi + "data/formats/visual",
+      dataInfo: "data/info",
+      dataConvert: "data/convert",
+      dataQuery: "data/query",
+      dataExtract: "data/extract",
+      dataFormatsInput: "data/formats/input",
+      dataFormatsOutput: "data/formats/output",
+      dataVisualFormats: "data/formats/visual",
 
-      schemaInfo: this.rootApi + "schema/info",
-      schemaConvert: this.rootApi + "schema/convert",
-      schemaValidate: this.rootApi + "schema/validate",
-      shExFormats: this.rootApi + "schema/formats?schemaEngine=shex",
-      shaclFormats: this.rootApi + "schema/formats?schemaEngine=shaclex",
-      schemaShaclEngines: this.rootApi + "schema/engines/shacl",
+      schemaInfo: "schema/info",
+      schemaConvert: "schema/convert",
+      schemaValidate: "schema/validate",
+      shExFormats: `schema/formats/${this.engines.shex}`,
+      shaclFormats: `schema/formats/${this.engines.shaclex}`,
+      schemaShaclEngines: `schema/engines/${this.engines.shacl}`,
 
-      shapeMapInfo: this.rootApi + "shapemap/info",
-      shapeMapFormats: this.rootApi + "shapemap/formats",
+      shapeMapInfo: "shapemap/info",
+      shapeMapFormats: "shapemap/formats",
 
-      endpointInfo: this.rootApi + "endpoint/info",
-      wikibaseQuery: this.rootApi + "wikibase/query",
+      endpointInfo: "endpoint/info",
+      wikibaseQuery: "wikibase/query",
 
-      inferenceEngines: this.rootApi + "data/inferenceEngines",
+      inferenceEngines: "data/inferenceEngines",
 
-      serverPermalinkEndpoint: this.rootApi + "permalink/generate",
-      serverOriginalLinkEndpoint: this.rootApi + "permalink/get",
-      fetchUrl: this.rootApi + "fetch",
+      serverPermalinkEndpoint: "permalink/generate",
+      serverOriginalLinkEndpoint: "permalink/get",
+      fetchUrl: "fetch",
     },
     // Routes in client
     client: {
@@ -157,6 +227,15 @@ class API {
       endpoint: "endpoint",
       payload: "payload",
     },
+
+    content: "content",
+    format: "format",
+    engine: "engine",
+    source: "source",
+    inference: "inference",
+    targetFormat: "targetFormat",
+    targetEngine: "targetEngine",
+    type: "type",
   };
 
   // Information sources / tabs
@@ -164,6 +243,7 @@ class API {
     byText: "byText",
     byUrl: "byUrl",
     byFile: "byFile",
+    byCompound: "byCompound",
     bySchema: "bySchema",
 
     default: "byText",
@@ -173,6 +253,7 @@ class API {
     none: "none",
     overview: "overview",
     result: "result",
+    associations: "associations",
     xmi: "XMI",
     html: "HTML",
     uml: "UML",
@@ -189,78 +270,6 @@ class API {
 
     shaclValidationReportText: "shaclReportText",
     shaclValidationReportNodes: "shaclReportNodes",
-  };
-
-  // Formats (most formats come from server but we need defaults for data initialization)
-  static formats = {
-    turtle: "turtle",
-    triG: "TriG",
-    compact: "Compact",
-    shexc: "ShExC",
-    shexj: "ShExJ",
-    sparql: "SPARQL",
-    xml: "XML",
-    rdfXml: "RDF/XML",
-    rdfJson: "RDF/JSON",
-    svg: "SVG",
-    png: "PNG",
-    html: "HTML",
-    htmlMicrodata: "html-microdata",
-    htmlRdf: "html-rdfa11",
-    htmlMixed: "htmlmixed",
-    json: "JSON",
-    jsonld: "JSON-LD",
-    javascript: "javascript",
-    dot: "DOT",
-    ps: "PS",
-    xmi: "UML/XMI",
-    txt: "txt",
-    htmlForm: "HTML form",
-
-    defaultData: "turtle",
-    defaultShex: "ShExC",
-    defaultShacl: "turtle",
-    defaultShapeMap: "Compact",
-    defaultQuery: "SPARQL",
-    defaultGraphical: "SVG",
-  };
-
-  // Mime types
-  static mimeTypes = {
-    shex: "text/shex",
-    svg: "image/svg+xml",
-    png: "image/png",
-  };
-
-  // Inferences
-  static inferences = {
-    default: "None",
-
-    none: "None",
-  };
-
-  // Engines
-  static engines = {
-    default: "ShEx",
-    defaultShex: "ShEx",
-    defaultShacl: "SHACLex",
-
-    shex: "ShEx",
-    shacl: "SHACL", // For general purpose, don't use in API requests
-    shaclex: "SHACLex",
-    jenaShacl: "JenaSHACL",
-    shacl_tq: "SHACL_TQ",
-
-    shumlex: "Shumlex",
-    shapeForms: "ShapeForms",
-  };
-
-  // Trigger modes
-  static triggerModes = {
-    default: "ShapeMap",
-
-    shapeMap: "ShapeMap",
-    targetDecls: "TargetDecls",
   };
 
   // By text limitations
@@ -501,11 +510,13 @@ class API {
       visualizations: "Visualizations",
       visualizationDot: "DOT",
       visualizationCyto: "Cytoscape",
+      associations: "Associations",
     },
 
     endpoints: {
       commonEndpoints: "Common endpoints",
       online: "Endpoint ONLINE",
+      offline: "Endpoint OFFLINE",
     },
 
     xmi: {
@@ -585,6 +596,7 @@ class API {
     networkError: "Network error",
     errorDetails: "Error details",
     errorParsingUrl: "Could not parse URL information",
+    errorFetchingQuery: "Could not fetch the query data",
     emptyDataUrl: "No URL data to process",
     noProvidedRdf: "No RDF data provided",
     noProvidedSchema: "No schema provided",

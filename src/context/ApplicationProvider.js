@@ -19,7 +19,6 @@ const ApplicationProvider = ({ children }) => {
     sparqlEnpoint: "sparqlEndpoint",
     shex: "shex",
     shacl: "shacl",
-    validationEndpoint: "validationEndpoint",
     shapeMap: "shapeMap",
     uml: "uml",
   });
@@ -60,8 +59,6 @@ const ApplicationProvider = ({ children }) => {
         return { ...state, shexSchema: finalValue };
       case reducerTypes.shacl:
         return { ...state, shaclSchema: finalValue };
-      case reducerTypes.validationEndpoint:
-        return { ...state, validationEndpoint: finalValue };
       case reducerTypes.shapeMap:
         return { ...state, shapeMap: finalValue };
       case reducerTypes.uml:
@@ -125,8 +122,6 @@ const ApplicationProvider = ({ children }) => {
           dispatch({ type: reducerTypes.shex, value: shexSchema }),
         setShaclSchema: (shaclSchema) =>
           dispatch({ type: reducerTypes.shacl, value: shaclSchema }),
-        setValidationEndpoint: (vEndpoint) =>
-          dispatch({ type: reducerTypes.validationEndpoint, value: vEndpoint }),
         setShapeMap: (shapeMap) =>
           dispatch({ type: reducerTypes.shapeMap, value: shapeMap }),
         setUmlData: (umlData) =>

@@ -23,7 +23,7 @@ function ResultDataExtract({
   } = extractResponse;
 
   const {
-    result: { schema: schemaSvg },
+    result: { content: schemaSvg },
   } = visualizeResponse;
 
   // Params of the extracted schema, used to create the embed link

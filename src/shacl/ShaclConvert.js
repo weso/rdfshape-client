@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -13,12 +12,14 @@ import PageHeader from "../components/PageHeader";
 import { SelectSHACLEngine } from "../components/SelectEngine";
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getShaclText,
   InitialShacl,
+  mkShaclServerParams,
   mkShaclTabs,
   paramsFromStateShacl,
   updateStateShacl
@@ -117,13 +118,28 @@ function ShaclConvert(props) {
     };
   }
 
+  async function mkServerParams(
+    pShacl = shacl,
+    pTargetFormat = targetSchemaFormat,
+    pTargetEngine = targetSchemaEngine
+  ) {
+    return {
+      [API.queryParameters.schema.schema]: await mkShaclServerParams(pShacl),
+      [API.queryParameters.targetFormat]: pTargetFormat,
+      [API.queryParameters.targetEngine]: pTargetEngine,
+    };
+  }
+
   async function postConvert() {
     setLoading(true);
     setProgressPercent(20);
 
     try {
-      const postData = params2Form(params);
-      const { data: convertResponse } = await axios.post(urlConvert, postData);
+      const postParams = await mkServerParams();
+      const { data: convertResponse } = await axios.post(
+        urlConvert,
+        postParams
+      );
       setProgressPercent(60);
 
       setResult(convertResponse);

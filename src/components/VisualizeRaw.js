@@ -3,18 +3,18 @@ import qs from "query-string";
 import React, { useEffect, useState } from "react";
 import API from "../API";
 import {
+  mkDataServerParams,
   mkDataVisualization,
-  paramsFromStateData,
   updateStateData
 } from "../data/Data";
 import {
+  mkShaclServerParams,
   mkShaclVisualization,
-  paramsFromStateShacl,
   updateStateShacl
 } from "../shacl/Shacl";
 import {
+  mkShexServerParams,
   mkShexVisualization,
-  paramsFromStateShex,
   updateStateShex
 } from "../shex/Shex";
 import {
@@ -38,8 +38,6 @@ function VisualizeRaw(props) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message] = useState("Processing...");
-
-  const url = API.routes.server.dataConvert;
 
   useEffect(() => {
     if (props.location?.search) {
@@ -79,9 +77,9 @@ function VisualizeRaw(props) {
           return;
         } else {
           setUserInput(finalInput);
-
-          const params = mkParams(finalInput, type, target);
-          setParams(params);
+          mkParams(finalInput, type, target)
+            .then((params) => setParams(params))
+            .catch((err) => setError(API.texts.errorParsingUrl));
         }
       } else {
         setError(API.texts.errorParsingUrl);
@@ -106,7 +104,7 @@ function VisualizeRaw(props) {
   }, [params]);
 
   // Create the params needed to compute the visualization for the type and target provided
-  function mkParams(
+  async function mkParams(
     pInput = userInput,
     pType = visualizationType,
     pTarget = visualizationTarget
@@ -114,11 +112,19 @@ function VisualizeRaw(props) {
     // Base params
     const baseParams =
       pType === API.queryParameters.visualization.types.data
-        ? paramsFromStateData(pInput)
+        ? { [API.queryParameters.data.data]: await mkDataServerParams(pInput) }
         : pType === API.queryParameters.visualization.types.shex
-        ? paramsFromStateShex(pInput)
+        ? {
+            [API.queryParameters.schema.schema]: await mkShexServerParams(
+              pInput
+            ),
+          }
         : pType === API.queryParameters.visualization.types.shacl
-        ? paramsFromStateShacl(pInput)
+        ? {
+            [API.queryParameters.schema.schema]: await mkShaclServerParams(
+              pInput
+            ),
+          }
         : pType === API.queryParameters.visualization.types.uml
         ? paramsFromStateUML(pInput)
         : null;
@@ -134,12 +140,12 @@ function VisualizeRaw(props) {
         if (pTarget === API.queryParameters.visualization.targets.svg)
           return {
             ...baseParams,
-            [API.queryParameters.data.targetFormat]: API.formats.dot,
+            [API.queryParameters.targetFormat]: API.formats.dot,
           };
         else if (pTarget === API.queryParameters.visualization.targets.cyto)
           return {
             ...baseParams,
-            [API.queryParameters.data.targetFormat]: API.formats.json,
+            [API.queryParameters.targetFormat]: API.formats.json,
           };
         else setError(API.texts.invalidVisualizationTarget);
 
@@ -147,12 +153,12 @@ function VisualizeRaw(props) {
         if (pTarget === API.queryParameters.visualization.targets.svg)
           return {
             ...baseParams,
-            [API.queryParameters.schema.targetFormat]: API.formats.svg,
+            [API.queryParameters.targetFormat]: API.formats.svg,
           };
         else if (pTarget === API.queryParameters.visualization.targets.cyto)
           return {
             ...baseParams,
-            [API.queryParameters.schema.targetFormat]: API.formats.json,
+            [API.queryParameters.targetFormat]: API.formats.json,
           };
         else setError(API.texts.invalidVisualizationTarget);
 
@@ -160,7 +166,7 @@ function VisualizeRaw(props) {
         if (pTarget === API.queryParameters.visualization.targets.svg)
           return {
             ...baseParams,
-            [API.queryParameters.schema.targetFormat]: API.formats.svg,
+            [API.queryParameters.targetFormat]: API.formats.svg,
           };
         else setError(API.texts.invalidVisualizationTarget);
 
@@ -168,7 +174,7 @@ function VisualizeRaw(props) {
         if (pTarget === API.queryParameters.visualization.targets.svg)
           return {
             ...baseParams,
-            [API.queryParameters.uml.targetFormat]: API.formats.svg,
+            [API.queryParameters.targetFormat]: API.formats.svg,
           };
         else setError(API.texts.invalidVisualizationTarget);
 

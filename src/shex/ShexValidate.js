@@ -1,4 +1,3 @@
-import axios from "axios";
 import qs from "query-string";
 import React, { useContext, useEffect, useState } from "react";
 import Alert from "react-bootstrap/Alert";
@@ -12,24 +11,27 @@ import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
-  getDataText, mkDataTabs,
+  getDataText,
+  mkDataServerParams,
+  mkDataTabs,
   paramsFromStateData,
   updateStateData
 } from "../data/Data";
-import EndpointInput from "../endpoint/EndpointInput";
-import { mkPermalinkLong, params2Form } from "../Permalink";
+import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaValidate from "../results/ResultValidate";
 import {
   getShapeMapText,
-  InitialShapeMap,
-  mkShapeMapTabs,
-  paramsFromStateShapemap,
+  InitialShapeMap, mkShapeMapTabs,
+  mkTriggerModeServerParams,
+  paramsFromStateShapeMap,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
+import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
   InitialShex,
+  mkShexServerParams,
   mkShexTabs,
   paramsFromStateShex,
   updateStateShex
@@ -47,9 +49,6 @@ function ShexValidate(props) {
   const [data, setData] = useState(ctxData || addRdfData());
   const [shex, setShEx] = useState(ctxShex || InitialShex);
   const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
-
-  const [endpoint, setEndpoint] = useState("");
-  const [withEndpoint, setWithEndpoint] = useState(false); // UI reference
 
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -85,40 +84,12 @@ function ShexValidate(props) {
         updateStateShapeMap(queryParams, shapeMap) || shapeMap;
       setShapeMap(finalShapeMap);
 
-      // Endpoint
-      const finalEndpoint =
-        queryParams[API.queryParameters.endpoint.endpoint] || endpoint;
-      setEndpoint(finalEndpoint);
-      setWithEndpoint(!!finalEndpoint);
-
-      const newParams = mkParams(
-        finalData,
-        finalShex,
-        finalShapeMap,
-        finalEndpoint
-      );
+      const newParams = mkParams(finalData, finalShex, finalShapeMap);
 
       setParams(newParams);
       setLastParams(newParams);
     }
   }, [props.location?.search]);
-
-  function mkParams(
-    pData = data,
-    pShex = shex,
-    pShapeMap = shapeMap,
-    pEndpoint = endpoint
-  ) {
-    const newParams = {
-      ...paramsFromStateData(pData),
-      ...paramsFromStateShex(pShex),
-      ...paramsFromStateShapemap(pShapeMap), // + trigger mode
-      [API.queryParameters.schema.targetEngine]: API.engines.shex, // Target is always ShEx
-    };
-
-    pEndpoint && (newParams[API.queryParameters.endpoint.endpoint] = pEndpoint);
-    return newParams;
-  }
 
   useEffect(() => {
     if (params) {
@@ -153,8 +124,29 @@ function ShexValidate(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-
     setParams(mkParams());
+  }
+
+  function mkParams(pData = data, pShex = shex, pShapeMap = shapeMap) {
+    return {
+      ...paramsFromStateData(pData),
+      ...paramsFromStateShex(pShex),
+      ...paramsFromStateShapeMap(pShapeMap), // + trigger mode
+    };
+  }
+
+  async function mkServerParams(
+    pData = data,
+    pShex = shex,
+    pShapeMap = shapeMap
+  ) {
+    return {
+      [API.queryParameters.data.data]: await mkDataServerParams(pData),
+      [API.queryParameters.schema.schema]: await mkShexServerParams(pShex),
+      [API.queryParameters.schema.triggerMode]: await mkTriggerModeServerParams(
+        pShapeMap
+      ),
+    };
   }
 
   async function postValidate() {
@@ -162,8 +154,8 @@ function ShexValidate(props) {
     setProgressPercent(30);
 
     try {
-      const postData = params2Form(params);
-      const { data: validateResponse } = await axios.post(url, postData);
+      const postParams = await mkServerParams();
+      const { data: validateResponse } = await axios.post(url, postParams);
       setProgressPercent(60);
 
       setResult(validateResponse);
@@ -241,23 +233,6 @@ function ShexValidate(props) {
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
             {mkDataTabs(data, setData)}
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setWithEndpoint(!withEndpoint);
-                if (!withEndpoint === false) {
-                  setEndpoint("");
-                }
-              }}
-            >
-              {withEndpoint ? "Remove" : "Add"} endpoint
-            </Button>
-            {withEndpoint ? (
-              <EndpointInput
-                value={endpoint}
-                handleOnChange={(value) => setEndpoint(value.trim())}
-              />
-            ) : null}
             <hr />
             {mkShexTabs(shex, setShEx)}
             <hr />
