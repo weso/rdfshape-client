@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "bootstrap": "^4.6.1",
-    "codemirror": "^5.65.1",
+    "codemirror": "^5.65.2",
     "cytoscape": "^3.21.0",
     "cytoscape-dagre": "^2.4.0",
     "cytoscape-node-html-label": "^1.2.1",
@@ -66,7 +66,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.17.4",
+    "@babel/core": "^7.17.7",
     "@testing-library/dom": "^6.16.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
