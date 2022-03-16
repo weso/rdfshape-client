@@ -480,7 +480,7 @@ class API {
 
     dataTabs: {
       dataHeader: "Data (RDF)",
-      shexHeader: "Shapes Graph (ShEx)",
+      shexHeader: "Schema (ShEx)",
       shaclHeader: "Shapes Graph (SHACL)",
       shapeMapHeader: "ShapeMap",
       queryHeader: "Query (SPARQL)",
