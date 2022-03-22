@@ -126,7 +126,6 @@ export const mkSvgElement = (umlRaw) => {
 
   // Remove dummy element and return
   dummy.remove();
-
   return inlineSvg;
 };
 

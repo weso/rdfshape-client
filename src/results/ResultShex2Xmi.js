@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, componentDidMount } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
@@ -7,6 +7,8 @@ import ByText from "../components/ByText";
 import { mkEmbedLink, Permalink } from "../Permalink";
 import { InitialUML, mkSvgElement, paramsFromStateUML } from "../uml/UML";
 import PrintJson from "../utils/PrintJson";
+import $ from "jquery";
+import shumlex from "shumlex";
 import {
   format2mode,
   scrollToResults,
@@ -27,6 +29,7 @@ function ResultShEx2XMI({
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [svg, setSvg] = useState();
+  const [svgId, setSvgId] = useState();
 
   // Params of the created uml, used to create the embed link
   const umlParams = paramsFromStateUML({
@@ -36,15 +39,42 @@ function ResultShEx2XMI({
   });
 
   useEffect(scrollToResults, []);
+  
+  if(!svg) {
+	  setSvg(mkSvgElement(resultRaw).replaceAll("�enumeration�", "«enumeration»"));  
+  }
+  
+  useEffect(() => {
+	  setSvgId(svg.match(/mermaid-[0-9]*/i)[0]);
+	  shumlex.asignarEventos(svgId);	  
+  });
 
   if (conversionResult)
     return (
       <div id={API.resultsId}>
         <Tabs
-          activeKey={activeTab}
+		defaultActiveKey={API.tabs.visualization}
+          activeKey={API.tabs.visualization}
           id="dataTabs"
           onSelect={(e) => setActiveTab(e)}
         >
+		  <Tab
+            eventKey={API.tabs.visualization}
+            title={API.texts.misc.umlDiagram}
+          >
+            <div>
+              <ShowVisualization
+                data={svg}
+                type={visualizationTypes.svgRaw}
+                embedLink={mkEmbedLink(umlParams, {
+                  visualizationType:
+                    API.queryParameters.visualization.types.uml,
+                  visualizationTarget:
+                    API.queryParameters.visualization.targets.svg,
+                })} 
+              />
+            </div>
+          </Tab>
           <Tab eventKey={API.tabs.xmi} title={API.texts.misc.xmi}>
             {resultRaw && (
               <ByText
@@ -59,24 +89,7 @@ function ResultShEx2XMI({
               />
             )}
           </Tab>
-          <Tab
-            eventKey={API.tabs.visualization}
-            title={API.texts.misc.umlDiagram}
-            onEnter={() => !svg && setSvg(mkSvgElement(resultRaw))}
-          >
-            <div>
-              <ShowVisualization
-                data={svg}
-                type={visualizationTypes.svgRaw}
-                embedLink={mkEmbedLink(umlParams, {
-                  visualizationType:
-                    API.queryParameters.visualization.types.uml,
-                  visualizationTarget:
-                    API.queryParameters.visualization.targets.svg,
-                })}
-              />
-            </div>
-          </Tab>
+          
         </Tabs>
 
         <hr />

@@ -205,6 +205,7 @@ function ShexConvert(props) {
       const xmiResult = shumlex.shExToXMI(input);
 
       setResult({ result: xmiResult, renderType: resultTypes.shumlex });
+
       setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
       checkLinks();
     } catch (error) {
