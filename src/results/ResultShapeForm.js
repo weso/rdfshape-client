@@ -66,10 +66,15 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
         <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
           {/* HTML code for the generated form */}
           <Tab eventKey={API.tabs.html} title={API.texts.resultTabs.result}>
+            {console.info(form)}
             <ByText
-              textAreaValue={format(form, {
+              // Wrap generated form in SPAN to have a unique root node for XML parser
+              textAreaValue={format(`<span>${form}</span>`, {
                 indentation: "  ",
-              })} // Pretty print generated HTML
+              })
+                // Remove the spans placed for XML parsing
+                .replace(/^<span>/, "")
+                .replace(/<\/span>$/, "")} // Pretty print generated HTML
               textFormat={API.formats.xml}
               fromParams={true}
               readonly={true}
