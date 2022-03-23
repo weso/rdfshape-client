@@ -1,14 +1,13 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useEffect, useState, componentDidMount } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import shumlex from "shumlex";
 import API from "../API";
 import ByText from "../components/ByText";
 import { mkEmbedLink, Permalink } from "../Permalink";
 import { InitialUML, mkSvgElement, paramsFromStateUML } from "../uml/UML";
 import PrintJson from "../utils/PrintJson";
-import $ from "jquery";
-import shumlex from "shumlex";
 import {
   format2mode,
   scrollToResults,
@@ -39,26 +38,29 @@ function ResultShEx2XMI({
   });
 
   useEffect(scrollToResults, []);
-  
-  if(!svg) {
-	  setSvg(mkSvgElement(resultRaw).replaceAll("�enumeration�", "«enumeration»"));  
+
+  if (!svg) {
+    setSvg(
+      mkSvgElement(resultRaw).replaceAll("�enumeration�", "«enumeration»")
+    );
   }
-  
+
   useEffect(() => {
-	  setSvgId(svg.match(/mermaid-[0-9]*/i)[0]);
-	  shumlex.asignarEventos(svgId);	  
+    setSvgId(svg.match(/mermaid-[0-9]*/i)[0]);
+    shumlex.asignarEventos(svgId);
   });
 
   if (conversionResult)
     return (
       <div id={API.resultsId}>
         <Tabs
-		defaultActiveKey={API.tabs.visualization}
-          activeKey={API.tabs.visualization}
+          defaultActiveKey={API.tabs.visualization}
+          activeKey={activeTab}
           id="dataTabs"
           onSelect={(e) => setActiveTab(e)}
+          mountOnEnter={true}
         >
-		  <Tab
+          <Tab
             eventKey={API.tabs.visualization}
             title={API.texts.misc.umlDiagram}
           >
@@ -71,7 +73,7 @@ function ResultShEx2XMI({
                     API.queryParameters.visualization.types.uml,
                   visualizationTarget:
                     API.queryParameters.visualization.targets.svg,
-                })} 
+                })}
               />
             </div>
           </Tab>
@@ -89,7 +91,6 @@ function ResultShEx2XMI({
               />
             )}
           </Tab>
-          
         </Tabs>
 
         <hr />
@@ -115,7 +116,7 @@ ResultShEx2XMI.propTypes = {
 
 ResultShEx2XMI.defaultProps = {
   resultMode: API.formats.xml, // Mode of the result textArea
-  initialTab: API.tabs.xmi, // Key of the initially active tab
+  initialTab: API.tabs.visualization, // Key of the initially active tab
 };
 
 export default ResultShEx2XMI;
