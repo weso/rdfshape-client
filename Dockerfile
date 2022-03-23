@@ -3,7 +3,7 @@ FROM node:lts-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 # Avoid JS heap out of memory when building
-ARG NODE_OPTIONS=--max-old-space-size=3000
+ARG NODE_OPTIONS=--max-old-space-size=4096
 
 # Backend location defaults to what is in .env file when the image was built.
 
