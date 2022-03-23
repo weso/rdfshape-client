@@ -1,3 +1,4 @@
+import shExTo3D from "3dshex";
 import cytoscape from "cytoscape";
 import svg from "cytoscape-svg";
 import PropTypes from "prop-types";
@@ -21,7 +22,7 @@ import VisualizationLinks from "./VisualizationLinks";
 // https://www.npmjs.com/package/cytoscape-svg
 cytoscape.use(svg);
 
-export const visualizationTypes = {
+export const visualizationTypes = Object.freeze({
   svgObject: "svg",
   svgRaw: "svgRaw",
   image: "image",
@@ -29,7 +30,8 @@ export const visualizationTypes = {
   cytoscape: "cyto",
   text: "text",
   object: "object",
-};
+  threeD: "3D",
+});
 
 // Unified class for showing data visualizations
 function ShowVisualization({
@@ -43,6 +45,8 @@ function ShowVisualization({
 }) {
   // Visualization ID and the ID of te html container of the visualization
   const id = randomInt();
+  // ID of the Visualization container
+  const threeDId = "3dgraph";
   const htmlId = `visualization-container-${id}`;
 
   // CSS-applied zoom on the element (via transform scale). Not needed for cyto
@@ -92,6 +96,20 @@ function ShowVisualization({
     setDownloadLink(generateDownloadLink());
   }, [data, type, layout, cytoStyles]);
 
+  // When changing visualization, if it is not the initial empty fragment,
+  // create the 3D visual (silently ignore errors for now)
+  useEffect(() => {
+    if (
+      visualization.type.toString() != "Symbol(react.fragment)" &&
+      type === visualizationTypes.threeD
+    )
+      try {
+        shExTo3D(data, threeDId);
+      } catch (err) {
+        console.warn(err);
+      }
+  }, [visualization]);
+
   // Re-gen download link with update cyto object when it is manupulated by the user
   useEffect(() => {
     setDownloadLink(generateDownloadLink(data, type));
@@ -140,6 +158,14 @@ function ShowVisualization({
       case visualizationTypes.object:
         return <PrintJson json={vData} overflow={false}></PrintJson>;
 
+      case visualizationTypes.threeD:
+        // Create the item, let useEffect perform the logic
+        // The class is very important. We make the 3D visuals not overflow via CSS
+        // TODO: better code handling in three.js to adapt to viewport
+        return (
+          <div id={threeDId} className="threed-graph-visualization-root"></div>
+        );
+
       // DOT, PS, (String)
       case visualizationTypes.text:
       default:
@@ -184,6 +210,10 @@ function ShowVisualization({
           type: API.formats.png.toLowerCase(),
         });
 
+      // No download link for 3D visuals
+      case visualizationTypes.threeD:
+        return () => {};
+
       case visualizationTypes.json:
       case visualizationTypes.object:
         return () => ({
@@ -219,8 +249,16 @@ function ShowVisualization({
         style={{ position: "relative" }}
         className={`width-100 height-100 ${!raw && "border"}`}
       >
+        {/* Special overflow for 3D visuals */}
         <div
-          style={{ overflow: raw ? "inherit" : "auto" }}
+          style={{
+            overflow:
+              type === visualizationTypes.threeD
+                ? "clip"
+                : raw
+                ? "inherit"
+                : "auto",
+          }}
           className={raw ? "width-100v height-100v" : "width-100 height-100"}
         >
           {/* // Basic div changing with the zoom level with the final contents */}

@@ -1,19 +1,15 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useEffect, useState, componentDidMount } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
-import ByText from "../components/ByText";
-import { mkEmbedLink, Permalink } from "../Permalink";
+import { Permalink } from "../Permalink";
 import { InitialUML, paramsFromStateUML } from "../uml/UML";
 import PrintJson from "../utils/PrintJson";
-import $ from "jquery";
-import shExTo3D from "3dshex";
-import {
-  format2mode,
-  scrollToResults,
-  yasheResultButtonsOptions
-} from "../utils/Utils";
+import { scrollToResults } from "../utils/Utils";
+import ShowVisualization, {
+  visualizationTypes
+} from "../visualization/ShowVisualization";
 
 function Result3DShex({
   result: conversionResult,
@@ -21,10 +17,13 @@ function Result3DShex({
   initialTab,
   permalink,
   disabled,
+  // Since 3dshex is generated in the result component, let this component know how to
+  // update errors in UI
+  setError,
 }) {
   const { result: resultRaw } = conversionResult;
 
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [resultTab, setResultTab] = useState(initialTab);
   const [svg, setSvg] = useState();
   const [svgId, setSvgId] = useState();
 
@@ -36,34 +35,28 @@ function Result3DShex({
   });
 
   useEffect(scrollToResults, []);
-  
-  useEffect(() => {
-	  shExTo3D(resultRaw, "3dgraph");	  
-  });
 
   if (conversionResult)
     return (
       <div id={API.resultsId}>
-        <Tabs
-		defaultActiveKey={API.tabs.visualization}
-          activeKey={API.tabs.visualization}
-          id="dataTabs"
-          onSelect={(e) => setActiveTab(e)}
-        >
-		  <Tab
+        <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
+          <Tab
             eventKey={API.tabs.visualization}
-            title={API.texts.misc.graph3d}
+            title={API.texts.resultTabs.graph3d}
           >
-            <div id="3dgraph">
-            </div>
+            <ShowVisualization
+              data={resultRaw}
+              type={visualizationTypes.threeD}
+              // No embed link for 3D for now
+            />
           </Tab>
-          
         </Tabs>
 
         <hr />
 
         <details>
           <summary>{API.texts.responseSummaryText}</summary>
+          <PrintJson json={conversionResult} />
         </details>
         {permalink && (
           <Fragment>

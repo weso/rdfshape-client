@@ -15,7 +15,10 @@ import ExternalLinkIcon from "react-open-iconic-svg/dist/ExternalLinkIcon";
 import TargetIcon from "react-open-iconic-svg/dist/TargetIcon";
 import ReactTooltip from "react-tooltip";
 import API from "../API";
-import { cytoscapeDefaultNodeColor, layouts } from "../utils/cytoscape/cytoUtils";
+import {
+  cytoscapeDefaultNodeColor,
+  layouts
+} from "../utils/cytoscape/cytoUtils";
 import {
   capitalize,
   visualizationMaxZoom,
@@ -45,10 +48,7 @@ function VisualizationLinks({
   // Color used for cytoscape nodes, needed in state for UI
   const [cytoNodeColor, setCytoNodeColor] = useState(cytoscapeDefaultNodeColor);
 
-  const [downloadLink, setDownloadLink] = useState({
-    link: "#",
-    type: null,
-  });
+  const [downloadLink, setDownloadLink] = useState(generateDownloadLink());
 
   // Change the cyto graph style when a new node color is selected
   useEffect(() => {
@@ -174,27 +174,29 @@ function VisualizationLinks({
               )}
             </>
           )}
-          {zoomControls && type !== visualizationTypes.cytoscape && (
-            <>
-              <Button
-                onClick={() => setZoom(false)}
-                className="btn-controls"
-                variant="secondary"
-                disabled={zoom <= visualizationMinZoom}
-              >
-                <ZoomOutIcon className="white-icon" />
-              </Button>
-              <Button
-                onClick={() => setZoom(true)}
-                style={{ marginLeft: "1px" }}
-                className="btn-controls"
-                variant="secondary"
-                disabled={zoom >= visualizationMaxZoom}
-              >
-                <ZoomInIcon className="white-icon" />
-              </Button>
-            </>
-          )}
+          {zoomControls &&
+            type !== visualizationTypes.cytoscape &&
+            type !== visualizationTypes.threeD && (
+              <>
+                <Button
+                  onClick={() => setZoom(false)}
+                  className="btn-controls"
+                  variant="secondary"
+                  disabled={zoom <= visualizationMinZoom}
+                >
+                  <ZoomOutIcon className="white-icon" />
+                </Button>
+                <Button
+                  onClick={() => setZoom(true)}
+                  style={{ marginLeft: "1px" }}
+                  className="btn-controls"
+                  variant="secondary"
+                  disabled={zoom >= visualizationMaxZoom}
+                >
+                  <ZoomInIcon className="white-icon" />
+                </Button>
+              </>
+            )}
         </div>
       )}
       {controls && type === visualizationTypes.cytoscape && (
