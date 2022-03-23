@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import format from "xml-formatter";
@@ -7,11 +8,16 @@ import { Permalink } from "../Permalink";
 import PrintJson from "../utils/PrintJson";
 import { scrollToResults, yasheResultButtonsOptions } from "../utils/Utils";
 
-function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
+function ResultShapeForm({
+  result: shapeFormResult,
+  permalink,
+  disabled,
+  initialTab,
+}) {
   // Destructure response items for later usage
   const { form, message } = shapeFormResult;
 
-  const [resultTab, setResultTab] = useState(API.tabs.html);
+  const [resultTab, setResultTab] = useState(initialTab);
   // TODO: adapt this results to show:
   // TAB1: the HTML code in a <Code> of type XML(?)
   // TAB2: the rendering of the form
@@ -63,10 +69,18 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
   if (shapeFormResult) {
     return (
       <div id={API.resultsId}>
-        <Tabs activeKey={resultTab} onSelect={setResultTab} id="resultTabs">
+        <Tabs
+          activeKey={resultTab}
+          onSelect={setResultTab}
+          id="resultTabs"
+          mountOnEnter={true}
+        >
+          {/* Rendering of the generated HTML form */}
+          <Tab eventKey={API.tabs.render} title={API.texts.resultTabs.render}>
+            <div id="resultform" dangerouslySetInnerHTML={{ __html: form }} />
+          </Tab>
           {/* HTML code for the generated form */}
           <Tab eventKey={API.tabs.html} title={API.texts.resultTabs.result}>
-            {console.info(form)}
             <ByText
               // Wrap generated form in SPAN to have a unique root node for XML parser
               textAreaValue={format(`<span>${form}</span>`, {
@@ -80,10 +94,6 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
               readonly={true}
               options={{ ...yasheResultButtonsOptions }}
             />
-          </Tab>
-          {/* Rendering of the generated HTML form */}
-          <Tab eventKey={API.tabs.render} title={API.texts.resultTabs.render}>
-            <div id="resultform" dangerouslySetInnerHTML={{ __html: form }} />
           </Tab>
         </Tabs>
 
@@ -102,5 +112,14 @@ function ResultShapeForm({ result: shapeFormResult, permalink, disabled }) {
     );
   }
 }
+
+ResultShapeForm.propTypes = {
+  result: PropTypes.object,
+  initialTab: PropTypes.string,
+};
+
+ResultShapeForm.defaultProps = {
+  initialTab: API.tabs.render, // Key of the initially active tab
+};
 
 export default ResultShapeForm;

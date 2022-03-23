@@ -574,3 +574,14 @@ h4 {
 .page-header-tip a:hover {
   color: currentColor;
 }
+
+/* We need this to be width-height 100% and the same
+  for DIVs and canvas below
+  Leave .scene-nav-info alone
+*/
+.threed-graph-visualization-root,
+.threed-graph-visualization-root
+  :is(div:not(.scene-nav-info, .graph-info-msg, .scene-tooltip), canvas) {
+  width: 100% !important;
+  height: 100% !important;
+}

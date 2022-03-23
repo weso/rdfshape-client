@@ -19,10 +19,10 @@ import {
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong } from "../Permalink";
+import Result3DShex from "../results/Result3DShex";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ResultShex2Xmi from "../results/ResultShex2Xmi";
-import Result3DShex from "../results/Result3DShex";
 import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
@@ -61,6 +61,7 @@ function ShexConvert(props) {
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
+  const urlInfo = API.routes.server.schemaInfo;
   const urlConvert = API.routes.server.schemaConvert;
 
   // Store the current result type as one of these to know which result component to render
@@ -68,7 +69,7 @@ function ShexConvert(props) {
     schema: "schema",
     shumlex: "shumlex",
     shapeForms: "shapeForms",
-	tresd: "3dshex"
+    tresd: "3dshex",
   });
 
   // Extra logic for handling the target format changes
@@ -84,7 +85,7 @@ function ShexConvert(props) {
         setTargetSchemaFormat(API.formats.htmlForm);
       else if (targetSchemaEngine === API.engines.shumlex)
         setTargetSchemaFormat(API.formats.xmi);
-	  else if (targetSchemaEngine === API.engines.tresdshex)
+      else if (targetSchemaEngine === API.engines.tresdshex)
         setTargetSchemaFormat(API.formats.tresd);
     } else setTargetSchemaFormat(newFormat);
   };
@@ -173,8 +174,22 @@ function ShexConvert(props) {
     if (schemaEngines.includes(targetSchemaEngine)) serverSchemaConvert();
     else if (targetSchemaEngine === API.engines.shapeForms) clientFormConvert();
     else if (targetSchemaEngine === API.engines.shumlex) clientUmlConvert();
-	else if (targetSchemaEngine === API.engines.tresdshex) client3DConvert();
+    else if (targetSchemaEngine === API.engines.tresdshex) client3DConvert();
   };
+
+  // Aux function. Before doing any client conversion, ask the server for the Schema info
+  // so that we get syntax errors.
+  // If no errors: discard response, we can assume ShEx is OK
+  // If errors: throw them so that the caller handles them
+  async function serverSchemaInfo() {
+    try {
+      const postParams = await mkServerParams();
+      const { data: infoResponse } = await axios.post(urlInfo, postParams);
+      return infoResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   // For schema-schema conversions done by server
   async function serverSchemaConvert() {
@@ -182,6 +197,8 @@ function ShexConvert(props) {
     setProgressPercent(20);
 
     try {
+      // We don't need to call "serverSchemaInfo", this operation is done in the server
+      // and will validate the schema
       const postParams = await mkServerParams();
       const { data: convertResponse } = await axios.post(
         urlConvert,
@@ -205,6 +222,10 @@ function ShexConvert(props) {
     setLoading(true);
     setProgressPercent(20);
     try {
+      // We do "serverSchemaInfo" first, so that the server validates
+      // the user ShEx before processing anything. We don't use this data though.
+      const schemaInfo = await serverSchemaInfo();
+
       // Get the raw data passed to the converter
       const input = await getConverterInput(params);
       const xmiResult = shumlex.shExToXMI(input);
@@ -230,6 +251,10 @@ function ShexConvert(props) {
     setLoading(true);
     setProgressPercent(20);
     try {
+      // We do "serverSchemaInfo" first, so that the server validates
+      // the user ShEx before processing anything. We don't use this data though.
+      const schemaInfo = await serverSchemaInfo();
+
       // Get the raw data passed to the converter
       const input = await getConverterInput(params);
       // Parse the ShEx to form
@@ -254,12 +279,16 @@ function ShexConvert(props) {
       setLoading(false);
     }
   }
-  
+
   // For schema-uml conversions done with client libraries
   async function client3DConvert() {
     setLoading(true);
     setProgressPercent(20);
     try {
+      // We do "serverSchemaInfo" first, so that the server validates
+      // the user ShEx before processing anything. We don't use this data though.
+      const schemaInfo = await serverSchemaInfo();
+
       // Get the raw data passed to the converter
       const input = await getConverterInput(params);
 
@@ -271,7 +300,7 @@ function ShexConvert(props) {
       setError(
         mkError({
           ...error,
-          message: `An error occurred creating the UML equivalent. Check your inputs.\n${error}`,
+          message: `An error occurred creating the 3D visualization. Check your inputs.\n${error}`,
         })
       );
     } finally {
@@ -346,9 +375,9 @@ function ShexConvert(props) {
               selectedEngine={targetSchemaEngine}
               fromParams={false}
               resetFromParams={false}
-              extraOptions={allEngines} // Allow to choose Shex engine too for this case
+              extraOptions={allEngines} // Allow to choose any engines
             />
-            {/* Warning to use shapestart if using shapeforms */}
+            {/* Warning to use shape-start if using shapeforms */}
             {targetSchemaEngine === API.engines.shapeForms && (
               <Alert variant="warning">
                 A <i>Shape Start</i> is required when using ShapeForms (
@@ -376,6 +405,8 @@ function ShexConvert(props) {
                   ? [API.formats.htmlForm]
                   : targetSchemaEngine === API.engines.shumlex
                   ? [API.formats.xmi]
+                  : targetSchemaEngine === API.engines.tresdshex
+                  ? [API.formats.tresd]
                   : []
               }
             />
@@ -426,6 +457,7 @@ function ShexConvert(props) {
                   result={result}
                   permalink={permalink}
                   disabled={disabledLinks}
+                  setError={setError} // Let the component know how to update error in UI
                 />
               ) : null
             ) : null}

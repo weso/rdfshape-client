@@ -2,7 +2,7 @@ import API from "../../API";
 import axios from "../networking/axiosConfig";
 import { getFileContents } from "../Utils";
 
-// Some validations (shunlex, shapeforms) are done in the client, so the client must parse the input,
+// Some validations (shumlex, shapeforms) are done in the client, so the client must parse the input,
 // whether if it's plain text, a URL to be fetched or a file to be parsed.
 
 // isShEx2Uml: specifies the direction of the conversion

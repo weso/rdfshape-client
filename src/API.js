@@ -29,7 +29,7 @@ class API {
     xmi: "XMI",
     txt: "txt",
     htmlForm: "HTML form",
-	tresd: "3D",
+    tresd: "3D",
 
     defaultData: "turtle",
     defaultShex: "ShExC",
@@ -67,7 +67,7 @@ class API {
 
     shumlex: "Shumlex",
     shapeForms: "ShapeForms",
-	tresdshex: "3DShEx"
+    tresdshex: "3DShEx",
   };
 
   // Trigger modes
@@ -267,6 +267,7 @@ class API {
     visualizations: "visualizations",
     visualizationDot: "dot",
     visualizationCyto: "cyto",
+    visualization3d: "3d",
 
     render: "Render",
 
@@ -287,7 +288,7 @@ class API {
       shex: "ShEx",
       shacl: "SHACL",
       shapeMap: "ShapeMap",
-      analysis: "Analysis",
+      analysis: "Analysis & Visualization",
       information: "Information",
       conversion: "Conversion",
       visualization: "Visualization",
@@ -367,7 +368,7 @@ class API {
         </span>
       ),
       shexInfo:
-        "Input some Shape Expression (ShEx) (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents and see additional information, including: prefix map, SVG and Cytoscape visuals",
+        "Input some Shape Expression (ShEx) (by text, by pointing to a URL with the contents or by file) and select its format to validate its contents and see additional information, including: prefix map, SVG / Cytoscape / 3D visuals",
 
       shexConversion: (
         <>
@@ -513,6 +514,7 @@ class API {
       visualizationDot: "DOT",
       visualizationCyto: "Cytoscape",
       associations: "Associations",
+      graph3d: "3D Graph",
     },
 
     endpoints: {
@@ -582,7 +584,6 @@ class API {
       prefixMap: "Prefix map",
       associations: "Associations",
       umlDiagram: "UML Diagram",
-	  graph3d: "3D Graph",
       fullscreen: "Fullscreen",
       download: "Download",
       address: "Address",

@@ -51,8 +51,17 @@ function ResultSchemaInfo({
   useEffect(scrollToResults, []);
 
   useEffect(() => {
-    if (schemaEngine === API.engines.shex)
-      setCytoElements(shumlex.crearGrafo(schemaRaw));
+    // If using ShEx, to to create CytoVisual and 3D visual
+    if (schemaEngine === API.engines.shex) {
+      try {
+        // We used shumlex to create CytoVisuals for ShEx
+        // Does "crearGrafo" keep existing?
+        setCytoElements(shumlex.crearGrafo(schemaRaw));
+      } catch (err) {
+        console.warn(err);
+        setCytoElements([]);
+      }
+    }
   }, []);
 
   // Forcibly render the cyto when entering the tab for accurate dimensions
@@ -126,6 +135,7 @@ function ResultSchemaInfo({
                   activeKey={visualTab}
                   id="visualTabs"
                   onSelect={setVisualTab}
+                  mountOnEnter={true}
                 >
                   {/* SVG visualization */}
                   {schemaSvg && (
@@ -152,6 +162,19 @@ function ResultSchemaInfo({
                       onEnter={renderCytoVisual}
                     >
                       {cytoVisual}
+                    </Tab>
+                  )}
+                  {/* 3D visualization */}
+                  {schemaRaw && (
+                    <Tab
+                      eventKey={API.tabs.visualization3d}
+                      title={API.texts.resultTabs.graph3d}
+                    >
+                      <ShowVisualization
+                        data={schemaRaw}
+                        type={visualizationTypes.threeD}
+                        // No embed link for 3D for now
+                      />
                     </Tab>
                   )}
                 </Tabs>
