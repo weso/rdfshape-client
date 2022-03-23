@@ -29,6 +29,7 @@ class API {
     xmi: "XMI",
     txt: "txt",
     htmlForm: "HTML form",
+	tresd: "3D",
 
     defaultData: "turtle",
     defaultShex: "ShExC",
@@ -66,6 +67,7 @@ class API {
 
     shumlex: "Shumlex",
     shapeForms: "ShapeForms",
+	tresdshex: "3DShEx"
   };
 
   // Trigger modes
@@ -580,6 +582,7 @@ class API {
       prefixMap: "Prefix map",
       associations: "Associations",
       umlDiagram: "UML Diagram",
+	  graph3d: "3D Graph",
       fullscreen: "Fullscreen",
       download: "Download",
       address: "Address",

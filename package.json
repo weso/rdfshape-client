@@ -3,6 +3,7 @@
   "version": "0.2.4",
   "private": true,
   "dependencies": {
+    "3dshex": "^0.1.4",
     "axios": "^0.21.4",
     "bootstrap": "^4.6.1",
     "codemirror": "^5.65.2",

@@ -22,6 +22,7 @@ import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ResultShex2Xmi from "../results/ResultShex2Xmi";
+import Result3DShex from "../results/Result3DShex";
 import axios from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
@@ -67,6 +68,7 @@ function ShexConvert(props) {
     schema: "schema",
     shumlex: "shumlex",
     shapeForms: "shapeForms",
+	tresd: "3dshex"
   });
 
   // Extra logic for handling the target format changes
@@ -82,6 +84,8 @@ function ShexConvert(props) {
         setTargetSchemaFormat(API.formats.htmlForm);
       else if (targetSchemaEngine === API.engines.shumlex)
         setTargetSchemaFormat(API.formats.xmi);
+	  else if (targetSchemaEngine === API.engines.tresdshex)
+        setTargetSchemaFormat(API.formats.tresd);
     } else setTargetSchemaFormat(newFormat);
   };
 
@@ -169,6 +173,7 @@ function ShexConvert(props) {
     if (schemaEngines.includes(targetSchemaEngine)) serverSchemaConvert();
     else if (targetSchemaEngine === API.engines.shapeForms) clientFormConvert();
     else if (targetSchemaEngine === API.engines.shumlex) clientUmlConvert();
+	else if (targetSchemaEngine === API.engines.tresdshex) client3DConvert();
   };
 
   // For schema-schema conversions done by server
@@ -243,6 +248,30 @@ function ShexConvert(props) {
         mkError({
           ...error,
           message: `An error has occurred while creating the Form equivalent:\n${error}`,
+        })
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  // For schema-uml conversions done with client libraries
+  async function client3DConvert() {
+    setLoading(true);
+    setProgressPercent(20);
+    try {
+      // Get the raw data passed to the converter
+      const input = await getConverterInput(params);
+
+      setResult({ result: input, renderType: resultTypes.tresd });
+
+      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      checkLinks();
+    } catch (error) {
+      setError(
+        mkError({
+          ...error,
+          message: `An error occurred creating the UML equivalent. Check your inputs.\n${error}`,
         })
       );
     } finally {
@@ -388,6 +417,12 @@ function ShexConvert(props) {
                 />
               ) : result.renderType === resultTypes.shapeForms ? (
                 <ResultShapeForm
+                  result={result}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              ) : result.renderType === resultTypes.tresd ? (
+                <Result3DShex
                   result={result}
                   permalink={permalink}
                   disabled={disabledLinks}

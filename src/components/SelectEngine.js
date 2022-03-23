@@ -12,6 +12,7 @@ export const allEngines = [
 
   API.engines.shumlex,
   API.engines.shapeForms,
+  API.engines.tresdshex
 ];
 
 export const schemaEngines = [
@@ -27,7 +28,7 @@ export const shaclEngines = [
   API.engines.shacl_tq,
 ];
 
-export const extraEngine = [API.engines.shumlex, API.engines.shapeForms];
+export const extraEngine = [API.engines.shumlex, API.engines.shapeForms, API.engines.tresdshex];
 
 export function SelectEngine(props) {
   return (
