@@ -4,17 +4,6 @@ import API from "../API";
 import { ApplicationContext } from "../context/ApplicationContext";
 import SelectFormat from "./SelectFormat";
 
-export const allEngines = [
-  API.engines.shex,
-  API.engines.shaclex,
-  API.engines.jenaShacl,
-  API.engines.shacl_tq,
-
-  API.engines.shumlex,
-  API.engines.shapeForms,
-  API.engines.tresdshex,
-];
-
 export const shaclEngines = [
   API.engines.shaclex,
   API.engines.jenaShacl,
@@ -27,8 +16,10 @@ export const schemaEngines = [API.engines.shex, ...shaclEngines];
 export const extraEngines = [
   API.engines.shumlex,
   API.engines.shapeForms,
-  API.engines.tresdshex,
+  // API.engines.tresdshex,
 ];
+
+export const allEngines = [...schemaEngines, ...extraEngines];
 
 export function SelectEngine(props) {
   return (

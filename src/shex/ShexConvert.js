@@ -19,7 +19,6 @@ import {
 import SelectFormat from "../components/SelectFormat";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong } from "../Permalink";
-import Result3DShex from "../results/Result3DShex";
 import ResultSchemaConvert from "../results/ResultSchemaConvert";
 import ResultShapeForm from "../results/ResultShapeForm";
 import ResultShex2Xmi from "../results/ResultShex2Xmi";
@@ -174,7 +173,6 @@ function ShexConvert(props) {
     if (schemaEngines.includes(targetSchemaEngine)) serverSchemaConvert();
     else if (targetSchemaEngine === API.engines.shapeForms) clientFormConvert();
     else if (targetSchemaEngine === API.engines.shumlex) clientUmlConvert();
-    else if (targetSchemaEngine === API.engines.tresdshex) client3DConvert();
   };
 
   // Aux function. Before doing any client conversion, ask the server for the Schema info
@@ -273,34 +271,6 @@ function ShexConvert(props) {
         mkError({
           ...error,
           message: `An error has occurred while creating the Form equivalent:\n${error}`,
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // For schema-uml conversions done with client libraries
-  async function client3DConvert() {
-    setLoading(true);
-    setProgressPercent(20);
-    try {
-      // We do "serverSchemaInfo" first, so that the server validates
-      // the user ShEx before processing anything. We don't use this data though.
-      const schemaInfo = await serverSchemaInfo();
-
-      // Get the raw data passed to the converter
-      const input = await getConverterInput(params);
-
-      setResult({ result: input, renderType: resultTypes.tresd });
-
-      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
-      checkLinks();
-    } catch (error) {
-      setError(
-        mkError({
-          ...error,
-          message: `An error occurred creating the 3D visualization. Check your inputs.\n${error}`,
         })
       );
     } finally {
@@ -451,13 +421,6 @@ function ShexConvert(props) {
                   result={result}
                   permalink={permalink}
                   disabled={disabledLinks}
-                />
-              ) : result.renderType === resultTypes.tresd ? (
-                <Result3DShex
-                  result={result}
-                  permalink={permalink}
-                  disabled={disabledLinks}
-                  setError={setError} // Let the component know how to update error in UI
                 />
               ) : null
             ) : null}

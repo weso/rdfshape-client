@@ -164,8 +164,8 @@ function ResultSchemaInfo({
                       {cytoVisual}
                     </Tab>
                   )}
-                  {/* 3D visualization */}
-                  {schemaRaw && (
+                  {/* 3D visualization for ShEx */}
+                  {schemaRaw && schemaEngine === API.engines.shex && (
                     <Tab
                       eventKey={API.tabs.visualization3d}
                       title={API.texts.resultTabs.graph3d}
