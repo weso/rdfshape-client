@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
@@ -28,6 +29,8 @@ function DataMerge(props) {
   // Recover user input data from context, if any. Use 2 items of the data array
   const { rdfData: rdfDataSet, addRdfData } = useContext(ApplicationContext);
   const [ctxData1, ctxData2] = rdfDataSet;
+
+  const history = useHistory();
 
   const [data1, setData1] = useState(ctxData1 || addRdfData());
   const [data2, setData2] = useState(ctxData2 || addRdfData());
@@ -173,7 +176,9 @@ function DataMerge(props) {
 
       setResult(serverMergeResponse);
 
-      setPermalink(mkPermalinkLong(API.routes.client.dataMergeRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.dataMergeRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(mkError(error, url));
@@ -203,10 +208,7 @@ function DataMerge(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.dataMergeRoute, {
           [API.queryParameters.data.compound]:
             lastParams[API.queryParameters.data.compound],
@@ -215,10 +217,7 @@ function DataMerge(props) {
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.dataMergeRoute, {
         [API.queryParameters.data.compound]:
           params[API.queryParameters.data.compound],

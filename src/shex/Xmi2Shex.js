@@ -8,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import shumlex from "shumlex";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
@@ -27,6 +28,8 @@ import { getConverterInput } from "../utils/xmiUtils/shumlexUtils";
 export default function Xmi2Shex(props) {
   // Recover user input data from context, if any. Use first item of the data array
   const { umlData: ctxUml } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [uml, setUml] = useState(ctxUml || InitialUML);
 
@@ -102,7 +105,9 @@ export default function Xmi2Shex(props) {
         graph,
       });
 
-      setPermalink(mkPermalinkLong(API.routes.client.xmi2ShexRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.xmi2ShexRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(
@@ -134,20 +139,12 @@ export default function Xmi2Shex(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.xmi2ShexRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
-      mkPermalinkLong(API.routes.client.xmi2ShexRoute, params)
-    );
+    history.replace(mkPermalinkLong(API.routes.client.xmi2ShexRoute, params));
 
     setLastParams(params);
   }

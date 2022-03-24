@@ -1,9 +1,9 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import API from "./API";
 import environmentConfiguration from "./EnvironmentConfig";
+import axios from "./utils/networking/axiosConfig";
 import PrintJson from "./utils/PrintJson";
 
 function About() {

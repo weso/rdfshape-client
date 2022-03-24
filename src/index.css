@@ -189,7 +189,7 @@ a.dropdown-item {
 }
 
 .pointable {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .white-icon {

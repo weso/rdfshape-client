@@ -6,13 +6,15 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { mkPermalinkLong } from "../Permalink";
 import {
   getQueryText,
-  InitialQuery, mkQueryTabs,
+  InitialQuery,
+  mkQueryTabs,
   paramsFromStateQuery,
   updateStateQuery
 } from "../query/Query";
@@ -27,6 +29,8 @@ function EndpointQuery(props) {
   const { sparqlEndpoint: ctxEndpoint, sparqlQuery: ctxQuery } = useContext(
     ApplicationContext
   );
+
+  const history = useHistory();
 
   const [endpoint, setEndpoint] = useState(ctxEndpoint || "");
   const [query, setQuery] = useState(ctxQuery || InitialQuery);
@@ -135,7 +139,7 @@ function EndpointQuery(props) {
 
       setResult(serverQueryResponse);
       setPermalink(
-        mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
+        mkPermalinkLong(API.routes.client.endpointQueryRoute, params, true)
       );
     } catch (err) {
       setError(mkError(err, url));
@@ -151,18 +155,13 @@ function EndpointQuery(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.endpointQueryRoute, lastParams)
       );
     }
     // Change current url for shareable links
     // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.endpointQueryRoute, params)
     );
 

@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -17,6 +18,8 @@ import EndpointInput from "./EndpointInput";
 
 function EndpointInfo(props) {
   const { sparqlEndpoint: ctxEndpoint } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [endpoint, setEndpoint] = useState(ctxEndpoint || "");
   const [params, setParams] = useState(null);
@@ -92,7 +95,7 @@ function EndpointInfo(props) {
       setProgressPercent(70);
       setResult(data);
       setPermalink(
-        mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
+        mkPermalinkLong(API.routes.client.endpointInfoRoute, params, true)
       );
     } catch (error) {
       setError(mkError(error, url));
@@ -108,18 +111,12 @@ function EndpointInfo(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.endpointInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.endpointInfoRoute, params)
     );
 

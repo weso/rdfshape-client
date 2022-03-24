@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import SelectFormat from "../components/SelectFormat";
@@ -28,6 +29,8 @@ function DataConvert(props) {
     rdfData: [ctxData],
     addRdfData,
   } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [data, setData] = useState(ctxData || addRdfData());
   const [dataTargetFormat, setDataTargetFormat] = useState(
@@ -131,7 +134,9 @@ function DataConvert(props) {
       setProgressPercent(70);
       setResult(convertResponse);
 
-      setPermalink(mkPermalinkLong(API.routes.client.dataConvertRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.dataConvertRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(mkError(error, url));
@@ -159,18 +164,12 @@ function DataConvert(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.dataConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.dataConvertRoute, params)
     );
 

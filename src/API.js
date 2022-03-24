@@ -288,7 +288,8 @@ class API {
       shex: "ShEx",
       shacl: "SHACL",
       shapeMap: "ShapeMap",
-      analysis: "Analysis & Visualization",
+      analysis: "Analysis",
+      analysisVisualization: "Analysis & Visualization",
       information: "Information",
       conversion: "Conversion",
       visualization: "Visualization",
@@ -308,6 +309,15 @@ class API {
       apiDocs: "API Docs",
       about: "About",
       projectSite: "Project site",
+    },
+
+    navbarExamples: {
+      dataInformation:"Data information",
+      dataQuery: "Data query",
+      shexValidation: "ShEx validation",
+      shaclValidation: "SHACL validation",
+      wikidataQuery: "Wikidata query",
+      shexFromUml: "ShEx from UML"
     },
 
     pageHeaders: {

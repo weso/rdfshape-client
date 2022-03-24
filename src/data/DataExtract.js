@@ -8,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -31,6 +32,8 @@ function DataExtract(props) {
     rdfData: [ctxData],
     addRdfData,
   } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [data, setData] = useState(ctxData || addRdfData());
   const [params, setParams] = useState(null);
@@ -153,7 +156,9 @@ function DataExtract(props) {
       });
 
       // Set permalinks and finish
-      setPermalink(mkPermalinkLong(API.routes.client.dataExtractRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.dataExtractRoute, params, true)
+      );
       checkLinks();
     } catch (err) {
       setError(mkError(err, urlServerExtract));
@@ -181,18 +186,12 @@ function DataExtract(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.dataExtractRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.dataExtractRoute, params)
     );
 
