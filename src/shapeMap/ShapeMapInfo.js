@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -25,6 +26,8 @@ import {
 function ShapeMapInfo(props) {
   // Recover user shapeMap from context, if any
   const { shapeMap: ctxShapeMap } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [shapemap, setShapemap] = useState(ctxShapeMap || InitialShapeMap);
 
@@ -104,7 +107,7 @@ function ShapeMapInfo(props) {
       setResult(data);
       setProgressPercent(70);
       setPermalink(
-        mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
+        mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params, true)
       );
       setProgressPercent(80);
       checkLinks();
@@ -135,18 +138,12 @@ function ShapeMapInfo(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.shapeMapInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.shapeMapInfoRoute, params)
     );
 

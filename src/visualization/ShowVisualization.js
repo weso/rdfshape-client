@@ -1,4 +1,3 @@
-import shExTo3D from "3dshex";
 import cytoscape from "cytoscape";
 import svg from "cytoscape-svg";
 import PropTypes from "prop-types";
@@ -10,6 +9,7 @@ import { breadthfirst } from "../utils/cytoscape/cytoUtils";
 import PrintJson from "../utils/PrintJson";
 import PrintSVG from "../utils/PrintSVG";
 import PrintXml from "../utils/PrintXml";
+import ThreeContainer from "../utils/three/ThreeContainer";
 import {
   randomInt,
   visualizationMaxZoom,
@@ -45,8 +45,7 @@ function ShowVisualization({
 }) {
   // Visualization ID and the ID of te html container of the visualization
   const id = randomInt();
-  // ID of the Visualization container
-  const threeDId = "3dgraph";
+
   const htmlId = `visualization-container-${id}`;
 
   // CSS-applied zoom on the element (via transform scale). Not needed for cyto
@@ -95,20 +94,6 @@ function ShowVisualization({
     setVisualization(generateVisualElement());
     setDownloadLink(generateDownloadLink());
   }, [data, type, layout, cytoStyles]);
-
-  // When changing visualization, if it is not the initial empty fragment,
-  // create the 3D visual (silently ignore errors for now)
-  useEffect(() => {
-    if (
-      visualization.type.toString() != "Symbol(react.fragment)" &&
-      type === visualizationTypes.threeD
-    )
-      try {
-        shExTo3D(data, threeDId);
-      } catch (err) {
-        console.warn(err);
-      }
-  }, [visualization]);
 
   // Re-gen download link with update cyto object when it is manupulated by the user
   useEffect(() => {
@@ -159,12 +144,7 @@ function ShowVisualization({
         return <PrintJson json={vData} overflow={false}></PrintJson>;
 
       case visualizationTypes.threeD:
-        // Create the item, let useEffect perform the logic
-        // The class is very important. We make the 3D visuals not overflow via CSS
-        // TODO: better code handling in three.js to adapt to viewport
-        return (
-          <div id={threeDId} className="threed-graph-visualization-root"></div>
-        );
+        return <ThreeContainer data={vData}></ThreeContainer>;
 
       // DOT, PS, (String)
       case visualizationTypes.text:

@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import shumlex from "shumlex";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
@@ -37,6 +38,8 @@ import {
 
 function ShexConvert(props) {
   const { shexSchema: ctxShex } = useContext(ApplicationContext);
+
+  const history = useHistory();
 
   const [shex, setShex] = useState(ctxShex || InitialShex);
 
@@ -206,7 +209,9 @@ function ShexConvert(props) {
 
       setResult({ ...convertResponse, renderType: resultTypes.schema });
 
-      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shexConvertRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(mkError(error, urlConvert));
@@ -230,7 +235,9 @@ function ShexConvert(props) {
 
       setResult({ result: xmiResult, renderType: resultTypes.shumlex });
 
-      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shexConvertRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(
@@ -264,7 +271,9 @@ function ShexConvert(props) {
         message: "successMessage",
         renderType: resultTypes.shapeForms,
       });
-      setPermalink(mkPermalinkLong(API.routes.client.shexConvertRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shexConvertRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(
@@ -297,18 +306,12 @@ function ShexConvert(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.shexConvertRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
+    history.replace(
       mkPermalinkLong(API.routes.client.shexConvertRoute, params)
     );
 

@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -25,6 +26,7 @@ import {
 
 function ShexInfo(props) {
   const { shexSchema: ctxShex } = useContext(ApplicationContext);
+  const history = useHistory();
 
   const [shex, setShEx] = useState(ctxShex || InitialShex);
 
@@ -124,7 +126,9 @@ function ShexInfo(props) {
       });
 
       // Set permalinks and finish
-      setPermalink(mkPermalinkLong(API.routes.client.shexInfoRoute, params));
+      setPermalink(
+        mkPermalinkLong(API.routes.client.shexInfoRoute, params, true)
+      );
       checkLinks();
     } catch (error) {
       setError(mkError(error, urlInfo));
@@ -152,20 +156,12 @@ function ShexInfo(props) {
       lastParams &&
       JSON.stringify(params) !== JSON.stringify(lastParams)
     ) {
-      // eslint-disable-next-line no-restricted-globals
-      history.pushState(
-        null,
-        document.title,
+      history.push(
         mkPermalinkLong(API.routes.client.shexInfoRoute, lastParams)
       );
     }
     // Change current url for shareable links
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(
-      null,
-      document.title,
-      mkPermalinkLong(API.routes.client.shexInfoRoute, params)
-    );
+    history.replace(mkPermalinkLong(API.routes.client.shexInfoRoute, params));
 
     setLastParams(params);
   }

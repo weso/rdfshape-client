@@ -15,7 +15,7 @@ import { notificationSettings } from "./utils/Utils";
 // Returns a promise that will return a shortened permalink generated on the server
 // or the full-length permalink if the server response fails
 export async function mkPermalink(route, params) {
-  const url = mkPermalinkLong(route, params);
+  const url = mkPermalinkLong(route, params, true);
   return await mkPermalinkFromUrl(url);
 }
 
@@ -38,8 +38,9 @@ export async function mkPermalinkFromUrl(url) {
   }
 }
 
-export function mkPermalinkLong(route, params) {
-  return getHost() + route + "?" + qs.stringify(params);
+// By default, does not include host and starts from the URL route "/"
+export function mkPermalinkLong(route, params, includeHost = false) {
+  return (includeHost ? getHost() : "") + route + "?" + qs.stringify(params);
 }
 
 // Shorthand for creating embed links

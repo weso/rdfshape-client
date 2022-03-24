@@ -43,6 +43,7 @@ function ResultSchemaInfo({
 
   const [cytoElements, setCytoElements] = useState([]);
   const [cytoVisual, setCytoVisual] = useState(null);
+  const [threedVisual, setThreedVisual] = useState(null);
 
   const embedLinkType = shaclEngines.includes(schemaEngine)
     ? API.queryParameters.visualization.types.shacl
@@ -81,10 +82,26 @@ function ResultSchemaInfo({
     );
   }
 
+  // Forcibly render the 3D when entering the tab for accurate dimensions
+  function render3DVisual() {
+    setThreedVisual(
+      <ShowVisualization
+        data={schemaRaw}
+        type={visualizationTypes.threeD}
+        // No embed link for 3D for now
+      />
+    );
+  }
+
   if (resultInfo) {
     return (
       <div id={API.resultsId}>
-        <Tabs activeKey={resultTab} id="resultTabs" onSelect={setResultTab}>
+        <Tabs
+          activeKey={resultTab}
+          id="resultTabs"
+          onSelect={setResultTab}
+          mountOnEnter={true}
+        >
           {/* Schema overview */}
           <Tab
             eventKey={API.tabs.overview}
@@ -169,12 +186,9 @@ function ResultSchemaInfo({
                     <Tab
                       eventKey={API.tabs.visualization3d}
                       title={API.texts.resultTabs.graph3d}
+                      onEnter={render3DVisual}
                     >
-                      <ShowVisualization
-                        data={schemaRaw}
-                        type={visualizationTypes.threeD}
-                        // No embed link for 3D for now
-                      />
+                      {threedVisual}
                     </Tab>
                   )}
                 </Tabs>

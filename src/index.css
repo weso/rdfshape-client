@@ -581,7 +581,7 @@ h4 {
 */
 .threed-graph-visualization-root,
 .threed-graph-visualization-root
-  :is(div:not(.scene-nav-info, .graph-info-msg, .scene-tooltip), canvas) {
+  :is(div:not(.scene-nav-info, .graph-info-msg, .scene-tooltip)) {
   width: 100% !important;
   height: 100% !important;
 }
