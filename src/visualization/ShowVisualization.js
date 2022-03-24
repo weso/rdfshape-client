@@ -233,7 +233,8 @@ function ShowVisualization({
         <div
           style={{
             overflow:
-              type === visualizationTypes.threeD
+              type === visualizationTypes.threeD ||
+              type === visualizationTypes.cytoscape
                 ? "clip"
                 : raw
                 ? "inherit"

@@ -189,7 +189,7 @@ a.dropdown-item {
 }
 
 .pointable {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .white-icon {
@@ -581,7 +581,7 @@ h4 {
 */
 .threed-graph-visualization-root,
 .threed-graph-visualization-root
-  :is(div:not(.scene-nav-info, .graph-info-msg, .scene-tooltip)) {
+  :is(div:not(.scene-nav-info, .graph-info-msg, .scene-tooltip), canvas) {
   width: 100% !important;
   height: 100% !important;
 }

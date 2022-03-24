@@ -55,3 +55,8 @@ html {
 .code {
   font-family: monospace !important;
 }
+
+#navigation li.dropdown-item a.custom-dropdown-link {
+  color: rgba(0, 0, 0, 0.9) !important;
+  padding: 2px 0 !important;
+}

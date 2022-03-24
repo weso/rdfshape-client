@@ -1,5 +1,5 @@
 import shExTo3D from "3dshex";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 
 // Custom component for rendering shex3d items
 
@@ -9,15 +9,10 @@ const ThreeContainer = ({ data }) => {
   // ID of the Visualization container
   const threeDId = "3dgraph";
 
-  // Ref of cytoscape element
-  const refThree = useRef(null);
-  const [flag, setFlag] = useState(0);
-
   // When loading, create the 3D visual (silently ignore errors for now)
   useEffect(() => {
     try {
       shExTo3D(data, threeDId);
-      setFlag((flag += 1));
     } catch (err) {
       console.warn(err);
     }
