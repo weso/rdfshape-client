@@ -1,4 +1,4 @@
-import shExTo3D from "3dshex";
+import sh3 from "3dshex"; 
 import React, { useEffect } from "react";
 
 // Custom component for rendering shex3d items
@@ -12,7 +12,7 @@ const ThreeContainer = ({ data }) => {
   // When loading, create the 3D visual (silently ignore errors for now)
   useEffect(() => {
     try {
-      shExTo3D(data, threeDId);
+      sh3.shExTo3D(data, threeDId);
     } catch (err) {
       console.warn(err);
     }
