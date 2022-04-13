@@ -3,7 +3,7 @@
   "version": "0.2.4",
   "private": true,
   "dependencies": {
-    "3dshex": "^0.5.1",
+    "3dshex": "^0.5.2",
     "axios": "^0.21.4",
     "bootstrap": "^4.6.1",
     "codemirror": "^5.65.2",
@@ -39,7 +39,7 @@
     "react-scripts": "^3.4.4",
     "react-toastify": "^7.0.3",
     "react-tooltip": "^4.2.21",
-    "shumlex": "^0.6.4",
+    "shumlex": "^0.6.5",
     "viz.js": "^2.1.2",
     "xml-formatter": "^2.6.1",
     "yasgui-yasqe": "^2.11.22",
