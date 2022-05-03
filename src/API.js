@@ -225,6 +225,28 @@ class API {
       },
     },
 
+    streaming: {
+      configuration: "configuration",
+      validator: {
+        validator: "validator",
+        haltOnInvalid: "haltOnInvalid",
+        haltOnErrored: "haltOnErrored",
+        concurrentItems: "concurrentItems",
+      },
+      extractor: {
+        extractor: "extractor",
+        concurrentItems: "concurrentItems",
+        timeout: "timeout"
+      },
+      stream: {
+        server: "server",
+        port: "port",
+        topic: "topic",
+        groupId: "groupId"
+      }
+
+    },
+
     wbQuery: {
       endpoint: "endpoint",
       payload: "payload",
