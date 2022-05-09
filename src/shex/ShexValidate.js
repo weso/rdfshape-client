@@ -1,5 +1,5 @@
 import qs from "query-string";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -8,11 +8,13 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { useHistory } from "react-router";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
   getDataText,
+  InitialDataStream,
   mkDataServerParams,
   mkDataTabs,
   mkStreamDataServerParams,
@@ -31,7 +33,7 @@ import {
   paramsFromStateShapeMap,
   updateStateShapeMap
 } from "../shapeMap/ShapeMap";
-import axios from "../utils/networking/axiosConfig";
+import axios, { rootWsApi } from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
 import {
   getShexText,
@@ -50,12 +52,15 @@ function ShexValidate(props) {
     shexSchema: ctxShex,
     shapeMap: ctxShapeMap,
     streamingData: ctxStreamingData,
+    setStreamingData: setCtxStreamingData,
   } = useContext(ApplicationContext);
 
   const history = useHistory();
 
   const [data, setData] = useState(ctxData || addRdfData());
-  const [streamData, setStreamData] = useState(ctxStreamingData);
+  const [streamData, setStreamData] = useState(
+    mkStreamDataInfoFromQs() || ctxStreamingData || InitialDataStream
+  );
   const [shex, setShEx] = useState(ctxShex || InitialShex);
   const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
 
@@ -75,12 +80,48 @@ function ShexValidate(props) {
   const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.routes.server.schemaValidate;
-  const wsUrl = API.routes.server.schemaValidateStream;
+  const wsUrl = rootWsApi + API.routes.server.schemaValidateStream;
 
   // Streaming validations
-  // const { sendMessage, lastMessage, readyState: wsReadyState } = useWebSocket(
-  //   wsUrl
-  // );
+  const { sendMessage, lastMessage, readyState: wsReadyState } = useWebSocket(
+    wsUrl,
+    {
+      // Should attempt reconnection on all closing events
+      shouldReconnect: (closeEvent) => true,
+    }
+  );
+
+  // Connection status reference
+  // https://github.com/robtaussig/react-use-websocket#example-implementation
+  // Memoize current connection status
+  const connectionStatus = useMemo(
+    () =>
+      ({
+        [ReadyState.CONNECTING]: "Connecting",
+        [ReadyState.OPEN]: "Open",
+        [ReadyState.CLOSING]: "Closing",
+        [ReadyState.CLOSED]: "Closed",
+        [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+      }[wsReadyState]),
+    [wsReadyState]
+  );
+
+  // Send messages
+  useEffect(() => {
+    sendMessage("HI");
+  }, []);
+
+  // Debug WS connection status
+  useEffect(() => {
+    console.info(connectionStatus);
+  }, [wsReadyState]);
+
+  // Parse the new message, if available
+  useEffect(() => {
+    if (!lastMessage) return;
+    const { data } = lastMessage;
+    console.info(JSON.parse(data));
+  }, [lastMessage]);
 
   // If client is in Stream Form tab, update that info
   useEffect(() => {
@@ -111,11 +152,17 @@ function ShexValidate(props) {
       const finalStreamData = updateStateStreamData(queryParams, streamData);
       setStreamData(finalStreamData);
 
+      // Confirm it is a streaming validation, taking the query string into accound
+      const isStreaming =
+        queryParams[API.queryParameters.data.source] === API.sources.byStream;
+      setIsStreamingValidation(isStreaming);
+
       const newParams = mkParams(
         finalData,
         finalShex,
         finalShapeMap,
-        finalStreamData
+        finalStreamData,
+        isStreaming
       );
 
       setParams(newParams);
@@ -123,8 +170,20 @@ function ShexValidate(props) {
     }
   }, [props.location?.search]);
 
+  // Attempt to parse the query parameters, exclusively for streaming validation data
+  function mkStreamDataInfoFromQs() {
+    if (props.location?.search) {
+      const queryParams = qs.parse(props.location.search);
+      // Streaming data
+      return updateStateStreamData(queryParams, InitialDataStream);
+    }
+  }
+
   useEffect(() => {
     if (params) {
+      const isStreaming =
+        (params[API.queryParameters.data.source] || isStreamingValidation) ===
+        API.sources.byStream;
       const dataPresent =
         params[API.queryParameters.data.data] &&
         (params[API.queryParameters.data.source] == API.sources.byFile
@@ -155,19 +214,26 @@ function ShexValidate(props) {
         ? streamData.topic.trim().length !== 0
         : true;
 
-      if (!dataPresent) setError(API.texts.noProvidedRdf);
-      else if (!schemaPresent) setError(API.texts.noProvidedSchema);
-      else if (!shapeMapPresent) setError(API.texts.noProvidedShapeMap);
-      else if (!streamServerPresent)
-        setError(API.texts.streamingTexts.noProvidedServer);
-      else if (!streamPortPresent)
-        setError(API.texts.streamingTexts.noProvidedPort);
-      else if (!streamTopicPresent)
-        setError(API.texts.streamingTexts.noProvidedTopic);
+      // No data was provided and a non-stream date is needed
+      let error;
+      if (!dataPresent && !isStreaming) error = API.texts.noProvidedRdf;
+      else if (!schemaPresent) error = API.texts.noProvidedSchema;
+      else if (!shapeMapPresent) error = API.texts.noProvidedShapeMap;
+      else if (isStreamingValidation) {
+        if (!streamServerPresent)
+          error = API.texts.streamingTexts.noProvidedServer;
+        else if (!streamPortPresent)
+          error = API.texts.streamingTexts.noProvidedPort;
+        else if (!streamTopicPresent)
+          error = API.texts.streamingTexts.noProvidedTopic;
+      }
+
+      // No errors found, proceed
+      if (error) setError(error);
       else {
         resetState();
         setUpHistory();
-        requestValidation();
+        requestValidation(isStreaming);
       }
     }
   }, [params]);
@@ -181,13 +247,20 @@ function ShexValidate(props) {
     pData = data,
     pShex = shex,
     pShapeMap = shapeMap,
-    pStreamData = streamData
+    pStreamData = streamData,
+    pIsStreamingValidation = isStreamingValidation
   ) {
-    return {
-      ...paramsFromStateData(pData),
+    const baseParams = {
       ...paramsFromStateShex(pShex),
-      ...paramsFromStateShapeMap(pShapeMap), // + trigger mode,
-      ...paramsFromStateStreamData(pStreamData),
+      ...paramsFromStateShapeMap(pShapeMap), // + trigger mode
+    };
+
+    const dataParams = pIsStreamingValidation
+      ? paramsFromStateStreamData(pStreamData)
+      : paramsFromStateData(pData);
+    return {
+      ...baseParams,
+      ...dataParams,
     };
   }
 
@@ -195,11 +268,12 @@ function ShexValidate(props) {
     pData = data,
     pShex = shex,
     pShapeMap = shapeMap,
-    pStreamData = streamData
+    pStreamData = streamData,
+    pIsStreamingValidation = isStreamingValidation
   ) {
     const schemaServerParams = await mkShexServerParams(pShex);
     const shapeMapServerParams = await mkTriggerModeServerParams(pShapeMap);
-    if (isStreamingValidation) {
+    if (!pIsStreamingValidation) {
       return {
         [API.queryParameters.data.data]: await mkDataServerParams(pData),
         [API.queryParameters.schema.schema]: schemaServerParams,
@@ -214,11 +288,10 @@ function ShexValidate(props) {
   }
 
   // Branch the logic depending on the type of validation: streaming or not
-  async function requestValidation() {
+  async function requestValidation(isStreaming = isStreamingValidation) {
     // Check if we are being requested a streaming validation,
     // based on the active form Tab when the validation is requested
-    const isStreamingValidation = currentTab === API.sources.byStream;
-    if (isStreamingValidation) streamValidate();
+    if (isStreaming) streamValidate();
     else postValidate();
   }
 

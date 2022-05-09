@@ -2,6 +2,7 @@
 // Fallback to .env values
 const environmentConfiguration = {
   apiHost: window?._env_?.RDFSHAPE_HOST || process.env.REACT_APP_RDFSHAPE_HOST,
+  wsApiHost: window?._env_?.RDFSHAPE_WS_HOST || process.env.REACT_APP_RDFSHAPE_WS_HOST,
   appVersion: window?._env_?.VERSION || process.env.REACT_APP_VERSION,
 };
 export default environmentConfiguration;

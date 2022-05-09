@@ -1,12 +1,17 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import API from "../API";
+import { ApplicationContext } from "../context/ApplicationContext";
 import { InitialDataStream } from "../data/Data";
+import { curateBoolean } from "../utils/Utils";
 
 // Form asking for/updating the input data stream information
 function ByStream({ streamValue: stream, handleStreamChange }) {
+  // Get all required data from state: data, schema, shapemap
+  const { streamingData: ctxStreamingData } = useContext(ApplicationContext);
+
   // In-state stream data
   const [streamData, setStreamData] = useState({
     ...InitialDataStream,
@@ -28,8 +33,8 @@ function ByStream({ streamValue: stream, handleStreamChange }) {
   return (
     <div className="marginTop">
       {/* Server name, port, topic */}
-      <InputGroup className="mb-3">
-        <Form.Group className="mb-3" controlId="streamServer">
+      <InputGroup className="mb-2">
+        <Form.Group controlId="streamServer">
           <Form.Label>Server</Form.Label>
           <Form.Control
             type="text"
@@ -40,7 +45,9 @@ function ByStream({ streamValue: stream, handleStreamChange }) {
             }}
           />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="streamPort">
+      </InputGroup>
+      <InputGroup className="mb-2">
+        <Form.Group controlId="streamPort">
           <Form.Label>Port</Form.Label>
           <Form.Control
             type="number"
@@ -51,6 +58,8 @@ function ByStream({ streamValue: stream, handleStreamChange }) {
             onChange={(e) => handleChange({ port: e.target.value })}
           />
         </Form.Group>
+      </InputGroup>
+      <InputGroup>
         <Form.Group className="mb-3" controlId="streamTopic">
           <Form.Label>Topic</Form.Label>
           <Form.Control
@@ -63,20 +72,20 @@ function ByStream({ streamValue: stream, handleStreamChange }) {
       </InputGroup>
 
       {/* Validator settings */}
-      <InputGroup className="mb-3">
-        <Form.Group className="mb-3">
+      <InputGroup>
+        <Form.Group>
           <Form.Check
             type="switch"
             id="haltInvalidCheck"
             label={API.texts.streamingTexts.haltOnInvalid}
-            checked={streamData.haltOnInvalid}
+            checked={curateBoolean(streamData.haltOnInvalid)}
             onChange={(e) => handleChange({ haltOnInvalid: e.target.checked })}
           />
           <Form.Check
             type="switch"
             id="haltErroredCheck"
             label={API.texts.streamingTexts.haltOnErrored}
-            checked={streamData.haltOnErrored}
+            checked={curateBoolean(streamData.haltOnErrored)}
             onChange={(e) => handleChange({ haltOnErrored: e.target.checked })}
           />
         </Form.Group>

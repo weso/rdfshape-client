@@ -191,7 +191,8 @@ class API {
       triggerMode: "triggerMode",
     },
     shapeMap: {
-      shapeMap: "shapeMap",
+      shapeMap: "shape-map",
+      shapeMapv2: "shapeMap",
       source: "shapeMapSource",
       format: "shapeMapFormat",
     },

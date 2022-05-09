@@ -389,10 +389,22 @@ export const trimFields = (item) => {
 };
 
 // Change all stringified boolean values to real booleans in an object
-export const curateBooleans = (item) => {
-  Object.keys(item).forEach((key) => {
-    item[key] === "true" && (item[key] = true);
-    item[key] === "false" && (item[key] = false);
+export const curateBooleans = (obj) => {
+  Object.keys(obj).forEach((key) => {
+    obj[key] = curateBoolean(obj[key]);
   });
-  return item;
+  return obj;
 };
+
+// Change a stringified boolean value to a real boolean
+export const curateBoolean = (value) => {
+  if (typeof value === "boolean") return value;
+  else if (typeof value === "string") {
+    const trimValue = value.trim();
+    return trimValue === "true" ? true : trimValue === "false" ? false : value;
+  } else return value;
+};
+
+// Deep clone two objects via JSON-stringify (expensive)
+export const objectEqualsObject = (obj1, obj2) =>
+  JSON.stringify(obj1) === JSON.stringify(obj2);

@@ -30,7 +30,9 @@ function DataTabs(props) {
 
   // Change context when the contained stream data changes
   useEffect(() => {
-    props.allowStream && setCtxStreamingData(props.streamValue);
+    if (props.allowStream) {
+      setCtxStreamingData(props.streamValue);
+    }
   }, [props.streamValue]);
 
   return (

@@ -19,6 +19,9 @@ export const InitialDataStream = {
   haltOnErrored: false,
   format: API.formats.defaultData,
   inference: API.inferences.default,
+
+  // Hints the UI to change to the Stream input tab
+  lastUsed: false,
 };
 
 export const InitialData = {
@@ -64,6 +67,7 @@ export function updateStateStreamData(params, streamData) {
   return {
     ...streamData,
     activeSource: API.sources.byStream,
+    lastUsed: params[API.queryParameters.data.source] === API.sources.byStream,
     // Fill in the data containers with the user data if necessary. Else leave them as they were.
     server:
       params[API.queryParameters.streaming.stream.server] || streamData?.server,
@@ -81,8 +85,6 @@ export function updateStateStreamData(params, streamData) {
     inference:
       params[API.queryParameters.data.inference] || streamData?.inference,
   };
-
-  return streamData;
 }
 
 export function paramsFromStateData(data) {
@@ -224,9 +226,9 @@ export function mkDataTabs(
         name={options._name}
         subname={options.subname}
         activeSource={
-          allowStream && streamData.lastUsed
+          allowStream && streamData.lastUsed === true
             ? API.sources.byStream
-            : currentTabStore || data.activeSource
+            : data.activeSource
         }
         handleTabChange={handleDataTabChange}
         textAreaValue={data.textArea}

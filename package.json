@@ -1,6 +1,6 @@
 {
   "name": "rdfshape-client",
-  "version": "0.2.4",
+  "version": "0.2.10",
   "private": true,
   "dependencies": {
     "3dshex": "^0.5.2",
