@@ -6,9 +6,12 @@ import { ApplicationContext } from "../context/ApplicationContext";
 
 function DataTabs(props) {
   // Get data and its setter from context
-  const { rdfData: ctxDataSet, setRdfData: setCtxDataSet } = useContext(
-    ApplicationContext
-  );
+  const {
+    rdfData: ctxDataSet,
+    setRdfData: setCtxDataSet,
+    streamingData: ctxStreamingData,
+    setStreamingData: setCtxStreamingData,
+  } = useContext(ApplicationContext);
 
   const dataIndex = props?.data?.index;
 
@@ -24,6 +27,11 @@ function DataTabs(props) {
       setCtxDataSet(newDataset);
     }
   }, [props.data]);
+
+  // Change context when the contained stream data changes
+  useEffect(() => {
+    props.allowStream && setCtxStreamingData(props.streamValue);
+  }, [props.streamValue]);
 
   return (
     <div>
@@ -45,6 +53,9 @@ function DataTabs(props) {
         setCodeMirror={props.setCodeMirror}
         fromParams={props.fromParams || ctxDataSet[dataIndex]?.fromParams}
         resetFromParams={props.resetFromParams}
+        allowStream={props.allowStream}
+        streamValue={props.streamValue || ctxStreamingData}
+        handleStreamChange={props.handleStreamChange}
       />
     </div>
   );
@@ -65,6 +76,10 @@ DataTabs.propTypes = {
 
   resetFromParams: PropTypes.func,
   fromParams: PropTypes.bool,
+
+  streamValue: PropTypes.object,
+  handleStreamChange: PropTypes.func,
+  allowStream: PropTypes.bool.isRequired,
 };
 
 DataTabs.defaultProps = {
@@ -72,6 +87,7 @@ DataTabs.defaultProps = {
   subname: "",
   selectedFormat: API.formats.defaultData,
   activeSource: API.sources.default,
+  allowStream: false,
 };
 
 export default DataTabs;

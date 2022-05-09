@@ -9,6 +9,16 @@ import ShowVisualization, {
 import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
 
+// Properties used for streaming validations.
+// Describe the incoming stream and the validator behaviour.
+export const InitialDataStream = {
+  server: "",
+  port: API.kafkaBaseValues.port,
+  topic: "",
+  haltOnInvalid: false,
+  haltOnErrored: false,
+};
+
 export const InitialData = {
   activeSource: API.sources.default,
   textArea: "",
@@ -69,15 +79,25 @@ export function paramsFromStateData(data) {
 export function mkDataTabs(
   data,
   setData,
-  name,
-  subname,
-  onTextChange = () => {}
+  options = {
+    _name: API.texts.dataTabs.dataHeader,
+    subname: "",
+    onTextChange: () => {},
+    // Optionally, allow to handle streaming data stored in context
+    streamData: {},
+    setStreamData: () => {},
+    allowStream: false,
+  }
 ) {
+  const { streamData, setStreamData, allowStream } = options;
+
   function handleDataTabChange(value) {
-    setData({ ...data, activeSource: value });
+    // Do not change data source, stream data is independent
+    if (value !== API.sources.byStream)
+      setData({ ...data, activeSource: value });
   }
   function handleDataByTextChange(value, y, change) {
-    onTextChange(value, y, change);
+    options.onTextChange && options.onTextChange(value, y, change);
     setData({ ...data, textArea: value });
   }
   function handleDataUrlChange(value) {
@@ -96,14 +116,19 @@ export function mkDataTabs(
   function handleCodeMirrorChange(value) {
     setData({ ...data, codeMirror: value });
   }
+
+  function handleStreamChange(value) {
+    allowStream && setStreamData && setStreamData({ ...streamData, ...value });
+  }
+
   const resetParams = () => setData({ ...data, fromParams: false });
 
   return (
     <React.Fragment>
       <DataTabs
         data={data}
-        name={name}
-        subname={subname}
+        name={options._name}
+        subname={options.subname}
         activeSource={data.activeSource}
         handleTabChange={handleDataTabChange}
         textAreaValue={data.textArea}
@@ -116,6 +141,9 @@ export function mkDataTabs(
         setCodeMirror={handleCodeMirrorChange}
         fromParams={data.fromParams}
         resetFromParams={resetParams}
+        streamValue={streamData}
+        handleStreamChange={handleStreamChange}
+        allowStream={allowStream}
       />
       <SelectInferenceEngine
         data={data}

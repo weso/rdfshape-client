@@ -257,6 +257,10 @@ table td {
   font-weight: bold;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .divider {
   background: black;
   width: 1px;

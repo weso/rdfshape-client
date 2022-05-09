@@ -247,9 +247,9 @@ function DataMerge(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data1, setData1, "RDF input (1)")}
+            {mkDataTabs(data1, setData1, {_name: "RDF input (1)"})}
             <hr />
-            {mkDataTabs(data2, setData2, "RDF input (2)")}
+            {mkDataTabs(data2, setData2, {_name: "RDF input (2)"})}
             <hr />
             <SelectFormat
               name="Target data format"

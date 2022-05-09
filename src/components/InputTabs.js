@@ -6,6 +6,7 @@ import Tabs from "react-bootstrap/Tabs";
 import API from "../API";
 import { yasheMinButtonsOptions } from "../utils/Utils";
 import ByFile from "./ByFile";
+import ByStream from "./ByStream";
 import ByText from "./ByText";
 import ByURL from "./ByURL";
 
@@ -24,7 +25,12 @@ function InputTabs(props) {
   return (
     <Form.Group>
       <Form.Label style={{ fontWeight: "bold" }}>{props.name}</Form.Label>
-      <Tabs activeKey={activeSource} id="dataTabs" onSelect={handleTabChange} mountOnEnter={true}>
+      <Tabs
+        activeKey={activeSource}
+        id="dataTabs"
+        onSelect={handleTabChange}
+        mountOnEnter={true}
+      >
         <Tab eventKey={API.sources.byText} title="Text">
           <ByText
             name={props.byTextName}
@@ -53,6 +59,16 @@ function InputTabs(props) {
             handleFileUpload={props.handleFileUpload}
           />
         </Tab>
+        {/* Do not show byStream option tab unless excplicitly allowed */}
+        {props.allowStream && (
+          <Tab eventKey={API.sources.byStream} title="Stream">
+            <ByStream
+              name={props.byStreamName}
+              streamValue={props.streamValue}
+              handleStreamChange={props.handleStreamChange}
+            />
+          </Tab>
+        )}
       </Tabs>
     </Form.Group>
   );
@@ -80,6 +96,8 @@ InputTabs.propTypes = {
   byURLPlaceholder: PropTypes.string,
   byFileName: PropTypes.string,
   handleFileUpload: PropTypes.func.isRequired,
+  byStreamName: PropTypes.string,
+  handleStreamChange: PropTypes.func,
 
   resetFromParams: PropTypes.func.isRequired,
   fromParams: PropTypes.bool.isRequired,
@@ -92,6 +110,7 @@ InputTabs.defaultProps = {
   byUrlName: "",
   byURLPlaceholder: API.texts.placeholders.url,
   byFileName: "",
+  byStreamName: "",
 };
 
 export default InputTabs;

@@ -77,6 +77,12 @@ class API {
     shapeMap: "ShapeMap",
     targetDecls: "TargetDecls",
   };
+
+  // Default Kafka values
+  static kafkaBaseValues = {
+    port: 9092,
+  };
+
   // Routes
   static routes = {
     // Routes in server
@@ -236,15 +242,14 @@ class API {
       extractor: {
         extractor: "extractor",
         concurrentItems: "concurrentItems",
-        timeout: "timeout"
+        timeout: "timeout",
       },
       stream: {
         server: "server",
         port: "port",
         topic: "topic",
-        groupId: "groupId"
-      }
-
+        groupId: "groupId",
+      },
     },
 
     wbQuery: {
@@ -269,6 +274,7 @@ class API {
     byFile: "byFile",
     byCompound: "byCompound",
     bySchema: "bySchema",
+    byStream: "byStream",
 
     default: "byText",
   };
@@ -334,12 +340,12 @@ class API {
     },
 
     navbarExamples: {
-      dataInformation:"Data information",
+      dataInformation: "Data information",
       dataQuery: "Data query",
       shexValidation: "ShEx validation",
       shaclValidation: "SHACL validation",
       wikidataQuery: "Wikidata query",
-      shexFromUml: "ShEx from UML"
+      shexFromUml: "ShEx from UML",
     },
 
     pageHeaders: {
@@ -444,9 +450,14 @@ class API {
           <p>
             Input some RDF data and ShEx schema (by text, by pointing to a URL
             with the contents or by file) to validate the data against the
-            schema and see the validation results in per-node detail
+            schema and see the validation results in per-node detail.
           </p>
-          <p>Results are searchable, sortable and downloadable</p>
+          <p>Results are searchable, sortable and downloadable.</p>
+          <p>
+            <span className="underline">Experimental feature</span>: Streaming
+            validations are available, given the host/port/topic identifying an
+            incoming <span className="bold">Kafka</span> stream of RDF data.
+          </p>
         </>
       ),
       umlToShex:
@@ -455,7 +466,21 @@ class API {
       shaclInfo:
         "Input some SHACL (by text, by pointing to a URL with the contents or by file) and select its format and engine to validate its contents and see additional information, including: prefix map and visuals",
 
-      shaclValidation: "SHACL validate data",
+      shaclValidation: (
+        <>
+          <p>
+            Input some RDF data and Shapes Graph (by text, by pointing to a URL
+            with the contents or by file) to validate the data and see the
+            validation results in per-node detail.
+          </p>
+          <p>Results are searchable, sortable and downloadable.</p>
+          <p>
+            <span className="underline">Experimental feature</span>: Streaming
+            validations are available, given the host/port/topic identifying an
+            incoming <span className="bold">Kafka</span> stream of RDF data.
+          </p>
+        </>
+      ),
       shaclConversion: (
         <>
           <p>
@@ -626,6 +651,11 @@ class API {
 
       shaclValidationReportText: "Validation report",
       shaclValidationReportNodes: "Results per node",
+    },
+
+    streamingTexts: {
+      haltOnInvalid: "Halt on invalid",
+      haltOnErrored: "Halt on errored",
     },
 
     serverStatus: "Server status",

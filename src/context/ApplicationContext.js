@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import { InitialDataStream } from "../data/Data";
 import { InitialQuery } from "../query/Query";
 import { InitialShacl } from "../shacl/Shacl";
 import { InitialShapeMap } from "../shapeMap/ShapeMap";
@@ -16,6 +17,7 @@ export const initialApplicationContext = {
   shaclSchema: InitialShacl,
   shapeMap: InitialShapeMap,
   umlData: InitialUML,
+  streamingData: InitialDataStream,
 };
 
 // Shared context for storing the data the user is operating on

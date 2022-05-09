@@ -216,13 +216,10 @@ function DataExtract(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(
-              data,
-              setData,
-              API.texts.dataTabs.dataHeader,
-              "",
-              (value, y, change) => setNodeSelectorList(getNodesFromForm(y))
-            )}
+            {mkDataTabs(data, setData, {
+              onTextChange: (value, y, change) =>
+                setNodeSelectorList(getNodesFromForm(y)),
+            })}
             <NodeSelector
               // Clear node selector list if the new data source is not by text
               options={

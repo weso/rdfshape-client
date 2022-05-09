@@ -26,6 +26,10 @@ function InputTabsWithFormat(props) {
         handleFileUpload={props.handleFileUpload}
         fromParams={props.fromParams}
         resetFromParams={props.resetFromParams}
+
+        allowStream={props.allowStream}
+        streamValue={props.streamValue}
+        handleStreamChange={props.handleStreamChange}
       />
       <SelectFormat
         name={props.nameFormat}

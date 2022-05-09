@@ -43,14 +43,16 @@ function ShexValidate(props) {
   // Get all required data from state: data, schema, shapemap
   const {
     rdfData: [ctxData],
+    addRdfData,
     shexSchema: ctxShex,
     shapeMap: ctxShapeMap,
-    addRdfData,
+    streamingData: ctxStreamingData,
   } = useContext(ApplicationContext);
 
   const history = useHistory();
 
   const [data, setData] = useState(ctxData || addRdfData());
+  const [streamData, setStreamData] = useState(ctxStreamingData);
   const [shex, setShEx] = useState(ctxShex || InitialShex);
   const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
 
@@ -166,7 +168,7 @@ function ShexValidate(props) {
       setProgressPercent(80);
 
       setPermalink(
-        mkPermalinkLong(API.routes.client.shexValidateRoute, params,true)
+        mkPermalinkLong(API.routes.client.shexValidateRoute, params, true)
       );
       checkLinks();
     } catch (error) {
@@ -230,7 +232,11 @@ function ShexValidate(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData)}
+            {mkDataTabs(data, setData, {
+              allowStream: true,
+              streamData,
+              setStreamData,
+            })}
             <hr />
             {mkShexTabs(shex, setShEx)}
             <hr />
