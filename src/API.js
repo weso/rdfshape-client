@@ -101,6 +101,7 @@ class API {
       schemaInfo: "schema/info",
       schemaConvert: "schema/convert",
       schemaValidate: "schema/validate",
+      schemaValidateStream: "schema/validate/stream", // To be used with websockets
       shExFormats: `schema/formats/${this.engines.shex}`,
       shaclFormats: `schema/formats/${this.engines.shaclex}`,
       schemaShaclEngines: `schema/engines/${this.engines.shacl}`,
@@ -245,6 +246,7 @@ class API {
         timeout: "timeout",
       },
       stream: {
+        stream: "stream",
         server: "server",
         port: "port",
         topic: "topic",
@@ -656,6 +658,10 @@ class API {
     streamingTexts: {
       haltOnInvalid: "Halt on invalid",
       haltOnErrored: "Halt on errored",
+
+      noProvidedServer: "No streaming server provided",
+      noProvidedPort: "No streaming port provided",
+      noProvidedTopic: "No Kafka topic provided",
     },
 
     serverStatus: "Server status",

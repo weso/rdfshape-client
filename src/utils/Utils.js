@@ -379,3 +379,20 @@ export const scrollToItem = (
 ) => {
   element.scrollIntoView(config);
 };
+
+// Trim all string fields in an object
+export const trimFields = (item) => {
+  Object.keys(item).forEach(
+    (key) => typeof item[key] == "string" && (item[key] = item[key].trim())
+  );
+  return item;
+};
+
+// Change all stringified boolean values to real booleans in an object
+export const curateBooleans = (item) => {
+  Object.keys(item).forEach((key) => {
+    item[key] === "true" && (item[key] = true);
+    item[key] === "false" && (item[key] = false);
+  });
+  return item;
+};

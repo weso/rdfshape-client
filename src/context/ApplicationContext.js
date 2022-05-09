@@ -17,7 +17,7 @@ export const initialApplicationContext = {
   shaclSchema: InitialShacl,
   shapeMap: InitialShapeMap,
   umlData: InitialUML,
-  streamingData: InitialDataStream,
+  streamingData: { ...InitialDataStream, lastUsed: false },
 };
 
 // Shared context for storing the data the user is operating on

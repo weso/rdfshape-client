@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import API from "../API";
 import { InitialData } from "../data/Data";
+import { curateBooleans, trimFields } from "../utils/Utils";
 import {
   ApplicationContext,
   initialApplicationContext
@@ -29,18 +30,13 @@ const ApplicationProvider = ({ children }) => {
     // Last trap for nullish values
     if (!value) return state;
 
-    // Trim string fields storing
-    const trimBeforeStore = (item) => {
-      Object.keys(item).forEach(
-        (key) => typeof item[key] == "string" && (item[key] = item[key].trim())
-      );
-      return item;
-    };
+    // Refine the object before storing
+    const curateObject = (item) => curateBooleans(trimFields(item));
 
     const finalValue = Array.isArray(value)
-      ? value.map(trimBeforeStore)
+      ? value.map(curateObject)
       : typeof value === "object"
-      ? trimBeforeStore(value)
+      ? curateObject(value)
       : typeof value === "string"
       ? value.trim()
       : value;

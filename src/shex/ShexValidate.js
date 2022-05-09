@@ -15,8 +15,11 @@ import {
   getDataText,
   mkDataServerParams,
   mkDataTabs,
+  mkStreamDataServerParams,
   paramsFromStateData,
-  updateStateData
+  paramsFromStateStreamData,
+  updateStateData,
+  updateStateStreamData
 } from "../data/Data";
 import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaValidate from "../results/ResultValidate";
@@ -56,6 +59,9 @@ function ShexValidate(props) {
   const [shex, setShEx] = useState(ctxShex || InitialShex);
   const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
 
+  // Shorthand enabled when the current client tab is the Stream one
+  const [isStreamingValidation, setIsStreamingValidation] = useState(false);
+  const [currentTab, setCurrentTab] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -69,6 +75,17 @@ function ShexValidate(props) {
   const [disabledLinks, setDisabledLinks] = useState(false);
 
   const url = API.routes.server.schemaValidate;
+  const wsUrl = API.routes.server.schemaValidateStream;
+
+  // Streaming validations
+  // const { sendMessage, lastMessage, readyState: wsReadyState } = useWebSocket(
+  //   wsUrl
+  // );
+
+  // If client is in Stream Form tab, update that info
+  useEffect(() => {
+    setIsStreamingValidation(currentTab === API.sources.byStream);
+  }, [currentTab]);
 
   useEffect(() => {
     if (props.location?.search) {
@@ -90,7 +107,16 @@ function ShexValidate(props) {
         updateStateShapeMap(queryParams, shapeMap) || shapeMap;
       setShapeMap(finalShapeMap);
 
-      const newParams = mkParams(finalData, finalShex, finalShapeMap);
+      // Streaming data
+      const finalStreamData = updateStateStreamData(queryParams, streamData);
+      setStreamData(finalStreamData);
+
+      const newParams = mkParams(
+        finalData,
+        finalShex,
+        finalShapeMap,
+        finalStreamData
+      );
 
       setParams(newParams);
       setLastParams(newParams);
@@ -117,13 +143,31 @@ function ShexValidate(props) {
           ? params[API.queryParameters.shapeMap.shapeMap].name
           : true);
 
+      const streamServerPresent = isStreamingValidation
+        ? streamData.server.trim().length !== 0
+        : true;
+
+      const streamPortPresent = isStreamingValidation
+        ? !!streamData.port
+        : true;
+
+      const streamTopicPresent = isStreamingValidation
+        ? streamData.topic.trim().length !== 0
+        : true;
+
       if (!dataPresent) setError(API.texts.noProvidedRdf);
       else if (!schemaPresent) setError(API.texts.noProvidedSchema);
       else if (!shapeMapPresent) setError(API.texts.noProvidedShapeMap);
+      else if (!streamServerPresent)
+        setError(API.texts.streamingTexts.noProvidedServer);
+      else if (!streamPortPresent)
+        setError(API.texts.streamingTexts.noProvidedPort);
+      else if (!streamTopicPresent)
+        setError(API.texts.streamingTexts.noProvidedTopic);
       else {
         resetState();
         setUpHistory();
-        postValidate();
+        requestValidation();
       }
     }
   }, [params]);
@@ -133,26 +177,53 @@ function ShexValidate(props) {
     setParams(mkParams());
   }
 
-  function mkParams(pData = data, pShex = shex, pShapeMap = shapeMap) {
+  function mkParams(
+    pData = data,
+    pShex = shex,
+    pShapeMap = shapeMap,
+    pStreamData = streamData
+  ) {
     return {
       ...paramsFromStateData(pData),
       ...paramsFromStateShex(pShex),
-      ...paramsFromStateShapeMap(pShapeMap), // + trigger mode
+      ...paramsFromStateShapeMap(pShapeMap), // + trigger mode,
+      ...paramsFromStateStreamData(pStreamData),
     };
   }
 
   async function mkServerParams(
     pData = data,
     pShex = shex,
-    pShapeMap = shapeMap
+    pShapeMap = shapeMap,
+    pStreamData = streamData
   ) {
-    return {
-      [API.queryParameters.data.data]: await mkDataServerParams(pData),
-      [API.queryParameters.schema.schema]: await mkShexServerParams(pShex),
-      [API.queryParameters.schema.triggerMode]: await mkTriggerModeServerParams(
-        pShapeMap
-      ),
-    };
+    const schemaServerParams = await mkShexServerParams(pShex);
+    const shapeMapServerParams = await mkTriggerModeServerParams(pShapeMap);
+    if (isStreamingValidation) {
+      return {
+        [API.queryParameters.data.data]: await mkDataServerParams(pData),
+        [API.queryParameters.schema.schema]: schemaServerParams,
+        [API.queryParameters.schema.triggerMode]: shapeMapServerParams,
+      };
+    } else
+      return mkStreamDataServerParams(
+        pStreamData,
+        schemaServerParams,
+        shapeMapServerParams
+      );
+  }
+
+  // Branch the logic depending on the type of validation: streaming or not
+  async function requestValidation() {
+    // Check if we are being requested a streaming validation,
+    // based on the active form Tab when the validation is requested
+    const isStreamingValidation = currentTab === API.sources.byStream;
+    if (isStreamingValidation) streamValidate();
+    else postValidate();
+  }
+
+  async function streamValidate() {
+    console.info("STREAM!");
   }
 
   async function postValidate() {
@@ -236,6 +307,8 @@ function ShexValidate(props) {
               allowStream: true,
               streamData,
               setStreamData,
+              currentTabStore: currentTab,
+              setCurrentTabStore: setCurrentTab,
             })}
             <hr />
             {mkShexTabs(shex, setShEx)}
