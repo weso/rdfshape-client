@@ -1,6 +1,7 @@
 /** This class contains global definitions */
 
 import React from "react";
+import { ReadyState } from "react-use-websocket";
 import { rootApi } from "./utils/networking/axiosConfig";
 
 class API {
@@ -253,6 +254,12 @@ class API {
         topic: "topic",
         groupId: "groupId",
       },
+      // Server messages may have one of the following types
+      responseTypes: {
+        result: "result",
+        error: "error",
+      },
+      reason: "reason",
     },
 
     wbQuery: {
@@ -309,6 +316,15 @@ class API {
   // By text limitations
   static limits = {
     byTextCharacterLimit: 2200,
+  };
+
+  // WS state as strings
+  static wsStatuses = {
+    [ReadyState.CONNECTING]: "Connecting",
+    [ReadyState.OPEN]: "Open",
+    [ReadyState.CLOSING]: "Closing",
+    [ReadyState.CLOSED]: "Closed",
+    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
   };
 
   // Text constants

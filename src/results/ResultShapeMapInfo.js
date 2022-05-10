@@ -12,7 +12,7 @@ function ResultShapeMapInfo({
 }) {
   const {
     message,
-    shapeMap: { shapeMap: inputShapeMap, model: shapeMapModel },
+    [API.queryParameters.shapeMap.shapeMap]: { shapeMap: inputShapeMap, model: shapeMapModel },
     result: {
       numberOfAssociations,
       format: { name: shapeMapFormatName },

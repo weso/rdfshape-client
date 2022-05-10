@@ -21,16 +21,18 @@ function ResultValidateShacl({
     data,
     schema: { engine: schemaEngine }, // Relevant: using SHACLex yields enhanced results
     trigger,
-    result: {
-      message: resultMessage,
-      valid: resultValid,
-      errors: resultErrors,
-      validationReport,
-      shapeMap: resultsMap,
-      nodesPrefixMap,
-      shapesPrefixMap,
-    },
+    result,
   } = schemaValidateResponse;
+
+  const {
+    message: resultMessage,
+    valid: resultValid,
+    errors: resultErrors,
+    validationReport,
+    shapeMap: resultsMap,
+    nodesPrefixMap,
+    shapesPrefixMap,
+  } = result;
 
   // Results active tab
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -110,9 +112,8 @@ function ResultValidateShacl({
                 {nodes?.length && (
                   <div style={{ marginTop: "5px" }}>
                     <ShowShapeMap
-                      shapeMap={resultsMap}
-                      nodesPrefixMap={nodesPrefixMap}
-                      shapesPrefixMap={shapesPrefixMap}
+                      results={[result]}
+                      options={{ isStreaming: false }}
                     />
                   </div>
                 )}

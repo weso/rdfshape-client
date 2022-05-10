@@ -14,21 +14,10 @@ function ResultSchemaValidate({
   permalink,
   disabled,
 }) {
-  const {
-    message,
-    data,
-    schema,
-    trigger,
-    result: {
-      shapeMap: resultsMap,
-      resultErrors,
-      nodesPrefixMap,
-      shapesPrefixMap,
-    },
-  } = schemaValidateResponse;
+  const { message, data, schema, trigger, result } = schemaValidateResponse;
 
   // Store the resulting nodes in state, plus the invalid ones
-  const [nodes] = useState(resultsMap);
+  const [nodes] = useState(result.shapeMap);
   const [invalidNodes, setInvalidNodes] = useState([]);
 
   // Update invalid nodes on node changes
@@ -63,11 +52,7 @@ function ResultSchemaValidate({
         )}
 
         {nodes?.length && (
-          <ShowShapeMap
-            shapeMap={resultsMap}
-            nodesPrefixMap={nodesPrefixMap}
-            shapesPrefixMap={shapesPrefixMap}
-          />
+          <ShowShapeMap results={[result]} options={{ isStreaming: false }} />
         )}
 
         <details>

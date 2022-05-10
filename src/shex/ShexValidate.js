@@ -8,7 +8,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { useHistory } from "react-router";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -35,6 +35,7 @@ import {
 } from "../shapeMap/ShapeMap";
 import axios, { rootWsApi } from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
+import { curateBooleans } from "../utils/Utils";
 import {
   getShexText,
   InitialShex,
@@ -64,64 +65,120 @@ function ShexValidate(props) {
   const [shex, setShEx] = useState(ctxShex || InitialShex);
   const [shapeMap, setShapeMap] = useState(ctxShapeMap || InitialShapeMap);
 
-  // Shorthand enabled when the current client tab is the Stream one
-  const [isStreamingValidation, setIsStreamingValidation] = useState(false);
   const [currentTab, setCurrentTab] = useState(null);
-  const [result, setResult] = useState(null);
+  // Array of results, instead of single result
+  // Streaming validations consist of several results
+  const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [permalink, setPermalink] = useState(null);
 
   const [params, setParams] = useState(null);
   const [lastParams, setLastParams] = useState(null);
+  const [serverParams, setServerParams] = useState(null);
 
   const [progressPercent, setProgressPercent] = useState(0);
 
   const [disabledLinks, setDisabledLinks] = useState(false);
 
-  const url = API.routes.server.schemaValidate;
+  const apiValidateUrl = API.routes.server.schemaValidate;
+
+  /* STREAMING VALIDATIONS */
+
   const wsUrl = rootWsApi + API.routes.server.schemaValidateStream;
 
-  // Streaming validations
-  const { sendMessage, lastMessage, readyState: wsReadyState } = useWebSocket(
-    wsUrl,
-    {
-      // Should attempt reconnection on all closing events
-      shouldReconnect: (closeEvent) => true,
+  // Shorthand enabled when the current client tab is the Stream one
+  const [isStreamingValidation, setIsStreamingValidation] = useState(false);
+
+  // https://github.com/robtaussig/react-use-websocket
+  const {
+    sendMessage,
+    sendJsonMessage,
+    lastMessage,
+    readyState: wsReadyState,
+    getWebSocket,
+  } = useWebSocket(wsUrl, {
+    // Should attempt reconnection on all closing events,
+    // so that the WS connection is always on standby waiting for commands
+    shouldReconnect: (closeEvent) => true,
+    reconnectAttempts: 10,
+    reconnectInterval: 1800,
+    // Action handlers:
+    onOpen: () => {
+      console.log("WS client Open");
+    },
+    onError: () => {
+      console.log("Errored WS connection...");
+      setStreamValidationRunning(false);
+    },
+    onClose: () => {
+      console.log("Closing WS connection...");
+      setStreamValidationRunning(false);
+    },
+    onMessage: (msg) => {
+      console.info("RUNNING?: ", streamValidationRunning);
+      setStreamValidationRunning(true);
+      try {
+        // Get response contents as JSON
+        const messageData = JSON.parse(msg.data);
+        // Check the response type, separate the contents
+        const { type, content } = messageData;
+        switch (type) {
+          case API.queryParameters.streaming.responseTypes.result:
+            const { valid, status, message, instant, report } = content;
+            const generationDate = new Date(instant);
+            console.info(generationDate, messageData);
+            // Result received, update result list
+            break;
+          case API.queryParameters.streaming.responseTypes.error:
+            console.info(messageData);
+            // Stream was stopped, show/handle errors, set state...
+            // If a reason is specified, check it is an invalid result
+            const { reason } = content[API.queryParameters.streaming.reason];
+            break;
+        }
+      } catch (err) {
+        console.warn(`Could not parse streaming validation response: ${err}`);
+      }
+    },
+    // Other
+    share: false,
+  });
+
+  // Functions to stop / kickstart the stream validation with in-memory params
+  const stopStreamingValidation = () => {
+    getWebSocket().close();
+  };
+  const startStreamingValidation = async () => {
+    // If a validation is already running, cancel it before invoking a new one
+    if (streamValidationRunning) {
+      console.log("Closing current WS connection before launching a new one.");
+      setStreamValidationRunning(false); // double check, though closing the connection should do this
+      stopStreamingValidation();
     }
-  );
+
+    // Departing from a clean connection:
+    // 1. Send server params to begin the validation
+    setStreamValidationRunning(true);
+    sendJsonMessage(serverParams);
+  };
+
+  // Control variables
+
+  // Errors, status, etc. of the streaming validation, once connection was established
+  const [streamValidationRunning, setStreamValidationRunning] = useState(false);
+  const [streamValidationError, setStreamValidationError] = useState(null);
 
   // Connection status reference
-  // https://github.com/robtaussig/react-use-websocket#example-implementation
   // Memoize current connection status
-  const connectionStatus = useMemo(
-    () =>
-      ({
-        [ReadyState.CONNECTING]: "Connecting",
-        [ReadyState.OPEN]: "Open",
-        [ReadyState.CLOSING]: "Closing",
-        [ReadyState.CLOSED]: "Closed",
-        [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-      }[wsReadyState]),
-    [wsReadyState]
-  );
+  const connectionStatus = useMemo(() => API.wsStatuses[wsReadyState], [
+    wsReadyState,
+  ]);
 
-  // Send messages
+  // Debug validation running in state
   useEffect(() => {
-    sendMessage("HI");
-  }, []);
-
-  // Debug WS connection status
-  useEffect(() => {
-    console.info(connectionStatus);
-  }, [wsReadyState]);
-
-  // Parse the new message, if available
-  useEffect(() => {
-    if (!lastMessage) return;
-    const { data } = lastMessage;
-    console.info(JSON.parse(data));
-  }, [lastMessage]);
+    console.info("Stream Validation RUNNING: " + streamValidationRunning);
+  }, [streamValidationRunning]);
 
   // If client is in Stream Form tab, update that info
   useEffect(() => {
@@ -143,7 +200,7 @@ function ShexValidate(props) {
       const finalShex = updateStateShex(queryParams, shex) || shex;
       setShEx(finalShex);
 
-      // Shapemap
+      // ShapeMap
       const finalShapeMap =
         updateStateShapeMap(queryParams, shapeMap) || shapeMap;
       setShapeMap(finalShapeMap);
@@ -180,62 +237,66 @@ function ShexValidate(props) {
   }
 
   useEffect(() => {
-    if (params) {
-      const isStreaming =
-        (params[API.queryParameters.data.source] || isStreamingValidation) ===
-        API.sources.byStream;
-      const dataPresent =
-        params[API.queryParameters.data.data] &&
-        (params[API.queryParameters.data.source] == API.sources.byFile
-          ? params[API.queryParameters.data.data].name
-          : true);
+    const fn = async () => {
+      if (params) {
+        const isStreaming =
+          (params[API.queryParameters.data.source] || isStreamingValidation) ===
+          API.sources.byStream;
+        const dataPresent =
+          params[API.queryParameters.data.data] &&
+          (params[API.queryParameters.data.source] == API.sources.byFile
+            ? params[API.queryParameters.data.data].name
+            : true);
 
-      const schemaPresent =
-        params[API.queryParameters.schema.schema] &&
-        (params[API.queryParameters.schema.source] == API.sources.byFile
-          ? params[API.queryParameters.schema.schema].name
-          : true);
+        const schemaPresent =
+          params[API.queryParameters.schema.schema] &&
+          (params[API.queryParameters.schema.source] == API.sources.byFile
+            ? params[API.queryParameters.schema.schema].name
+            : true);
 
-      const shapeMapPresent =
-        params[API.queryParameters.shapeMap.shapeMap] &&
-        (params[API.queryParameters.shapeMap.source] == API.sources.byFile
-          ? params[API.queryParameters.shapeMap.shapeMap].name
-          : true);
+        const shapeMapPresent =
+          params[API.queryParameters.shapeMap.shapeMap] &&
+          (params[API.queryParameters.shapeMap.source] == API.sources.byFile
+            ? params[API.queryParameters.shapeMap.shapeMap].name
+            : true);
 
-      const streamServerPresent = isStreamingValidation
-        ? streamData.server.trim().length !== 0
-        : true;
+        const streamServerPresent = isStreamingValidation
+          ? streamData.server.trim().length !== 0
+          : true;
 
-      const streamPortPresent = isStreamingValidation
-        ? !!streamData.port
-        : true;
+        const streamPortPresent = isStreamingValidation
+          ? !!streamData.port
+          : true;
 
-      const streamTopicPresent = isStreamingValidation
-        ? streamData.topic.trim().length !== 0
-        : true;
+        const streamTopicPresent = isStreamingValidation
+          ? streamData.topic.trim().length !== 0
+          : true;
 
-      // No data was provided and a non-stream date is needed
-      let error;
-      if (!dataPresent && !isStreaming) error = API.texts.noProvidedRdf;
-      else if (!schemaPresent) error = API.texts.noProvidedSchema;
-      else if (!shapeMapPresent) error = API.texts.noProvidedShapeMap;
-      else if (isStreamingValidation) {
-        if (!streamServerPresent)
-          error = API.texts.streamingTexts.noProvidedServer;
-        else if (!streamPortPresent)
-          error = API.texts.streamingTexts.noProvidedPort;
-        else if (!streamTopicPresent)
-          error = API.texts.streamingTexts.noProvidedTopic;
+        // No data was provided and a non-stream date is needed
+        let error;
+        if (!dataPresent && !isStreaming) error = API.texts.noProvidedRdf;
+        else if (!schemaPresent) error = API.texts.noProvidedSchema;
+        else if (!shapeMapPresent) error = API.texts.noProvidedShapeMap;
+        else if (isStreamingValidation) {
+          if (!streamServerPresent)
+            error = API.texts.streamingTexts.noProvidedServer;
+          else if (!streamPortPresent)
+            error = API.texts.streamingTexts.noProvidedPort;
+          else if (!streamTopicPresent)
+            error = API.texts.streamingTexts.noProvidedTopic;
+        }
+
+        // No errors found, proceed
+        if (error) setError(error);
+        else {
+          resetState();
+          setUpHistory();
+          setServerParams(await mkServerParams());
+          // requestValidation(isStreaming);
+        }
       }
-
-      // No errors found, proceed
-      if (error) setError(error);
-      else {
-        resetState();
-        setUpHistory();
-        requestValidation(isStreaming);
-      }
-    }
+    };
+    fn();
   }, [params]);
 
   function handleSubmit(event) {
@@ -258,10 +319,10 @@ function ShexValidate(props) {
     const dataParams = pIsStreamingValidation
       ? paramsFromStateStreamData(pStreamData)
       : paramsFromStateData(pData);
-    return {
+    return curateBooleans({
       ...baseParams,
       ...dataParams,
-    };
+    });
   }
 
   async function mkServerParams(
@@ -295,20 +356,36 @@ function ShexValidate(props) {
     else postValidate();
   }
 
+  useEffect(() => {
+    if (!serverParams) return;
+    if (isStreamingValidation) streamValidate();
+    else postValidate();
+  }, [serverParams]);
+
+  // WS request for a streaming validation
+  // Open WS connection and set permalink
   async function streamValidate() {
-    console.info("STREAM!");
+    startStreamingValidation();
+    setPermalink(
+      mkPermalinkLong(API.routes.client.shexValidateRoute, params, true)
+    );
   }
 
+  // HTTP request for a standard validation
   async function postValidate() {
     setLoading(true);
     setProgressPercent(30);
 
     try {
-      const postParams = await mkServerParams();
-      const { data: validateResponse } = await axios.post(url, postParams);
+      const postParams = serverParams;
+      const { data: validateResponse } = await axios.post(
+        apiValidateUrl,
+        postParams
+      );
       setProgressPercent(60);
 
-      setResult(validateResponse);
+      // Single array result
+      setResults([validateResponse]);
       setProgressPercent(80);
 
       setPermalink(
@@ -316,7 +393,7 @@ function ShexValidate(props) {
       );
       checkLinks();
     } catch (error) {
-      setError(mkError(error, url));
+      setError(mkError(error, apiValidateUrl));
     } finally {
       setLoading(false);
     }
@@ -359,9 +436,11 @@ function ShexValidate(props) {
   }
 
   function resetState() {
-    setResult(null);
+    setResults(null);
     setPermalink(null);
     setError(null);
+    setStreamValidationError(null);
+    // setStreamValidationRunning(false); Self-managed
     setProgressPercent(0);
   }
 
@@ -394,11 +473,11 @@ function ShexValidate(props) {
               className={"btn-with-icon " + (loading ? "disabled" : "")}
               disabled={loading}
             >
-              Validate
+              {API.texts.actionButtons.validate}
             </Button>
           </Form>
         </Col>
-        {loading || result || permalink || error ? (
+        {loading || results || permalink || error ? (
           <Col className={"half-col"}>
             {loading ? (
               <ProgressBar
@@ -410,12 +489,16 @@ function ShexValidate(props) {
               />
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
-            ) : result ? (
-              <ResultSchemaValidate
-                result={result}
-                permalink={permalink}
-                disabled={disabledLinks}
-              />
+            ) : results ? (
+              isStreamingValidation ? (
+                <div>Under construction</div>
+              ) : (
+                <ResultSchemaValidate
+                  result={results[0]}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
+              )
             ) : null}
           </Col>
         ) : (

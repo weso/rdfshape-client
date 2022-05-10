@@ -405,6 +405,10 @@ export const curateBoolean = (value) => {
   } else return value;
 };
 
+export const curateObject = (item) => curateBooleans(trimFields(item));
+
+
 // Deep clone two objects via JSON-stringify (expensive)
 export const objectEqualsObject = (obj1, obj2) =>
   JSON.stringify(obj1) === JSON.stringify(obj2);
+

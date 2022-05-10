@@ -141,8 +141,8 @@ export function mkStreamDataServerParams(data, schemaParams, triggerParams) {
       },
       [API.queryParameters.streaming.extractor.extractor]: {
         [API.queryParameters.data.data]: {
-          [API.queryParameters.data.format]: data.format,
-          [API.queryParameters.data.inference]: data.inference,
+          [API.queryParameters.format]: data.format,
+          [API.queryParameters.inference]: data.inference,
         },
       },
       [API.queryParameters.streaming.stream.stream]: {

@@ -91,27 +91,48 @@ export function mkCellElement(node, prefixMap) {
   return node;
 }
 
+// Given an array of validation results from the API, show them all together
+// in a table, nicely formatted.
+// Each item in the array contains:
+// - shapeMap (array of results)
+function ShowShapeMap({
+  results,
+  options = {
+    // Change the table's behaviour to adapt to a bunch of results coming in streams
+    isStreaming: false,
+  },
+}) {
+  // We assume the following are the same for all validations passed here:
+  // - nodesPrefixMap (nodes pm of that validation)
+  // - shapesPrefixMap (shapes pm of that validations)
+  const nodesPrefixMap = results[0].nodesPrefixMap || [];
+  const shapesPrefixMap = results[0].shapesPrefixMap || [];
 
-
-function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
   // Given the shapeMap resulting from a schema validation, map each result to an object
-  // compatible with Bootstrap table
-  function mkTableItems(shapeMap) {
-    return shapeMap.map((item, index) => ({
-      id: index,
-      node: item.node,
-      shape: item.shape,
-      status:
-        item.status === conformant
-          ? API.texts.validationResults.nodeValid
-          : API.texts.validationResults.nodeInvalid,
-      reason: item.reason,
-      resultInfo: item.appInfo,
-    }));
+  // compatible with Bootstrap table.
+  // If we have several results, merge them all together to a single array of items.
+  function mkTableItems() {
+    return results.reduce((prevItems, curr, idx, arr) => {
+      // Make the items out of each result
+      const newItems = curr.shapeMap.map((item, index) => ({
+        id: index,
+        node: item.node,
+        shape: item.shape,
+        status:
+          item.status === conformant
+            ? API.texts.validationResults.nodeValid
+            : API.texts.validationResults.nodeInvalid,
+        reason: item.reason,
+        resultInfo: item.appInfo,
+        // Look for a date in the result, if non-existent, create a new one
+        date: item.date ? new Date(item.date) : new Date(),
+      }));
+      return [...prevItems, ...newItems];
+    }, []);
   }
 
-  if (!Array.isArray(shapeMap)) return <></>;
-  const tableItems = mkTableItems(shapeMap);
+  if (!Array.isArray(results)) return <></>;
+  const tableItems = mkTableItems();
 
   // Settings for the data appearing in the table columns
   const columns = [
@@ -150,6 +171,16 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
       text: "Reason",
       searchable: false,
       hidden: true,
+    },
+    {
+      dataField: "date", // "date" field contains when the item was validated in streaming validations
+      text: "Date",
+      formatter: (dateObj, _) => dateObj.toLocaleTimeString(),
+      searchable: false,
+      sort: true,
+      sortCaret: sortCaretGen,
+      // Show date only for streaming validations, in which timing is relevant
+      hidden: options.isStreaming ? false : true,
     },
   ];
 

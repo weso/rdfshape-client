@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import API from "../API";
 import { InitialData } from "../data/Data";
-import { curateBooleans, trimFields } from "../utils/Utils";
+import { curateObject } from "../utils/Utils";
 import {
   ApplicationContext,
   initialApplicationContext
@@ -31,8 +31,6 @@ const ApplicationProvider = ({ children }) => {
     if (!value) return state;
 
     // Refine the object before storing
-    const curateObject = (item) => curateBooleans(trimFields(item));
-
     const finalValue = Array.isArray(value)
       ? value.map(curateObject)
       : typeof value === "object"
