@@ -112,10 +112,10 @@ function ShowShapeMap({
   // compatible with Bootstrap table.
   // If we have several results, merge them all together to a single array of items.
   function mkTableItems() {
-    return results.reduce((prevItems, curr, idx, arr) => {
+    return results.reduce((prevItems, curr, idx) => {
       // Make the items out of each result
       const newItems = curr.shapeMap.map((item, index) => ({
-        id: index,
+        id: `${idx}-${index}`,
         node: item.node,
         shape: item.shape,
         status:
@@ -125,7 +125,9 @@ function ShowShapeMap({
         reason: item.reason,
         resultInfo: item.appInfo,
         // Look for a date in the result, if non-existent, create a new one
-        date: item.date ? new Date(item.date) : new Date(),
+        date: curr[API.queryParameters.streaming.date]
+          ? new Date(curr[API.queryParameters.streaming.date])
+          : new Date(),
       }));
       return [...prevItems, ...newItems];
     }, []);
@@ -183,6 +185,15 @@ function ShowShapeMap({
       hidden: options.isStreaming ? false : true,
     },
   ];
+
+  // Setting for initial table sorting
+  // When streaming, sort by date (most recent first). Else, sort by node name.
+  const sortingSettings = options.isStreaming
+    ? {
+        dataField: "date",
+        order: "desc",
+      }
+    : { dataField: "node", order: "asc" };
 
   // Settings for dynamic row expansion
   const rowExpandSettings = {
@@ -279,6 +290,7 @@ function ShowShapeMap({
             <BootstrapTable
               {...props.baseProps}
               classes="results-table"
+              sort={sortingSettings}
               expandRow={rowExpandSettings}
               rowClasses={rowClassesFn}
               pagination={paginationFactory(paginationSettings)}

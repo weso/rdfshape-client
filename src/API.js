@@ -260,6 +260,8 @@ class API {
         error: "error",
       },
       reason: "reason",
+      report: "report", // Contains the SHAclEX validation report in WS responses
+      date: "instant", // Contains the validation date in WS responses
     },
 
     wbQuery: {
@@ -679,6 +681,9 @@ class API {
       noProvidedServer: "No streaming server provided",
       noProvidedPort: "No streaming port provided",
       noProvidedTopic: "No Kafka topic provided",
+
+      connectionClosedError: "Connection to the server was lost",
+      unknownError: "Unknown error",
     },
 
     serverStatus: "Server status",
@@ -696,6 +701,7 @@ class API {
     noProvidedUml: "No UML provided",
     errorResponsePrefix: "Error response",
     responseSummaryText: "Full response",
+    sentParams: "Parameters sent",
     noPrefixes: "No prefixes",
     noAssociations: "No associations",
 

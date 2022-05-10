@@ -14,6 +14,7 @@ import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
 import {
   getDataText,
+  getStreamingDataText,
   InitialDataStream,
   mkDataServerParams,
   mkDataTabs,
@@ -25,6 +26,7 @@ import {
 } from "../data/Data";
 import { mkPermalinkLong } from "../Permalink";
 import ResultSchemaValidate from "../results/ResultValidate";
+import ResultSchemaValidateStream from "../results/ResultValidateStream";
 import {
   getShapeMapText,
   InitialShapeMap,
@@ -68,7 +70,7 @@ function ShexValidate(props) {
   const [currentTab, setCurrentTab] = useState(null);
   // Array of results, instead of single result
   // Streaming validations consist of several results
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [permalink, setPermalink] = useState(null);
@@ -111,13 +113,13 @@ function ShexValidate(props) {
       console.log("Errored WS connection...");
       setStreamValidationRunning(false);
     },
-    onClose: () => {
+    onClose: (closeEvent) => {
       console.log("Closing WS connection...");
       setStreamValidationRunning(false);
+      setStreamValidationError();
     },
     onMessage: (msg) => {
-      console.info("RUNNING?: ", streamValidationRunning);
-      setStreamValidationRunning(true);
+      setStreamValidationRunning(true); // Double check
       try {
         // Get response contents as JSON
         const messageData = JSON.parse(msg.data);
@@ -125,16 +127,18 @@ function ShexValidate(props) {
         const { type, content } = messageData;
         switch (type) {
           case API.queryParameters.streaming.responseTypes.result:
-            const { valid, status, message, instant, report } = content;
-            const generationDate = new Date(instant);
-            console.info(generationDate, messageData);
-            // Result received, update result list
+            // Result received, update result list with it
+            setResults([content, ...results]);
             break;
           case API.queryParameters.streaming.responseTypes.error:
-            console.info(messageData);
             // Stream was stopped, show/handle errors, set state...
-            // If a reason is specified, check it is an invalid result
-            const { reason } = content[API.queryParameters.streaming.reason];
+            setStreamValidationError(
+              content.message || API.texts.streamingTexts.unknownError
+            );
+            // If a reason is specified, then it was an invalid result that we can still append
+            // to the results list
+            const reason = content[API.queryParameters.streaming.reason];
+            if (reason) setResults([reason, ...results]);
             break;
         }
       } catch (err) {
@@ -153,7 +157,6 @@ function ShexValidate(props) {
     // If a validation is already running, cancel it before invoking a new one
     if (streamValidationRunning) {
       console.log("Closing current WS connection before launching a new one.");
-      setStreamValidationRunning(false); // double check, though closing the connection should do this
       stopStreamingValidation();
     }
 
@@ -174,11 +177,6 @@ function ShexValidate(props) {
   const connectionStatus = useMemo(() => API.wsStatuses[wsReadyState], [
     wsReadyState,
   ]);
-
-  // Debug validation running in state
-  useEffect(() => {
-    console.info("Stream Validation RUNNING: " + streamValidationRunning);
-  }, [streamValidationRunning]);
 
   // If client is in Stream Form tab, update that info
   useEffect(() => {
@@ -292,12 +290,18 @@ function ShexValidate(props) {
           resetState();
           setUpHistory();
           setServerParams(await mkServerParams());
-          // requestValidation(isStreaming);
         }
       }
     };
     fn();
   }, [params]);
+
+  // Trigger validation when server params change
+  useEffect(() => {
+    if (!serverParams) return;
+    if (isStreamingValidation) streamValidate();
+    else postValidate();
+  }, [serverParams]);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -356,12 +360,6 @@ function ShexValidate(props) {
     else postValidate();
   }
 
-  useEffect(() => {
-    if (!serverParams) return;
-    if (isStreamingValidation) streamValidate();
-    else postValidate();
-  }, [serverParams]);
-
   // WS request for a streaming validation
   // Open WS connection and set permalink
   async function streamValidate() {
@@ -369,10 +367,14 @@ function ShexValidate(props) {
     setPermalink(
       mkPermalinkLong(API.routes.client.shexValidateRoute, params, true)
     );
+    checkLinks();
   }
 
   // HTTP request for a standard validation
   async function postValidate() {
+    // Stop streaming validation, if any
+    stopStreamingValidation();
+
     setLoading(true);
     setProgressPercent(30);
 
@@ -401,8 +403,12 @@ function ShexValidate(props) {
 
   // Disabled permalinks, etc. if the user input is too long or a file
   function checkLinks() {
+    const dataText = isStreamingValidation
+      ? getStreamingDataText(streamData)
+      : getDataText(data);
+
     const disabled =
-      getDataText(data).length +
+      dataText.length +
         getShexText(shex).length +
         getShapeMapText(shapeMap).length >
       API.limits.byTextCharacterLimit
@@ -436,7 +442,7 @@ function ShexValidate(props) {
   }
 
   function resetState() {
-    setResults(null);
+    setResults([]);
     setPermalink(null);
     setError(null);
     setStreamValidationError(null);
@@ -489,9 +495,17 @@ function ShexValidate(props) {
               />
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
-            ) : results ? (
+            ) : results.length ? (
               isStreamingValidation ? (
-                <div>Under construction</div>
+                <ResultSchemaValidateStream
+                  results={results}
+                  error={streamValidationError}
+                  config={serverParams}
+                  stopValidation={stopStreamingValidation}
+                  resumeValidation={startStreamingValidation}
+                  permalink={permalink}
+                  disabled={disabledLinks}
+                />
               ) : (
                 <ResultSchemaValidate
                   result={results[0]}

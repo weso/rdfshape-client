@@ -271,6 +271,10 @@ export function getDataText(data) {
   return "";
 }
 
+export function getStreamingDataText(streamData) {
+  return `${streamData.server}:${streamData.port}@${streamData.topic}`;
+}
+
 // Prepare basic server params for when data is sent to the server
 export async function mkDataServerParams(data) {
   return {
