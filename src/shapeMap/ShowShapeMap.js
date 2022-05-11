@@ -101,6 +101,7 @@ export function mkCellElement(node, prefixMap) {
 // - shapeMap (array of results)
 function ShowShapeMap({
   results,
+  // Options are meant for streaming validations
   options = {
     // Change the table's behaviour to adapt to a bunch of results coming in streams
     isStreaming: false,
@@ -111,6 +112,7 @@ function ShowShapeMap({
     // Override prefix maps
     nodesPrefixMap: [],
     shapesPrefixMap: [],
+    error: null,
   },
 }) {
   // De-structure for later use
@@ -120,6 +122,7 @@ function ShowShapeMap({
     clearItems,
     nodesPrefixMap: optionsNodesPm,
     shapesPrefixMap: optionsShapesPm,
+    error: streamError,
   } = options;
 
   // We assume the following are the same for all validations passed here:
@@ -309,17 +312,20 @@ function ShowShapeMap({
               {options.isStreaming && (
                 <>
                   <Button
-                    className={"no-margins"}
+                    className={`no-margins ${!!streamError ? "disabled" : ""}`}
+                    disabled={!!streamError}
                     onClick={() => setPaused(!isPaused)}
-                    variant={isPaused ? "primary" : "warning"}
+                    variant={"primary"}
                   >
-                    {isPaused ? (
+                    {isPaused || !!streamError ? (
                       <MediaPlayIcon className="white-icon" />
                     ) : (
                       <MediaPauseIcon className="white-icon" />
                     )}
                   </Button>
                   <Button
+                    className={`${!tableItems?.length ? "disabled" : ""}`}
+                    disabled={!tableItems?.length}
                     style={{ marginRight: "0" }}
                     onClick={clearItems}
                     variant={"danger"}

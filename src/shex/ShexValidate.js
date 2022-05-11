@@ -8,7 +8,7 @@ import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import { useHistory } from "react-router";
-import useWebSocket from "react-use-websocket";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import API from "../API";
 import PageHeader from "../components/PageHeader";
 import { ApplicationContext } from "../context/ApplicationContext";
@@ -119,15 +119,24 @@ function ShexValidate(props) {
       // Get values from close event
       const { code, reason } = closeEvent;
       // If the close code is one of our custom API codes, set the reason as error
-      if (code > 3000 && code < 4999)
+      // Notice more detailed errors are returned in the message before closure,
+      // but for now this level of detail is enough
+      if (code > 3000 && code < 4999) {
         setStreamValidationError(
-          `${reason} (WebSocket closed with code ${code})` ||
-            API.texts.streamingTexts.unknownError
+          `${reason} (WebSocket closed with code ${code})`
         );
+      }
+      // Server disconnected
+      else if (code == 1006)
+        setStreamValidationError(
+          `Server is offline (WebSocket closed with code ${code})`
+        );
+      // If there's an unknown closing code whose number indicates an error, show fallback
+      else if (code > 1015)
+        setStreamValidationError(API.texts.streamingTexts.unknownError);
 
       // Set state: if the validation is just paused, do not tell the state that it is over
       if (!streamValidationPaused) setStreamValidationInProgress(false);
-      // setStreamValidationError();
     },
     onMessage: (msg) => {
       setStreamValidationInProgress(true); // Double check
@@ -165,9 +174,11 @@ function ShexValidate(props) {
     getWebSocket().close();
   };
   const startStreamingValidation = async (cancelPrevious = true) => {
-    // If a validation is already running, cancel it before invoking a new one
+    // If a validation is already running (WS connection open unless paused),
+    // cancel it before invoking a new one
     if (cancelPrevious && streamValidationInProgress) {
       console.log("Closing current WS connection before launching a new one.");
+      stopStreamingValidation();
     }
 
     // Departing from a clean connection:
@@ -526,26 +537,35 @@ function ShexValidate(props) {
               />
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
-            ) : streamValidationError ||
-              streamValidationInProgress ||
-              streamValidationPaused ? (
-              <ResultValidateStream
-                results={results}
-                error={streamValidationError}
-                config={serverParams}
-                paused={streamValidationPaused}
-                setPaused={setStreamValidationPaused}
-                clearItems={() => setResults([])}
-                permalink={permalink}
-                disabled={disabledLinks}
-              />
-            ) : results.length && !streamValidationError ? (
+            ) : results.length &&
+              !streamValidationError &&
+              !streamValidationInProgress ? (
               <ResultValidateShex
                 result={results[0]}
                 permalink={permalink}
                 disabled={disabledLinks}
               />
-            ) : null}
+            ) : (
+              <ResultValidateStream
+                results={results}
+                error={streamValidationError}
+                config={serverParams}
+                paused={streamValidationPaused}
+                setPaused={(v) => {
+                  // Only pause validations if the connection had time to open
+                  if (
+                    [
+                      API.wsStatuses[ReadyState.CONNECTING],
+                      API.wsStatuses[ReadyState.OPEN],
+                    ].includes(connectionStatus)
+                  )
+                    setStreamValidationPaused(v);
+                }}
+                clearItems={() => setResults([])}
+                permalink={permalink}
+                disabled={disabledLinks}
+              />
+            )}
           </Col>
         ) : (
           <Col className={"half-col"}>

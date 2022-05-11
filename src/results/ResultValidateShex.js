@@ -14,7 +14,6 @@ function ResultValidateShex({
   permalink,
   disabled,
 }) {
-  console.info("IM HERE!");
   const { message, data, schema, trigger, result } = schemaValidateResponse;
 
   // Store the resulting nodes in state, plus the invalid ones
