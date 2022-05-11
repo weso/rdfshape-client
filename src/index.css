@@ -209,6 +209,10 @@ a.dropdown-item {
   margin: 0 8px;
 }
 
+.no-margins {
+  margin: 0 !important;
+}
+
 .white-filler {
   fill: white;
   margin: auto 5px;

@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -6,7 +7,10 @@ import ToolkitProvider, {
   CSVExport,
   Search
 } from "react-bootstrap-table2-toolkit";
+import { MediaPauseIcon } from "react-open-iconic-svg";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
+import MediaPlayIcon from "react-open-iconic-svg/dist/MediaPlayIcon";
+import TrashIcon from "react-open-iconic-svg/dist/TrashIcon";
 import API from "../API";
 import { conformant } from "../results/ResultValidateShex";
 import { sortCaretGen } from "../utils/Utils";
@@ -103,16 +107,27 @@ function ShowShapeMap({
     // If streaming, controls over the "paused" state of the validation process
     isPaused: false,
     setPaused: () => {},
+    clearItems: () => {},
+    // Override prefix maps
+    nodesPrefixMap: [],
+    shapesPrefixMap: [],
   },
 }) {
   // De-structure for later use
-  const { isPaused, setPaused } = options;
+  const {
+    isPaused,
+    setPaused,
+    clearItems,
+    nodesPrefixMap: optionsNodesPm,
+    shapesPrefixMap: optionsShapesPm,
+  } = options;
 
   // We assume the following are the same for all validations passed here:
   // - nodesPrefixMap (nodes pm of that validation)
   // - shapesPrefixMap (shapes pm of that validations)
-  const nodesPrefixMap = results[0].nodesPrefixMap || [];
-  const shapesPrefixMap = results[0].shapesPrefixMap || [];
+  // Extract them from options, else from the first result
+  const nodesPrefixMap = optionsNodesPm || results[0]?.nodesPrefixMap || [];
+  const shapesPrefixMap = optionsShapesPm || results[0]?.shapesPrefixMap || [];
 
   // Given the shapeMap resulting from a schema validation, map each result to an object
   // compatible with Bootstrap table.
@@ -290,13 +305,28 @@ function ShowShapeMap({
                 {...props.searchProps}
                 className="search-form"
               />
-              {/* For streaming validations: show stop/resume */}
+              {/* For streaming validations: show stop/resume and clear */}
               {options.isStreaming && (
-                <div onClick={() => setPaused(!isPaused)}>
-                  {isPaused
-                    ? API.texts.actionButtons.resume
-                    : API.texts.actionButtons.pause}
-                </div>
+                <>
+                  <Button
+                    className={"no-margins"}
+                    onClick={() => setPaused(!isPaused)}
+                    variant={isPaused ? "primary" : "warning"}
+                  >
+                    {isPaused ? (
+                      <MediaPlayIcon className="white-icon" />
+                    ) : (
+                      <MediaPauseIcon className="white-icon" />
+                    )}
+                  </Button>
+                  <Button
+                    style={{ marginRight: "0" }}
+                    onClick={clearItems}
+                    variant={"danger"}
+                  >
+                    <TrashIcon className="white-icon" />
+                  </Button>
+                </>
               )}
               <CSVExport.ExportCSVButton
                 {...props.csvProps}

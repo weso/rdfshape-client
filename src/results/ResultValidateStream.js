@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
@@ -9,8 +9,9 @@ import PrintJson from "../utils/PrintJson";
 import { mkError } from "../utils/ResponseError";
 import { scrollToResults } from "../utils/Utils";
 
-export const conformant = "conformant"; // Status of conformant nodes
-export const nonConformant = "nonconformant"; // Status of non-conformant nodes
+export const valid = "valid"; // Status of valid validated data
+export const invalid = "invalid"; // Status of invalid validated data
+export const errored = "errored"; // Status of non-validated data (an errored occurred)
 
 function ResultValidateStream({
   results,
@@ -19,6 +20,7 @@ function ResultValidateStream({
   // Info about the paused status of the validation
   paused,
   setPaused,
+  clearItems,
   permalink,
   disabled,
 }) {
@@ -30,6 +32,23 @@ function ResultValidateStream({
     config?.[API.queryParameters.streaming.configuration]?.[
       API.queryParameters.streaming.validator.validator
     ]?.[API.queryParameters.streaming.validator.haltOnInvalid];
+
+  // Set to true the moment a result is received and shown
+  const [hasStarted, setHasStarted] = useState(false);
+
+  // Set them once, the moment the first result is received
+  // Assume all data will share them
+  const [nodesPrefixMap, setNodesPrefixMap] = useState(null);
+  const [shapesPrefixMap, setShapesPrefixMap] = useState(null);
+
+  useEffect(() => {
+    if (hasStarted || results.length == 0) return;
+    else {
+      setHasStarted(results.length > 0);
+      setNodesPrefixMap(results[0].nodesPrefixMap);
+      setShapesPrefixMap(results[0].shapesPrefixMap);
+    }
+  }, [results]);
 
   // Format result objects as needed before sending them to the rendering component
   // Send the validation report + generated time
@@ -74,6 +93,21 @@ function ResultValidateStream({
     </Alert>
   );
 
+  const runningAlert = mkAlert(API.texts.streamingTexts.validationRunning, {
+    variant: "success",
+    spinner: true,
+  });
+
+  const pausedAlert = mkAlert(API.texts.streamingTexts.validationPaused, {
+    variant: "info",
+    spinner: false,
+  });
+
+  const startingAlert = mkAlert(API.texts.streamingTexts.validationStarting, {
+    variant: "info",
+    spinner: true,
+  });
+
   return (
     <div id={API.resultsId}>
       <div>
@@ -82,32 +116,29 @@ function ResultValidateStream({
           <Alert variant="danger">
             {mkError(error, API.routes.server.schemaValidateStream)}
           </Alert>
-        ) : results.length ? (
-          // There are results, validation is running (either playing or paused)
+        ) : results.length || hasStarted ? (
+          // There are results, or at least the validation has started (might have been cleared)
           paused ? (
-            mkAlert(API.texts.streamingTexts.validationPaused, {
-              variant: "info",
-              spinner: false,
-            })
+            pausedAlert
           ) : (
-            mkAlert(API.texts.streamingTexts.validationRunning, {
-              variant: "success",
-              spinner: true,
-            })
+            runningAlert
           )
         ) : (
-          // No results but no errors, validation is starting
-          mkAlert(API.texts.streamingTexts.validationStarting, {
-            variant: "info",
-            spinner: true,
-          })
+          startingAlert
         )}
 
         {/* Render the results table */}
-        {results.length > 0 && (
+        {(results.length > 0 || hasStarted) && (
           <ShowShapeMap
             results={results.map(formatResult).slice(0, maxItemsUI)}
-            options={{ isStreaming: true, isPaused: paused, setPaused }}
+            options={{
+              isStreaming: true,
+              isPaused: paused,
+              setPaused,
+              clearItems,
+              nodesPrefixMap,
+              shapesPrefixMap,
+            }}
           />
         )}
 
@@ -141,16 +172,18 @@ ResultValidateStream.propTypes = {
   // JSON params that started the streaming validation
   config: PropTypes.object,
   // Functions to allow stop/resume of the same streaming validation
-  stopValidation: PropTypes.func,
-  resumeValidation: PropTypes.func,
+  paused: PropTypes.bool,
+  setPaused: PropTypes.func,
+  clearItems: PropTypes.func,
   // Other props
   permalink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 ResultValidateStream.defaultProps = {
-  stopValidation: () => {},
-  resumeValidation: () => {},
+  paused: false,
+  setPaused: () => {},
+  clearItems: () => {},
   permalink: false,
   disabled: false,
 };

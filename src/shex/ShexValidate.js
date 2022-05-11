@@ -26,7 +26,7 @@ import {
 } from "../data/Data";
 import { mkPermalinkLong } from "../Permalink";
 import ResultValidateShex from "../results/ResultValidateShex";
-import ResultValidateStream from "../results/ResultValidateStream";
+import ResultValidateStream, { errored } from "../results/ResultValidateStream";
 import {
   getShapeMapText,
   InitialShapeMap,
@@ -138,8 +138,8 @@ function ShexValidate(props) {
         const { type, content } = messageData;
         switch (type) {
           case API.queryParameters.streaming.responseTypes.result:
-            // Result received, update result list with it
-            setResults([content, ...results]);
+            // Result received, update result list with it if not errored
+            if (content.status != errored) setResults([content, ...results]);
             break;
           case API.queryParameters.streaming.responseTypes.error:
             // Stream was stopped, show/handle errors, set state...
@@ -379,14 +379,6 @@ function ShexValidate(props) {
       );
   }
 
-  // Branch the logic depending on the type of validation: streaming or not
-  async function requestValidation(isStreaming = isStreamingValidation) {
-    // Check if we are being requested a streaming validation,
-    // based on the active form Tab when the validation is requested
-    if (isStreaming) streamValidate();
-    else postValidate();
-  }
-
   // WS request for a streaming validation
   // Open WS connection and set permalink
   async function streamValidate() {
@@ -504,8 +496,19 @@ function ShexValidate(props) {
             <Button
               variant="primary"
               type="submit"
-              className={"btn-with-icon " + (loading ? "disabled" : "")}
-              disabled={loading}
+              className={
+                "btn-with-icon " +
+                (loading ||
+                (streamValidationInProgress && !streamValidationPaused)
+                  ? "disabled"
+                  : "")
+              }
+              // Disabled the validation button as usual and
+              // when a stream validation is running un-paused
+              disabled={
+                loading ||
+                (streamValidationInProgress && !streamValidationPaused)
+              }
             >
               {API.texts.actionButtons.validate}
             </Button>
@@ -532,6 +535,7 @@ function ShexValidate(props) {
                 config={serverParams}
                 paused={streamValidationPaused}
                 setPaused={setStreamValidationPaused}
+                clearItems={() => setResults([])}
                 permalink={permalink}
                 disabled={disabledLinks}
               />
@@ -541,14 +545,7 @@ function ShexValidate(props) {
                 permalink={permalink}
                 disabled={disabledLinks}
               />
-            ) : (
-              <>
-                {console.log("RESULTS: " + results.length)}
-                {console.log("IN PROGRESS: " + streamValidationInProgress)}
-                {console.log("PAUSED: " + streamValidationPaused)}
-                <p>Fallback</p>
-              </>
-            )}
+            ) : null}
           </Col>
         ) : (
           <Col className={"half-col"}>

@@ -14,11 +14,11 @@ function ResultValidateShex({
   permalink,
   disabled,
 }) {
-  console.info("IM HERE!")
+  console.info("IM HERE!");
   const { message, data, schema, trigger, result } = schemaValidateResponse;
 
   // Store the resulting nodes in state, plus the invalid ones
-  const [nodes] = useState(result.shapeMap);
+  const [nodes] = useState(result.shapeMap || []);
   const [invalidNodes, setInvalidNodes] = useState([]);
 
   // Update invalid nodes on node changes
@@ -31,7 +31,7 @@ function ResultValidateShex({
 
   useEffect(scrollToResults, []);
 
-  if (schemaValidateResponse) {
+  if (schemaValidateResponse && result) {
     return (
       <div id={API.resultsId}>
         {/* Place an alert depending on the validation errors */}
