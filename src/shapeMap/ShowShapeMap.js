@@ -8,7 +8,7 @@ import ToolkitProvider, {
 } from "react-bootstrap-table2-toolkit";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
 import API from "../API";
-import { conformant } from "../results/ResultValidate";
+import { conformant } from "../results/ResultValidateShex";
 import { sortCaretGen } from "../utils/Utils";
 
 const relativeBaseRegex = () => /^<internal:\/\/base\/(.*)>$/g;
@@ -100,9 +100,14 @@ function ShowShapeMap({
   options = {
     // Change the table's behaviour to adapt to a bunch of results coming in streams
     isStreaming: false,
+    // If streaming, controls over the "paused" state of the validation process
+    isPaused: false,
+    setPaused: () => {},
   },
 }) {
-  console.info(results);
+  // De-structure for later use
+  const { isPaused, setPaused } = options;
+
   // We assume the following are the same for all validations passed here:
   // - nodesPrefixMap (nodes pm of that validation)
   // - shapesPrefixMap (shapes pm of that validations)
@@ -285,6 +290,14 @@ function ShowShapeMap({
                 {...props.searchProps}
                 className="search-form"
               />
+              {/* For streaming validations: show stop/resume */}
+              {options.isStreaming && (
+                <div onClick={() => setPaused(!isPaused)}>
+                  {isPaused
+                    ? API.texts.actionButtons.resume
+                    : API.texts.actionButtons.pause}
+                </div>
+              )}
               <CSVExport.ExportCSVButton
                 {...props.csvProps}
                 className="btn-secondary btn-export-csv"

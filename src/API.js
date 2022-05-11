@@ -628,6 +628,8 @@ class API {
       extract: "Extract",
       fetch: "Fetch",
       createForm: "Create form",
+      pause: "Pause",
+      resume: "Resume",
     },
 
     visualizationSettings: {
@@ -682,6 +684,12 @@ class API {
       noProvidedServer: "No streaming server provided",
       noProvidedPort: "No streaming port provided",
       noProvidedTopic: "No Kafka topic provided",
+
+      validationStarting: "Validation is starting...",
+      validationRunning: "Validation is running...",
+      validationPaused: "Validation is paused",
+
+      validationConfiguration: "Validation configuration",
 
       connectionClosedError: "Connection to the server was lost",
       unknownError: "Unknown error",

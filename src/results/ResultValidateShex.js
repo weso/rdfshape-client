@@ -9,11 +9,12 @@ import { equalsIgnoreCase, scrollToResults } from "../utils/Utils";
 export const conformant = "conformant"; // Status of conformant nodes
 export const nonConformant = "nonconformant"; // Status of non-conformant nodes
 
-function ResultSchemaValidate({
+function ResultValidateShex({
   result: schemaValidateResponse, // Request successful response
   permalink,
   disabled,
 }) {
+  console.info("IM HERE!")
   const { message, data, schema, trigger, result } = schemaValidateResponse;
 
   // Store the resulting nodes in state, plus the invalid ones
@@ -71,4 +72,4 @@ function ResultSchemaValidate({
   }
 }
 
-export default ResultSchemaValidate;
+export default ResultValidateShex;

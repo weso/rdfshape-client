@@ -25,8 +25,8 @@ import {
   updateStateStreamData
 } from "../data/Data";
 import { mkPermalinkLong } from "../Permalink";
-import ResultSchemaValidate from "../results/ResultValidate";
-import ResultSchemaValidateStream from "../results/ResultValidateStream";
+import ResultValidateShex from "../results/ResultValidateShex";
+import ResultValidateStream from "../results/ResultValidateStream";
 import {
   getShapeMapText,
   InitialShapeMap,
@@ -37,7 +37,7 @@ import {
 } from "../shapeMap/ShapeMap";
 import axios, { rootWsApi } from "../utils/networking/axiosConfig";
 import { mkError } from "../utils/ResponseError";
-import { curateBooleans } from "../utils/Utils";
+import { curateBooleans, usePrevious } from "../utils/Utils";
 import {
   getShexText,
   InitialShex,
@@ -111,22 +111,26 @@ function ShexValidate(props) {
     },
     onError: () => {
       console.log("Errored WS connection...");
-      setStreamValidationRunning(false);
+      setStreamValidationInProgress(false);
     },
     onClose: (closeEvent) => {
       console.log("Closing WS connection...");
 
       // Get values from close event
       const { code, reason } = closeEvent;
-      console.info("CODE: " + code);
-      console.info("REASON: " + reason);
+      // If the close code is one of our custom API codes, set the reason as error
+      if (code > 3000 && code < 4999)
+        setStreamValidationError(
+          `${reason} (WebSocket closed with code ${code})` ||
+            API.texts.streamingTexts.unknownError
+        );
 
-      // Set state
-      setStreamValidationRunning(false);
-      setStreamValidationError();
+      // Set state: if the validation is just paused, do not tell the state that it is over
+      if (!streamValidationPaused) setStreamValidationInProgress(false);
+      // setStreamValidationError();
     },
     onMessage: (msg) => {
-      setStreamValidationRunning(true); // Double check
+      setStreamValidationInProgress(true); // Double check
       try {
         // Get response contents as JSON
         const messageData = JSON.parse(msg.data);
@@ -160,23 +164,27 @@ function ShexValidate(props) {
   const stopStreamingValidation = () => {
     getWebSocket().close();
   };
-  const startStreamingValidation = async () => {
+  const startStreamingValidation = async (cancelPrevious = true) => {
     // If a validation is already running, cancel it before invoking a new one
-    if (streamValidationRunning) {
+    if (cancelPrevious && streamValidationInProgress) {
       console.log("Closing current WS connection before launching a new one.");
-      stopStreamingValidation();
     }
 
     // Departing from a clean connection:
+    setStreamValidationInProgress(true);
     // 1. Send server params to begin the validation
-    setStreamValidationRunning(true);
     sendJsonMessage(serverParams);
   };
 
   // Control variables
 
   // Errors, status, etc. of the streaming validation, once connection was established
-  const [streamValidationRunning, setStreamValidationRunning] = useState(false);
+  // A stream validation is taking place
+  const [streamValidationInProgress, setStreamValidationInProgress] = useState(
+    false
+  );
+  // The current streaming validation is paused by user, but could resume (starts as false)
+  const [streamValidationPaused, setStreamValidationPaused] = useState(false);
   const [streamValidationError, setStreamValidationError] = useState(null);
 
   // Connection status reference
@@ -184,6 +192,18 @@ function ShexValidate(props) {
   const connectionStatus = useMemo(() => API.wsStatuses[wsReadyState], [
     wsReadyState,
   ]);
+
+  // Was validation paused before or not?
+  const prevPaused = usePrevious(streamValidationPaused);
+
+  // If we receive a change in the paused status, stop or resume the current validation
+  // Do not run the resume logic if the component was already running.
+  // Similarly, so not run the pause logic if things were already paused.
+  useEffect(() => {
+    if (streamValidationPaused && !prevPaused) stopStreamingValidation();
+    else if (!streamValidationPaused && prevPaused)
+      startStreamingValidation(false);
+  }, [streamValidationPaused]);
 
   // If client is in Stream Form tab, update that info
   useEffect(() => {
@@ -453,7 +473,8 @@ function ShexValidate(props) {
     setPermalink(null);
     setError(null);
     setStreamValidationError(null);
-    // setStreamValidationRunning(false); Self-managed
+    setStreamValidationPaused(false);
+    // setStreamValidationInProgress(false); Self-managed
     setProgressPercent(0);
   }
 
@@ -502,25 +523,32 @@ function ShexValidate(props) {
               />
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
-            ) : results.length ? (
-              streamValidationRunning ? (
-                <ResultSchemaValidateStream
-                  results={results}
-                  error={streamValidationError}
-                  config={serverParams}
-                  stopValidation={stopStreamingValidation}
-                  resumeValidation={startStreamingValidation}
-                  permalink={permalink}
-                  disabled={disabledLinks}
-                />
-              ) : (
-                <ResultSchemaValidate
-                  result={results[0]}
-                  permalink={permalink}
-                  disabled={disabledLinks}
-                />
-              )
-            ) : null}
+            ) : streamValidationError ||
+              streamValidationInProgress ||
+              streamValidationPaused ? (
+              <ResultValidateStream
+                results={results}
+                error={streamValidationError}
+                config={serverParams}
+                paused={streamValidationPaused}
+                setPaused={setStreamValidationPaused}
+                permalink={permalink}
+                disabled={disabledLinks}
+              />
+            ) : results.length && !streamValidationError ? (
+              <ResultValidateShex
+                result={results[0]}
+                permalink={permalink}
+                disabled={disabledLinks}
+              />
+            ) : (
+              <>
+                {console.log("RESULTS: " + results.length)}
+                {console.log("IN PROGRESS: " + streamValidationInProgress)}
+                {console.log("PAUSED: " + streamValidationPaused)}
+                <p>Fallback</p>
+              </>
+            )}
           </Col>
         ) : (
           <Col className={"half-col"}>

@@ -1,21 +1,24 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
+import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import API from "../API";
 import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
 import { mkError } from "../utils/ResponseError";
+import { scrollToResults } from "../utils/Utils";
 
 export const conformant = "conformant"; // Status of conformant nodes
 export const nonConformant = "nonconformant"; // Status of non-conformant nodes
 
-function ResultSchemaValidateStream({
+function ResultValidateStream({
   results,
   error,
   config,
-  stopValidation,
-  resumeValidation,
+  // Info about the paused status of the validation
+  paused,
+  setPaused,
   permalink,
   disabled,
 }) {
@@ -45,33 +48,80 @@ function ResultSchemaValidateStream({
       };
   };
 
-  if (results) {
-    // If there are results, render them
-    return results.length ? (
-      <div id={API.resultsId}>
-        {/* Place an alert depending on the validation errors */}
+  useEffect(scrollToResults, []);
+
+  // Factory of HTML spinners sharing the same properties unless overridden by user
+  const mkSpinner = (options) => (
+    <Spinner
+      className="white-filler"
+      {...{ animation: "grow", size: "sm", ...options }}
+    />
+  );
+
+  // Factory of Alerts showing the validation status
+  const mkAlert = (
+    text,
+    options = {
+      variant: "success",
+      spinner: false,
+    }
+  ) => (
+    <Alert {...{ variant: "success", ...{ variant: options.variant } }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        {text}
+        {options.spinner && mkSpinner()}
+      </div>
+    </Alert>
+  );
+
+  return (
+    <div id={API.resultsId}>
+      <div>
+        {/* Alert shows status (even when there are errors, show old results) */}
         {error ? ( // An error occurred
-          <Alert variant="danger">{mkError(error)}</Alert>
+          <Alert variant="danger">
+            {mkError(error, API.routes.server.schemaValidateStream)}
+          </Alert>
+        ) : results.length ? (
+          // There are results, validation is running (either playing or paused)
+          paused ? (
+            mkAlert(API.texts.streamingTexts.validationPaused, {
+              variant: "info",
+              spinner: false,
+            })
+          ) : (
+            mkAlert(API.texts.streamingTexts.validationRunning, {
+              variant: "success",
+              spinner: true,
+            })
+          )
         ) : (
-          // No error
-          <Alert variant="success">Nothing to see here</Alert>
+          // No results but no errors, validation is starting
+          mkAlert(API.texts.streamingTexts.validationStarting, {
+            variant: "info",
+            spinner: true,
+          })
         )}
 
         {/* Render the results table */}
-        {results.length && (
+        {results.length > 0 && (
           <ShowShapeMap
             results={results.map(formatResult).slice(0, maxItemsUI)}
-            options={{ isStreaming: true }}
+            options={{ isStreaming: true, isPaused: paused, setPaused }}
           />
         )}
 
+        {/* Show server config details */}
         {config && (
           <details>
-            <summary>{API.texts.sentParams}</summary>
+            <summary>
+              {API.texts.streamingTexts.validationConfiguration}
+            </summary>
             <PrintJson json={config} />
           </details>
         )}
 
+        {/* Permalink */}
         {permalink && (
           <Fragment>
             <hr />
@@ -79,14 +129,11 @@ function ResultSchemaValidateStream({
           </Fragment>
         )}
       </div>
-    ) : (
-      // No results, show informational message
-      <p>Waiting for results...</p>
-    );
-  }
+    </div>
+  );
 }
 
-ResultSchemaValidateStream.propTypes = {
+ResultValidateStream.propTypes = {
   // Set of results returned by the server, should update over time
   results: PropTypes.array.isRequired,
   // Error occurred during the streaming validation
@@ -101,11 +148,11 @@ ResultSchemaValidateStream.propTypes = {
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
-ResultSchemaValidateStream.defaultProps = {
+ResultValidateStream.defaultProps = {
   stopValidation: () => {},
   resumeValidation: () => {},
   permalink: false,
   disabled: false,
 };
 
-export default ResultSchemaValidateStream;
+export default ResultValidateStream;

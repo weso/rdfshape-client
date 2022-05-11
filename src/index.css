@@ -198,6 +198,12 @@ a.dropdown-item {
   margin: auto;
 }
 
+.black-icon {
+  fill: black;
+  transform: scale(1.5);
+  margin: auto;
+}
+
 .embedded-icon {
   fill: black;
   margin: 0 8px;

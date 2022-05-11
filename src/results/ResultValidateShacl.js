@@ -8,7 +8,7 @@ import { Permalink } from "../Permalink";
 import ShowShapeMap from "../shapeMap/ShowShapeMap";
 import PrintJson from "../utils/PrintJson";
 import { equalsIgnoreCase, format2mode, scrollToResults } from "../utils/Utils";
-import { nonConformant } from "./ResultValidate";
+import { nonConformant } from "./ResultValidateShex";
 
 function ResultValidateShacl({
   result: schemaValidateResponse,

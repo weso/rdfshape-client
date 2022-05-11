@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
@@ -6,6 +6,16 @@ import API from "../API";
 import axios from "./networking/axiosConfig";
 
 const { Module, render } = require("viz.js/full.render.js");
+
+// Custom hook for storing previous state values
+// https://stackoverflow.com/a/56817365/9744696
+export const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 
 export function dot2svg(dot, cb) {
   const digraph = "digraph { a -> b; }";
