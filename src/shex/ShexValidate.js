@@ -115,6 +115,13 @@ function ShexValidate(props) {
     },
     onClose: (closeEvent) => {
       console.log("Closing WS connection...");
+
+      // Get values from close event
+      const { code, reason } = closeEvent;
+      console.info("CODE: " + code);
+      console.info("REASON: " + reason);
+
+      // Set state
       setStreamValidationRunning(false);
       setStreamValidationError();
     },
@@ -496,7 +503,7 @@ function ShexValidate(props) {
             ) : error ? (
               <Alert variant="danger">{error}</Alert>
             ) : results.length ? (
-              isStreamingValidation ? (
+              streamValidationRunning ? (
                 <ResultSchemaValidateStream
                   results={results}
                   error={streamValidationError}

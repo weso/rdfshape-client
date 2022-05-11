@@ -354,6 +354,28 @@ export const yasheResultButtonsOptions = {
 export const randomInt = (min = 0, max = 1000) =>
   Math.floor(Math.random() * (max - min)) + min;
 
+// Create a random guid
+// https://stackoverflow.com/a/6860916/9744696
+export function guidGenerator() {
+  var S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+  return (
+    S4() +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    S4() +
+    S4()
+  );
+}
+
 // Smoothly scroll to the element with the given id (if it exists)
 export const scrollToElementById = (
   id = API.resultsId,
@@ -407,8 +429,6 @@ export const curateBoolean = (value) => {
 
 export const curateObject = (item) => curateBooleans(trimFields(item));
 
-
 // Deep clone two objects via JSON-stringify (expensive)
 export const objectEqualsObject = (obj1, obj2) =>
   JSON.stringify(obj1) === JSON.stringify(obj2);
-

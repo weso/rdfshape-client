@@ -102,6 +102,7 @@ function ShowShapeMap({
     isStreaming: false,
   },
 }) {
+  console.info(results);
   // We assume the following are the same for all validations passed here:
   // - nodesPrefixMap (nodes pm of that validation)
   // - shapesPrefixMap (shapes pm of that validations)
@@ -112,25 +113,27 @@ function ShowShapeMap({
   // compatible with Bootstrap table.
   // If we have several results, merge them all together to a single array of items.
   function mkTableItems() {
-    return results.reduce((prevItems, curr, idx) => {
-      // Make the items out of each result
-      const newItems = curr.shapeMap.map((item, index) => ({
-        id: `${idx}-${index}`,
-        node: item.node,
-        shape: item.shape,
-        status:
-          item.status === conformant
-            ? API.texts.validationResults.nodeValid
-            : API.texts.validationResults.nodeInvalid,
-        reason: item.reason,
-        resultInfo: item.appInfo,
-        // Look for a date in the result, if non-existent, create a new one
-        date: curr[API.queryParameters.streaming.date]
-          ? new Date(curr[API.queryParameters.streaming.date])
-          : new Date(),
-      }));
-      return [...prevItems, ...newItems];
-    }, []);
+    return results
+      .filter((it) => !!it.shapeMap) // Filter results with valid shapeMap
+      .reduce((prevItems, curr, idx) => {
+        // Make the items out of each result
+        const newItems = curr.shapeMap.map((item, index) => ({
+          id: `${idx}-${index}`,
+          node: item.node,
+          shape: item.shape,
+          status:
+            item.status === conformant
+              ? API.texts.validationResults.nodeValid
+              : API.texts.validationResults.nodeInvalid,
+          reason: item.reason,
+          resultInfo: item.appInfo,
+          // Look for a date in the result, if non-existent, create a new one
+          date: curr[API.queryParameters.streaming.date]
+            ? new Date(curr[API.queryParameters.streaming.date])
+            : new Date(),
+        }));
+        return [...prevItems, ...newItems];
+      }, []);
   }
 
   if (!Array.isArray(results)) return <></>;
@@ -228,19 +231,22 @@ function ShowShapeMap({
 
   // Settings for pagination
   // https://react-bootstrap-table.github.io/react-bootstrap-table2/docs/pagination-props.html
+  const basePaginationSizes = [
+    ...[5, 10, 15, 20, 25, 30]
+      .filter((n) => n < tableItems.length)
+      .map((n) => ({
+        text: n.toString(),
+        value: n,
+      })),
+  ];
+
   const paginationSettings = {
-    sizePerPage: 5,
+    sizePerPage: options.isStreaming ? 10 : 5,
     paginationSize: 3,
-    hidePageListOnlyOnePage: true,
-    sizePerPageList: [
-      ...[5, 10, 15, 20, 25, 30]
-        .filter((n) => n < tableItems.length)
-        .map((n) => ({
-          text: n.toString(),
-          value: n,
-        })),
-      { text: "All", value: tableItems.length },
-    ],
+    hidePageListOnlyOnePage: options.isStreaming ? false : true,
+    sizePerPageList: options.isStreaming
+      ? basePaginationSizes
+      : [...basePaginationSizes, { text: "All", value: tableItems.length }],
     sizePerPageOptionRenderer: ({ text, page, onSizePerPageChange }) => (
       <li
         key={text}

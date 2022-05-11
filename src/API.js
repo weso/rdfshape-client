@@ -5,6 +5,7 @@ import { ReadyState } from "react-use-websocket";
 import { rootApi } from "./utils/networking/axiosConfig";
 
 class API {
+  static appName = "RdfShape-Client";
   // Formats (most formats come from server but we need defaults for data initialization)
   static formats = {
     turtle: "turtle",

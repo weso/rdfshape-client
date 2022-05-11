@@ -2,7 +2,7 @@ import React from "react";
 import API from "../API";
 import { processDotData } from "../utils/dot/dotUtils";
 import axios from "../utils/networking/axiosConfig";
-import { getItemRaw } from "../utils/Utils";
+import { getItemRaw, guidGenerator } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
@@ -149,6 +149,11 @@ export function mkStreamDataServerParams(data, schemaParams, triggerParams) {
         [API.queryParameters.streaming.stream.server]: data.server,
         [API.queryParameters.streaming.stream.port]: data.port,
         [API.queryParameters.streaming.stream.topic]: data.topic,
+        // Generate a new random group ID each time we regenerate server params.
+        // The consumer will start consuming from the latest incoming messages.
+        // On the other hand, when we stop-resume a streaming validation,
+        // we keep the same groupId and lost messages are processed anew.
+        [API.queryParameters.streaming.stream.groupId]: guidGenerator(),
       },
     },
   };

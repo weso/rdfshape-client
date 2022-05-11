@@ -24,9 +24,9 @@ function ResultSchemaValidateStream({
 
   // Check if validator halts on invalid to know how to format some results
   const haltOnInvalid =
-    config[API.queryParameters.streaming.configuration][
+    config?.[API.queryParameters.streaming.configuration]?.[
       API.queryParameters.streaming.validator.validator
-    ][API.queryParameters.streaming.validator.haltOnInvalid];
+    ]?.[API.queryParameters.streaming.validator.haltOnInvalid];
 
   // Format result objects as needed before sending them to the rendering component
   // Send the validation report + generated time
@@ -98,7 +98,7 @@ ResultSchemaValidateStream.propTypes = {
   resumeValidation: PropTypes.func,
   // Other props
   permalink: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 ResultSchemaValidateStream.defaultProps = {
