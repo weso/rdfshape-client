@@ -137,7 +137,7 @@ function ShowShapeMap({
   // If we have several results, merge them all together to a single array of items.
   function mkTableItems() {
     return results
-      .filter((it) => !!it.shapeMap) // Filter results with valid shapeMap
+      .filter((it) => !!it.shapeMap && Array.isArray(it.shapeMap)) // Filter results with valid shapeMap (it exists and it's an array)
       .reduce((prevItems, curr, idx) => {
         // Make the items out of each result
         const newItems = curr.shapeMap.map((item, index) => ({
