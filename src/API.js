@@ -1,9 +1,11 @@
 /** This class contains global definitions */
 
 import React from "react";
+import { ReadyState } from "react-use-websocket";
 import { rootApi } from "./utils/networking/axiosConfig";
 
 class API {
+  static appName = "RdfShape-Client";
   // Formats (most formats come from server but we need defaults for data initialization)
   static formats = {
     turtle: "turtle",
@@ -77,6 +79,12 @@ class API {
     shapeMap: "ShapeMap",
     targetDecls: "TargetDecls",
   };
+
+  // Default Kafka values
+  static kafkaBaseValues = {
+    port: 9092,
+  };
+
   // Routes
   static routes = {
     // Routes in server
@@ -95,6 +103,7 @@ class API {
       schemaInfo: "schema/info",
       schemaConvert: "schema/convert",
       schemaValidate: "schema/validate",
+      schemaValidateStream: "schema/validate/stream", // To be used with websockets
       shExFormats: `schema/formats/${this.engines.shex}`,
       shaclFormats: `schema/formats/${this.engines.shaclex}`,
       schemaShaclEngines: `schema/engines/${this.engines.shacl}`,
@@ -184,7 +193,8 @@ class API {
       triggerMode: "triggerMode",
     },
     shapeMap: {
-      shapeMap: "shapeMap",
+      shapeMap: "shape-map",
+      shapeMapv2: "shapeMap",
       source: "shapeMapSource",
       format: "shapeMapFormat",
     },
@@ -225,6 +235,36 @@ class API {
       },
     },
 
+    streaming: {
+      configuration: "configuration",
+      validator: {
+        validator: "validator",
+        haltOnInvalid: "haltOnInvalid",
+        haltOnErrored: "haltOnErrored",
+        concurrentItems: "concurrentItems",
+      },
+      extractor: {
+        extractor: "extractor",
+        concurrentItems: "concurrentItems",
+        timeout: "timeout",
+      },
+      stream: {
+        stream: "stream",
+        server: "server",
+        port: "port",
+        topic: "topic",
+        groupId: "groupId",
+      },
+      // Server messages may have one of the following types
+      responseTypes: {
+        result: "result",
+        error: "error",
+      },
+      reason: "reason",
+      report: "report", // Contains the SHAclEX validation report in WS responses
+      date: "instant", // Contains the validation date in WS responses
+    },
+
     wbQuery: {
       endpoint: "endpoint",
       payload: "payload",
@@ -247,6 +287,7 @@ class API {
     byFile: "byFile",
     byCompound: "byCompound",
     bySchema: "bySchema",
+    byStream: "byStream",
 
     default: "byText",
   };
@@ -278,6 +319,15 @@ class API {
   // By text limitations
   static limits = {
     byTextCharacterLimit: 2200,
+  };
+
+  // WS state as strings
+  static wsStatuses = {
+    [ReadyState.CONNECTING]: "Connecting",
+    [ReadyState.OPEN]: "Open",
+    [ReadyState.CLOSING]: "Closing",
+    [ReadyState.CLOSED]: "Closed",
+    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
   };
 
   // Text constants
@@ -312,12 +362,12 @@ class API {
     },
 
     navbarExamples: {
-      dataInformation:"Data information",
+      dataInformation: "Data information",
       dataQuery: "Data query",
       shexValidation: "ShEx validation",
       shaclValidation: "SHACL validation",
       wikidataQuery: "Wikidata query",
-      shexFromUml: "ShEx from UML"
+      shexFromUml: "ShEx from UML",
     },
 
     pageHeaders: {
@@ -422,9 +472,14 @@ class API {
           <p>
             Input some RDF data and ShEx schema (by text, by pointing to a URL
             with the contents or by file) to validate the data against the
-            schema and see the validation results in per-node detail
+            schema and see the validation results in per-node detail.
           </p>
-          <p>Results are searchable, sortable and downloadable</p>
+          <p>Results are searchable, sortable and downloadable.</p>
+          <p>
+            <span className="underline">Experimental feature</span>: Streaming
+            validations are available, given the host/port/topic identifying an
+            incoming <span className="bold">Kafka</span> stream of RDF data.
+          </p>
         </>
       ),
       umlToShex:
@@ -433,7 +488,21 @@ class API {
       shaclInfo:
         "Input some SHACL (by text, by pointing to a URL with the contents or by file) and select its format and engine to validate its contents and see additional information, including: prefix map and visuals",
 
-      shaclValidation: "SHACL validate data",
+      shaclValidation: (
+        <>
+          <p>
+            Input some RDF data and Shapes Graph (by text, by pointing to a URL
+            with the contents or by file) to validate the data and see the
+            validation results in per-node detail.
+          </p>
+          <p>Results are searchable, sortable and downloadable.</p>
+          <p>
+            <span className="underline">Experimental feature</span>: Streaming
+            validations are available, given the host/port/topic identifying an
+            incoming <span className="bold">Kafka</span> stream of RDF data.
+          </p>
+        </>
+      ),
       shaclConversion: (
         <>
           <p>
@@ -559,6 +628,8 @@ class API {
       extract: "Extract",
       fetch: "Fetch",
       createForm: "Create form",
+      pause: "Pause",
+      resume: "Resume",
     },
 
     visualizationSettings: {
@@ -606,6 +677,24 @@ class API {
       shaclValidationReportNodes: "Results per node",
     },
 
+    streamingTexts: {
+      haltOnInvalid: "Halt on invalid",
+      haltOnErrored: "Halt on errored",
+
+      noProvidedServer: "No streaming server provided",
+      noProvidedPort: "No streaming port provided",
+      noProvidedTopic: "No Kafka topic provided",
+
+      validationStarting: "Validation is starting...",
+      validationRunning: "Validation is running...",
+      validationPaused: "Validation is paused",
+
+      validationConfiguration: "Validation configuration",
+
+      connectionClosedError: "Connection to the server was lost",
+      unknownError: "Unknown error",
+    },
+
     serverStatus: "Server status",
     networkError: "Network error",
     errorDetails: "Error details",
@@ -621,6 +710,7 @@ class API {
     noProvidedUml: "No UML provided",
     errorResponsePrefix: "Error response",
     responseSummaryText: "Full response",
+    sentParams: "Parameters sent",
     noPrefixes: "No prefixes",
     noAssociations: "No associations",
 

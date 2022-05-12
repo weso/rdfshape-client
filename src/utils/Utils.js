@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ExternalLinkIcon } from "react-open-iconic-svg";
 import { Slide } from "react-toastify";
 import Viz from "viz.js/viz.js";
@@ -6,6 +6,16 @@ import API from "../API";
 import axios from "./networking/axiosConfig";
 
 const { Module, render } = require("viz.js/full.render.js");
+
+// Custom hook for storing previous state values
+// https://stackoverflow.com/a/56817365/9744696
+export const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 
 export function dot2svg(dot, cb) {
   const digraph = "digraph { a -> b; }";
@@ -354,6 +364,28 @@ export const yasheResultButtonsOptions = {
 export const randomInt = (min = 0, max = 1000) =>
   Math.floor(Math.random() * (max - min)) + min;
 
+// Create a random guid
+// https://stackoverflow.com/a/6860916/9744696
+export function guidGenerator() {
+  var S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+  return (
+    S4() +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    "-" +
+    S4() +
+    S4() +
+    S4()
+  );
+}
+
 // Smoothly scroll to the element with the given id (if it exists)
 export const scrollToElementById = (
   id = API.resultsId,
@@ -379,3 +411,34 @@ export const scrollToItem = (
 ) => {
   element.scrollIntoView(config);
 };
+
+// Trim all string fields in an object
+export const trimFields = (item) => {
+  Object.keys(item).forEach(
+    (key) => typeof item[key] == "string" && (item[key] = item[key].trim())
+  );
+  return item;
+};
+
+// Change all stringified boolean values to real booleans in an object
+export const curateBooleans = (obj) => {
+  Object.keys(obj).forEach((key) => {
+    obj[key] = curateBoolean(obj[key]);
+  });
+  return obj;
+};
+
+// Change a stringified boolean value to a real boolean
+export const curateBoolean = (value) => {
+  if (typeof value === "boolean") return value;
+  else if (typeof value === "string") {
+    const trimValue = value.trim();
+    return trimValue === "true" ? true : trimValue === "false" ? false : value;
+  } else return value;
+};
+
+export const curateObject = (item) => curateBooleans(trimFields(item));
+
+// Deep clone two objects via JSON-stringify (expensive)
+export const objectEqualsObject = (obj1, obj2) =>
+  JSON.stringify(obj1) === JSON.stringify(obj2);

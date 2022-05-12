@@ -1,6 +1,6 @@
 {
   "name": "rdfshape-client",
-  "version": "0.2.4",
+  "version": "0.2.10",
   "private": true,
   "dependencies": {
     "3dshex": "^0.5.2",
@@ -39,6 +39,7 @@
     "react-scripts": "^3.4.4",
     "react-toastify": "^7.0.3",
     "react-tooltip": "^4.2.21",
+    "react-use-websocket": "^3.0.0",
     "shumlex": "^0.6.5",
     "viz.js": "^2.1.2",
     "xml-formatter": "^2.6.1",

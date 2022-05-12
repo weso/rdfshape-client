@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -6,9 +7,12 @@ import ToolkitProvider, {
   CSVExport,
   Search
 } from "react-bootstrap-table2-toolkit";
+import { MediaPauseIcon } from "react-open-iconic-svg";
 import DataTransferDownloadIcon from "react-open-iconic-svg/dist/DataTransferDownloadIcon";
+import MediaPlayIcon from "react-open-iconic-svg/dist/MediaPlayIcon";
+import TrashIcon from "react-open-iconic-svg/dist/TrashIcon";
 import API from "../API";
-import { conformant } from "../results/ResultValidate";
+import { conformant } from "../results/ResultValidateShex";
 import { sortCaretGen } from "../utils/Utils";
 
 const relativeBaseRegex = () => /^<internal:\/\/base\/(.*)>$/g;
@@ -91,27 +95,72 @@ export function mkCellElement(node, prefixMap) {
   return node;
 }
 
+// Given an array of validation results from the API, show them all together
+// in a table, nicely formatted.
+// Each item in the array contains:
+// - shapeMap (array of results)
+function ShowShapeMap({
+  results,
+  // Options are meant for streaming validations
+  options = {
+    // Change the table's behaviour to adapt to a bunch of results coming in streams
+    isStreaming: false,
+    // If streaming, controls over the "paused" state of the validation process
+    isPaused: false,
+    setPaused: () => {},
+    clearItems: () => {},
+    // Override prefix maps
+    nodesPrefixMap: [],
+    shapesPrefixMap: [],
+    error: null,
+  },
+}) {
+  // De-structure for later use
+  const {
+    isPaused,
+    setPaused,
+    clearItems,
+    nodesPrefixMap: optionsNodesPm,
+    shapesPrefixMap: optionsShapesPm,
+    error: streamError,
+  } = options;
 
+  // We assume the following are the same for all validations passed here:
+  // - nodesPrefixMap (nodes pm of that validation)
+  // - shapesPrefixMap (shapes pm of that validations)
+  // Extract them from options, else from the first result
+  const nodesPrefixMap = optionsNodesPm || results[0]?.nodesPrefixMap || [];
+  const shapesPrefixMap = optionsShapesPm || results[0]?.shapesPrefixMap || [];
 
-function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
   // Given the shapeMap resulting from a schema validation, map each result to an object
-  // compatible with Bootstrap table
-  function mkTableItems(shapeMap) {
-    return shapeMap.map((item, index) => ({
-      id: index,
-      node: item.node,
-      shape: item.shape,
-      status:
-        item.status === conformant
-          ? API.texts.validationResults.nodeValid
-          : API.texts.validationResults.nodeInvalid,
-      reason: item.reason,
-      resultInfo: item.appInfo,
-    }));
+  // compatible with Bootstrap table.
+  // If we have several results, merge them all together to a single array of items.
+  function mkTableItems() {
+    return results
+      .filter((it) => !!it.shapeMap) // Filter results with valid shapeMap
+      .reduce((prevItems, curr, idx) => {
+        // Make the items out of each result
+        const newItems = curr.shapeMap.map((item, index) => ({
+          id: `${idx}-${index}`,
+          node: item.node,
+          shape: item.shape,
+          status:
+            item.status === conformant
+              ? API.texts.validationResults.nodeValid
+              : API.texts.validationResults.nodeInvalid,
+          reason: item.reason,
+          resultInfo: item.appInfo,
+          // Look for a date in the result, if non-existent, create a new one
+          date: curr[API.queryParameters.streaming.date]
+            ? new Date(curr[API.queryParameters.streaming.date])
+            : new Date(),
+        }));
+        return [...prevItems, ...newItems];
+      }, []);
   }
 
-  if (!Array.isArray(shapeMap)) return <></>;
-  const tableItems = mkTableItems(shapeMap);
+  if (!Array.isArray(results)) return <></>;
+  const tableItems = mkTableItems();
 
   // Settings for the data appearing in the table columns
   const columns = [
@@ -151,7 +200,26 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
       searchable: false,
       hidden: true,
     },
+    {
+      dataField: "date", // "date" field contains when the item was validated in streaming validations
+      text: "Date",
+      formatter: (dateObj, _) => dateObj.toLocaleTimeString(),
+      searchable: false,
+      sort: true,
+      sortCaret: sortCaretGen,
+      // Show date only for streaming validations, in which timing is relevant
+      hidden: options.isStreaming ? false : true,
+    },
   ];
+
+  // Setting for initial table sorting
+  // When streaming, sort by date (most recent first). Else, sort by node name.
+  const sortingSettings = options.isStreaming
+    ? {
+        dataField: "date",
+        order: "desc",
+      }
+    : { dataField: "node", order: "asc" };
 
   // Settings for dynamic row expansion
   const rowExpandSettings = {
@@ -186,19 +254,22 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
 
   // Settings for pagination
   // https://react-bootstrap-table.github.io/react-bootstrap-table2/docs/pagination-props.html
+  const basePaginationSizes = [
+    ...[5, 10, 15, 20, 25, 30]
+      .filter((n) => n < tableItems.length)
+      .map((n) => ({
+        text: n.toString(),
+        value: n,
+      })),
+  ];
+
   const paginationSettings = {
-    sizePerPage: 5,
+    sizePerPage: options.isStreaming ? 10 : 5,
     paginationSize: 3,
-    hidePageListOnlyOnePage: true,
-    sizePerPageList: [
-      ...[5, 10, 15, 20, 25, 30]
-        .filter((n) => n < tableItems.length)
-        .map((n) => ({
-          text: n.toString(),
-          value: n,
-        })),
-      { text: "All", value: tableItems.length },
-    ],
+    hidePageListOnlyOnePage: options.isStreaming ? false : true,
+    sizePerPageList: options.isStreaming
+      ? basePaginationSizes
+      : [...basePaginationSizes, { text: "All", value: tableItems.length }],
     sizePerPageOptionRenderer: ({ text, page, onSizePerPageChange }) => (
       <li
         key={text}
@@ -237,6 +308,32 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
                 {...props.searchProps}
                 className="search-form"
               />
+              {/* For streaming validations: show stop/resume and clear */}
+              {options.isStreaming && (
+                <>
+                  <Button
+                    className={`no-margins ${!!streamError ? "disabled" : ""}`}
+                    disabled={!!streamError}
+                    onClick={() => setPaused(!isPaused)}
+                    variant={"primary"}
+                  >
+                    {isPaused || !!streamError ? (
+                      <MediaPlayIcon className="white-icon" />
+                    ) : (
+                      <MediaPauseIcon className="white-icon" />
+                    )}
+                  </Button>
+                  <Button
+                    className={`${!tableItems?.length ? "disabled" : ""}`}
+                    disabled={!tableItems?.length}
+                    style={{ marginRight: "0" }}
+                    onClick={clearItems}
+                    variant={"danger"}
+                  >
+                    <TrashIcon className="white-icon" />
+                  </Button>
+                </>
+              )}
               <CSVExport.ExportCSVButton
                 {...props.csvProps}
                 className="btn-secondary btn-export-csv"
@@ -248,6 +345,7 @@ function ShowShapeMap({ shapeMap, nodesPrefixMap, shapesPrefixMap }) {
             <BootstrapTable
               {...props.baseProps}
               classes="results-table"
+              sort={sortingSettings}
               expandRow={rowExpandSettings}
               rowClasses={rowClassesFn}
               pagination={paginationFactory(paginationSettings)}

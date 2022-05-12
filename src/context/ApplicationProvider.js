@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import API from "../API";
 import { InitialData } from "../data/Data";
+import { curateObject } from "../utils/Utils";
 import {
   ApplicationContext,
   initialApplicationContext
@@ -21,6 +22,7 @@ const ApplicationProvider = ({ children }) => {
     shacl: "shacl",
     shapeMap: "shapeMap",
     uml: "uml",
+    stream: "stream",
   });
 
   // Reducer function
@@ -28,17 +30,11 @@ const ApplicationProvider = ({ children }) => {
     // Last trap for nullish values
     if (!value) return state;
 
-    // Trim text and URLs before storing
-    const trimBeforeStore = (item) => ({
-      ...item,
-      textArea: item.textArea.trim(),
-      url: item.url.trim(),
-    });
-
+    // Refine the object before storing
     const finalValue = Array.isArray(value)
-      ? value.map(trimBeforeStore)
+      ? value.map(curateObject)
       : typeof value === "object"
-      ? trimBeforeStore(value)
+      ? curateObject(value)
       : typeof value === "string"
       ? value.trim()
       : value;
@@ -63,6 +59,8 @@ const ApplicationProvider = ({ children }) => {
         return { ...state, shapeMap: finalValue };
       case reducerTypes.uml:
         return { ...state, umlData: finalValue };
+      case reducerTypes.stream:
+        return { ...state, streamingData: finalValue };
       default:
         return state;
     }
@@ -126,6 +124,8 @@ const ApplicationProvider = ({ children }) => {
           dispatch({ type: reducerTypes.shapeMap, value: shapeMap }),
         setUmlData: (umlData) =>
           dispatch({ type: reducerTypes.uml, value: umlData }),
+        setStreamingData: (streamingData) =>
+          dispatch({ type: reducerTypes.stream, value: streamingData }),
       }}
     >
       {children}

@@ -16,9 +16,9 @@ export const InitialShapeMap = {
 
 export function updateStateShapeMap(params, shapeMap) {
   // Only update state if there is data
-  if (params[API.queryParameters.shapeMap.shapeMap]) {
+  if (params[API.queryParameters.shapeMap.shapeMap] || params[API.queryParameters.shapeMap.shapeMapv2]) {
     // Get the raw data string introduced by the user
-    const userData = params[API.queryParameters.shapeMap.shapeMap];
+    const userData = params[API.queryParameters.shapeMap.shapeMap] || params[API.queryParameters.shapeMap.shapeMapv2];
     // Get the data source to be used: take it from params or resort to default
     const shapeMapSource =
       params[API.queryParameters.shapeMap.source] || API.sources.default;
@@ -58,7 +58,17 @@ export function paramsFromStateShapeMap(shapeMap) {
   return params;
 }
 
-export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
+export function mkShapeMapTabs(
+  shapeMap,
+  setShapeMap,
+  options = {
+    _name: API.texts.dataTabs.shapeMapHeader,
+    subname: "",
+    onTextChange: () => {},
+  }
+) {
+  const { _name: name, subname } = options;
+
   function handleShapeMapTabChange(value) {
     setShapeMap({ ...shapeMap, activeSource: value });
   }
@@ -67,7 +77,8 @@ export function mkShapeMapTabs(shapeMap, setShapeMap, name, subname) {
     setShapeMap({ ...shapeMap, format: value });
   }
 
-  function handleShapeMapByTextChange(value) {
+  function handleShapeMapByTextChange(value, editor, change) {
+    options.onTextChange && options.onTextChange(value, editor, change);
     setShapeMap({ ...shapeMap, textArea: value });
   }
 

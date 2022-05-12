@@ -9,26 +9,15 @@ import { equalsIgnoreCase, scrollToResults } from "../utils/Utils";
 export const conformant = "conformant"; // Status of conformant nodes
 export const nonConformant = "nonconformant"; // Status of non-conformant nodes
 
-function ResultSchemaValidate({
+function ResultValidateShex({
   result: schemaValidateResponse, // Request successful response
   permalink,
   disabled,
 }) {
-  const {
-    message,
-    data,
-    schema,
-    trigger,
-    result: {
-      shapeMap: resultsMap,
-      resultErrors,
-      nodesPrefixMap,
-      shapesPrefixMap,
-    },
-  } = schemaValidateResponse;
+  const { message, data, schema, trigger, result } = schemaValidateResponse;
 
   // Store the resulting nodes in state, plus the invalid ones
-  const [nodes] = useState(resultsMap);
+  const [nodes] = useState(result.shapeMap || []);
   const [invalidNodes, setInvalidNodes] = useState([]);
 
   // Update invalid nodes on node changes
@@ -41,7 +30,7 @@ function ResultSchemaValidate({
 
   useEffect(scrollToResults, []);
 
-  if (schemaValidateResponse) {
+  if (schemaValidateResponse && result) {
     return (
       <div id={API.resultsId}>
         {/* Place an alert depending on the validation errors */}
@@ -63,11 +52,7 @@ function ResultSchemaValidate({
         )}
 
         {nodes?.length && (
-          <ShowShapeMap
-            shapeMap={resultsMap}
-            nodesPrefixMap={nodesPrefixMap}
-            shapesPrefixMap={shapesPrefixMap}
-          />
+          <ShowShapeMap results={[result]} options={{ isStreaming: false }} />
         )}
 
         <details>
@@ -86,4 +71,4 @@ function ResultSchemaValidate({
   }
 }
 
-export default ResultSchemaValidate;
+export default ResultValidateShex;

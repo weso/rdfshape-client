@@ -30,6 +30,7 @@ function Code(props) {
 
   useEffect(() => {
     if (editor) {
+      editor.refresh();
       if (props.fromParams) {
         props.value && editor.setValue(props.value);
         props.resetFromParams && props.resetFromParams();
@@ -43,7 +44,7 @@ function Code(props) {
         value={props.value}
         options={options}
         onBeforeChange={(_editor, _data, val) => {
-          props.onChange(val);
+          props.onChange(val, _editor, _data);
         }}
         editorDidMount={(editor) => {
           setEditor(editor);

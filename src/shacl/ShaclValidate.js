@@ -37,11 +37,13 @@ function ShaclValidate(props) {
     rdfData: [ctxData],
     addRdfData,
     shaclSchema: ctxShacl,
+    streamingData: ctxStreamingData,
   } = useContext(ApplicationContext);
 
   const history = useHistory();
 
   const [data, setData] = useState(ctxData || addRdfData());
+  const [streamData, setStreamData] = useState(ctxStreamingData);
   const [shacl, setShacl] = useState(ctxShacl || InitialShacl);
 
   const [result, setResult] = useState("");
@@ -203,7 +205,11 @@ function ShaclValidate(props) {
       <Row>
         <Col className={"half-col border-right"}>
           <Form onSubmit={handleSubmit}>
-            {mkDataTabs(data, setData)}
+            {mkDataTabs(data, setData, {
+              allowStream: true,
+              streamData,
+              setStreamData,
+            })}
             <hr />
             {mkShaclTabs(shacl, setShacl)}
             <hr />

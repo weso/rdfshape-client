@@ -2,12 +2,27 @@ import React from "react";
 import API from "../API";
 import { processDotData } from "../utils/dot/dotUtils";
 import axios from "../utils/networking/axiosConfig";
-import { getItemRaw } from "../utils/Utils";
+import { getItemRaw, guidGenerator } from "../utils/Utils";
 import ShowVisualization, {
   visualizationTypes
 } from "../visualization/ShowVisualization";
 import DataTabs from "./DataTabs";
 import SelectInferenceEngine from "./SelectInferenceEngine";
+
+// Properties used for streaming validations.
+// Describe the incoming stream and the validator behaviour.
+export const InitialDataStream = {
+  server: "",
+  port: API.kafkaBaseValues.port,
+  topic: "",
+  haltOnInvalid: false,
+  haltOnErrored: false,
+  format: API.formats.defaultData,
+  inference: API.inferences.default,
+
+  // Hints the UI to change to the Stream input tab
+  lastUsed: false,
+};
 
 export const InitialData = {
   activeSource: API.sources.default,
@@ -45,6 +60,33 @@ export function updateStateData(params, data) {
   return data;
 }
 
+// Given the query parameters and current streaming data object
+// form a new one with the info in the query params
+export function updateStateStreamData(params, streamData) {
+  // Compose new Data State building from the old one
+  return {
+    ...streamData,
+    activeSource: API.sources.byStream,
+    lastUsed: params[API.queryParameters.data.source] === API.sources.byStream,
+    // Fill in the data containers with the user data if necessary. Else leave them as they were.
+    server:
+      params[API.queryParameters.streaming.stream.server] || streamData?.server,
+    port: params[API.queryParameters.streaming.stream.port] || streamData?.port,
+    topic:
+      params[API.queryParameters.streaming.stream.topic] || streamData?.topic,
+    haltOnInvalid:
+      params[API.queryParameters.streaming.validator.haltOnInvalid] ||
+      streamData?.haltOnInvalid,
+    haltOnErrored:
+      params[API.queryParameters.streaming.validator.haltOnErrored] ||
+      streamData?.haltOnErrored,
+
+    format: params[API.queryParameters.data.format] || streamData?.format,
+    inference:
+      params[API.queryParameters.data.inference] || streamData?.inference,
+  };
+}
+
 export function paramsFromStateData(data) {
   let params = {};
   params[API.queryParameters.data.source] = data.activeSource;
@@ -66,18 +108,93 @@ export function paramsFromStateData(data) {
   return params;
 }
 
+// State object for streaming data
+// Basic data to rebuild it in state
+export function paramsFromStateStreamData(streamData) {
+  return {
+    [API.queryParameters.data.source]: API.sources.byStream,
+
+    [API.queryParameters.streaming.stream.server]: streamData.server,
+    [API.queryParameters.streaming.stream.port]: streamData.port,
+    [API.queryParameters.streaming.stream.topic]: streamData.topic,
+    [API.queryParameters.streaming.validator.haltOnInvalid]:
+      streamData.haltOnInvalid,
+    [API.queryParameters.streaming.validator.haltOnErrored]:
+      streamData.haltOnErrored,
+
+    [API.queryParameters.data.format]: streamData.format,
+    [API.queryParameters.data.inference]: streamData.inference,
+  };
+}
+
+export function mkStreamDataServerParams(data, schemaParams, triggerParams) {
+  return {
+    [API.queryParameters.streaming.configuration]: {
+      [API.queryParameters.streaming.validator.validator]: {
+        [API.queryParameters.schema.schema]: schemaParams,
+        [API.queryParameters.schema.triggerMode]: triggerParams,
+
+        [API.queryParameters.streaming.validator.haltOnInvalid]:
+          data.haltOnInvalid,
+        [API.queryParameters.streaming.validator.haltOnErrored]:
+          data.haltOnErrored,
+      },
+      [API.queryParameters.streaming.extractor.extractor]: {
+        [API.queryParameters.data.data]: {
+          [API.queryParameters.format]: data.format,
+          [API.queryParameters.inference]: data.inference,
+        },
+      },
+      [API.queryParameters.streaming.stream.stream]: {
+        [API.queryParameters.streaming.stream.server]: data.server,
+        [API.queryParameters.streaming.stream.port]: data.port,
+        [API.queryParameters.streaming.stream.topic]: data.topic,
+        // Generate a new random group ID each time we regenerate server params.
+        // The consumer will start consuming from the latest incoming messages.
+        // On the other hand, when we stop-resume a streaming validation,
+        // we keep the same groupId and lost messages are processed anew.
+        [API.queryParameters.streaming.stream.groupId]: guidGenerator(),
+      },
+    },
+  };
+}
+
 export function mkDataTabs(
   data,
   setData,
-  name,
-  subname,
-  onTextChange = () => {}
+  options = {
+    _name: API.texts.dataTabs.dataHeader,
+    subname: "",
+    onTextChange: () => {},
+    // Callback on tab changes
+    currentTabStore: null,
+    setCurrentTabStore: () => {},
+    // Optionally, allow to handle streaming data stored in context
+    streamData: {},
+    setStreamData: () => {},
+    allowStream: false,
+  }
 ) {
+  const {
+    streamData,
+    setStreamData,
+    allowStream,
+    currentTabStore,
+    setCurrentTabStore,
+  } = options;
+
+  const isStreamingValidation = () => currentTabStore === API.sources.byStream;
+
   function handleDataTabChange(value) {
-    setData({ ...data, activeSource: value });
+    setCurrentTabStore && setCurrentTabStore(value);
+    // Do not change data source, stream data is independent
+    if (value !== API.sources.byStream) {
+      setData({ ...data, activeSource: value });
+      handleStreamChange({ lastUsed: false });
+    } else handleStreamChange({ lastUsed: true });
   }
   function handleDataByTextChange(value, y, change) {
-    onTextChange(value, y, change);
+    options.onTextChange && options.onTextChange(value, y, change);
     setData({ ...data, textArea: value });
   }
   function handleDataUrlChange(value) {
@@ -87,40 +204,62 @@ export function mkDataTabs(
     setData({ ...data, file: value });
   }
   function handleDataFormatChange(value) {
-    setData({ ...data, format: value });
+    // Change the format of the standard data or streaming data:
+    if (isStreamingValidation()) handleStreamChange({ format: value });
+    else setData({ ...data, format: value });
   }
   function handleInferenceChange(value) {
-    setData({ ...data, inference: value });
+    // Change the inference of the standard data or streaming data:
+    if (isStreamingValidation()) handleStreamChange({ inference: value });
+    else setData({ ...data, inference: value });
   }
 
   function handleCodeMirrorChange(value) {
     setData({ ...data, codeMirror: value });
   }
+
+  function handleStreamChange(value) {
+    setStreamData && setStreamData({ ...streamData, ...value });
+  }
+
   const resetParams = () => setData({ ...data, fromParams: false });
 
   return (
     <React.Fragment>
       <DataTabs
         data={data}
-        name={name}
-        subname={subname}
-        activeSource={data.activeSource}
+        name={options._name}
+        subname={options.subname}
+        activeSource={
+          allowStream && streamData.lastUsed === true
+            ? API.sources.byStream
+            : data.activeSource
+        }
         handleTabChange={handleDataTabChange}
         textAreaValue={data.textArea}
         handleByTextChange={handleDataByTextChange}
         urlValue={data.url}
         handleDataUrlChange={handleDataUrlChange}
         handleFileUpload={handleDataFileUpload}
-        selectedFormat={data.format}
+        selectedFormat={
+          isStreamingValidation() ? streamData.format : data.format
+        }
         handleDataFormatChange={handleDataFormatChange}
         setCodeMirror={handleCodeMirrorChange}
         fromParams={data.fromParams}
         resetFromParams={resetParams}
+        streamValue={streamData}
+        handleStreamChange={handleStreamChange}
+        allowStream={allowStream}
       />
       <SelectInferenceEngine
         data={data}
         handleInferenceChange={handleInferenceChange}
-        selectedInference={data.inference || InitialData.inference}
+        selectedInference={
+          isStreamingValidation()
+            ? streamData.inference || InitialDataStream.inference
+            : data.inference || InitialData.inference
+        }
         fromParams={data.fromParams}
         resetFromParams={resetParams}
       />
@@ -135,6 +274,10 @@ export function getDataText(data) {
     return encodeURI(data.url.trim());
   }
   return "";
+}
+
+export function getStreamingDataText(streamData) {
+  return `${streamData.server}:${streamData.port}@${streamData.topic}`;
 }
 
 // Prepare basic server params for when data is sent to the server
