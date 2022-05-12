@@ -118,22 +118,28 @@ function ShexValidate(props) {
 
       // Get values from close event
       const { code, reason } = closeEvent;
-      // If the close code is one of our custom API codes, set the reason as error
-      // Notice more detailed errors are returned in the message before closure,
-      // but for now this level of detail is enough
-      if (code > 3000 && code < 4999) {
-        setStreamValidationError(
-          `${reason} (WebSocket closed with code ${code})`
-        );
+      // If a streaming validation was in progress when the connection closed,
+      // perform error handling logic
+      if (streamValidationInProgress) {
+        if (code > 3000 && code < 4999) {
+          // If the close code is one of our custom API codes, set the reason as error
+          // Notice more detailed errors are returned in the message before closure,
+          // but for now this level of detail is enough
+          setStreamValidationError(
+            `${reason} (WebSocket closed with code ${code})`
+          );
+        }
+        // Server disconnected
+        else if (code == 1006)
+          setStreamValidationError(
+            `Server is offline (WebSocket closed with code ${code})`
+          );
+        // If there's an unknown closing code whose number indicates an error, show fallback
+        else if (code > 1015)
+          setStreamValidationError(API.texts.streamingTexts.unknownError);
+
+        // We close code 1005, that means we closed the connection ourselves
       }
-      // Server disconnected
-      else if (code == 1006)
-        setStreamValidationError(
-          `Server is offline (WebSocket closed with code ${code})`
-        );
-      // If there's an unknown closing code whose number indicates an error, show fallback
-      else if (code > 1015)
-        setStreamValidationError(API.texts.streamingTexts.unknownError);
 
       // Set state: if the validation is just paused, do not tell the state that it is over
       if (!streamValidationPaused) setStreamValidationInProgress(false);
