@@ -153,8 +153,18 @@ function ShexValidate(props) {
         const { type, content } = messageData;
         switch (type) {
           case API.queryParameters.streaming.responseTypes.result:
-            // Result received, update result list with it if not errored
-            if (content.status != errored) setResults([content, ...results]);
+            // We got a result with an embedded error message, set error
+            if (!Array.isArray(content?.report?.shapeMap)) {
+              setStreamValidationError(
+                content?.report?.message ||
+                  API.texts.streamingTexts.unknownError
+              );
+              // Stream was not stopped, so we disconnect ourselves
+              stopStreamingValidation();
+            }
+            // Result received, update result list with it after checking that it is not errored (and thus omitted)
+            else if (content.status != errored)
+              setResults([content, ...results]);
             break;
           case API.queryParameters.streaming.responseTypes.error:
             // Stream was stopped, show/handle errors, set state...
@@ -531,7 +541,7 @@ function ShexValidate(props) {
             </Button>
           </Form>
         </Col>
-        {loading || results || permalink || error ? (
+        {loading || results.length || permalink || error ? (
           <Col className={"half-col"}>
             {loading ? (
               <ProgressBar
