@@ -34,7 +34,7 @@ function ResultValidateStream({
         [API.queryParameters.streaming.date]:
           result[API.queryParameters.streaming.date],
       };
-    // Stream will to halt on invalid: invalidating result, the report is contained in itself and there's no date
+    // Stream will halt on invalid: invalidating result, the report is contained in itself and there's no date
     else
       return {
         ...result,
