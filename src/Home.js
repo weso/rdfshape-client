@@ -8,8 +8,9 @@ function Home() {
       <h1>RDFShape</h1>
       <p>
         RDFShape is a playground for RDF data conversion, validation and
-        visualization, among other features. Here are some ideas:
+        visualization, among other features. 
       </p>
+      <p>It supports the following tasks:</p>
       <ul>
         <li>
           <a href="https://www.w3.org/TR/rdf11-concepts/">RDF</a> conversion
@@ -41,7 +42,7 @@ function Home() {
       </p>
       <ul>
         <li>
-          Data <a href={API.routes.client.dataInfoRoute}>analyis</a> and
+          Data <a href={API.routes.client.dataInfoRoute}>analysis</a> and
           visualization
         </li>
         <li>

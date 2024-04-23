@@ -40,8 +40,8 @@ function About() {
         <a href="http://ceur-ws.org/Vol-2180/paper-35.pdf">
           RDFShape: An RDF playground based on Shapes
         </a>
-        , <a href="http://labra.weso.es">Jose Emilio Labra Gayo</a>, Daniel
-        Fernández Álvarez, Herminio García González, Demo presented at{" "}
+        , <a href="http://labra.weso.es">Jose Emilio Labra Gayo</a>, <a href="http://danifdez.weso.es/">Daniel
+        Fernández Álvarez</a>, <a href="https://herminiogarcia.com/">Herminio García González</a>, Demo presented at{" "}
         <a href="http://iswc2018.semanticweb.org/">
           International Semantic Web Conference
         </a>
